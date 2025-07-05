@@ -121,7 +121,7 @@
     </Grid>
 
 
-    <Button ClickMode="Release" Tag="{Binding IsColorized}" HorizontalContentAlignment="Stretch" x:Shared="false" x:Key="ButtonWidgetControl" Margin="{StaticResource StdMargin}" IsEnabled="{Binding Enabled}" Grid.Column="1" DataContext="{Binding}" d:DataContext="{d:DesignInstance widget:vMixControlButton}">
+    <Button ClickMode="Release" Height="Auto" Tag="{Binding IsColorized}" HorizontalContentAlignment="Stretch" x:Shared="false" x:Key="ButtonWidgetControl" Margin="{StaticResource StdMargin}" IsEnabled="{Binding Enabled}" Grid.Column="1" DataContext="{Binding}" d:DataContext="{d:DesignInstance widget:vMixControlButton}">
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
                 <cmd:EventToCommand Command="{Binding ExecutePushOn}" PassEventArgsToCommand="True"/>
