@@ -166,10 +166,11 @@ namespace vMixController.Classes
                     //Add or update global variable, according to controller variables
                     foreach (var item in globals)
                     {
-                        if (GlobalVariablesViewModel._variables.Count(x => x.A == item.A) == 0)
-                            GlobalVariablesViewModel._variables.Add(item);
+                        var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                        if (globalSettings.Variables.Count(x => x.A == item.A) == 0)
+                            globalSettings.Variables.Add(item);
                         else
-                            GlobalVariablesViewModel._variables.Where(x => x.A == item.A).First().B = item.B;
+                            globalSettings.Variables.Where(x => x.A == item.A).First().B = item.B;
                     }
                     reader.ReadEndElement();
                 }
@@ -207,10 +208,12 @@ namespace vMixController.Classes
                 s.Serialize(writer, _windowSettings);
                 writer.WriteEndElement();
 
+
+                var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
                 writer.WriteStartElement("GlobalVariables");
                 s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
                 _logger.Info("Writing global variables.");
-                s.Serialize(writer, GlobalVariablesViewModel._variables);
+                s.Serialize(writer, globalSettings.Variables);
                 writer.WriteEndElement();
 
                 writer.WriteEndElement();
@@ -224,7 +227,8 @@ namespace vMixController.Classes
             if (varName != null)
                 return (d ?? Dispatcher.CurrentDispatcher).Invoke(() =>
                 {
-                    var variable = GlobalVariablesViewModel._variables.Where(x => x.A == varName).FirstOrDefault();
+                    var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                    var variable = globalSettings.Variables.Where(x => x.A == varName).FirstOrDefault();
                     var inputKey = varName;
                     if (variable != null)
                         inputKey = variable.B;

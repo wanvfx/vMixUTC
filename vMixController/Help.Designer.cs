@@ -168,6 +168,15 @@ namespace vMixController {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Here you can assign StreamDeck commands to hotkeys in another widgets..
+        /// </summary>
+        public static string StreamDeck_Default {
+            get {
+                return ResourceManager.GetString("StreamDeck_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на If checked, text field of this widget will be working in `table` mode.
         ///It means, that all mapped title texts will be shown into text field with `|` delimiter.
         ///User can edit one title at time, or replace text in all titles.

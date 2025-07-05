@@ -930,6 +930,17 @@
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>
 
+    <DataTemplate x:Key="vMixControlVariableViewer" DataType="widget:vMixControlVariableViewer">
+        <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
+                                         MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
+            <ctrls:vMixControlContainerDummy.MainContent>
+                <StackPanel Margin="{StaticResource StdMargin}">
+                    <TextBlock Style="{StaticResource CaptionText}"><Run Text="{Binding Variable}"></Run>: <Run Text="{Binding Text}"/></TextBlock>
+                </StackPanel>
+            </ctrls:vMixControlContainerDummy.MainContent>
+        </ctrls:vMixControlContainerDummy>
+    </DataTemplate>
+
     <DataTemplate x:Key="vMixControlRegion" DataType="widget:vMixControlRegion">
         <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
@@ -994,6 +1005,18 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.MainContent>
                 <Label HorizontalAlignment="Center" Content="{Binding DeviceCaps}"/>
+            </ctrls:vMixControlContainerDummy.MainContent>
+        </ctrls:vMixControlContainerDummy>
+    </DataTemplate>
+
+    <DataTemplate x:Key="vMixControlStreamDeck" DataType="widget:vMixControlStreamDeck">
+        <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
+                                         MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
+            <ctrls:vMixControlContainerDummy.MainContent>
+                <StackPanel>
+                <Label HorizontalAlignment="Center" Content="{Binding Context}"/>
+                    <!--<Button Command="{Binding ResetCommand}">Reset</Button>-->
+                </StackPanel>
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>

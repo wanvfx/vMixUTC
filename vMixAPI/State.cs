@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -152,8 +153,8 @@ namespace vMixAPI
                     foreach (var item in state.Inputs)
                         state._changedinputs.Add(item.Key);
 
-                    state.Inputs.Insert(0, new Input() { Key = "0", Title = "[Preview]" });
-                    state.Inputs.Insert(0, new Input() { Key = "-1", Title = "[Active]" });
+                    //state.Inputs.Insert(0, new Input() { Key = "0", Title = "[Preview]" });
+                    //state.Inputs.Insert(0, new Input() { Key = "-1", Title = "[Active]" });
 
 
 
@@ -190,9 +191,9 @@ namespace vMixAPI
         {
             SendFunction("", true, e =>
             {
-                if (e.Error != null) return;
+                if (string.IsNullOrEmpty(e)) return;
 
-                var state = Create(e.Result);
+                var state = Create(e);
                 if (state != null)
                     OnStateCreated?.Invoke(state, null);
 
@@ -315,77 +316,81 @@ namespace vMixAPI
         {
             SendFunction("", true, x =>
             {
-                try
+                Dispatcher.Invoke(() =>
                 {
-                    var e = (DownloadStringCompletedEventArgs)x;
-
-                    if (e.Error != null)
+                    try
                     {
-                        OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = false });
-                        return;
-                    }
-                    if (e.UserState == null)
-                        return;
-                    IsInitializing = true;
-                    _logger.Debug("Updating vMix state.");
-                    var _temp = Create(e.Result);
+                        //var e = (DownloadStringCompletedEventArgs)x;
 
-                    if (_temp == null)
-                    {
-                        _logger.Debug("vMix is offline");
+                        if (string.IsNullOrEmpty(x))
+                        {
+                            OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = false });
+                            return;
+                        }
+                        /*if (e.UserState == null)
+                            return;*/
+                        IsInitializing = true;
+                        _logger.Debug("Updating vMix state.");
+                        var _temp = Create(x);
+
+                        if (_temp == null)
+                        {
+                            _logger.Debug("vMix is offline");
+                            _logger.Debug("Firing \"updated\" event.");
+
+                            IsInitializing = false;
+                            OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = false });
+                        }
+
+                        _logger.Debug("Calculating difference.");
+                        Diff(this, _temp);
+
+                        _logger.Debug("Updating inputs.");
+                        if (Inputs == null)
+                            Inputs = new List<Input>();
+                        if (Overlays == null)
+                            Overlays = new List<Overlay>();
+                        if (Audio == null)
+                            Audio = new List<Master>();
+                        if (Transitions == null)
+                            Transitions = new List<Transition>();
+                        Inputs.Clear();
+                        foreach (var item in _temp.Inputs)
+                            Inputs.Add(item);
+                        Overlays.Clear();
+                        foreach (var item in _temp.Overlays)
+                            Overlays.Add(item);
+                        Audio.Clear();
+                        foreach (var item in _temp.Audio)
+                            Audio.Add(item);
+                        Transitions.Clear();
+                        foreach (var item in _temp.Transitions)
+                            Transitions.Add(item);
+                        Mixes.Clear();
+                        foreach (var item in _temp.Mixes)
+                            Mixes.Add(item);
+
+
+                        if (_currentStateText != _temp._currentStateText)
+                            _currentStateText = _temp._currentStateText;
+
                         _logger.Debug("Firing \"updated\" event.");
 
                         IsInitializing = false;
-                        OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = false });
+                        OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = true, OldInputs = null, NewInputs = null });
+                        return;
                     }
+                    catch (Exception e)
+                    {
+                        IsInitializing = false;
+                        _logger.Error(e, "Exception at UpdateAsync");
+                    }
+                });
 
-                    _logger.Debug("Calculating difference.");
-                    Diff(this, _temp);
-
-                    _logger.Debug("Updating inputs.");
-                    if (Inputs == null)
-                        Inputs = new List<Input>();
-                    if (Overlays == null)
-                        Overlays = new List<Overlay>();
-                    if (Audio == null)
-                        Audio = new List<Master>();
-                    if (Transitions == null)
-                        Transitions = new List<Transition>();
-                    Inputs.Clear();
-                    foreach (var item in _temp.Inputs)
-                        Inputs.Add(item);
-                    Overlays.Clear();
-                    foreach (var item in _temp.Overlays)
-                        Overlays.Add(item);
-                    Audio.Clear();
-                    foreach (var item in _temp.Audio)
-                        Audio.Add(item);
-                    Transitions.Clear();
-                    foreach (var item in _temp.Transitions)
-                        Transitions.Add(item);
-                    Mixes.Clear();
-                    foreach (var item in _temp.Mixes)
-                        Mixes.Add(item);
-
-
-                    if (_currentStateText != _temp._currentStateText)
-                        _currentStateText = _temp._currentStateText;
-
-                    _logger.Debug("Firing \"updated\" event.");
-
-                    IsInitializing = false;
-                    OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = true, OldInputs = null, NewInputs = null });
-                    return;
-                }
-                catch (Exception e)
-                {
-                    IsInitializing = false;
-                    _logger.Error(e, "Exception at UpdateAsync");
-                }
             });
         }
 
-        public string SendFunction(string textParameters, bool async = true, Action<DownloadStringCompletedEventArgs> handler = null, int timeout = 1000)
+        public string SendFunction(string textParameters, bool async = true, Action<string> handler = null, int timeout = 1000)
         {
             _logger.Debug("Trying to send function <{0}> in {1} mode.", textParameters, async ? "async" : "sync");
 
@@ -405,10 +410,31 @@ namespace vMixAPI
 
             if (async)
             {
-                vMixWebClient _webClient = new vMixWebClient();
-                _webClient.Timeout = timeout;
-                _webClient.DownloadStringCompleted += _webClient_DownloadStringCompleted;
-                _webClient.DownloadStringAsync(new Uri(url), handler);
+                /*HttpClient _client = new HttpClient();
+                _client.Timeout = TimeSpan.FromMilliseconds(timeout);
+                _client.GetStringAsync(url);*/
+
+                APIRequestManagerV2.GetApiResponseAsync(url, (response, error) =>
+                {
+                    if (error != null)
+                    {
+                        string result = "";
+                        if (error is WebException && (error as WebException).Response != null)
+                        {
+                            using (StreamReader sr = new StreamReader((error as WebException).Response.GetResponseStream()))
+                                result = sr.ReadToEnd();
+                        }
+                        _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
+                    }
+                    else
+                        _logger.Debug("Async function sended, result is \"{0}\".", response);
+
+                    handler?.Invoke(response);
+                });
+
+                //vMixWebClient _webClient = APIRequestManager.GetClient(url, timeout);//new vMixWebClient();
+                //_webClient.DownloadStringCompleted += _webClient_DownloadStringCompleted;
+                //_webClient.DownloadStringAsync(new Uri(url), handler);
             }
             else
             {
@@ -421,9 +447,9 @@ namespace vMixAPI
                     else
                         _logger.Debug("Async function sended, result is \"{0}\".", e.Result);
 
-                    handler?.Invoke(e);
+                    handler?.Invoke(e.Result);
 
-                    (sender as WebClient).Dispose();
+                    //(sender as WebClient).Dispose();
                 };
                 try
                 {
@@ -442,7 +468,7 @@ namespace vMixAPI
             return null;
         }
 
-        private void _webClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        /*private void _webClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
 
             if (e.Error != null)
@@ -460,8 +486,8 @@ namespace vMixAPI
 
             ((Action<DownloadStringCompletedEventArgs>)e.UserState)?.Invoke(e);
 
-            (sender as WebClient).Dispose();
-        }
+            //(sender as WebClient).Dispose();
+        }*/
 
         public string SendFunction(Dictionary<string, string> parameters = null)
         {

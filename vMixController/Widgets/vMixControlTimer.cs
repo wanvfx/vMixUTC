@@ -66,7 +66,7 @@ namespace vMixController.Widgets
                 _tickSecond = 0;
             }
             
-            Debug.WriteLine(_stopwatch.Elapsed);
+            //Debug.WriteLine(_stopwatch.Elapsed);
             _stopwatch.Restart();
         }
     }

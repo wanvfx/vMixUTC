@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMixController", "vMixController\vMixController.csproj", "{84AB3528-B120-4E4F-AB37-223475747FA8}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -42,6 +42,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcron.Sheets", "Popcron.Sheets\Popcron.Sheets.csproj", "{C16DECA7-0A86-4285-9B3A-99DFD499B4FD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCalc", "..\ncalc\Evaluant.Calculator\NCalc.csproj", "{252E5F34-FA82-488A-939D-EF8DDAAB7D2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMixUTCStreamDeck", "vMixUTCStreamDeck\vMixUTCStreamDeck.csproj", "{5E45C05E-5E37-460D-A85F-EF9849E5091A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vMixStreamDeckLibrary", "vMixStreamDeckLibrary\vMixStreamDeckLibrary.csproj", "{2111D7ED-A462-490D-B696-809471BAEB4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -221,6 +225,30 @@ Global
 		{252E5F34-FA82-488A-939D-EF8DDAAB7D2A}.Release|x64.Build.0 = Release|Any CPU
 		{252E5F34-FA82-488A-939D-EF8DDAAB7D2A}.Release|x86.ActiveCfg = Release|Any CPU
 		{252E5F34-FA82-488A-939D-EF8DDAAB7D2A}.Release|x86.Build.0 = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|x64.Build.0 = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E45C05E-5E37-460D-A85F-EF9849E5091A}.Release|x86.Build.0 = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|x64.Build.0 = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Debug|x86.Build.0 = Debug|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|x64.ActiveCfg = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|x64.Build.0 = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2111D7ED-A462-490D-B696-809471BAEB4A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

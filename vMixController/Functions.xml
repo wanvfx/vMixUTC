@@ -242,6 +242,18 @@
 
 	<vMixFunctionReference>
 		<Native>true</Native>
+		<Description>Set global variable by index.</Description>
+		<Function>SetGlobalVariable</Function>
+		<HasInputProperty>true</HasInputProperty>
+		<HasIntProperty>true</HasIntProperty>
+		<HasStringProperty>true</HasStringProperty>
+		<StringDescription>Value</StringDescription>
+		<InputDescription>Input</InputDescription>
+		<IntDescription>Index</IntDescription>
+	</vMixFunctionReference>	
+
+	<vMixFunctionReference>
+		<Native>true</Native>
 		<Description>Wait some time in milliseconds.</Description>
 		<Function>Timer</Function>
 		<HasInputProperty>false</HasInputProperty>
@@ -2112,6 +2124,170 @@
 		<Function>SharpenOn</Function>
 		<FormatString>Function=SharpenOn&amp;Input={0}</FormatString>
 	</vMixFunctionReference>
+
+
+	<vMixFunctionReference>
+		<Description>Set height of input layer X</Description>
+		<Function>SetLayerHeight</Function>
+		<FormatString>Function=SetLayer{1}Height&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>Height</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set width of input layer X</Description>
+		<Function>SetLayerWidth</Function>
+		<FormatString>Function=SetLayer{1}Width&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>Width</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set PanX of input layer X</Description>
+		<Function>SetLayerPanX</Function>
+		<FormatString>Function=SetLayer{1}PanX&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>PanX</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set PanY of input layer X</Description>
+		<Function>SetLayerPanY</Function>
+		<FormatString>Function=SetLayer{1}PanY&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>PanY</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set Rectangle of input layer X</Description>
+		<Function>SetLayerRectangle</Function>
+		<FormatString>Function=SetLayer{1}Rectangle&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<StringDescription>Rectangle</StringDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set X of input layer X</Description>
+		<Function>SetLayerX</Function>
+		<FormatString>Function=SetLayer{1}X&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>X</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set Y of input layer X</Description>
+		<Function>SetLayerY</Function>
+		<FormatString>Function=SetLayer{1}Y&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>Y</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Set Zoom of input layer X</Description>
+		<Function>SetLayerZoom</Function>
+		<FormatString>Function=SetLayer{1}Zoom&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Layer</IntDescription>
+		<IntDescription>Zoom</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+			<int>5</int>
+			<int>6</int>
+			<int>7</int>
+			<int>8</int>
+			<int>9</int>
+			<int>10</int>
+		</IntValues>
+	</vMixFunctionReference>
+
+	<vMixFunctionReference>
+		<Description>Animate a layer swap between two specified layers</Description>
+		<Function>SwapLayerAnimated</Function>
+		<FormatString>Function=SwapLayerAnimated&amp;Input={0}&amp;Value={2}</FormatString>
+		<StringDescription>
+			Value
+		</StringDescription>
+	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>VideoCallAudioSource</Function>
 		<FormatString>Function=VideoCallAudioSource&amp;Value={2}&amp;Input={0}</FormatString>
@@ -2139,6 +2315,7 @@
 			<string>Output4</string>
 		</StringValues>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Description>Start Video Delay Recording</Description>
 		<Function>VideoDelayStartRecording</Function>
@@ -2165,6 +2342,56 @@
 		<IntDescription>Duration</IntDescription>
 	</vMixFunctionReference>
 
+	<vMixFunctionReference>
+		<Description>Toggle effect X on/off</Description>
+		<Function>EffectX</Function>
+		<FormatString>Function=Effect{1}&amp;Input={0}</FormatString>
+		<IntDescription>Effect</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Turn effect X on</Description>
+		<Function>EffectXOn</Function>
+		<FormatString>Function=Effect{1}On&amp;Input={0}</FormatString>
+		<IntDescription>Effect</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+		</IntValues>
+	</vMixFunctionReference>
+	<vMixFunctionReference>
+		<Description>Turn effect X off</Description>
+		<Function>EffectXOff</Function>
+		<FormatString>Function=Effect{1}Off&amp;Input={0}</FormatString>
+		<IntDescription>Effect</IntDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+		</IntValues>
+	</vMixFunctionReference>
+
+	<vMixFunctionReference>
+		<Description>Set effect X strength</Description>
+		<Function>SetEffectXStrength</Function>
+		<FormatString>Function=SetEffect{1}Strength&amp;Input={0}&amp;Value={2}</FormatString>
+		<IntDescription>Effect</IntDescription>
+		<StringDescription>Strength</StringDescription>
+		<IntValues>
+			<int>1</int>
+			<int>2</int>
+			<int>3</int>
+			<int>4</int>
+		</IntValues>
+	</vMixFunctionReference>
 
 	<!--Input-->
 	<vMixFunctionReference>
@@ -2379,6 +2606,8 @@
 		<ActiveStateXPath>//inputs/input[@key='{0}']/overlay[@index='{3}']/@key</ActiveStateXPath>
 		<ActiveStateValue>{7}</ActiveStateValue>
 	</vMixFunctionReference>
+	
+	
 
 	<!--PlayList-->
 
@@ -3086,6 +3315,36 @@
 		<FormatString>Function=ReplayUpdateSelectedOutPoint</FormatString>
 	</vMixFunctionReference>
 
+	<!-- ReplaySetChannelAToBTimecode -->
+	<vMixFunctionReference>
+		<Description>Set A timecode to B timecode</Description>
+		<Function>ReplaySetChannelAToBTimecode</Function>
+		<FormatString>Function=ReplaySetChannelAToBTimecode</FormatString>
+	</vMixFunctionReference>
+
+	<!-- ReplaySetChannelBtoATimecode -->
+	<vMixFunctionReference>
+		<Description>Set B timecode to A timecode</Description>
+		<Function>ReplaySetChannelBtoATimecode</Function>
+		<FormatString>Function=ReplaySetChannelBtoATimecode</FormatString>
+	</vMixFunctionReference>
+
+	<!-- ReplaySetTimecode -->
+	<vMixFunctionReference>
+		<Description>Set position to timecode - format yyyy-MM-ddTHH:mm:ss.fff</Description>
+		<Function>ReplaySetTimecode</Function>
+		<FormatString>Function=ReplaySetTimecode&amp;Value={2}</FormatString>
+		<StringDescription>Timecode, Channel</StringDescription>
+	</vMixFunctionReference>
+
+	<!-- ReplayScrollSelectedEvent -->
+	<vMixFunctionReference>
+		<Description>Move back or forward through event list by specified number of events</Description>
+		<Function>ReplayScrollSelectedEvent</Function>
+		<FormatString>Function=ReplayScrollSelectedEvent&amp;Value={1}</FormatString>
+		<IntDescription>Count</IntDescription>
+	</vMixFunctionReference>
+	
 	<!--NDI-->
 
 	<vMixFunctionReference>
@@ -3296,6 +3555,27 @@
 		<IntDescription>Row</IntDescription>
 	</vMixFunctionReference>
 
+	<vMixFunctionReference>
+		<Description>Pause Data Source</Description>
+		<Function>DataSourcePause</Function>
+		<FormatString>Function=DataSourcePause&amp;Value={2}</FormatString>
+		<StringDescription>NameAndTable</StringDescription>
+	</vMixFunctionReference>
+
+	<vMixFunctionReference>
+		<Description>Play Data Source</Description>
+		<Function>DataSourcePlay</Function>
+		<FormatString>Function=DataSourcePlay&amp;Value={2}</FormatString>
+		<StringDescription>NameAndTable</StringDescription>
+	</vMixFunctionReference>
+
+	<vMixFunctionReference>
+		<Description>Play/Pause Data Source</Description>
+		<Function>DataSourcePlayPause</Function>
+		<FormatString>Function=DataSourcePlayPause&amp;Value={2}</FormatString>
+		<StringDescription>NameAndTable</StringDescription>
+	</vMixFunctionReference>
+	
 	<!--Browser-->
 
 	<vMixFunctionReference>

@@ -54,7 +54,12 @@ namespace NewTek.NDI.WPF
             }
         }
         public static readonly DependencyProperty IsAudioEnabledProperty =
-    DependencyProperty.Register("IsAudioEnabled", typeof(bool), typeof(ReceiveView), new PropertyMetadata(true));
+    DependencyProperty.Register("IsAudioEnabled", typeof(bool), typeof(ReceiveView), new PropertyMetadata(true, OnAudioEnabledChange));
+
+        private static void OnAudioEnabledChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ReceiveView)d)._audioEnabled = (bool)e.NewValue;
+        }
 
         [Category("NewTek NDI"),
         Description("If true (default) received video will be sent to the screen.")]
@@ -65,6 +70,7 @@ namespace NewTek.NDI.WPF
             {
                 if (value != _videoEnabled)
                 {
+                    _videoEnabled = value;
                     NotifyPropertyChanged("IsVideoEnabled");
                 }
             }
@@ -81,8 +87,8 @@ namespace NewTek.NDI.WPF
                 {
                     _volume = Math.Max(0.0f, Math.Min(1.0f, value));
 
-                    if (_wasapiOut != null)
-                        _wasapiOut.Volume = _volume;
+                    //if (_wasapiOut != null)
+                        //_wasapiOut.Volume = _volume;
 
                     NotifyPropertyChanged("Volume");
                 }
@@ -725,7 +731,7 @@ namespace NewTek.NDI.WPF
                                 // This is close enough to show that audio is received and converted correctly.
                                 _wasapiOut = new WasapiOut(NAudio.CoreAudioApi.AudioClientShareMode.Shared, 50);
                                 _wasapiOut.Init(_multiplexProvider);
-                                _wasapiOut.Volume = _volume;
+                                //_wasapiOut.Volume = _volume;
                                 _wasapiOut.Play();
                             }
                             catch
@@ -811,7 +817,7 @@ namespace NewTek.NDI.WPF
         private WriteableBitmap VideoBitmap;
 
         // should we send audio to Windows or not?
-        private bool _audioEnabled = true;
+        private bool _audioEnabled = false;
 
         // should we send video to Windows or not?
         private bool _videoEnabled = true;

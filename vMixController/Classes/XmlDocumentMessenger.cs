@@ -52,18 +52,70 @@ namespace vMixController.Classes
 
         static int _queries = 0;
         static DateTime _previousQuery = DateTime.Now;
-        static DispatcherTimer _stateDependentTimer;
+        static System.Threading.Timer _stateDependentTimer;
         static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger(typeof(XmlDocumentMessenger));
         private static string url;
 
         static XmlDocumentMessenger()
         {
-            _stateDependentTimer = new DispatcherTimer(DispatcherPriority.Render);
-            _stateDependentTimer.Interval = TimeSpan.FromSeconds(Properties.Settings.Default.AudioMeterPollTime / 5);
-            _stateDependentTimer.Start();
-            _stateDependentTimer.Tick += _stateDependentTimer_Tick;
+            _stateDependentTimer = new System.Threading.Timer((obj) =>
+            {
 
-            //_client = new HttpClient() { Timeout = TimeSpan.FromSeconds(1) };
+                Dispatcher.CurrentDispatcher.Invoke(() =>
+                {
+                    if (!Sync) return;
+                    var t = DateTime.Now - _previousQuery;
+                    if (t.TotalMilliseconds >= (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds) && _queries < 5 && _subscribers > 0)
+                    {
+#if DEBUG
+                        //Debug.WriteLine("{0}, {1}", DateTime.Now, t.TotalMilliseconds);
+                        //ThreadPool.GetAvailableThreads(out int t1, out int t2);
+                        //Debug.WriteLine("{0}, {1}", t1, t2);
+#endif
+                        _previousQuery = DateTime.Now;
+                        _queries++;
+
+                        ThreadPool.QueueUserWorkItem(x =>
+                        {
+                            Uri uri = null;
+                            if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088") + "/api", UriKind.Absolute, out uri))
+                            {
+                                try
+                                {
+                                    APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), (response, ex) =>
+                                    {
+                                        if (ex == null)
+                                        {
+                                            try
+                                            {
+                                                if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
+                                                {
+                                                    XmlDocument doc = new XmlDocument();
+                                                    doc.LoadXml(response);
+                                                    _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
+                                                    _queries--;
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                _queries--;
+                                            }
+                                        }
+                                        _previousQuery = DateTime.Now;
+                                    });
+                                }
+                                catch (Exception)
+                                {
+                                    _queries--;
+                                }
+                            }
+                        });
+
+
+                    }
+                });
+
+            }, null, 0, 10);
         }
 
         private static void _stateDependentTimer_Tick(object sender, EventArgs e)
@@ -87,9 +139,30 @@ namespace vMixController.Classes
                     {
                         try
                         {
-                            var client = new vMixWebClient();
+                            APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), (response, ex) =>
+                            {
+                                if (ex == null)
+                                {
+                                    try
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
+                                        {
+                                            XmlDocument doc = new XmlDocument();
+                                            doc.LoadXml(response);
+                                            _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
+                                            _queries--;
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
+                                        _queries--;
+                                    }
+                                }
+                                _previousQuery = DateTime.Now;
+                            });
+                            /*vMixWebClient client = APIRequestManager.GetClient(uri.ToString(), 1000);
                             client.DownloadStringCompleted += Client_DownloadStringCompleted;
-                            client.DownloadStringAsync(uri);
+                            client.DownloadStringAsync(uri, null);*/
                         }
                         catch (Exception)
                         {

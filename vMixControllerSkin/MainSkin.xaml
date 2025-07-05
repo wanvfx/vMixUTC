@@ -1297,7 +1297,7 @@
                         <Trigger SourceName="PART_DecreaseButton" Property="IsEnabled" Value="False">
                             <Setter TargetName="PART_DecreaseButton" Property="ContentTemplate" Value="{StaticResource DecreaseGlyphDisabledKey}" />
                         </Trigger>
-                        <Trigger Property="ButtonSpinnerLocation"
+                        <Trigger Property="SpinnerLocation"
                            Value="Left">
                             <Setter TargetName="firstContentColumn"
                              Property="Width"

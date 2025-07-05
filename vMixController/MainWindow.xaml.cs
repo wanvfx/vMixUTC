@@ -58,6 +58,8 @@ namespace vMixController
                     _loading = false;
                 }
             });
+
+            App.SplashScreen.Close();
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)

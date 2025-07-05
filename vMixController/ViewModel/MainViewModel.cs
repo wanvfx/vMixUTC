@@ -30,6 +30,8 @@ using vMixController.Messages;
 using vMixControllerSkin;
 using static System.Net.Mime.MediaTypeNames;
 using System.Security.Policy;
+using vMixAPI;
+using System.Windows.Data;
 
 namespace vMixController.ViewModel
 {
@@ -455,6 +457,37 @@ namespace vMixController.ViewModel
 
 
         /// <summary>
+        /// The <see cref="PollingStatus" /> property's name.
+        /// </summary>
+        public const string PollingStatusPropertyName = "PollingStatus";
+
+        private Status _pollingstatus = Classes.Status.Offline;
+
+        /// <summary>
+        /// Sets and gets the Status property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Status PollingStatus
+        {
+            get
+            {
+                return _pollingstatus;
+            }
+
+            set
+            {
+                if (_pollingstatus == value)
+                {
+                    return;
+                }
+
+                _pollingstatus = value;
+
+                RaisePropertyChanged(PollingStatusPropertyName);
+            }
+        }
+
+        /// <summary>
         /// The <see cref="ExecLinks" /> property's name.
         /// </summary>
         public const string ExecLinksPropertyName = "ExecLinks";
@@ -748,7 +781,7 @@ namespace vMixController.ViewModel
         };
 #pragma warning restore CS0649
 
-        static DateTime GetBuildDateTime(Assembly assembly)
+        public static DateTime GetBuildDateTime(Assembly assembly)
         {
             var path = assembly.Location;
             if (File.Exists(path))
@@ -1913,11 +1946,33 @@ namespace vMixController.ViewModel
             }
         }
 
+        private void LinkGlobalVariables(vMixAPI.State state)
+        {
+            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+
+            if (state.Inputs.Where(x=>x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
+            var input = new vMixAPI.Input() { Number = -99, Title = "[Global Variables]", Key = "vmix-utc-internal-gv" };
+            int index = 0;
+            foreach (var v in globalSettings.Variables)
+            {
+                var t = new InputText() { Text = v.B, Index = index++ };
+                t.Name = v.A + ".Value";
+                Binding b = new Binding("Text");
+                b.Source = t;
+                b.Mode = BindingMode.TwoWay;
+                BindingOperations.SetBinding(v, Pair<string, string>.BProperty, b);
+
+                input.Elements.Add(t);
+            }
+            state.Inputs.Insert(0, input);
+        }
+
         private void State_OnStateCreated(object sender, EventArgs e)
         {
             if (Model != null)
                 Model.OnStateSynced -= Model_OnStateUpdated;
             Model = (vMixAPI.State)sender;
+            LinkGlobalVariables(Model);
             foreach (var item in _widgets)
                 item.State = Model;
             if (Model != null)
@@ -1935,6 +1990,11 @@ namespace vMixController.ViewModel
             }
             else
             {
+
+                var instate = (vMixAPI.State)sender;
+
+                LinkGlobalVariables(instate);
+
                 foreach (var item in _widgets)
                     item.State = (vMixAPI.State)sender;
             }
@@ -2073,7 +2133,10 @@ namespace vMixController.ViewModel
                         _logger.Info("Saving variables.");
                         s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
                         using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Create))
-                            s.Serialize(fs, GlobalVariablesViewModel._variables);
+                        {
+                            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                            s.Serialize(fs, globalSettings.Variables);
+                        }
 
 
                         _logger.Info("Saving last controller");
@@ -2146,6 +2209,7 @@ namespace vMixController.ViewModel
         /// </summary>
         public MainViewModel()
         {
+            vMixAPI.APIRequestManager.OnStatusChange += APIRequestManager_OnStatusChange;
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
             ThreadPool.GetAvailableThreads(out int t1, out int t2);
@@ -2276,7 +2340,10 @@ namespace vMixController.ViewModel
                 s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
                 if (File.Exists(Path.Combine(_documentsPath, "Variables.xml")))
                     using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Open))
-                        GlobalVariablesViewModel._variables = (ObservableCollection<Pair<string, string>>)s.Deserialize(fs);
+                    {
+                        var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                        globalSettings.Variables = (ObservableCollection<Pair<string, string>>)s.Deserialize(fs);
+                    }
 
             }
             catch (Exception)
@@ -2446,6 +2513,12 @@ namespace vMixController.ViewModel
 
         }
 
+        private void APIRequestManager_OnStatusChange(object sender, EventArgs e)
+        {
+
+            PollingStatus = PollingStatus == Status.Online ? Status.Offline : Status.Online;
+        }
+
         private const string css = "p { margin-left: 3em; }";
 
         private void CheckUpdate()
@@ -2580,11 +2653,12 @@ namespace vMixController.ViewModel
             SelectorHeight = Math.Abs(h);
         }
 
-        WebClient _client = new vMixAPI.vMixWebClient();
 
         private void ConnectTimer_Tick(object sender, EventArgs e)
         {
             if (IsInDesignMode) return;
+            var url = new Uri(vMixAPI.StateFabrique.GetUrl(WindowSettings.IP, WindowSettings.Port));
+            WebClient _client = vMixAPI.APIRequestManager.GetClient(url.ToString(), 1000);
 
             IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
             if (!IsUrlValid)
@@ -2593,7 +2667,7 @@ namespace vMixController.ViewModel
             _client.DownloadStringCompleted += Client_DownloadStringCompleted;
             _client.CancelAsync();
             while (_client.IsBusy) Thread.Sleep(100);
-            _client.DownloadStringAsync(new Uri(vMixAPI.StateFabrique.GetUrl(WindowSettings.IP, WindowSettings.Port)));
+            _client.DownloadStringAsync(url);
         }
 
         private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
@@ -2627,8 +2701,8 @@ namespace vMixController.ViewModel
 
         protected virtual void Dispose(bool managed)
         {
-            if (_client != null)
-                _client.Dispose();
+            /*if (_client != null)
+                _client.Dispose();*/
         }
 
         public void Dispose()

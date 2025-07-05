@@ -39,14 +39,23 @@ namespace NewTek.NDI
                 _name = value;
 
                 int parenIdx = _name.IndexOf(" (");
-                _computerName = _name.Substring(0, parenIdx);
 
-                _sourceName = Regex.Match(_name, @"(?<=\().+?(?=\))").Value;
+                if (parenIdx != 0)
+                {
 
-                String uriString = String.Format("ndi://{0}/{1}", _computerName, System.Net.WebUtility.UrlEncode(_sourceName));
+                    _computerName = _name.Substring(0, parenIdx);
 
-                if (!Uri.TryCreate(uriString, UriKind.Absolute, out _uri))
+                    _sourceName = Regex.Match(_name, @"(?<=\().+?(?=\))").Value;
+
+                    String uriString = String.Format("ndi://{0}/{1}", _computerName, System.Net.WebUtility.UrlEncode(_sourceName));
+
+                    if (!Uri.TryCreate(uriString, UriKind.Absolute, out _uri))
+                        _uri = null;
+                }
+                else
+                {
                     _uri = null;
+                }
 
             }
         }

@@ -20,6 +20,7 @@ namespace vMixController.Classes
         public const string HASVARIABLE = "HasVariable";
         public const string ISPRESSED = "IsPressed";
         public const string SETVARIABLE = "SetVariable";
+        public const string SETGLOBALVARIABLE = "SetGlobalVariable";
         public const string TIMER = "Timer";
         public const string UPDATEINTERNALBUTTONSTATE = "UpdateInternalButtonState";
         public const string SYNCINTERNALBUTTONSTATE = "SyncInternalButtonState";

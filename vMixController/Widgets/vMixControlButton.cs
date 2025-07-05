@@ -786,7 +786,23 @@ namespace vMixController.Widgets
                 if (item.UseInActiveState && (conds.Count == 0 || conds.Peek()))
                 {
 
-                    var input = Convert.ToInt32(doc.SelectSingleNode(string.Format(@"//inputs/input[@key='{0}']/@number", item.InputKey))?.Value ?? "-1");
+                    var inputKey = item.InputKey;
+                    //Expand [VAR] input key
+                    Dispatcher.Invoke(() =>
+                    {
+                        var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                        foreach (var variable in globalSettings.Variables)
+                        {
+                            if (inputKey == variable.A)
+                            {
+                                inputKey = variable.B;
+                                break;
+                            }
+                        }
+                    });
+
+
+                    var input = Convert.ToInt32(doc.SelectSingleNode(string.Format(@"//inputs/input[@key='{0}']/@number", inputKey))?.Value ?? "-1");
 
                     int intp = CalculateExpression<int>(item.Parameter);
                     object strp = CalculateExpression(item.StringParameter);
@@ -804,10 +820,10 @@ namespace vMixController.Widgets
                     var path = "";
 
                     if (!string.IsNullOrWhiteSpace(item.Action.ActiveStateXPath))
-                        path = string.Format(item.Action.ActiveStateXPath, item.InputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
+                        path = string.Format(item.Action.ActiveStateXPath, inputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
 
                     if (item.Action.ActiveStateXPathIntDependence != null)
-                        path = string.Format(item.Action.ActiveStateXPathIntDependence[intp], item.InputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
+                        path = string.Format(item.Action.ActiveStateXPathIntDependence[intp], inputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
 
                     if (string.IsNullOrWhiteSpace(path)) return false;
 
@@ -863,7 +879,8 @@ namespace vMixController.Widgets
                 var x = Dispatcher.Invoke(() => new { item.A, item.B });
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, x.A), x.B);
             }
-            foreach (var item in GlobalVariablesViewModel._variables)
+            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+            foreach (var item in globalSettings.Variables)
             {
                 var x = Dispatcher.Invoke(() => new { item.A, item.B });
                 if (!exp.Parameters.ContainsKey(x.A))
@@ -1244,6 +1261,22 @@ namespace vMixController.Widgets
                                 else
                                 {
                                     Dispatcher.Invoke(() => _variables[idx].B = tobj);
+                                }
+                                break;
+                            case NativeFunctions.SETGLOBALVARIABLE:
+                                var gidx = CalculateExpression<int>(cmd.Parameter);
+                                var gtobj = CalculateObjectParameter(cmd);
+                                AddLog("{2}) SETGLOBALVARIABLE {0} TO {1}", gidx, gtobj, _pointer + 1);
+                                var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                                if (gidx < 0 || gidx >= globalSettings.Variables.Count)
+                                    AddLog("{2}) VARIABLE {0} NOT FOUND", gidx, gtobj, _pointer + 1);
+                                //Dispatcher.Invoke(() => _variables.Add(new Pair<int, object>() { A = CalculateExpression<int>(cmd.Parameter), B = gtobj }));
+                                else
+                                {
+                                    Dispatcher.Invoke(() =>
+                                    {
+                                        globalSettings.Variables[gidx].B = gtobj.ToString();
+                                    });
                                 }
                                 break;
                             case NativeFunctions.VALUECHANGED:

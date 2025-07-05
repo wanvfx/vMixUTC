@@ -87,6 +87,13 @@
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="{e:Localize VariableViewer}">
+                    <MenuItem.Icon>
+                        <Border Width="16" Height="16">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF02B;</TextBlock>
+                        </Border>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem x:Name="Region" Command="{Binding CreateWidgetCommand}" CommandParameter="Region" Header="{e:Localize Region}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
@@ -184,6 +191,13 @@
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF0E7;</TextBlock>
+                        </Border>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="StreamDeck" Command="{Binding CreateWidgetCommand}" CommandParameter="StreamDeck" Header="{e:Localize StreamDeck Device}">
+                    <MenuItem.Icon>
+                        <Border Width="16" Height="16">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF11C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -566,7 +580,7 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{e:Localize Static Global Variables}" FontSize="14"/>
+                                        <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{e:Localize Global Variables}" FontSize="14"/>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                                             <Button ToolTip="{e:Localize Add Variable}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#xF415;"/>
                                             <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{x:Static this:Help.StaticVariables_Default}"/>
@@ -574,23 +588,30 @@
                                         <Border VerticalAlignment="Center" Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
                                         <Grid HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="4">
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.1*"/>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock HorizontalAlignment="Center">Name</TextBlock>
-                                            <TextBlock HorizontalAlignment="Center" Grid.Column="1">Value</TextBlock>
+                                            <TextBlock HorizontalAlignment="Center">Index</TextBlock>
+                                            <TextBlock HorizontalAlignment="Center" Grid.Column="1">Name</TextBlock>
+                                            <TextBlock HorizontalAlignment="Center" Grid.Column="2">Value</TextBlock>
                                         </Grid>
                                     </Grid>
                                     <ListView BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
+                                                <DataTemplate.Resources>
+                                                    <c:IndexConverter x:Key="IndexConverter"/>
+                                                </DataTemplate.Resources>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="0.1*"/>
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Border Background="{StaticResource Main.Gradient}">
+                                                    <TextBlock HorizontalAlignment="Center" Style="{StaticResource CaptionText}" FontWeight="Normal" Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListViewItem}}, Converter={StaticResource IndexConverter}}"></TextBlock>
+                                                    <Border Grid.Column="1" Background="{StaticResource Main.Gradient}">
                                                         <TextBox CaretBrush="White" FontWeight="Bold" Margin="8,2,2,2" Text="{Binding A, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0,0,0,1">
                                                             <i:Interaction.Triggers>
                                                                 <i:EventTrigger EventName="PreviewKeyUp">
@@ -612,7 +633,7 @@
                                                             </TextBox.Style>
                                                         </TextBox>
                                                     </Border>
-                                                    <TextBox Background="Transparent" Foreground="White" CaretBrush="White" BorderThickness="0,0,0,1" Margin="2" Grid.Column="1" Text="{Binding B, UpdateSourceTrigger=PropertyChanged}" FontWeight="Regular">
+                                                    <TextBox Background="Transparent" Foreground="White" CaretBrush="White" BorderThickness="0,0,0,1" Margin="2" Grid.Column="2" Text="{Binding B, UpdateSourceTrigger=PropertyChanged}" FontWeight="Regular">
                                                         <i:Interaction.Triggers>
                                                             <i:EventTrigger EventName="PreviewKeyUp">
                                                                 <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -625,7 +646,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </TextBox>
-                                                    <Button ToolTip="{e:Localize Remove Variable}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF374;" Grid.Column="2"/>
+                                                    <Button ToolTip="{e:Localize Remove Variable}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF374;" Grid.Column="3"/>
                                                 </Grid>
 
                                             </DataTemplate>
@@ -889,6 +910,11 @@
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
+                    <Rectangle Width="4" Height="16" Margin="{StaticResource RightStdMargin}" Stroke="Transparent">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding PollingStatus, Converter={c:StatusToColorConverter}}"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
                     <TextBlock Margin="0,0,8,0">
                         HTTP://<Run FontWeight="Bold" Text="{Binding WindowSettings.IP}"/>:<Run FontWeight="Bold" Text="{Binding WindowSettings.Port}"/>
                     </TextBlock>
