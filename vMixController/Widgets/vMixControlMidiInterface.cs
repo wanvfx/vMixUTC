@@ -17,7 +17,7 @@ namespace vMixController.Widgets
 {
     public class vMixControlMidiInterface : vMixControl
     {
-
+        private static Dictionary<int, Melanchall.DryWetMidi.Multimedia.InputDevice> _openedDevices = new Dictionary<int, Melanchall.DryWetMidi.Multimedia.InputDevice>();
         /// <summary>
         /// The <see cref="Midis" /> property's name.
         /// </summary>
@@ -118,15 +118,7 @@ namespace vMixController.Widgets
                 }
 
                 if (Device != null)
-                {
-                    //Device.ChannelMessageReceived -= Device_ChannelMessageReceived;
                     Device.EventReceived -= Device_EventReceived;
-                    if (Device.IsListeningForEvents)
-                        Device.StopEventsListening();
-                    //Device.Reset();
-                    Device.Dispose();
-                    Device = null;
-                }
 
                 _deviceCaps = value;
                 RaisePropertyChanged(DeviceCapsPropertyName);
@@ -149,21 +141,14 @@ namespace vMixController.Widgets
             {
                 if (_midiDeviceName == value) return;
                 _midiDeviceName = value;
-                if (Device != null)
-                {
-                    //Device.Close();
-                    //Device.Reset();
-                    Device.Dispose();
-                    Device = null;
-                }
 
                 Device = CreateDeviceByName(_midiDeviceName);
 
                 if (Device != null)
                 {
-                    //Device.Reset();
                     Device.EventReceived += Device_EventReceived;
-                    Device.StartEventsListening();
+                    if (!Device.IsListeningForEvents)
+                        Device.StartEventsListening();
                 }
             }
         }
@@ -207,19 +192,6 @@ namespace vMixController.Widgets
                     }
                 }
             });
-
-                /*if (e.Message.MidiChannel == item.A && e.Message.Data1 == item.B && e.Message.Command == item.D)
-                    Messenger.Default.Send(new Pair<string, object>(item.C, e.Message.Data2));*/
-        }
-
-        private void Device_ChannelMessageReceived(object sender, ChannelMessageEventArgs e)
-        {
-            
-            /*foreach (var item in Midis)
-            {
-                if (e.Message.MidiChannel == item.A && e.Message.Data1 == item.B && e.Message.Command == item.D)
-                    Messenger.Default.Send(new Pair<string, object>(item.C, e.Message.Data2));
-            }*/
         }
 
         private Melanchall.DryWetMidi.Multimedia.InputDevice CreateDeviceByName(string name)
@@ -231,13 +203,11 @@ namespace vMixController.Widgets
                 if (deviceNumber != null)
                     if (Device?.Name != name)
                     {
-                        if (Device != null)
-                        {
-                            //Device.Reset();
-                            Device.Dispose();
-                        }
-
-                        return Melanchall.DryWetMidi.Multimedia.InputDevice.GetByIndex(deviceNumber.idx);//new InputDevice(deviceNumber.idx);
+                        if (_openedDevices.ContainsKey(deviceNumber.idx))
+                            return _openedDevices[deviceNumber.idx];
+                        var device = Melanchall.DryWetMidi.Multimedia.InputDevice.GetByIndex(deviceNumber.idx);
+                        _openedDevices[deviceNumber.idx] = device;
+                        return device;
                     }
                     else
                         return Device;
@@ -256,20 +226,11 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-
-            if (Device != null)
-            {
-                //Device.Reset();
-                Device.Dispose();
-                Device = null;
-            }
-
             Device = CreateDeviceByName(_midiDeviceName);
             if (Device != null)
             {
-                //Device.Reset();
                 if (!Device.IsListeningForEvents)
-                    Device.StartEventsListening();//StartRecording();
+                    Device.StartEventsListening();
                 Device.EventReceived += Device_EventReceived;
 
             }
@@ -283,7 +244,6 @@ namespace vMixController.Widgets
             b.Mode = BindingMode.TwoWay;
             b.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
             BindingOperations.SetBinding(midiDeviceComboBox, ComboBoxControl.ValueProperty, b);
-            //midiDeviceComboBox.Value = Device != null ? InputDevice.GetDeviceCapabilities(Device.DeviceID).name : "";
 
 
             var midiMappingCtrl = GetPropertyControl<MidiMappingControl>();
@@ -295,11 +255,6 @@ namespace vMixController.Widgets
             {
                 midiMappingCtrl.Midis.Add(item);
             }
-
-            /*var maxInt = GetPropertyControl<IntControl>("IntMidiMax");
-            maxInt.Value = MaxMIDIValue;
-            maxInt.Title = "Maximum MIDI Value (127/255)"; ;*/
-
 
             return base.GetPropertiesControls().Union(new UserControl[] { midiDeviceComboBox, midiMappingCtrl }).ToArray();
         }
@@ -317,7 +272,6 @@ namespace vMixController.Widgets
             }
 
             return null;
-            //throw new NotImplementedException();
         }
 
         public override void SetProperties(UserControl[] _controls)
@@ -341,22 +295,14 @@ namespace vMixController.Widgets
             if (managed)
             {
                 if (Device != null)
-                {
-                    //Device.ChannelMessageReceived -= Device_ChannelMessageReceived;
                     Device.EventReceived -= Device_EventReceived;
-                    if (Device.IsListeningForEvents)
-                        Device.StopEventsListening();
-                    //Device.Reset();
-                    //Device.Close();
-                    Device.Dispose();
-                }
                 base.Dispose(managed);
                 GC.SuppressFinalize(this);
             }
         }
     }
 
-    public class MidiInterfaceKey : Quadriple<int, int, string, /*Sanford.Multimedia.Midi.ChannelCommand*/Melanchall.DryWetMidi.Core.MidiEventType>
+    public class MidiInterfaceKey : Quadriple<int, int, string, Melanchall.DryWetMidi.Core.MidiEventType>
     {
 
     }

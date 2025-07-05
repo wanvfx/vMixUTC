@@ -19,6 +19,7 @@ namespace vMixController.Widgets
 {
     public class vMixControlStreamDeck : vMixControl
     {
+        public override int MaxCount => 1;
         /// <summary>
         /// The <see cref="Context" /> property's name.
         /// </summary>

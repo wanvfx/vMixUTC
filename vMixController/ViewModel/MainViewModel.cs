@@ -1136,6 +1136,7 @@ namespace vMixController.ViewModel
                         try
                         {
                             var copy = p.Copy();
+                            if (copy == null) return;
                             copy.Name += " copy";
                             copy.State = Model;
                             copy.Left += 16;
@@ -2965,15 +2966,20 @@ namespace vMixController.ViewModel
                     ?? (_duplicateSelectedCommand = new RelayCommand(
                     () =>
                     {
+                        
                         List<vMixControl> dups = new List<vMixControl>();
                         foreach (var item in _widgets.Where(x => x.Selected))
                         {
+                            
                             var copy = item.Copy();
-                            dups.Add(copy);
-                            copy.Left += 16;
-                            copy.Top += 16;
-                            copy.State = Model;
-                            item.Selected = false;
+                            if (copy != null)
+                            {
+                                dups.Add(copy);
+                                copy.Left += 16;
+                                copy.Top += 16;
+                                copy.State = Model;
+                                item.Selected = false;
+                            }
                         }
                         foreach (var item in dups)
                         {

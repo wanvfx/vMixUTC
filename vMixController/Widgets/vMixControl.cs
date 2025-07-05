@@ -1059,7 +1059,7 @@ namespace vMixController.Widgets
 
         public vMixControl Copy()
         {
-
+            if (MaxCount != -1) return null;
             using (MemoryStream ms = new MemoryStream())
             {
                 XmlSerializer s = new XmlSerializer(typeof(vMixControl));
