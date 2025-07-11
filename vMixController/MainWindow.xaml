@@ -87,7 +87,7 @@
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="{e:Localize VariableViewer}">
+                <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="{e:Localize Variable Viewer}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF02B;</TextBlock>
@@ -508,6 +508,34 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </TextBox>
+
+                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="API Login" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="API Password" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+
 
                                 <TextBox Style="{StaticResource WidgetTextBox}" Tag="Poll Time, msec" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
                                     <i:Interaction.Triggers>

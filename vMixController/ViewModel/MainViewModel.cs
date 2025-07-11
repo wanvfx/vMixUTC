@@ -414,8 +414,8 @@ namespace vMixController.ViewModel
         {
             ThreadPool.QueueUserWorkItem((x) =>
             {
-                if (e.PropertyName == "IP" || e.PropertyName == "Port")
-                    ConnectTimer_Tick(null, new EventArgs());
+                if (e.PropertyName == "IP" || e.PropertyName == "Port" || e.PropertyName == "HttpLogin" || e.PropertyName == "HttpPassword")
+                    CheckvMixConnection(null, new EventArgs());
             });
 
         }
@@ -1060,9 +1060,9 @@ namespace vMixController.ViewModel
                     foreach (var item in _widgets)
                         item.Update();
 
-                    ConnectTimer_Tick(null, new EventArgs());
+                    CheckvMixConnection(null, new EventArgs());
 
-                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port);
+                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
 
                     IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
@@ -1716,9 +1716,9 @@ namespace vMixController.ViewModel
                 RaisePropertyChanged(nameof(WindowSettings));
                 _logger.Debug("Configuring API.");
 
-                ConnectTimer_Tick(null, new EventArgs());
+                CheckvMixConnection(null, new EventArgs());
 
-                vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port);
+                vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
 
                 IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
@@ -1936,12 +1936,12 @@ namespace vMixController.ViewModel
                 if (Model == null || (Model.Ip != WindowSettings.IP || Model.Port != WindowSettings.Port))
                 {
                     Model = null;
-                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port);
+                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
                     vMixAPI.StateFabrique.CreateAsync();
                 }
                 else
                 {
-                    Model.Configure(WindowSettings.IP, WindowSettings.Port);
+                    Model.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
                     Model.UpdateAsync();
                 }
             }
@@ -1951,7 +1951,7 @@ namespace vMixController.ViewModel
         {
             var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
 
-            if (state.Inputs.Where(x=>x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
+            if (state == null || state.Inputs.Where(x=>x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
             var input = new vMixAPI.Input() { Number = -99, Title = "[Global Variables]", Key = "vmix-utc-internal-gv" };
             int index = 0;
             foreach (var v in globalSettings.Variables)
@@ -1978,7 +1978,7 @@ namespace vMixController.ViewModel
                 item.State = Model;
             if (Model != null)
                 Model.OnStateSynced += Model_OnStateUpdated;
-            ConnectTimer_Tick(null, new EventArgs());
+            CheckvMixConnection(null, new EventArgs());
         }
 
         private void Model_OnStateUpdated(object sender, vMixAPI.StateSyncedEventArgs e)
@@ -2221,7 +2221,7 @@ namespace vMixController.ViewModel
             vMixAPI.StateFabrique.OnStateCreated += State_OnStateCreated;
 
             _connectTimer.Interval = TimeSpan.FromSeconds(20);
-            _connectTimer.Tick += ConnectTimer_Tick;
+            _connectTimer.Tick += CheckvMixConnection;
             _connectTimer.Start();
 
             _logger.Info("Loading mapped functions.");
@@ -2655,35 +2655,37 @@ namespace vMixController.ViewModel
         }
 
 
-        private void ConnectTimer_Tick(object sender, EventArgs e)
+        private void CheckvMixConnection(object sender, EventArgs e)
         {
             if (IsInDesignMode) return;
             var url = new Uri(vMixAPI.StateFabrique.GetUrl(WindowSettings.IP, WindowSettings.Port));
-            WebClient _client = vMixAPI.APIRequestManager.GetClient(url.ToString(), 1000);
+            //WebClient _client = vMixAPI.APIRequestManager.GetClient(url.ToString(), 1000);
+            vMixAPI.APIRequestManagerV2.GetApiResponseAsync(url.ToString(), new WeakAction((response, exception) =>
+            {
+                Dispatcher.CurrentDispatcher.Invoke(() =>
+                {
+                    _logger.Debug("Checking vMix server.");
+                    if (exception != null)
+                    {
+                        _logger.Error(exception, "Error while connecting vMix server.");
+                        Status = Status.Offline;
+                        return;
+                    }
+                    if (Model != null && (Model.Ip == WindowSettings.IP && Model.Port == WindowSettings.Port))
+                        Status = Status.Online;
+                    else
+                        Status = Status.Sync;
 
+                });
+            }), vMixAPI.StateFabrique.GetCredentials(WindowSettings.HttpLogin, WindowSettings.HttpPassword));
             IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
             if (!IsUrlValid)
                 return;
 
-            _client.DownloadStringCompleted += Client_DownloadStringCompleted;
-            _client.CancelAsync();
-            while (_client.IsBusy) Thread.Sleep(100);
-            _client.DownloadStringAsync(url);
-        }
-
-        private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            _logger.Debug("Checking vMix server.");
-            if (e.Error != null)
-            {
-                _logger.Error(e.Error, "Error while connecting vMix server.");
-                Status = Status.Offline;
-                return;
-            }
-            if (Model != null && (Model.Ip == WindowSettings.IP && Model.Port == WindowSettings.Port))
-                Status = Status.Online;
-            else
-                Status = Status.Sync;
+            //_client.DownloadStringCompleted += Client_DownloadStringCompleted;
+            //_client.CancelAsync();
+            //while (_client.IsBusy) Thread.Sleep(100);
+            //_client.DownloadStringAsync(url);
         }
 
         public override void Cleanup()

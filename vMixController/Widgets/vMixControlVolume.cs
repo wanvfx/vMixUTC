@@ -83,7 +83,7 @@ namespace vMixController.Widgets
             var muted = Convert.ToBoolean(input.Attributes["muted"]?.Value ?? "True", CultureInfo.InvariantCulture);
             var volume = Convert.ToDouble(input.Attributes["volume"]?.Value ?? "0", CultureInfo.InvariantCulture);
             var audiobusses = input.Attributes["audiobusses"]?.Value ?? "M";
-
+            //Debug.WriteLine("{0}/{1}:{2}", DateTime.Now, f1, f2);
             Dispatcher.Invoke(() =>
             {
                 F1 = Math.Pow(f1, 1 / 4d);

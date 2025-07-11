@@ -33,6 +33,8 @@ namespace vMixAPI
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private static string _ip = "127.0.0.1";
         private static string _port = "8088";
+        private static string _login = "admin";
+        private static string _password = "";
         private static State _base = new State();
         private static Regex _regex;
 
@@ -50,13 +52,15 @@ namespace vMixAPI
             OnStateCreated?.Invoke(sender, e);
         }
 
-        public static void Configure(string ip = "127.0.0.1", string port = "8088")
+        public static void Configure(string ip = "127.0.0.1", string port = "8088", string login = "admin", string password = "")
         {
             _ip = ip;
             _port = port;
+            _login = login;
+            _password = password;
             //_configured = true;
             _logger.Info("Configuring fabrique to {0}:{1}.", ip, port);
-            _base.Configure(_ip, _port);
+            _base.Configure(_ip, _port, _login, _password);
         }
 
         public static string GetUrl()
@@ -79,6 +83,11 @@ namespace vMixAPI
             return string.Format("http://{0}:{1}/api?", _ip, _port);
         }
 
+        public static string GetCredentials(string _login, string _password)
+        {
+            return string.Format("{0}:{1}", _login, _password);
+        }
+
         public static void CreateAsync()
         {
             _base.CreateAsync();
@@ -96,15 +105,19 @@ namespace vMixAPI
         //private static bool _configured = false;
         private string _ip = "127.0.0.1";
         private string _port = "8088";
+        private string _login = "admin";
+        private string _password = "";
 
         private string _currentStateText;
         private List<string> _changedinputs = new List<string>();
         private const int _changedCounterConst = 1;
 
-        public void Configure(string ip = "127.0.0.1", string port = "8088")
+        public void Configure(string ip = "127.0.0.1", string port = "8088", string login = "admin", string password = "")
         {
             _ip = ip.Trim();
             _port = port.Trim();
+            _login = login.Trim();
+            _password = password.Trim();
 
             //_configured = true;
             _logger.Debug("Configuring to {0}:{1}.", ip, port);
@@ -170,7 +183,7 @@ namespace vMixAPI
                         item.ControlledState = state;
 
                     OnStateCreated?.Invoke(state, null);
-                    state.Configure(_ip, _port);
+                    state.Configure(_ip, _port, _login, _password);
                     return state;
                 }
             }
@@ -410,59 +423,62 @@ namespace vMixAPI
 
             if (async)
             {
-                /*HttpClient _client = new HttpClient();
-                _client.Timeout = TimeSpan.FromMilliseconds(timeout);
-                _client.GetStringAsync(url);*/
-
-                APIRequestManagerV2.GetApiResponseAsync(url, (response, error) =>
+                APIRequestManagerV2.GetApiResponseAsync(url, new WeakAction((response, error) =>
                 {
-                    if (error != null)
+                    Dispatcher.Invoke(() =>
                     {
-                        string result = "";
-                        if (error is WebException && (error as WebException).Response != null)
+                        if (error != null)
                         {
-                            using (StreamReader sr = new StreamReader((error as WebException).Response.GetResponseStream()))
-                                result = sr.ReadToEnd();
+                            string result = "";
+                            if (error is WebException && (error as WebException).Response != null)
+                            {
+                                using (StreamReader sr = new StreamReader((error as WebException).Response.GetResponseStream()))
+                                    result = sr.ReadToEnd();
+                            }
+                            _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
                         }
-                        _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
-                    }
-                    else
-                        _logger.Debug("Async function sended, result is \"{0}\".", response);
+                        else
+                            _logger.Debug("Async function sended, result is \"{0}\".", response);
 
-                    handler?.Invoke(response);
-                });
-
-                //vMixWebClient _webClient = APIRequestManager.GetClient(url, timeout);//new vMixWebClient();
-                //_webClient.DownloadStringCompleted += _webClient_DownloadStringCompleted;
-                //_webClient.DownloadStringAsync(new Uri(url), handler);
+                        handler?.Invoke(response);
+                    });
+                }), GetCredentials());
             }
             else
             {
-                vMixWebClient _webClient = new vMixWebClient();
-                _webClient.Timeout = timeout;
-                _webClient.DownloadStringCompleted += (sender, e) =>
-                {
-                    if (e.Error != null)
-                        _logger.Error(e.Error, "Error while sending async function.");
-                    else
-                        _logger.Debug("Async function sended, result is \"{0}\".", e.Result);
 
-                    handler?.Invoke(e.Result);
-
-                    //(sender as WebClient).Dispose();
-                };
                 try
                 {
-                    return _webClient.DownloadString(url);
-                }
-                catch (WebException ex)
-                {
-                    string result = "";
-                    if (ex.Response != null)
-                        using (var sr = new StreamReader(ex.Response.GetResponseStream()))
-                            result = sr.ReadToEnd();
-                    _logger.Error(ex, string.Format("Function calling error, result is {0}.", result));
+                    // 1. Вызываем тот же менеджер, что и для асинхронных запросов.
+                    //    Колбэк здесь не нужен, так как мы обрабатываем результат прямо на месте.
+                    var task = APIRequestManagerV2.GetApiResponseAsync(url);
+
+                    // 2. Блокируем выполнение и ждем результат.
+                    //    GetAwaiter().GetResult() предпочтительнее, чем .Result.
+                    string result = task.GetAwaiter().GetResult();
+
+                    _logger.Debug("Sync function sent, result is \"{0}\".", result);
+
+                    // 3. Вызываем обработчик, если он предоставлен.
+                    handler?.Invoke(result);
+
+                    // 4. Возвращаем результат.
                     return result;
+                }
+                catch (Exception ex) // Ловим общее исключение, так как HttpClient может бросать не только WebException
+                {
+                    string errorBody = "";
+                    // Попытка извлечь тело ответа из WebException для обратной совместимости
+                    if (ex is WebException webEx && webEx.Response != null)
+                    {
+                        using (var sr = new StreamReader(webEx.Response.GetResponseStream()))
+                            errorBody = sr.ReadToEnd();
+                    }
+
+                    _logger.Error(ex, "Sync function calling error, response body is '{0}'.", errorBody);
+
+                    // Возвращаем тело ошибки, если удалось его получить, или пустую строку
+                    return errorBody;
                 }
             }
             return null;
@@ -510,6 +526,11 @@ namespace vMixAPI
         public string GetUrl()
         {
             return string.Format("http://{0}:{1}/api?", _ip, _port);
+        }
+
+        public string GetCredentials()
+        {
+            return string.Format("{0}:{1}", _login, _password);
         }
 
         public State()
@@ -634,6 +655,32 @@ namespace vMixAPI
             set
             {
                 _port = value;
+            }
+        }
+
+        public string Login
+        {
+            get
+            {
+                return _login;
+            }
+
+            set
+            {
+                _login = value;
+            }
+        }
+
+        public string Password
+        {
+            get
+            {
+                return _password;
+            }
+
+            set
+            {
+                _password = value;
             }
         }
 

@@ -26,6 +26,9 @@ namespace vMixController.Classes
                 url = value;
             }
         }
+
+        public static string Credentials { get => credentials; set { credentials = value; } }
+
         public delegate void DocumentDownloaded(XmlDocument doc, DateTime timestamp);
         static int _subscribers = 0;
 
@@ -55,6 +58,7 @@ namespace vMixController.Classes
         static System.Threading.Timer _stateDependentTimer;
         static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger(typeof(XmlDocumentMessenger));
         private static string url;
+        private static string credentials;
 
         static XmlDocumentMessenger()
         {
@@ -67,49 +71,46 @@ namespace vMixController.Classes
                     var t = DateTime.Now - _previousQuery;
                     if (t.TotalMilliseconds >= (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds) && _queries < 5 && _subscribers > 0)
                     {
-#if DEBUG
-                        //Debug.WriteLine("{0}, {1}", DateTime.Now, t.TotalMilliseconds);
-                        //ThreadPool.GetAvailableThreads(out int t1, out int t2);
-                        //Debug.WriteLine("{0}, {1}", t1, t2);
-#endif
                         _previousQuery = DateTime.Now;
                         _queries++;
-
-                        ThreadPool.QueueUserWorkItem(x =>
+                        //ThreadPool.QueueUserWorkItem(x =>
                         {
                             Uri uri = null;
                             if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088") + "/api", UriKind.Absolute, out uri))
                             {
                                 try
                                 {
-                                    APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), (response, ex) =>
+                                    APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), new WeakAction((response, ex) =>
                                     {
-                                        if (ex == null)
+                                        Dispatcher.CurrentDispatcher.Invoke(() =>
                                         {
-                                            try
+                                            if (ex == null)
                                             {
-                                                if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
+                                                try
                                                 {
-                                                    XmlDocument doc = new XmlDocument();
-                                                    doc.LoadXml(response);
-                                                    _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
+                                                    if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
+                                                    {
+                                                        XmlDocument doc = new XmlDocument();
+                                                        doc.LoadXml(response);
+                                                        _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
+                                                        _queries--;
+                                                    }
+                                                }
+                                                catch (Exception)
+                                                {
                                                     _queries--;
                                                 }
                                             }
-                                            catch (Exception)
-                                            {
-                                                _queries--;
-                                            }
-                                        }
-                                        _previousQuery = DateTime.Now;
-                                    });
+                                            _previousQuery = DateTime.Now;
+                                        });
+                                    }), credentials);
                                 }
                                 catch (Exception)
                                 {
                                     _queries--;
                                 }
                             }
-                        });
+                        }//);
 
 
                     }
@@ -118,84 +119,6 @@ namespace vMixController.Classes
             }, null, 0, 10);
         }
 
-        private static void _stateDependentTimer_Tick(object sender, EventArgs e)
-        {
-            if (!Sync) return;
-            var t = DateTime.Now - _previousQuery;
-            if (t.TotalMilliseconds >= (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds) && _queries < 5 && _subscribers > 0)
-            {
-#if DEBUG
-                //Debug.WriteLine("{0}, {1}", DateTime.Now, t.TotalMilliseconds);
-                //ThreadPool.GetAvailableThreads(out int t1, out int t2);
-                //Debug.WriteLine("{0}, {1}", t1, t2);
-#endif
-                _previousQuery = DateTime.Now;
-                _queries++;
-
-                ThreadPool.QueueUserWorkItem(x =>
-                {
-                    Uri uri = null;
-                    if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088") + "/api", UriKind.Absolute, out uri))
-                    {
-                        try
-                        {
-                            APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), (response, ex) =>
-                            {
-                                if (ex == null)
-                                {
-                                    try
-                                    {
-                                        if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
-                                        {
-                                            XmlDocument doc = new XmlDocument();
-                                            doc.LoadXml(response);
-                                            _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
-                                            _queries--;
-                                        }
-                                    }
-                                    catch (Exception)
-                                    {
-                                        _queries--;
-                                    }
-                                }
-                                _previousQuery = DateTime.Now;
-                            });
-                            /*vMixWebClient client = APIRequestManager.GetClient(uri.ToString(), 1000);
-                            client.DownloadStringCompleted += Client_DownloadStringCompleted;
-                            client.DownloadStringAsync(uri, null);*/
-                        }
-                        catch (Exception)
-                        {
-                            _queries--;
-                        }
-                    }
-                });
-
-
-            }
-        }
-
-        private static void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            if (e.Error == null)
-            {
-                try
-                {
-                    if (!string.IsNullOrWhiteSpace(e.Result) && e.Result.StartsWith("<vmix>"))
-                    {
-                        XmlDocument doc = new XmlDocument();
-                        doc.LoadXml(e.Result);
-                        _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
-                        _queries--;
-                    }
-                }
-                catch (Exception)
-                {
-                    _queries--;
-                }
-            }
-            (sender as WebClient).Dispose();
-            _previousQuery = DateTime.Now;
-        }
+        
     }
 }

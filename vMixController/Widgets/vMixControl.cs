@@ -751,13 +751,13 @@ namespace vMixController.Widgets
                 if (_internalState == null && value != null)
                 {
                     _internalState = value.Create();
-                    _internalState?.Configure(value.Ip, value.Port);
+                    _internalState?.Configure(value.Ip, value.Port, value.Login, value.Password);
                 }
                 else if (value == null)
                     _internalState = null;
                 else
                 {
-                    _internalState?.Configure(value.Ip, value.Port);
+                    _internalState?.Configure(value.Ip, value.Port, value.Login, value.Password);
                     //_internalState?.UpdateAsync();
                 }
             }

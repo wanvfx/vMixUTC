@@ -16,6 +16,8 @@ namespace vMixController.Widgets
 
         public string IP { get; set; }
         public string Port { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
 
         [XmlIgnore]
         public State DummyState { get; set; }
@@ -81,7 +83,7 @@ namespace vMixController.Widgets
         {
             if (DummyState == null)
                 DummyState = new State();
-            DummyState.Configure(IP, Port);
+            DummyState.Configure(IP, Port, Login, Password);
             if (Enabled)
                 DummyState.SendFunction(e.Function);
         }
@@ -96,6 +98,12 @@ namespace vMixController.Widgets
             uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "PRT");
             uc.Title = "Port";
             uc.Value = Port;
+            uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "LGN");
+            uc.Title = "Login";
+            uc.Value = Login;
+            uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "PWD");
+            uc.Title = "Password";
+            uc.Value = Password;
             _temp.Add(uc);
             return base.GetPropertiesControls().Concat(_temp).ToArray();
         }
@@ -105,6 +113,8 @@ namespace vMixController.Widgets
             var ctrls = _controls.OfType<PropertiesControls.StringControl>().ToArray();
             IP = ctrls[0].Value;
             Port = ctrls[1].Value;
+            Login = ctrls[2].Value;
+            Password = ctrls[3].Value;
             base.SetProperties(_controls);
         }
 
@@ -124,6 +134,8 @@ namespace vMixController.Widgets
         {
             IP = "127.0.0.1";
             Port = "8088";
+            Login = "admin";
+            Password = "";
         }
 
         [NonSerialized]

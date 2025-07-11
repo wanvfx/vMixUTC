@@ -193,9 +193,9 @@ namespace vMixController.Classes
                 }
 
                 _ip = value;
-                vMixAPI.StateFabrique.Configure(IP, Port);
-
+                vMixAPI.StateFabrique.Configure(IP, Port, HttpLogin, HttpPassword);
                 XmlDocumentMessenger.Url = vMixAPI.StateFabrique.GetUrl(IP, Port);
+                XmlDocumentMessenger.Credentials = vMixAPI.StateFabrique.GetCredentials(HttpLogin, HttpPassword);
 
                 RaisePropertyChanged(IPPropertyName);
             }
@@ -227,11 +227,81 @@ namespace vMixController.Classes
                 }
 
                 _port = value;
-                vMixAPI.StateFabrique.Configure(IP, Port);
-
+                vMixAPI.StateFabrique.Configure(IP, Port, HttpLogin, HttpPassword);
                 XmlDocumentMessenger.Url = vMixAPI.StateFabrique.GetUrl(IP, Port);
+                XmlDocumentMessenger.Credentials = vMixAPI.StateFabrique.GetCredentials(HttpLogin, HttpPassword);
 
                 RaisePropertyChanged(PortPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HttpLogin" /> property's name.
+        /// </summary>
+        public const string HttpLoginPropertyName = "HttpLogin";
+
+        private string _httpLogin = "";
+
+        /// <summary>
+        /// Sets and gets the HttpLogin property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string HttpLogin
+        {
+            get
+            {
+                return _httpLogin;
+            }
+
+            set
+            {
+                if (_httpLogin == value)
+                {
+                    return;
+                }
+
+                _httpLogin = value;
+                // Используем новые свойства HttpLogin и HttpPassword для конфигурации
+                vMixAPI.StateFabrique.Configure(IP, Port, HttpLogin, HttpPassword);
+                XmlDocumentMessenger.Url = vMixAPI.StateFabrique.GetUrl(IP, Port);
+                XmlDocumentMessenger.Credentials = vMixAPI.StateFabrique.GetCredentials(HttpLogin, HttpPassword);
+
+                RaisePropertyChanged(HttpLoginPropertyName);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HttpPassword" /> property's name.
+        /// </summary>
+        public const string HttpPasswordPropertyName = "HttpPassword";
+
+        private string _httpPassword = "";
+
+        /// <summary>
+        /// Sets and gets the HttpPassword property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string HttpPassword
+        {
+            get
+            {
+                return _httpPassword;
+            }
+
+            set
+            {
+                if (_httpPassword == value)
+                {
+                    return;
+                }
+
+                _httpPassword = value;
+                // Используем новые свойства HttpLogin и HttpPassword для конфигурации
+                vMixAPI.StateFabrique.Configure(IP, Port, HttpLogin, HttpPassword);
+                XmlDocumentMessenger.Url = vMixAPI.StateFabrique.GetUrl(IP, Port);
+                XmlDocumentMessenger.Credentials = vMixAPI.StateFabrique.GetCredentials(HttpLogin, HttpPassword);
+
+                RaisePropertyChanged(HttpPasswordPropertyName);
             }
         }
 
