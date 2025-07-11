@@ -1160,12 +1160,14 @@ namespace vMixController.Widgets
                                 Process.Start(cmd.StringParameter);
                                 break;
                             case NativeFunctions.API:
-                                WebClient _webClient = new vMixWebClient();
+                                
+                                //WebClient _webClient = new vMixWebClient();
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uri;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uri))
                                 {
-                                    _webClient.DownloadStringAsync(uri, null);
+                                    vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter);
+                                    //_webClient.DownloadStringAsync(uri, null);
                                     AddLog("{1}) API {0}", strparameter, _pointer + 1);
                                 }
                                 else
