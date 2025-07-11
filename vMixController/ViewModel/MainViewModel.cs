@@ -1758,8 +1758,8 @@ namespace vMixController.ViewModel
                                 ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.C });
                             break;
                         case vMixControlClock c:
-                            foreach (var l in c.Events.Where(x => active.Contains(x.B)))
-                                ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.B });
+                            foreach (var l in c.Events.Where(x => active.Contains(x.Command)))
+                                ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.Command });
                             break;
                     }
                 }

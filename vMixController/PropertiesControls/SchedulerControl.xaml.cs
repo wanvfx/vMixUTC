@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using vMixController.Classes;
+using vMixController.Widgets;
 
 namespace vMixController.PropertiesControls
 {
@@ -33,13 +34,13 @@ namespace vMixController.PropertiesControls
             /// </summary>
         public const string EventsPropertyName = "Events";
 
-        private ObservableCollection<Pair<DateTime, string>> _events = new ObservableCollection<Pair<DateTime, string>>();
+        private ObservableCollection<ScheduledEvent> _events = new ObservableCollection<ScheduledEvent> ();
 
         /// <summary>
         /// Sets and gets the Events property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public ObservableCollection<Pair<DateTime, string>> Events
+        public ObservableCollection<ScheduledEvent> Events
         {
             get
             {
@@ -58,17 +59,17 @@ namespace vMixController.PropertiesControls
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _removePathCommand;
+        private RelayCommand<ScheduledEvent> _removePathCommand;
 
         /// <summary>
         /// Gets the RemoveControlCommand.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> RemovePathCommand
+        public RelayCommand<ScheduledEvent> RemovePathCommand
         {
             get
             {
                 return _removePathCommand
-                    ?? (_removePathCommand = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_removePathCommand = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
                         Events.Remove(p);
@@ -76,128 +77,128 @@ namespace vMixController.PropertiesControls
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkM;
+        private RelayCommand<ScheduledEvent> _checkM;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckM
+        public RelayCommand<ScheduledEvent> CheckM
         {
             get
             {
                 return _checkM
-                    ?? (_checkM = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkM = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Monday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkT;
+        private RelayCommand<ScheduledEvent> _checkT;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckT
+        public RelayCommand<ScheduledEvent> CheckT
         {
             get
             {
                 return _checkT
-                    ?? (_checkT = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkT = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 1) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Tuesday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkW;
+        private RelayCommand<ScheduledEvent> _checkW;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckW
+        public RelayCommand<ScheduledEvent> CheckW
         {
             get
             {
                 return _checkW
-                    ?? (_checkW = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkW = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 2) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Wednesday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkTH;
+        private RelayCommand<ScheduledEvent> _checkTH;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckTH
+        public RelayCommand<ScheduledEvent> CheckTH
         {
             get
             {
                 return _checkTH
-                    ?? (_checkTH = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkTH = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 3) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Tuesday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkF;
+        private RelayCommand<ScheduledEvent> _checkF;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckF
+        public RelayCommand<ScheduledEvent> CheckF
         {
             get
             {
                 return _checkF
-                    ?? (_checkF = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkF = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 4) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Friday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkS;
+        private RelayCommand<ScheduledEvent> _checkS;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckS
+        public RelayCommand<ScheduledEvent> CheckS
         {
             get
             {
                 return _checkS
-                    ?? (_checkS = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkS = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 5) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Saturday;
                     }));
             }
         }
 
-        private RelayCommand<Pair<DateTime, string>> _checkSU;
+        private RelayCommand<ScheduledEvent> _checkSU;
 
         /// <summary>
         /// Gets the CheckM.
         /// </summary>
-        public RelayCommand<Pair<DateTime, string>> CheckSU
+        public RelayCommand<ScheduledEvent> CheckSU
         {
             get
             {
                 return _checkSU
-                    ?? (_checkSU = new RelayCommand<Pair<DateTime, string>>(
+                    ?? (_checkSU = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.A = p.A.AddMilliseconds((p.A.Millisecond ^ 1 << 6) - p.A.Millisecond);
+                        p.Days = p.Days ^ DaysOfWeek.Sunday;
                     }));
             }
         }
@@ -223,7 +224,7 @@ namespace vMixController.PropertiesControls
                     () =>
                     {
                         var now = DateTime.Now;
-                        Events.Add(new Pair<DateTime, string>(now.Subtract(TimeSpan.FromMilliseconds(now.Millisecond)).AddMilliseconds(127), ""));
+                        Events.Add(new ScheduledEvent() { TimeOfDay = DateTime.Now, Days = DaysOfWeek.Everyday });
                     }));
             }
         }

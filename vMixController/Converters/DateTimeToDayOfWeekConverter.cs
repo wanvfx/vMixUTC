@@ -22,23 +22,23 @@ namespace vMixController.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var date = (DateTime)value;
+            var date = (Classes.DaysOfWeek)value;
             switch ((string)parameter)
             {
                 case "M":
-                    return (date.Millisecond & 1) == 1;
+                    return date.HasFlag(Classes.DaysOfWeek.Monday);
                 case "T":
-                    return (date.Millisecond & (1 << 1)) == 1 << 1;
+                    return date.HasFlag(Classes.DaysOfWeek.Tuesday);
                 case "W":
-                    return (date.Millisecond & (1 << 2)) == 1 << 2;
+                    return date.HasFlag(Classes.DaysOfWeek.Wednesday);
                 case "TH":
-                    return (date.Millisecond & (1 << 3)) == 1 << 3;
+                    return date.HasFlag(Classes.DaysOfWeek.Thursday);
                 case "F":
-                    return (date.Millisecond & (1 << 4)) == 1 << 4;
+                    return date.HasFlag(Classes.DaysOfWeek.Friday);
                 case "S":
-                    return (date.Millisecond & (1 << 5)) == 1 << 5;
+                    return date.HasFlag(Classes.DaysOfWeek.Saturday);
                 case "SU":
-                    return (date.Millisecond & (1 << 6)) == 1 << 6;
+                    return date.HasFlag(Classes.DaysOfWeek.Sunday);
 
             }
             return false;
