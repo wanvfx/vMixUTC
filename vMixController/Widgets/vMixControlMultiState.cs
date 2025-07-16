@@ -90,31 +90,11 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            List<UserControl> _temp = new List<UserControl>();
-            var uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "IP");
-            uc.Title = "IP";
-            uc.Value = IP;
-            _temp.Add(uc);
-            uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "PRT");
-            uc.Title = "Port";
-            uc.Value = Port;
-            uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "LGN");
-            uc.Title = "Login";
-            uc.Value = Login;
-            uc = GetPropertyControl<PropertiesControls.StringControl>(Type + "PWD");
-            uc.Title = "Password";
-            uc.Value = Password;
-            _temp.Add(uc);
-            return base.GetPropertiesControls().Concat(_temp).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            var ctrls = _controls.OfType<PropertiesControls.StringControl>().ToArray();
-            IP = ctrls[0].Value;
-            Port = ctrls[1].Value;
-            Login = ctrls[2].Value;
-            Password = ctrls[3].Value;
             base.SetProperties(_controls);
         }
 

@@ -417,24 +417,7 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            IntControl periodInt = GetPropertyControl<IntControl>();
-            periodInt.Title = LocalizationManager.Get("Update Period");
-            periodInt.Value = Period;
-
-            FilePathControl providerPath = GetPropertyControl<FilePathControl>();
-            providerPath.Filter = "External Data|*.dll";
-            providerPath.Value = DataProviderPath;
-            periodInt.Value = Period;
-
-            BoolControl loopBool = GetPropertyControl<BoolControl>();
-            loopBool.Value = RestartData;
-            loopBool.Title = LocalizationManager.Get("Loop Data");
-            loopBool.Tag = "RD";
-
-            var props = base.GetPropertiesControls();
-            foreach (var prop in props.OfType<BoolControl>())
-                prop.Visibility = Visibility.Collapsed;
-            return (new UserControl[] { periodInt, providerPath, loopBool }).Concat(props).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
@@ -449,9 +432,6 @@ namespace vMixController.Widgets
 
             if (DataProviderProperties != null)
                 DataProviderProperties.Clear();
-            Period = _controls.OfType<IntControl>().First().Value;
-            DataProviderPath = _controls.OfType<FilePathControl>().First().Value;
-            RestartData = _controls.OfType<BoolControl>().Where(x=>(string)x.Tag == "RD").First().Value;
         }
 
         public override Hotkey[] GetHotkeys()

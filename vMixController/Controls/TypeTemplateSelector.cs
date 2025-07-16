@@ -9,11 +9,12 @@ using System.Windows.Controls;
 
 namespace vMixController.Controls
 {
-    public class TypeTemplateSelector: DataTemplateSelector
+    public class TypeTemplateSelector : DataTemplateSelector
     {
 
 
         public int Page { get; set; } = 0;
+        public string Suffix { get; set; } = "";
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -21,14 +22,22 @@ namespace vMixController.Controls
             FrameworkElement element = container as FrameworkElement;
             //if (((int?)item.GetType().GetProperty("Page")?.GetValue(item) ?? 0) == Page)
             //{
+            if (item == null) return null;
+            try
+            {
+                return (DataTemplate)element.FindResource(item.GetType().Name + Suffix);
+            }
+            catch (ResourceReferenceKeyNotFoundException)
+            {
                 try
                 {
-                    return (DataTemplate)element.FindResource(item.GetType().Name);
+                    return (DataTemplate)element.FindResource(item.GetType().BaseType.Name + Suffix);
                 }
                 catch (ResourceReferenceKeyNotFoundException)
                 {
-                    return (DataTemplate)element.FindResource(item.GetType().BaseType.Name);
+                    return null;
                 }
+            }
             //}
             //else
             //   return (DataTemplate)element.FindResource("Dummy");

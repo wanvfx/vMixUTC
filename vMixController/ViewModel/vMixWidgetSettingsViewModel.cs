@@ -347,9 +347,9 @@ namespace vMixController.ViewModel
         /// <summary>
         /// The <see cref="Widget" /> property's name.
         /// </summary>
-        public const string ControlPropertyName = "Control";
+        public const string WidgetPropertyName = "Widget";
 
-        private vMixControl _control = null;
+        private vMixControl _widget = null;
 
         /// <summary>
         /// Sets and gets the Control property.
@@ -359,18 +359,18 @@ namespace vMixController.ViewModel
         {
             get
             {
-                return _control;
+                return _widget;
             }
 
             set
             {
-                if (_control == value)
+                if (_widget == value)
                 {
                     return;
                 }
 
-                _control = value;
-                RaisePropertyChanged(ControlPropertyName);
+                _widget = value;
+                RaisePropertyChanged(WidgetPropertyName);
             }
         }
 

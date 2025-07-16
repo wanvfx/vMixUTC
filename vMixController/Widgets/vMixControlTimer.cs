@@ -116,61 +116,8 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-
-            StringControl formatString = GetPropertyControl<StringControl>();
-            formatString.Title = "Format";
-            formatString.Value = Format;
-            var props = base.GetPropertiesControls().ToList();
-            //Return IsTable
-            //props.OfType<BoolControl>().First().Visibility = System.Windows.Visibility.Collapsed;
-
-
-            StringControl[] links = new StringControl[] {
-                GetPropertyControl<StringControl>(Type + "1"),
-                GetPropertyControl<StringControl>(Type + "2"),
-                GetPropertyControl<StringControl>(Type + "3"),
-                GetPropertyControl<StringControl>(Type + "4"),
-                GetPropertyControl<StringControl>(Type + "5"),
-            };
-
-
-            var splittext = GetPropertyControl<BoolControl>(Type + "BC");
-            splittext.Title = "Split Text";
-            splittext.Help = "Split text by chars: if your text is 11:22, you will get 1|1|:|2|2. \nUseful for creating animated timers.";
-            splittext.Value = SplitText;
-
-            var highpc = GetPropertyControl<BoolControl>(Type + "HPC");
-            highpc.Title = "High Precision";
-            highpc.Help = "1/10 millisecond";
-            highpc.Value = IsHighPrecision;
-
-            var lbl = GetPropertyControl<LabelControl>();
-            lbl.Title = "Events";
-            lbl.Help = "Execute ExecLink on corresponding event";
-
-            links[0].Title = "On Start";
-            links[0].Value = Links[0];
-            //links[0].Tag = "0";
-            links[1].Title = "On Pause";
-            links[1].Value = Links[1];
-            //links[1].Tag = "1";
-            links[2].Title = "On Stop";
-            links[2].Value = Links[2];
-            //links[2].Tag = "2";
-            links[3].Title = "On Completion";
-            links[3].Value = Links.Length > 3 ? Links[3] : "";
-            //links[3].Tag = "3";
-            links[4].Title = "On Tick";
-            links[4].Value = Links.Length > 4 ? Links[4] : "";
-            props.Insert(2, splittext);
-            return props.Concat(new UserControl[] { highpc, formatString, lbl }.Union(links)).ToArray();
+            return base.GetPropertiesControls();
         }
-
-        /*private void _timer_Tick(object sender, EventArgs e)
-        {
-            Tick(_stopwatch.Elapsed);
-            _stopwatch.Restart();
-        }*/
 
         private void Tick(TimeSpan e)
         {
@@ -321,7 +268,7 @@ namespace vMixController.Widgets
         /// </summary>
         public const string LinksPropertyName = "Links";
 
-        private string[] _links = new string[] { "", "", "", "" };
+        private string[] _links = new string[] { "", "", "", "", "" };
 
         /// <summary>
         /// Sets and gets the Links property.
@@ -688,19 +635,6 @@ namespace vMixController.Widgets
         public override void SetProperties(UserControl[] _controls)
         {
             base.SetProperties(_controls);
-            Format = _controls.OfType<StringControl>().First().Value;
-
-            if (Links.Length < 5)
-                Links = new string[] { "", "", "", "", "" };
-
-            SplitText = (_controls.Where(x => (x.Tag is string) &&  x.Tag.ToString() == Type + "BC").FirstOrDefault() as BoolControl).Value;
-            IsHighPrecision = (_controls.Where(x => (x.Tag is string) && x.Tag.ToString() == Type + "HPC").FirstOrDefault() as BoolControl).Value;
-
-            Links[0] = _controls.FindPropertyControl<StringControl>(Type + "1").Value;
-            Links[1] = _controls.FindPropertyControl<StringControl>(Type + "2").Value;
-            Links[2] = _controls.FindPropertyControl<StringControl>(Type + "3").Value;
-            Links[3] = _controls.FindPropertyControl<StringControl>(Type + "4").Value;
-            Links[4] = _controls.FindPropertyControl<StringControl>(Type + "5").Value;
         }
 
         protected override void Dispose(bool managed)

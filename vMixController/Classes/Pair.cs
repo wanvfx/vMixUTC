@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using NLog.Filters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,11 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using vMixController.Extensions;
 
 namespace vMixController.Classes
 {
     [Serializable]
-    public class Pair<T> : ObservableObject
+    public class Pair<T> : ObservableObject, ICloneable
     {
         private T a;
         private T b;
@@ -44,6 +46,11 @@ namespace vMixController.Classes
             RaisePropertyChanged("B");
         }
 
+        public object Clone()
+        {
+            return new Pair<T>() { A = (T)ObjectCopier.Copy(A) };
+        }
+
         public T B
         {
             get
@@ -63,7 +70,8 @@ namespace vMixController.Classes
         }
     }
 
-    public class Pair<T1, T2> : DependencyObject
+    [Serializable]
+    public class Pair<T1, T2> : DependencyObject, ICloneable
     {
 
         public Pair()
@@ -89,6 +97,12 @@ namespace vMixController.Classes
         private static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             
+        }
+
+        public object Clone()
+        {
+            
+            return new Pair<T1, T2>((T1)ObjectCopier.Copy(A), (T2)ObjectCopier.Copy(B));
         }
 
         public T2 B

@@ -1388,81 +1388,7 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            FilePathControl imagePath = GetPropertyControl<FilePathControl>(this.Type);
-            imagePath.Filter = "Images|*.bmp;*.jpg;*.png;*.ico";
-            imagePath.Value = Image;
-            imagePath.Title = "Image";
-
-            ComboBoxControl imageTypeComboBox = GetPropertyControl<ComboBoxControl>(this.Type + "imagetype");
-            imageTypeComboBox.Title = LocalizationManager.Get("Image Type");
-            imageTypeComboBox.Items = new string[] { DEFAULT, DEFAULTPRESSED };
-            imageTypeComboBox.Value = ImageMax == 1 ? DEFAULT : DEFAULTPRESSED;
-            imageTypeComboBox.Margin = new Thickness(0, 0, 2, 0);
-
-            ComboBoxControl styleComboBox = GetPropertyControl<ComboBoxControl>(this.Type + "style");
-            styleComboBox.Title = LocalizationManager.Get("Style");
-            styleComboBox.Items = new string[] { MOMENTARY, PRESS/*, TOGGLE */};
-            styleComboBox.Value = Style;
-            styleComboBox.Margin = new Thickness(2, 0, 0, 0);
-            Grid.SetColumn(styleComboBox, 1);
-
-            GridControl styleGroup = GetPropertyControl<GridControl>(this.Type + "ST");
-            styleGroup.Columns = 2;
-            styleGroup.Children.Clear();
-            styleGroup.Children.Add(imageTypeComboBox);
-            styleGroup.Children.Add(styleComboBox);
-
-
-            BoolControl stateDependentBool = GetPropertyControl<BoolControl>(this.Type + "SD");
-            stateDependentBool.Title = LocalizationManager.Get("State Dependent");
-            stateDependentBool.Value = IsStateDependent;
-            stateDependentBool.Visibility = System.Windows.Visibility.Visible;
-            stateDependentBool.Help = Help.Button_StateDependent;
-            stateDependentBool.Grouped = true;
-            stateDependentBool.Margin = new Thickness(0, 0, 2, 0);
-
-            BoolControl execAfterLoadBool = GetPropertyControl<BoolControl>(this.Type + "EA");
-            execAfterLoadBool.Title = LocalizationManager.Get("Execute After Load");
-            execAfterLoadBool.Value = AutoStart;
-            execAfterLoadBool.Visibility = System.Windows.Visibility.Visible;
-            execAfterLoadBool.Help = Help.Button_ExecuteAfterLoad;
-            execAfterLoadBool.Grouped = true;
-            execAfterLoadBool.Margin = new Thickness(2, 0, 2, 0);
-
-            BoolControl colorizeBool = GetPropertyControl<BoolControl>(Type + "CB");
-            colorizeBool.Title = LocalizationManager.Get("Colorize Button");
-            colorizeBool.Value = IsColorized;
-            colorizeBool.Visibility = System.Windows.Visibility.Visible;
-            colorizeBool.Help = Help.Button_Colorize;
-            colorizeBool.Grouped = true;
-            colorizeBool.Margin = new Thickness(2, 0, 0, 0);
-
-            ScriptControl script = GetPropertyControl<ScriptControl>();
-            script.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-            script.Commands.Clear();
-
-
-            GridControl boolGroup = GetPropertyControl<GridControl>();
-            boolGroup.Columns = 3;
-
-            Grid.SetColumn(stateDependentBool, 0);
-            Grid.SetColumn(execAfterLoadBool, 1);
-            Grid.SetColumn(colorizeBool, 2);
-
-            boolGroup.Children.Clear();
-            boolGroup.Children.Add(stateDependentBool);
-            boolGroup.Children.Add(execAfterLoadBool);
-            boolGroup.Children.Add(colorizeBool);
-
-            foreach (var item in Commands)
-            {
-                if (item.AdditionalParameters.Count == 0)
-                    for (int i = 0; i < 10; i++)
-                        item.AdditionalParameters.Add(new One<string>());
-                script.Commands.Add(new vMixControlButtonCommand() { IsExecutable = item.IsExecutable, UseInActiveState = item.UseInActiveState, Action = item.Action, Collapsed = item.Collapsed, Input = item.Input, InputKey = item.InputKey, Parameter = item.Parameter, StringParameter = item.StringParameter, AdditionalParameters = item.AdditionalParameters });
-            }
-            script.Log = Log;
-            return base.GetPropertiesControls().Concat(new UserControl[] { imagePath, styleGroup, boolGroup, script }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
@@ -1473,34 +1399,18 @@ namespace vMixController.Widgets
 
         public override void SetProperties(UserControl[] _controls)
         {
-            Commands.Clear();
+            base.SetProperties(_controls);
+
             bool hasGoToOrTimer = false;
             int p;
             int i = 0;
-            foreach (var item in (_controls.OfType<ScriptControl>().First()).Commands)
+            foreach (var item in Commands)
             {
-                Commands.Add(new vMixControlButtonCommand() { IsExecutable = item.IsExecutable, UseInActiveState = item.UseInActiveState, Action = item.Action, Collapsed = item.Collapsed, Input = item.Input, InputKey = item.InputKey, Parameter = item.Parameter, StringParameter = item.StringParameter, AdditionalParameters = item.AdditionalParameters });
-
                 hasGoToOrTimer |= item.Action.Function == NativeFunctions.TIMER;
                 hasGoToOrTimer |= item.Action.Function == NativeFunctions.GOTO && ((int.TryParse(item.Parameter, out p) && p < i) || !int.TryParse(item.Parameter, out p));
                 i++;
             }
 
-            var sg = _controls.OfType<GridControl>().FirstOrDefault();
-            var g = _controls.OfType<GridControl>().LastOrDefault();
-
-            IsStateDependent = g.Children.OfType<BoolControl>().First().Value;
-            AutoStart = g.Children.OfType<BoolControl>().ElementAt(1).Value;
-            IsColorized = g.Children.OfType<BoolControl>().ElementAt(2).Value;
-
-
-            Style = (string)sg.Children.OfType<ComboBoxControl>().Last().Value;
-            ImageMax = (string)sg.Children.OfType<ComboBoxControl>().First().Value == DEFAULT ? 1 : 2;
-
-            var u = _controls.OfType<FilePathControl>().First().Value;
-            Image = u;
-
-            base.SetProperties(_controls);
             if (hasGoToOrTimer && Style != MOMENTARY)
             {
                 var d = new Ookii.Dialogs.Wpf.TaskDialog();

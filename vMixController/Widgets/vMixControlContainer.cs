@@ -87,6 +87,8 @@ namespace vMixController.Widgets
             }
         }
 
+        public string FilePath { get; set; }
+
         public vMixControlContainer()
         {
 
@@ -104,38 +106,18 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-
-            var filePath = GetPropertyControl<FilePathControl>();
-            filePath.Filter = "vMix Title Controller|*.vmc";
-            filePath.Value = null;
-
-            _propIndex.Clear();
-            List<UserControl> _props = new List<UserControl>();
-            for (int i = 0; i < _controls.Count; i++)
-            {
-                var _ctrls = _controls[i].GetPropertiesControls();
-                _propIndex.Add(i, _ctrls);
-                var lbl = GetPropertyControl<LabelControl>(Type + i.ToString());
-                lbl.Title = _controls[i].Name;
-                _props.Add(lbl);
-                foreach (var ctrl in _ctrls)
-                    ctrl.Margin = new System.Windows.Thickness(8, 0, 0, 0);
-                _props.AddRange(_ctrls);
-            }
-
-            return base.GetPropertiesControls().Concat(new UserControl[] { filePath }).Concat(_props).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
         {
             base.SetProperties(viewModel);
-            var fp = (viewModel.WidgetPropertiesControls.OfType<FilePathControl>().First()).Value;
 
-            if (!string.IsNullOrWhiteSpace(fp))
+            if (!string.IsNullOrWhiteSpace(FilePath))
             {
                 _controls.Clear();
 
-                foreach (var item in Utils.LoadController(fp, null, out MainWindowSettings _tmp).OrderBy(x => x.Top))
+                foreach (var item in Utils.LoadController(FilePath, null, out MainWindowSettings _tmp).OrderBy(x => x.Top))
                 {
                     item.Width = Width - 2;
                     item.State = State;
@@ -148,14 +130,12 @@ namespace vMixController.Widgets
             {
                 for (int i = 0; i < _controls.Count; i++)
                 {
-                    /*_controls[i].Color = Color;
-                    _controls[i].BorderColor = BorderColor;*/
                     if (_propIndex.Count > i)
                     _controls[i].SetProperties(_propIndex[i]);
                     _propIndex[i] = null;
-                    //_controls[i].SetProperties(_propIndex[i]);
                 }
             }
+            FilePath = null;
         }
 
         protected override void Dispose(bool managed)

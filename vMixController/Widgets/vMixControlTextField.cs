@@ -412,34 +412,7 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-
-            var titleMapper = GetPropertyControl<TitleMappingControl>();
-            titleMapper.Titles.Clear();
-            titleMapper.Visibility = Visibility.Visible;
-            foreach (var item in _paths)
-                titleMapper.Titles.Add(new Pair<string, string>(item.A, item.B));
-
-            var tableBool = GetPropertyControl<BoolControl>(Type + "T");
-            tableBool.Visibility = Visibility.Visible;
-            tableBool.Value = IsTable;
-            tableBool.Title = LocalizationManager.Get("Table");
-            tableBool.Help = Help.TextField_Table;
-
-            var editableBool = GetPropertyControl<BoolControl>(Type + "E");
-            editableBool.Visibility = Visibility.Visible;
-            editableBool.Value = IsEditable;
-            editableBool.Title = LocalizationManager.Get("Editable");
-
-            if (this.GetType() == typeof(vMixControlTextField))
-            {
-                var styleComboBox = GetPropertyControl<ComboBoxControl>(Type + "ST");
-                styleComboBox.Title = "Style";
-                styleComboBox.Value = Template ? "File" : "Text";
-                styleComboBox.Items = new List<string>() { "Text", "File" };
-                return base.GetPropertiesControls().Concat(new UserControl[] { styleComboBox, tableBool, editableBool, titleMapper }).ToArray();
-            }
-
-            return base.GetPropertiesControls().Concat(new UserControl[] { tableBool, editableBool, titleMapper }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
@@ -477,17 +450,6 @@ namespace vMixController.Widgets
         public override void SetProperties(UserControl[] _controls)
         {
             base.SetProperties(_controls);
-
-            _paths.Clear();
-            foreach (var item in (_controls.OfType<TitleMappingControl>().First()).Titles)
-                _paths.Add(new Pair<string, string>(item.A, item.B));
-
-            IsTable = _controls.FindPropertyControl<BoolControl>(Type + "T").Value;
-            IsEditable = _controls.FindPropertyControl<BoolControl>(Type + "E").Value;
-
-            if (this.GetType() == typeof(vMixControlTextField))
-                Template = (string)_controls.FindPropertyControl<ComboBoxControl>(Type + "ST").Value == "File";
-
             UpdateText(_paths);
         }
 

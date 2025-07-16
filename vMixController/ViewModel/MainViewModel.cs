@@ -1262,6 +1262,7 @@ namespace vMixController.ViewModel
                         if (result.HasValue && result.Value)
                         {
                             SaveUndo(string.Format("Widget {1}[{0}] properties changed", p.Type, p.Name));
+                            _settings.SaveConnectedWidgetProperties();
                             p.SetProperties(viewModel);
                         }
                         _logger.Debug("Properties updated.");

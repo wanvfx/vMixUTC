@@ -1,22 +1,10 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using vMixController.Classes;
-using vMixController.Widgets;
 
 namespace vMixController.PropertiesControls
 {
@@ -26,37 +14,17 @@ namespace vMixController.PropertiesControls
     public partial class SchedulerControl : UserControl, INotifyPropertyChanged
     {
 
+        public static readonly DependencyProperty EventsProperty =
+            DependencyProperty.Register(
+                nameof(Events),
+                typeof(ObservableCollection<ScheduledEvent>),
+                typeof(SchedulerControl),
+                new PropertyMetadata(new ObservableCollection<ScheduledEvent>()));
 
-
-
-        /// <summary>
-            /// The <see cref="Events" /> property's name.
-            /// </summary>
-        public const string EventsPropertyName = "Events";
-
-        private ObservableCollection<ScheduledEvent> _events = new ObservableCollection<ScheduledEvent> ();
-
-        /// <summary>
-        /// Sets and gets the Events property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public ObservableCollection<ScheduledEvent> Events
         {
-            get
-            {
-                return _events;
-            }
-
-            set
-            {
-                if (_events == value)
-                {
-                    return;
-                }
-
-                _events = value;
-                RaisePropertyChanged(EventsPropertyName);
-            }
+            get => (ObservableCollection<ScheduledEvent>)GetValue(EventsProperty);
+            set => SetValue(EventsProperty, value);
         }
 
         private RelayCommand<ScheduledEvent> _removePathCommand;
@@ -144,7 +112,7 @@ namespace vMixController.PropertiesControls
                     ?? (_checkTH = new RelayCommand<ScheduledEvent>(
                     p =>
                     {
-                        p.Days = p.Days ^ DaysOfWeek.Tuesday;
+                        p.Days = p.Days ^ DaysOfWeek.Thursday;
                     }));
             }
         }

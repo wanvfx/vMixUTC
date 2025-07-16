@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:e="clr-namespace:vMixController.Extensions"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:conv="clr-namespace:vMixController.Converters"
              mc:Ignorable="d" 
              x:Name="Me"
              d:DesignHeight="300" d:DesignWidth="300">

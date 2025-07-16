@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Xml;
 using System.Xml.Serialization;
+using vMixAPI;
 using vMixController.Classes;
 using vMixController.PropertiesControls;
 
@@ -119,6 +120,8 @@ namespace vMixController.Widgets
             }
         }
 
+        public List<Input> Inputs { get => _internalState?.Inputs; }
+
         public vMixControlPlaylist()
         {
             XmlDocumentMessenger.OnDocumentDownloaded += XmlDocumentMessenger_OnDocumentDownloaded;
@@ -186,18 +189,11 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            var isc = GetPropertyControl<InputSelectorControl>(this.Type);
-            isc.Items = null;
-            isc.Items = _internalState?.Inputs;
-            isc.Title = "Input";
-            isc.Value = InputKey;
-
-            return (new UserControl[] { isc }).Concat(base.GetPropertiesControls()).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            InputKey = (string)_controls.OfType<InputSelectorControl>().FirstOrDefault()?.Value;
             base.SetProperties(_controls);
         }
 

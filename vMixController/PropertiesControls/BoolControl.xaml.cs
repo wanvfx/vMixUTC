@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,17 +57,15 @@ namespace vMixController.PropertiesControls
 
 
 
-        public List<Pair<bool, string>> Values
+        public ObservableCollection<Pair<bool, string>> Values
         {
-            get { return (List<Pair<bool, string>>)GetValue(ValuesProperty); }
+            get { return (ObservableCollection<Pair<bool, string>>)GetValue(ValuesProperty); }
             set { SetValue(ValuesProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Values.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValuesProperty =
-            DependencyProperty.Register("Values", typeof(List<Pair<bool, string>>), typeof(BoolControl), new PropertyMetadata(null));
-
-
+            DependencyProperty.Register("Values", typeof(ObservableCollection<Pair<bool, string>>), typeof(BoolControl), new PropertyMetadata(null));
 
         public string Help
         {

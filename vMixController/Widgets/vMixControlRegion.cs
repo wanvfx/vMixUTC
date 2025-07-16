@@ -141,18 +141,12 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            var infoString = GetPropertyControl<StringControl>();
-            infoString.AcceptReturn = true;
-            infoString.TextWrapping = System.Windows.TextWrapping.Wrap;
-            infoString.Title = "Info";
-            infoString.Value = Text;
-            return base.GetPropertiesControls().Concat(new UserControl[] { infoString }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
             base.SetProperties(_controls);
-            Text = _controls.OfType<StringControl>().First().Value;
         }
 
         public override void Update()

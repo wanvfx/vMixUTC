@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
+using vMixController.Interfaces;
 using vMixController.Widgets;
 
 namespace vMixController.PropertiesControls
@@ -27,16 +28,20 @@ namespace vMixController.PropertiesControls
     /// <summary>
     /// Логика взаимодействия для ScriptControl.xaml
     /// </summary>
-    public partial class ScriptControl : UserControl, INotifyPropertyChanged
+    public partial class ScriptControl : UserControl, INotifyPropertyChanged, ICancellable
     {
         public ScriptControl()
         {
             InitializeComponent();
-            Commands.CollectionChanged += OnCommandsChanged;
+
             if (DesignerProperties.GetIsInDesignMode(this))
             {
+                Commands = new ObservableCollection<vMixControlButtonCommand>();
+                Commands.CollectionChanged += OnCommandsChanged;
                 Commands.Add(new vMixControlButtonCommand());
             }
+
+
         }
 
         private void OnCommandsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -174,63 +179,86 @@ namespace vMixController.PropertiesControls
         }
 
         /// <summary>
-        /// The <see cref="Log" /> property's name.
+        /// The <see cref="IsCancelled" /> property's name.
         /// </summary>
-        public const string LogPropertyName = "Log";
+        public const string IsCancelledPropertyName = "IsCancelled";
 
-        private string _log = "";
+        private bool _isCancelled = false;
 
         /// <summary>
-        /// Sets and gets the Log property.
+        /// Sets and gets the IsCancelled property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string Log
+        public bool IsCancelled
         {
             get
             {
-                return _log;
+                return _isCancelled;
             }
 
             set
             {
-                if (_log == value)
+                if (_isCancelled == value)
                 {
                     return;
                 }
 
-                _log = value;
-                RaisePropertyChanged(LogPropertyName);
+                _isCancelled = value;
+
+                RaisePropertyChanged(IsCancelledPropertyName);
             }
         }
 
         /// <summary>
-        /// The <see cref="Commands" /> property's name.
+        /// Идентифицирует свойство зависимостей <see cref="Log"/>.
         /// </summary>
-        public const string CommandsPropertyName = "Commands";
-
-        private ObservableCollection<vMixControlButtonCommand> _commands = new ObservableCollection<vMixControlButtonCommand>();
+        public static readonly DependencyProperty LogProperty =
+            DependencyProperty.Register(
+                nameof(Log),
+                typeof(string),
+                typeof(ScriptControl), // <-- Замените YourControl на имя вашего класса
+                new PropertyMetadata("")); // Значение по умолчанию - пустая строка
 
         /// <summary>
-        /// Sets and gets the Commands property.
-        /// Changes to that property's value raise the PropertyChanged event. 
+        /// Получает или задает свойство Log.
+        /// Это свойство зависимостей.
+        /// </summary>
+        public string Log
+        {
+            get { return (string)GetValue(LogProperty); }
+            set { SetValue(LogProperty, value); }
+        }
+
+        // <summary>
+        /// Идентифицирует свойство зависимостей <see cref="Commands"/>.
+        /// </summary>
+        public static readonly DependencyProperty CommandsProperty =
+            DependencyProperty.Register(
+                nameof(Commands),
+                typeof(ObservableCollection<vMixControlButtonCommand>),
+                typeof(ScriptControl),
+                new PropertyMetadata(null, CommandsChangedCallback)); // По умолчанию null, чтобы избежать совместного использования одной коллекции между экземплярами
+
+        private static void CommandsChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var ctrl = (ScriptControl)d;
+            var ov = (ObservableCollection<vMixControlButtonCommand>)e.OldValue;
+            var nv = (ObservableCollection<vMixControlButtonCommand>)e.NewValue;
+            ctrl.GenerateCode();
+            if (ov != null)
+                ov.CollectionChanged -= ((ScriptControl)d).OnCommandsChanged;
+            if (nv != null)
+                nv.CollectionChanged += ((ScriptControl)d).OnCommandsChanged;
+        }
+
+        /// <summary>
+        /// Получает или задает коллекцию команд для кнопки.
+        /// Это свойство зависимостей.
         /// </summary>
         public ObservableCollection<vMixControlButtonCommand> Commands
         {
-            get
-            {
-                return _commands;
-            }
-
-            set
-            {
-                if (_commands == value)
-                {
-                    return;
-                }
-
-                _commands = value;
-                RaisePropertyChanged(CommandsPropertyName);
-            }
+            get { return (ObservableCollection<vMixControlButtonCommand>)GetValue(CommandsProperty); }
+            set { SetValue(CommandsProperty, value); }
         }
 
 
@@ -279,7 +307,6 @@ namespace vMixController.PropertiesControls
                     }));
             }
         }
-
 
         private RelayCommand _exportScriptCommand;
 

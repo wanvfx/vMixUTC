@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using vMixController.Classes;
+using vMixController.Extensions;
 using vMixController.PropertiesControls;
 
 namespace vMixController.Widgets
@@ -221,7 +222,20 @@ namespace vMixController.Widgets
 
         public vMixControlMidiInterface()
         {
+            Learn = () =>
+            {
 
+                var wnd = new MidiLearnWindow(Device = CreateDeviceByName(DeviceCaps));
+                var result = wnd.ShowDialog();
+                if (result ?? true)
+                {
+                    var k = wnd.Key;
+                    wnd.Close();
+                    return k;
+                }
+
+                return null;
+            };
         }
 
         public override UserControl[] GetPropertiesControls()
@@ -235,7 +249,7 @@ namespace vMixController.Widgets
 
             }
 
-            var midiDeviceComboBox = GetPropertyControl<ComboBoxControl>();
+            /*var midiDeviceComboBox = GetPropertyControl<ComboBoxControl>();
             midiDeviceComboBox.Title = "Device";
             midiDeviceComboBox.Items = MidiDevices;
             midiDeviceComboBox.Tag = "DeviceSelector";
@@ -254,37 +268,17 @@ namespace vMixController.Widgets
             foreach (var item in Midis)
             {
                 midiMappingCtrl.Midis.Add(item);
-            }
+            }*/
 
-            return base.GetPropertiesControls().Union(new UserControl[] { midiDeviceComboBox, midiMappingCtrl }).ToArray();
+            return base.GetPropertiesControls();//base.GetPropertiesControls().Union(new UserControl[] { midiDeviceComboBox, midiMappingCtrl }).ToArray();
         }
 
-        private MidiInterfaceKey Learn()
-        {
-
-            var wnd = new MidiLearnWindow(Device = CreateDeviceByName(DeviceCaps));
-            var result = wnd.ShowDialog();
-            if (result ?? true)
-            {
-                var k = wnd.Key;
-                wnd.Close();
-                return k;
-            }
-
-            return null;
-        }
+        [XmlIgnore]
+        public Func<MidiInterfaceKey> Learn { get; set; }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            MidiDeviceName = (string)(_controls.Where(x => (string)x.Tag == "DeviceSelector").First() as ComboBoxControl).Value;
-            DeviceCaps = MidiDeviceName;
-            var ctrl = _controls.OfType<MidiMappingControl>().First();
-            Midis.Clear();
-            foreach (var item in ctrl.Midis)
-            {
-                Midis.Add(item);
-            }
-            
+            MidiDeviceName = DeviceCaps;
             base.SetProperties(_controls);
         }
 
@@ -302,8 +296,12 @@ namespace vMixController.Widgets
         }
     }
 
-    public class MidiInterfaceKey : Quadriple<int, int, string, Melanchall.DryWetMidi.Core.MidiEventType>
+    [Serializable]
+    public class MidiInterfaceKey : Quadriple<int, int, string, Melanchall.DryWetMidi.Core.MidiEventType>, ICloneable
     {
-
+        new public object Clone()
+        {
+            return new MidiInterfaceKey() { A = (int)A.Copy(), B = (int)B.Copy(), C = (string)C.Copy(), D = (Melanchall.DryWetMidi.Core.MidiEventType)D.Copy() };
+        }
     }
 }

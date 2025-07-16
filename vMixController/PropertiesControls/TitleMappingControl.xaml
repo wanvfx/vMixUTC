@@ -18,6 +18,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <i:Interaction.Behaviors>
+        <e:DeepCopyCancelBehavior TargetCollection="{Binding Titles, ElementName=Me}" IsCancelled="{Binding IsCancelled, ElementName=Me}"></e:DeepCopyCancelBehavior>
         <e:IgnoreMouseWheelBehavior/>
     </i:Interaction.Behaviors>
     <Border BorderBrush="#1A3CB1" BorderThickness="1" Background="#18488C" Margin="{StaticResource TopBottomStdMargin}">

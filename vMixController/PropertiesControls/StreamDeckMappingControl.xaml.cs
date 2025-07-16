@@ -25,37 +25,32 @@ namespace vMixController.PropertiesControls
     public partial class StreamDeckMappingControl : UserControl, INotifyPropertyChanged
     {
 
-        public Func<Widgets.StreamDeckKey> LearnFunction { get; set; }
+        public static readonly DependencyProperty LearnFunctionProperty =
+    DependencyProperty.Register(
+        nameof(LearnFunction),
+        typeof(Func<Widgets.StreamDeckKey>),
+        typeof(StreamDeckMappingControl),
+        new PropertyMetadata(null));
 
-        /// <summary>
-        /// The <see cref="KeysProperty" /> property's name.
-        /// </summary>
-        public const string KeysProperty = "Keys";
+        public Func<Widgets.StreamDeckKey> LearnFunction
+        {
+            get => (Func<Widgets.StreamDeckKey>)GetValue(LearnFunctionProperty);
+            set => SetValue(LearnFunctionProperty, value);
+        }
 
-        private ObservableCollection<Widgets.StreamDeckKey> _keys = new ObservableCollection<Widgets.StreamDeckKey>();
+        public static readonly DependencyProperty KeysProperty =
+    DependencyProperty.Register(
+        nameof(Keys),
+        typeof(ObservableCollection<Widgets.StreamDeckKey>),
+        typeof(StreamDeckMappingControl),
+        new PropertyMetadata(new ObservableCollection<Widgets.StreamDeckKey>()));
 
-        /// <summary>
-        /// Sets and gets the Titles property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public ObservableCollection<Widgets.StreamDeckKey> Keys
         {
-            get
-            {
-                return _keys;
-            }
-
-            set
-            {
-                if (_keys == value)
-                {
-                    return;
-                }
-
-                _keys = value;
-                RaisePropertyChanged(KeysProperty);
-            }
+            get => (ObservableCollection<Widgets.StreamDeckKey>)GetValue(KeysProperty);
+            set => SetValue(KeysProperty, value);
         }
+
         private RelayCommand<Widgets.StreamDeckKey> _removePathCommand;
 
         /// <summary>

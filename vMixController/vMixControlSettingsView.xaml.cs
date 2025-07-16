@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
+using System.Windows.Media;
+using vMixController.Classes;
+using vMixController.Extensions;
 
 namespace vMixController
 {
@@ -49,6 +52,42 @@ namespace vMixController
             SetWindowLong(hwnd, GWL_STYLE, (int)(value & ~WS_MINIMIZEBOX));
             Topmost = Application.Current?.MainWindow?.Topmost ?? false;
             Activate();
+        }
+
+        private void OkClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SaveTemplateClick(object sender, RoutedEventArgs e)
+        {
+            if (VisualTreeHelper.GetChildrenCount(this.WidgetProperties) > 0)
+            {
+                var templateRootElement = VisualTreeHelper.GetChild(this.WidgetProperties, 0);
+
+                // Теперь вызываем наш хелпер, но в качестве стартовой точки
+                // передаем не все окно (this), а только корневой элемент шаблона.
+                templateRootElement?.UpdateAllExplicitSources();
+
+            }
+        }
+
+        private void CancelClick(object sender, RoutedEventArgs e)
+        {
+            this.SetIsCancelledOnAllChildren();
+        }
+
+        public void SaveConnectedWidgetProperties()
+        {
+            if (VisualTreeHelper.GetChildrenCount(this.WidgetProperties) > 0)
+            {
+                var templateRootElement = VisualTreeHelper.GetChild(this.WidgetProperties, 0);
+
+                // Теперь вызываем наш хелпер, но в качестве стартовой точки
+                // передаем не все окно (this), а только корневой элемент шаблона.
+                templateRootElement?.UpdateAllExplicitSources();
+
+            }
         }
     }
 }

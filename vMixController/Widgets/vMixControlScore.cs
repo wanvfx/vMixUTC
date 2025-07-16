@@ -1,24 +1,24 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Xml.Serialization;
 using vMixController.Classes;
-using System.Windows.Controls;
-using vMixController.PropertiesControls;
-using vMixController.Extensions;
-using System.Windows.Data;
 using vMixController.Converters;
-using System.Windows;
+using vMixController.Extensions;
+using vMixController.PropertiesControls;
 
 namespace vMixController.Widgets
 {
     [Serializable]
     public class vMixControlScore : vMixControlTextField
     {
-
         public override string Type
         {
             get
@@ -88,25 +88,26 @@ namespace vMixController.Widgets
             }
         }
 
-        public const string FormatStringPropertyName = "FormatString";
-        private string _formatString = "0";
+
+
+        /// <summary>
+        /// Регистрация DependencyProperty для FormatString.
+        /// </summary>
+        public static readonly DependencyProperty FormatStringProperty =
+            DependencyProperty.Register(
+                nameof(FormatString),
+                typeof(string),
+                typeof(StringControl), // <-- ЗАМЕНИТЕ MyUserControl НА ИМЯ ВАШЕГО КЛАССА
+                new PropertyMetadata("0")); // "0" - это значение по умолчанию
+
+        /// <summary>
+        /// CLR-обертка для доступа к свойству из кода.
+        /// WPF использует GetValue/SetValue напрямую для производительности.
+        /// </summary>
         public string FormatString
         {
-            get
-            {
-                return _formatString;
-            }
-
-            set
-            {
-                if (_formatString == value)
-                {
-                    return;
-                }
-
-                _formatString = value;
-                RaisePropertyChanged(FormatStringPropertyName);
-            }
+            get { return (string)GetValue(FormatStringProperty); }
+            set { SetValue(FormatStringProperty, value); }
         }
 
         static vMixControlScore()
@@ -213,7 +214,7 @@ namespace vMixController.Widgets
                 {
                     return;
                 }
-                Text = value.ToString(_formatString);
+                Text = value.ToString(FormatString);
                 _value = value;
                 RaisePropertyChanged(ValuePropertyName);
             }
@@ -265,51 +266,11 @@ namespace vMixController.Widgets
         public override UserControl[] GetPropertiesControls()
         {
             var props = base.GetPropertiesControls();
-            props.OfType<BoolControl>().First().Visibility = System.Windows.Visibility.Collapsed;
-
-            var styleComboBox = GetPropertyControl<ComboBoxControl>(Type + "SCS");
-            styleComboBox.Title = Extensions.LocalizationManager.Get("Style");
-            styleComboBox.Items = new System.Collections.ObjectModel.ObservableCollection<string>
-            {
-                "Basic",
-                "Basketball",
-                "Rugby",
-                "American Football",
-                "Custom"
-            };
-            styleComboBox.Value = Style;
-
-            var customBool = GetPropertyControl<BoolControl>(Type + "CBC");
-
-            var vals = new List<Pair<bool, string>>();
-            for (byte i = 0; i < 7; i++)
-                vals.Add(new Pair<bool, string>(EnabledButtons.GetBit(i), GetHotkeys().Skip(1).ToArray()[i].Name ));
-            customBool.Values = vals;
-            customBool.Title = "Active Buttons";
-            customBool.Tag = 0;
-
-            var cbEnabled = new Binding("Value");
-            cbEnabled.Source = styleComboBox;
-            cbEnabled.Converter = NKristek.Wpf.Converters.ObjectToStringEqualsParameterToBoolConverter.Instance;
-            cbEnabled.ConverterParameter = "Custom";
-            BindingOperations.SetBinding(customBool, BoolControl.IsEnabledProperty, cbEnabled);
-
-            var formatControl = GetPropertyControl<StringControl>(Type + "FmtString");
-            formatControl.Value = _formatString;
-            formatControl.Title = "Format String";
-
-            return (new UserControl[] { styleComboBox, customBool, formatControl }).Concat(props).ToArray();
+            return props;
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            Style = (string)((ComboBoxControl)_controls.Where(x => x is ComboBoxControl).FirstOrDefault()).Value;
-
-            var vals = (_controls.Where(x => x.Tag is int i && i == 0).FirstOrDefault() as BoolControl).Values;
-            for (byte i = 0; i < 7; i++)
-                EnabledButtons = EnabledButtons.SetBit(i, vals[i].A);
-
-            FormatString = (string)((StringControl)_controls.Where(x=>x is StringControl).FirstOrDefault()).Value;
 
             base.SetProperties(_controls);
         }

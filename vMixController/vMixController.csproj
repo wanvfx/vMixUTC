@@ -331,6 +331,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\BindableAvalonEditor.cs" />
+    <Compile Include="Classes\BindingHelper.cs" />
     <Compile Include="Classes\BindingProxy.cs" />
     <Compile Include="Classes\ColorNamePair.cs" />
     <Compile Include="Classes\DummyStringProperty.cs" />
@@ -369,7 +370,12 @@
     <Compile Include="Converters\AudiobusToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToSolidColorBrushConverter.cs" />
     <Compile Include="Converters\BoolToOrientationConverter.cs" />
+    <Compile Include="Converters\ByteToPairBoolStringConverter.cs" />
+    <Compile Include="Converters\BoolToTextOrFileConverter.cs" />
     <Compile Include="Converters\IndexConverter.cs" />
+    <Compile Include="Converters\IntegerToButtonImageTypeConverter.cs" />
+    <Compile Include="Converters\ObservableCollectionCopyConverter.cs" />
+    <Compile Include="Converters\StringCollectionToDummyStringPropertyCollectionConverter.cs" />
     <Compile Include="Converters\StringListToStringConverter.cs" />
     <Compile Include="Converters\ColorsListToColorConverter.cs" />
     <Compile Include="Converters\ColorToBlackOrWhiteConverter.cs" />
@@ -400,6 +406,8 @@
     <Compile Include="Converters\ListItemTagConverter.cs" />
     <Compile Include="Converters\ImagePathToVisibilityConverter.cs" />
     <Compile Include="Extensions\ControlBox.cs" />
+    <Compile Include="Extensions\DeepCopyCancelBehavior.cs" />
+    <Compile Include="Extensions\ObjectUtils.cs" />
     <Compile Include="Extensions\ThumbColorizer.cs" />
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Extensions\HideCloseButtonOnWindow.cs" />
@@ -407,11 +415,13 @@
     <Compile Include="Extensions\LocalizationManager.cs" />
     <Compile Include="Extensions\Localize.cs" />
     <Compile Include="Extensions\ScrollViewerHelper.cs" />
+    <Compile Include="Extensions\VisualTreeUtils.cs" />
     <Compile Include="Help.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Help.resx</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\ICancellable.cs" />
     <Compile Include="PropertiesControls\StreamDeckMappingControl.xaml.cs">
       <DependentUpon>StreamDeckMappingControl.xaml</DependentUpon>
     </Compile>
@@ -513,6 +523,10 @@
     <Page Include="PropertiesControls\StreamDeckMappingControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Skins\PropertyEditorTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="StreamDeckLearnWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

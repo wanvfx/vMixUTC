@@ -15,7 +15,7 @@ using vMixController.ViewModel;
 namespace vMixController.Widgets
 {
     [Serializable]
-    public class vMixControlButtonCommand : ObservableObject
+    public class vMixControlButtonCommand : ObservableObject, ICloneable
     {
         /// <summary>
         /// The <see cref="Action" /> property's name.
@@ -525,6 +525,11 @@ namespace vMixController.Widgets
                 arguments.RemoveAt(0);
             }
             return result;
+        }
+
+        public object Clone()
+        {
+            return vMixControlButtonCommand.FromString(this.ToString());
         }
 
         public vMixControlButtonCommand()

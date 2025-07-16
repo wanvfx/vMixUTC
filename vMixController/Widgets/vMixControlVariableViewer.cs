@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using vMixController.Classes;
 using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets
 {
-    public class vMixControlVariableViewer: vMixControl
+    public class vMixControlVariableViewer : vMixControl
     {
 
         //public override bool IsCaptionOn { get => true; set => base.IsCaptionOn = true; }
@@ -70,6 +71,8 @@ namespace vMixController.Widgets
             }
         }
 
+        public List<string> VariableList { get => ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings.Variables.Select(x => x.A).ToList(); }
+
         public override string Type
         {
             get
@@ -80,20 +83,11 @@ namespace vMixController.Widgets
 
         public override UserControl[] GetPropertiesControls()
         {
-            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-            var ctrl = GetPropertyControl<ComboBoxControl>("VarViewerCB");
-            ctrl.Items = new ObservableCollection<string>();
-            foreach (var variable in globalSettings.Variables)
-                ((ObservableCollection<string>)ctrl.Items).Add(variable.A);
-            ctrl.Value = Variable;
-            ctrl.Title = Extensions.LocalizationManager.Get("Variable");
-            return new UserControl[] { ctrl }.Concat(base.GetPropertiesControls()).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            Variable = (string)_controls.OfType<ComboBoxControl>().First().Value;
-            
 
             base.SetProperties(_controls);
         }

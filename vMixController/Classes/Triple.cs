@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using vMixController.Extensions;
 
 namespace vMixController.Classes
 {
     [Serializable]
-    public class Triple<T1, T2, T3>: Pair<T1, T2>
+    public class Triple<T1, T2, T3>: Pair<T1, T2>, ICloneable
     {
         public Triple()
         {
@@ -45,7 +46,10 @@ namespace vMixController.Classes
         public static readonly DependencyProperty BProperty =
             DependencyProperty.Register("B", typeof(T2), typeof(Triple<T1, T2, T3>), new PropertyMetadata(default(T2)));*/
 
-
+        new public object Clone()
+        {
+            return new Triple<T1, T2, T3>((T1)ObjectCopier.Copy(A), (T2)ObjectCopier.Copy(B), (T3)ObjectCopier.Copy(C));
+        }
 
         public T3 C
         {

@@ -33,34 +33,25 @@ namespace vMixController.PropertiesControls
 
 
         /// <summary>
-        /// The <see cref="Items" /> property's name.
+        /// Регистрация DependencyProperty. Это статическое поле содержит все метаданные о свойстве.
         /// </summary>
-        public const string ItemsPropertyName = "Items";
-
-        private ObservableCollection<DummyStringProperty> _items = new ObservableCollection<DummyStringProperty>();
+        public static readonly DependencyProperty ItemsProperty =
+            DependencyProperty.Register(
+                nameof(Items),
+                typeof(ObservableCollection<DummyStringProperty>),
+                typeof(ListControl),
+                new PropertyMetadata(null));
 
         /// <summary>
-        /// Sets and gets the Items property.
-        /// Changes to that property's value raise the PropertyChanged event. 
+        /// CLR-обертка для удобного доступа к свойству из кода.
+        /// Система WPF будет напрямую вызывать GetValue/SetValue для производительности.
         /// </summary>
         public ObservableCollection<DummyStringProperty> Items
         {
-            get
-            {
-                return _items;
-            }
-
-            set
-            {
-                if (_items == value)
-                {
-                    return;
-                }
-
-                _items = value;
-                RaisePropertyChanged(ItemsPropertyName);
-            }
+            get { return (ObservableCollection<DummyStringProperty>)GetValue(ItemsProperty); }
+            set { SetValue(ItemsProperty, value); }
         }
+
 
         private RelayCommand _addItemCommand;
 

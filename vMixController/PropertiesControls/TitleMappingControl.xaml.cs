@@ -16,44 +16,70 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using vMixController.Classes;
+using vMixController.Interfaces;
 
 namespace vMixController.PropertiesControls
 {
     /// <summary>
     /// Логика взаимодействия для PathsControl.xaml
     /// </summary>
-    public partial class TitleMappingControl : UserControl, INotifyPropertyChanged
+    public partial class TitleMappingControl : UserControl, INotifyPropertyChanged, ICancellable
     {
 
         /// <summary>
-        /// The <see cref="Titles" /> property's name.
+        /// Регистрация DependencyProperty. 
+        /// Это статическое поле хранит метаданные свойства.
         /// </summary>
-        public const string TitlesPropertyName = "Titles";
-
-        private ObservableCollection<Pair<string, string>> _myProperty = new ObservableCollection<Pair<string, string>>();
+        public static readonly DependencyProperty TitlesProperty =
+            DependencyProperty.Register(
+                nameof(Titles),
+                typeof(ObservableCollection<Pair<string, string>>),
+                typeof(TitleMappingControl), // <-- ЗАМЕНИТЕ MyUserControl НА ИМЯ ВАШЕГО КЛАССА
+                new PropertyMetadata(null));
 
         /// <summary>
-        /// Sets and gets the Titles property.
-        /// Changes to that property's value raise the PropertyChanged event. 
+        /// CLR-обертка для доступа к свойству из кода.
+        /// Система WPF будет вызывать GetValue/SetValue напрямую,
+        /// а вы можете использовать эту обертку для удобства.
         /// </summary>
         public ObservableCollection<Pair<string, string>> Titles
         {
+            get { return (ObservableCollection<Pair<string, string>>)GetValue(TitlesProperty); }
+            set { SetValue(TitlesProperty, value); }
+        }
+
+
+        /// <summary>
+        /// The <see cref="IsCancelled" /> property's name.
+        /// </summary>
+        public const string IsCancelledPropertyName = "IsCancelled";
+
+        private bool _isCancelled = false;
+
+        /// <summary>
+        /// Sets and gets the IsCancelled property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool IsCancelled
+        {
             get
             {
-                return _myProperty;
+                return _isCancelled;
             }
 
             set
             {
-                if (_myProperty == value)
+                if (_isCancelled == value)
                 {
                     return;
                 }
 
-                _myProperty = value;
-                RaisePropertyChanged(TitlesPropertyName);
+                _isCancelled = value;
+
+                RaisePropertyChanged(IsCancelledPropertyName);
             }
         }
+
         private RelayCommand<Pair<string, string>> _removePathCommand;
 
         /// <summary>

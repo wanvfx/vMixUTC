@@ -13,6 +13,7 @@
              xmlns:c="clr-namespace:System;assembly=mscorlib"
              xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:w="clr-namespace:vMixController.Widgets"
              xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
@@ -30,6 +31,7 @@
     </UserControl.Resources>
     <i:Interaction.Behaviors>
         <e:IgnoreMouseWheelBehavior/>
+        <e:DeepCopyCancelBehavior TargetCollection="{Binding Commands, ElementName=Me}" IsCancelled="{Binding IsCancelled, ElementName=Me}"></e:DeepCopyCancelBehavior>
     </i:Interaction.Behaviors>
     <StackPanel>
         <Border BorderBrush="#D01818" Background="#8B0000" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">

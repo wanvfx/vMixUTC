@@ -60,41 +60,14 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ItemsProperty =
-            DependencyProperty.Register("Items", typeof(ObservableCollection<string>), typeof(vMixControlTextField), new PropertyMetadata(null));
+            DependencyProperty.Register("Items", typeof(ObservableCollection<string>), typeof(vMixControlTextField), new PropertyMetadata(new ObservableCollection<string>()));
 
 
         public Triple<string, string, bool> DataSource { get; set; }
 
         public override UserControl[] GetPropertiesControls()
         {
-            var dataSource = GetPropertyControl<DataSourceControl>();
-            dataSource.Update();
-            if (DataSource != null)
-            {
-                dataSource.DataSource = DataSource.A;
-                dataSource.DataProperty = DataSource.B;
-                dataSource.Active = DataSource.C;
-            }
-
-
-            ListControl itemsList = GetPropertyControl<ListControl>();
-            BindingOperations.ClearAllBindings(itemsList);
-            var binding = new Binding("Active")
-            {
-                Converter = new NKristek.Wpf.Converters.BoolToInverseVisibilityConverter(),
-                Source = dataSource
-            };
-            BindingOperations.SetBinding(itemsList, ListControl.VisibilityProperty, binding);
-
-            itemsList.Items.Clear();
-            if (Items != null)
-                foreach (var item in Items)
-                {
-                    itemsList.Items.Add(new Classes.DummyStringProperty() { Value = item });
-                }
-
-            return base.GetPropertiesControls().Concat(new UserControl[] { itemsList, dataSource }).ToArray();
-            //return base.GetPropertiesControls().Concat(new UserControl[] { control }).ToArray(); ;
+            return base.GetPropertiesControls();
         }
 
         public override void Update()
@@ -122,33 +95,6 @@ namespace vMixController.Widgets
         {
             var tb = BindingOperations.GetBindingBase(this, TextProperty);
             BindingOperations.ClearBinding(this, TextProperty);
-
-            if (Items == null)
-                Items = new ObservableCollection<string>();
-
-            //Update Items instead of clearing
-            var newItems = (_controls.OfType<ListControl>().First()).Items;
-            for (int i = 0; i < Math.Max(Items.Count, newItems.Count); i++)
-            {
-                if (i < Math.Min(Items.Count, newItems.Count))
-                {
-                    if (Items[i] != newItems[i].Value)
-                        Items[i] = newItems[i].Value;
-                }
-                else if (Items.Count < newItems.Count)
-                    Items.Add(newItems[i].Value);
-            }
-            while (Items.Count > newItems.Count)
-                Items.RemoveAt(Items.Count - 1);
-
-            //UpdateBinding();
-
-            DataSource = new Triple<string, string, bool>
-            {
-                A = _controls.OfType<DataSourceControl>().First().DataSource,
-                B = _controls.OfType<DataSourceControl>().First().DataProperty,
-                C = _controls.OfType<DataSourceControl>().First().Active
-            };
             UpdateBinding();
 
             if (tb != null)
@@ -176,6 +122,7 @@ namespace vMixController.Widgets
         public vMixControlList()
         {
             Items = new ObservableCollection<string>();
+            DataSource = new Triple<string, string, bool>();
         }
 
     }

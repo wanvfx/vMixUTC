@@ -204,16 +204,12 @@ namespace vMixController.Widgets
         public override UserControl[] GetPropertiesControls()
         {
             _timer.Stop();
-            var clockSchedule = GetPropertyControl<PropertiesControls.SchedulerControl>();
-            clockSchedule.Events = this.Events; // Просто передаем коллекцию
-            return base.GetPropertiesControls().Union(new UserControl[] { clockSchedule }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
             base.SetProperties(_controls);
-            var ctrl = _controls.OfType<PropertiesControls.SchedulerControl>().First();
-            this.Events = ctrl.Events; // Получаем коллекцию обратно
             UpdateSortedEvents(); // Обновляем отсортированный список
             _timer.Start();
         }

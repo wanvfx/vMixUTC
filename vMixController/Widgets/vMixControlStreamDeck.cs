@@ -97,11 +97,20 @@ namespace vMixController.Widgets
 
 
             _connector.OnStreamDeckEvent += _connector_OnStreamDeckEvent;
-            
-            //if (device == null)
-            //   device = new vMixStreamDeckLibrary.StreamDeckAPI();
-            //device.EventReceived += Device_EventReceived;
-            //device.Dispose();
+            Learn = new Func<StreamDeckKey>(() =>
+            {
+
+                var wnd = new StreamDeckLearnWindow(_connector);
+                var result = wnd.ShowDialog();
+                if (result ?? true)
+                {
+                    var k = wnd.Key;
+                    wnd.Close();
+                    return k;
+                }
+
+                return null;
+            });
         }
 
         private void _connector_OnStreamDeckEvent(object sender, StreamDeckEvent e)
@@ -123,67 +132,16 @@ namespace vMixController.Widgets
             });
         }
 
-        [NonSerialized]
-        private RelayCommand _resetCommand;
-
-        /// <summary>
-        /// Gets the ExecuteScriptCommand.
-        /// </summary>
         [XmlIgnore]
-        public RelayCommand ResetCommand
-        {
-            get
-            {
-                return _resetCommand
-                    ?? (_resetCommand = new RelayCommand(
-                    () =>
-                    {
-                        //device.Dispose();
-                        //device = new vMixStreamDeckLibrary.StreamDeckAPI();
-                        //device.EventReceived += Device_EventReceived;
-
-                    }));
-            }
-        }
-
-        private StreamDeckKey Learn()
-        {
-
-            var wnd = new StreamDeckLearnWindow(_connector);
-            var result = wnd.ShowDialog();
-            if (result ?? true)
-            {
-                var k = wnd.Key;
-                wnd.Close();
-                return k;
-            }
-
-            return null;
-            //throw new NotImplementedException();
-        }
+        public Func<StreamDeckKey> Learn { get; set; }
 
         public override UserControl[] GetPropertiesControls()
         {
-            var midiMappingCtrl = GetPropertyControl<StreamDeckMappingControl>();
-            midiMappingCtrl.LearnFunction = Learn;
-
-
-            midiMappingCtrl.Keys.Clear();
-            foreach (var item in Keys)
-            {
-                midiMappingCtrl.Keys.Add(item);
-            }
-            return base.GetPropertiesControls().Union(new UserControl[] { midiMappingCtrl }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         public override void SetProperties(UserControl[] _controls)
         {
-            var ctrl = _controls.OfType<StreamDeckMappingControl>().First();
-            Keys.Clear();
-            foreach (var item in ctrl.Keys)
-            {
-                Keys.Add(item);
-            }
             base.SetProperties(_controls);
         }
 
@@ -204,8 +162,12 @@ namespace vMixController.Widgets
 
     }
 
-    public class StreamDeckKey : Quadriple<string, string, int, int>
+    public class StreamDeckKey : Quadriple<string, string, int, int>, ICloneable
     {
+        new public object Clone()
+        {
+            return new StreamDeckKey() { A = (string)(A?.Clone() ?? ""), B = (string)(B?.Clone() ?? ""), C = C, D = D };
+        }
 
     }
 }

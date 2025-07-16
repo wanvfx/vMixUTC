@@ -25,37 +25,32 @@ namespace vMixController.PropertiesControls
     public partial class MidiMappingControl : UserControl, INotifyPropertyChanged
     {
 
-        public Func<Widgets.MidiInterfaceKey> LearnFunction { get; set; }
+        public static readonly DependencyProperty LearnFunctionProperty =
+    DependencyProperty.Register(
+        nameof(LearnFunction),
+        typeof(Func<Widgets.MidiInterfaceKey>),
+        typeof(MidiMappingControl),
+        new PropertyMetadata(null));
 
-        /// <summary>
-        /// The <see cref="Midis" /> property's name.
-        /// </summary>
-        public const string MidisPropertyName = "Midis";
+        public Func<Widgets.MidiInterfaceKey> LearnFunction
+        {
+            get => (Func<Widgets.MidiInterfaceKey>)GetValue(LearnFunctionProperty);
+            set => SetValue(LearnFunctionProperty, value);
+        }
 
-        private ObservableCollection<Widgets.MidiInterfaceKey> _midis = new ObservableCollection<Widgets.MidiInterfaceKey>();
+        public static readonly DependencyProperty MidisProperty =
+    DependencyProperty.Register(
+        nameof(Midis),
+        typeof(ObservableCollection<Widgets.MidiInterfaceKey>),
+        typeof(MidiMappingControl),
+        new PropertyMetadata(new ObservableCollection<Widgets.MidiInterfaceKey>()));
 
-        /// <summary>
-        /// Sets and gets the Titles property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public ObservableCollection<Widgets.MidiInterfaceKey> Midis
         {
-            get
-            {
-                return _midis;
-            }
-
-            set
-            {
-                if (_midis == value)
-                {
-                    return;
-                }
-
-                _midis = value;
-                RaisePropertyChanged(MidisPropertyName);
-            }
+            get => (ObservableCollection<Widgets.MidiInterfaceKey>)GetValue(MidisProperty);
+            set => SetValue(MidisProperty, value);
         }
+
         private RelayCommand<Widgets.MidiInterfaceKey> _removePathCommand;
 
         /// <summary>

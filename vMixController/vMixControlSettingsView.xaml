@@ -30,6 +30,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml" />
+                <ResourceDictionary Source="/Skins/PropertyEditorTemplates.xaml" />
                 <!--<x:Static Member="skin:ExportResourceDictionary.Instance"/>-->
 
             </ResourceDictionary.MergedDictionaries>
@@ -245,8 +246,12 @@
                         </StackPanel>
                     </Grid>
                 </StackPanel>
-
                 <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding WidgetPropertiesControls.Length, Converter={wpfc:ObjectToStringEqualsParameterToInverseVisibilityConverter}, ConverterParameter=0, Mode=OneWay}"></pctrl:LabelControl>
+                <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
+                    <ContentPresenter.ContentTemplateSelector>
+                        <ctrl:TypeTemplateSelector Suffix="PropEditor"/>
+                    </ContentPresenter.ContentTemplateSelector>
+                </ContentPresenter>
                 <ItemsControl VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VerticalContentAlignment="Stretch" ItemsSource="{Binding WidgetPropertiesControls}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -257,9 +262,9 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Margin="2" HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="1">
-            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="{e:Localize Save Template}" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}"/>
-            <Button Margin="0,0,4,0" Command="{Binding CancelCommand}" IsCancel="True" Content="{e:Localize Cancel}"/>
-            <Button Command="{Binding OkCommand}" Content="{e:Localize Ok}" IsDefault="True"/>
+            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="{e:Localize Save Template}" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}" Click="SaveTemplateClick"/>
+            <Button Margin="0,0,4,0" Command="{Binding CancelCommand}" IsCancel="True" Content="{e:Localize Cancel}" Click="CancelClick"/>
+            <Button Command="{Binding OkCommand}" Content="{e:Localize Ok}" IsDefault="True" Click="OkClick"/>
         </StackPanel>
     </Grid>
 </Window>

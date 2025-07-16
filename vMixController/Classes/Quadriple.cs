@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using vMixController.Extensions;
 
 namespace vMixController.Classes
 {
     [Serializable]
-    public class Quadriple<T1, T2, T3, T4> : Triple<T1, T2, T3>
+    public class Quadriple<T1, T2, T3, T4> : Triple<T1, T2, T3>, ICloneable
     {
         public Quadriple()
         {
@@ -27,6 +28,11 @@ namespace vMixController.Classes
         {
             get { return (T4)GetValue(DProperty); }
             set { SetValue(DProperty, value); }
+        }
+
+        new public object Clone()
+        {
+            return new Quadriple<T1, T2, T3, T4>((T1)ObjectCopier.Copy(A), (T2)ObjectCopier.Copy(B), (T3)ObjectCopier.Copy(C), (T4)ObjectCopier.Copy(D));
         }
 
         // Using a DependencyProperty as the backing store for C.  This enables animation, styling, binding, etc...
