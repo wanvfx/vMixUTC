@@ -1,17 +1,11 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Xml.Serialization;
 using vMixController.Classes;
 using vMixController.Converters;
-using vMixController.Extensions;
 using vMixController.PropertiesControls;
 
 namespace vMixController.Widgets

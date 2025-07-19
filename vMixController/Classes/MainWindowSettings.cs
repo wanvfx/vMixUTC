@@ -637,10 +637,50 @@ namespace vMixController.Classes
             }
         }
 
+        /// <summary>
+        /// The <see cref="RecentFiles" /> property's name.
+        /// </summary>
+        public const string RecentFilesPropertyName = "RecentFiles";
+
+        private ObservableCollection<string> _recentFiles = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Sets and gets the RecentFiles property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public ObservableCollection<string> RecentFiles
+        {
+            get
+            {
+                return _recentFiles;
+            }
+
+            set
+            {
+                if (_recentFiles == value)
+                {
+                    return;
+                }
+
+                _recentFiles = value;
+                RaisePropertyChanged(RecentFilesPropertyName);
+            }
+        }
+
         public void UpdatePages()
         {
             RaisePropertyChanged(PagesPropertyName);
         }
 
+        internal void AddRecentFile(string fileName)
+        {
+            if (RecentFiles == null)
+                RecentFiles = new ObservableCollection<string>();
+            if (RecentFiles.Contains(fileName))
+                RecentFiles.Remove(fileName);
+            RecentFiles.Insert(0, fileName);
+            while (RecentFiles.Count > 5)
+                RecentFiles.RemoveAt(RecentFiles.Count - 1);
+        }
     }
 }

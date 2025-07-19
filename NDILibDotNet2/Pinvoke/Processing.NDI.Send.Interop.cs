@@ -5,7 +5,7 @@
 //
 //*************************************************************************************************************************************
 // 
-// Copyright (C) 2023 Vizrt NDI AB. All rights reserved.
+// Copyright (C) 2023-2025 Vizrt NDI AB. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
 // files(the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
@@ -107,17 +107,17 @@ namespace NewTek
 				 UnsafeNativeMethods.send_send_audio_v2_32( p_instance, ref p_audio_data);
 		}
 
-        // This will add an audio frame
-        public static void send_send_audio_v3(IntPtr p_instance, ref audio_frame_v3_t p_audio_data)
-        {
-            if (IntPtr.Size == 8)
-                UnsafeNativeMethods.send_send_audio_v3_64(p_instance, ref p_audio_data);
-            else
-                UnsafeNativeMethods.send_send_audio_v3_32(p_instance, ref p_audio_data);
-        }
+		// This will add an audio frame
+		public static void send_send_audio_v3(IntPtr p_instance, ref audio_frame_v3_t p_audio_data)
+		{
+			if (IntPtr.Size == 8)
+				UnsafeNativeMethods.send_send_audio_v3_64(p_instance, ref p_audio_data);
+			else
+				UnsafeNativeMethods.send_send_audio_v3_32(p_instance, ref p_audio_data);
+		}
 
-        // This will add a metadata frame
-        public static void send_send_metadata(IntPtr p_instance, ref metadata_frame_t p_metadata)
+		// This will add a metadata frame
+		public static void send_send_metadata(IntPtr p_instance, ref metadata_frame_t p_metadata)
 		{
 			if (IntPtr.Size == 8)
 				 UnsafeNativeMethods.send_send_metadata_64( p_instance, ref p_metadata);
@@ -238,14 +238,14 @@ namespace NewTek
 			[DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_send_send_audio_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void send_send_audio_v2_32(IntPtr p_instance, ref audio_frame_v2_t p_audio_data);
 
-            // send_send_audio_v3 
-            [DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-            internal static extern void send_send_audio_v3_64(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
-            [DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
-            internal static extern void send_send_audio_v3_32(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
+			// send_send_audio_v3 
+			[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+			internal static extern void send_send_audio_v3_64(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
+			[DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_send_send_audio_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+			internal static extern void send_send_audio_v3_32(IntPtr p_instance, ref audio_frame_v3_t p_audio_data);
 
-            // send_send_metadata 
-            [DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+			// send_send_metadata 
+			[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_send_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void send_send_metadata_64(IntPtr p_instance, ref metadata_frame_t p_metadata);
 			[DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_send_send_metadata", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void send_send_metadata_32(IntPtr p_instance, ref metadata_frame_t p_metadata);

@@ -21,7 +21,10 @@ namespace vMixController.Classes
     public static class XmlDocumentMessenger
     {
         public static bool Sync { get; set; }
-        public static string Url { get => url; set {
+        public static string Url
+        {
+            get => url; set
+            {
                 _queries = 0;
                 url = value;
             }
@@ -64,61 +67,54 @@ namespace vMixController.Classes
         {
             _stateDependentTimer = new System.Threading.Timer((obj) =>
             {
-
                 Dispatcher.CurrentDispatcher.Invoke(() =>
                 {
                     if (!Sync) return;
+
                     var t = DateTime.Now - _previousQuery;
-                    if (t.TotalMilliseconds >= (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds) && _queries < 5 && _subscribers > 0)
+                    var pollInterval = (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds);
+                    if (t.TotalMilliseconds >= pollInterval && _queries < 5 && _subscribers > 0)
                     {
                         _previousQuery = DateTime.Now;
                         _queries++;
-                        //ThreadPool.QueueUserWorkItem(x =>
+
+                        Uri uri = null;
+                        if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088/api").TrimEnd('?'), UriKind.Absolute, out uri))
                         {
-                            Uri uri = null;
-                            if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088") + "/api", UriKind.Absolute, out uri))
+                            APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), new WeakAction((response, ex) =>
                             {
-                                try
+                                Interlocked.Decrement(ref _queries);
+
+                                Dispatcher.CurrentDispatcher.Invoke(() =>
                                 {
-                                    APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), new WeakAction((response, ex) =>
+                                    if (ex != null)
+                                        return;
+
+                                    try
                                     {
-                                        Dispatcher.CurrentDispatcher.Invoke(() =>
+                                        if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
                                         {
-                                            if (ex == null)
-                                            {
-                                                try
-                                                {
-                                                    if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
-                                                    {
-                                                        XmlDocument doc = new XmlDocument();
-                                                        doc.LoadXml(response);
-                                                        _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
-                                                        _queries--;
-                                                    }
-                                                }
-                                                catch (Exception)
-                                                {
-                                                    _queries--;
-                                                }
-                                            }
-                                            _previousQuery = DateTime.Now;
-                                        });
-                                    }), credentials);
-                                }
-                                catch (Exception)
-                                {
-                                    _queries--;
-                                }
-                            }
-                        }//);
+                                            XmlDocument doc = new XmlDocument();
+                                            doc.LoadXml(response);
+                                            _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
+                                        }
+                                    }
+                                    catch (Exception)
+                                    {
 
-
+                                    }
+                                });
+                            }), credentials);
+                        }
+                        else
+                        {
+                            _queries--;
+                        }
                     }
                 });
-
             }, null, 0, 10);
         }
 
-        
+
     }
 }

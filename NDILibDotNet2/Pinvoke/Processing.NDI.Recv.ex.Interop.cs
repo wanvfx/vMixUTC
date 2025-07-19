@@ -5,7 +5,7 @@
 //
 //*************************************************************************************************************************************
 // 
-// Copyright (C) 2023 Vizrt NDI AB. All rights reserved.
+// Copyright (C) 2023-2025 Vizrt NDI AB. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
 // files(the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
@@ -97,10 +97,10 @@ namespace NewTek
 				return  UnsafeNativeMethods.recv_ptz_pan_tilt_32( p_instance,  pan_value,  tilt_value);
 		}
 
-        // Set the pan and tilt direction and speed
-        // pan_speed = -1.0 (moving right) ... 0.0 (stopped) ... +1.0 (moving left)
-        // tilt_speed = -1.0 (down) ... 0.0 (stopped) ... +1.0 (moving up)
-        public static bool recv_ptz_pan_tilt_speed(IntPtr p_instance, float pan_speed, float tilt_speed)
+		// Set the pan and tilt direction and speed
+		// pan_speed = -1.0 (moving right) ... 0.0 (stopped) ... +1.0 (moving left)
+		// tilt_speed = -1.0 (down) ... 0.0 (stopped) ... +1.0 (moving up)
+		public static bool recv_ptz_pan_tilt_speed(IntPtr p_instance, float pan_speed, float tilt_speed)
 		{
 			if (IntPtr.Size == 8)
 				return  UnsafeNativeMethods.recv_ptz_pan_tilt_speed_64( p_instance,  pan_speed,  tilt_speed);

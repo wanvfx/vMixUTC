@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
-using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets

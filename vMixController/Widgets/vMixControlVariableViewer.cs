@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using vMixController.Classes;
-using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets
 {
     public class vMixControlVariableViewer : vMixControl
     {
-
-        //public override bool IsCaptionOn { get => true; set => base.IsCaptionOn = true; }
+        public override bool IsResizeableVertical => true;
+        
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -26,6 +20,17 @@ namespace vMixController.Widgets
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(vMixControlVariableViewer), new PropertyMetadata("", InternalPropertyChanged));
+
+        public bool ShowVariableName
+        {
+            get { return (bool)GetValue(ShowVariableNameProperty); }
+            set { SetValue(ShowVariableNameProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowVariableName.  
+        // This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowVariableNameProperty =
+            DependencyProperty.Register("ShowVariableName", typeof(bool), typeof(vMixControlVariableViewer), new PropertyMetadata(true, InternalPropertyChanged));
 
         private static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

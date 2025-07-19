@@ -1,22 +1,15 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Threading;
 using vMixAPI;
 using vMixController.Classes;
 using vMixController.Converters;
-using vMixController.Extensions;
-using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets
@@ -255,9 +248,13 @@ namespace vMixController.Widgets
                     var exp = BindingOperations.GetMultiBindingExpression(d, TextProperty);
                     if (exp != null && exp.Status == BindingStatus.Active)
                         DelayedUpdate.Enqueue(new Triple<DependencyObject, DependencyProperty, DateTime>() { A = d, B = e.Property, C = DateTime.Now });
+
+                    //((vMixControlTextField)d).OnPropertyChanged(e);
                 }
                 catch (Exception) { }
             }
+
+            
         }
 
         internal virtual IMultiValueConverter ConverterSelector()

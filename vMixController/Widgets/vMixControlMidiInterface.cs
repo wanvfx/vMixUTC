@@ -1,18 +1,12 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
-using Sanford.Multimedia.Midi;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Xml.Serialization;
 using vMixController.Classes;
 using vMixController.Extensions;
-using vMixController.PropertiesControls;
 
 namespace vMixController.Widgets
 {

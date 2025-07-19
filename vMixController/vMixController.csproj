@@ -152,8 +152,8 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=9.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.9.0.6\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.9.0.7\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
@@ -294,8 +294,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="VirtualizingWrapPanel, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VirtualizingWrapPanel.2.2.1\lib\net462\VirtualizingWrapPanel.dll</HintPath>
+    <Reference Include="VirtualizingWrapPanel, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VirtualizingWrapPanel.2.3.0\lib\net462\VirtualizingWrapPanel.dll</HintPath>
     </Reference>
     <Reference Include="WatsonWebsocket, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b91cb133bf2a61f3, processorArchitecture=MSIL">
       <HintPath>..\packages\WatsonWebsocket.4.1.4\lib\net462\WatsonWebsocket.dll</HintPath>
@@ -639,6 +639,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="costura-mac-x64\Melanchall_DryWetMidi_Native64.dylib" />
     <None Include="Examples\Buttons.vmc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -669,6 +670,8 @@
     <None Include="Examples\TimerEvents.vmix">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="costura-win-x86\Melanchall_DryWetMidi_Native32.dll" />
+    <EmbeddedResource Include="costura-win-x64\Melanchall_DryWetMidi_Native64.dll" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -705,12 +708,8 @@
     <None Include="Examples\UTC Buttons\WhiteYellow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Processing.NDI.Lib.x64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Processing.NDI.Lib.x86.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="costura-win-x64\Processing.NDI.Lib.x64.dll" />
+    <EmbeddedResource Include="costura-win-x86\Processing.NDI.Lib.x86.dll" />
     <Resource Include="settings-gears %281%29.ico" />
     <Resource Include="settings-gears.ico" />
     <EmbeddedResource Include="Help.resx">

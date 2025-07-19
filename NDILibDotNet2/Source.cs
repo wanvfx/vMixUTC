@@ -36,27 +36,20 @@ namespace NewTek.NDI
             get { return _name; }
             private set
             {
+                if (_name == value)
+                    return;
+
                 _name = value;
+                _uri = null;
 
-                int parenIdx = _name.IndexOf(" (");
-
-                if (parenIdx != 0)
+                var match = Regex.Match(_name, @"^(?<device>.*?)\s+\((?<channel>.*)\)$");
+                if (match.Success)
                 {
+                    _computerName = match.Groups["device"].Value;
+                    _sourceName = match.Groups["channel"].Value;
 
-                    _computerName = _name.Substring(0, parenIdx);
-
-                    _sourceName = Regex.Match(_name, @"(?<=\().+?(?=\))").Value;
-
-                    String uriString = String.Format("ndi://{0}/{1}", _computerName, System.Net.WebUtility.UrlEncode(_sourceName));
-
-                    if (!Uri.TryCreate(uriString, UriKind.Absolute, out _uri))
-                        _uri = null;
+                    Uri.TryCreate(string.Format("ndi://{0}/{1}", _computerName, System.Net.WebUtility.UrlEncode(_sourceName)), UriKind.Absolute, out _uri);
                 }
-                else
-                {
-                    _uri = null;
-                }
-
             }
         }
 

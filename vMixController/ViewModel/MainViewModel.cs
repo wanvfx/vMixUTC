@@ -1634,11 +1634,34 @@ namespace vMixController.ViewModel
                         {
                             SaveUndo("Controller loaded");
                             LoadControllerFromFile(opendlg.FileName);
+                            WindowSettings.AddRecentFile(opendlg.FileName);
                         }
                     }));
             }
         }
 
+        private RelayCommand<string> _loadRecentControllerCommand;
+
+        /// <summary>
+        /// Gets the LoadControllerCommand.
+        /// </summary>
+        public RelayCommand<string> LoadRecentControllerCommand
+        {
+            get
+            {
+                return _loadRecentControllerCommand
+                    ?? (_loadRecentControllerCommand = new RelayCommand<string>(
+                    (path) =>
+                    {
+                        if (File.Exists(path))
+                        {
+                            SaveUndo("Controller loaded");
+                            LoadControllerFromFile(path);
+                            WindowSettings.AddRecentFile(path);
+                        }
+                    }));
+            }
+        }
 
         private RelayCommand _appendControllerCommand;
 
@@ -2894,8 +2917,10 @@ namespace vMixController.ViewModel
                         };
 
                         var forumbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "vMix Forum" };
+                        var githubbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "GitHub" };
                         var donatebtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "Donate" };
                         td.Buttons.Add(forumbtn);
+                        td.Buttons.Add(githubbtn);
                         td.Buttons.Add(donatebtn);
                         td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Close) { Default = true });
 
@@ -2903,8 +2928,9 @@ namespace vMixController.ViewModel
                         if (btn == forumbtn)
                             Process.Start(new ProcessStartInfo("https://forums.vmix.com/default.aspx?g=posts&t=6468"));
                         else if (btn == donatebtn)
-                            Process.Start(new ProcessStartInfo("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WT9QZ2XH97HMN&lc=US&item_name=vMix%20Universal%20Title%20Controller&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"));
-
+                            Process.Start(new ProcessStartInfo("https://coindrop.to/elgarf"));
+                        else if (btn == githubbtn)
+                            Process.Start(new ProcessStartInfo("https://github.com/elgarf/vMixUTC"));
 
                     }));
             }

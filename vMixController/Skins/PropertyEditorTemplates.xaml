@@ -262,7 +262,10 @@
         </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlVariableViewerPropEditor" DataType="{x:Type widget:vMixControlVariableViewer}">
-        <prop:ComboBoxControl Title="Variable" Value="{Binding Variable, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Items="{Binding VariableList}"/>
+        <StackPanel>
+            <prop:ComboBoxControl Title="Variable" Value="{Binding Variable, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Items="{Binding VariableList}"/>
+            <prop:BoolControl Title="Show Variable Name" Value="{Binding ShowVariableName, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+        </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlLabelPropEditor" DataType="{x:Type widget:vMixControlLabel}">
         <TextBlock>No Individual Properties Provided</TextBlock>

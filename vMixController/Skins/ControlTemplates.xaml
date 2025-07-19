@@ -934,9 +934,18 @@
         <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.MainContent>
-                <StackPanel Margin="{StaticResource StdMargin}">
-                    <TextBlock Style="{StaticResource CaptionText}"><Run Text="{Binding Variable}"></Run>: <Run Text="{Binding Text}"/></TextBlock>
-                </StackPanel>
+                <Grid Height="{Binding Height}" Background="{Binding Color, Converter={c:ColorToSolidBrushConverter}}">
+                    <Viewbox>
+                        <TextBlock Foreground="{Binding Color, Converter={c:ColorToBlackOrWhiteConverter}}" Style="{StaticResource CaptionText}" Margin="0"><TextBlock Visibility="{Binding ShowVariableName, Converter={wpfc:BoolToVisibilityConverter}}" Text="{Binding Variable}"></TextBlock><TextBlock Visibility="{Binding ShowVariableName, Converter={wpfc:BoolToVisibilityConverter}}">: </TextBlock><Run Text="{Binding Text}"/></TextBlock>
+                    </Viewbox>
+                    <ctrls:vMixControlResizeThumb IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Margin="0,4,0,-4"  Height="4" Cursor="SizeNS" DataContext="{Binding}" VerticalAlignment="Bottom">
+                        <ctrls:vMixControlResizeThumb.Template>
+                            <ControlTemplate TargetType="{x:Type ctrls:vMixControlResizeThumb}">
+                                <Rectangle Fill="Transparent"/>
+                            </ControlTemplate>
+                        </ctrls:vMixControlResizeThumb.Template>
+                    </ctrls:vMixControlResizeThumb>
+                </Grid>
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>
@@ -985,9 +994,9 @@
                     <Grid.Background>
                         <SolidColorBrush Color="{Binding BorderColor}"/>
                     </Grid.Background>
-                    
+
                     <TextBox IsHitTestVisible="{Binding IsEditable}" IsReadOnly="{Binding IsEditable, Converter={wpfc:BoolToInverseBoolConverter}}" IsReadOnlyCaretVisible="False" FontWeight="Normal" Margin="{StaticResource StdMargin}" Text="{Binding Text}" Foreground="{Binding BorderColor, Converter={c:ColorToBlackOrWhiteConverter}}" TextWrapping="Wrap" Background="Transparent" BorderBrush="Transparent" BorderThickness="0"/>
-                    
+
                     <ctrls:vMixControlResizeThumb IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Margin="0,4,0,-4"  Height="4" Cursor="SizeNS" DataContext="{Binding}" VerticalAlignment="Bottom">
                         <ctrls:vMixControlResizeThumb.Template>
                             <ControlTemplate TargetType="{x:Type ctrls:vMixControlResizeThumb}">
@@ -1014,7 +1023,7 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.MainContent>
                 <StackPanel>
-                <Label HorizontalAlignment="Center" Content="{Binding Context}"/>
+                    <Label HorizontalAlignment="Center" Content="{Binding Context}"/>
                     <!--<Button Command="{Binding ResetCommand}">Reset</Button>-->
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.MainContent>

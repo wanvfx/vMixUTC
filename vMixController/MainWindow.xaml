@@ -271,12 +271,25 @@
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Command="{Binding LoadControllerCommand}" Header="{e:Localize Open}">
+                <MenuItem Command="{Binding LoadControllerCommand}" Header="{e:Localize Open}" ItemsSource="{Binding WindowSettings.RecentFiles}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}">
+                            <Setter Property="Command" Value="{Binding Main.LoadRecentControllerCommand, Source={StaticResource Locator}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                            <Setter Property="Icon">
+                                <Setter.Value>
+                                    <Border Width="16" Height="16">
+                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF15B;</TextBlock>
+                                    </Border>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
                 </MenuItem>
 
                 <MenuItem Command="{Binding AppendControllerCommand}" Header="{e:Localize Append}">

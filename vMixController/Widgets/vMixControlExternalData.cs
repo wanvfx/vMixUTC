@@ -5,17 +5,13 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
-using vMixController.Extensions;
-using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 using vMixControllerDataProvider;
 

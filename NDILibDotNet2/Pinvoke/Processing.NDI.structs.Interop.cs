@@ -5,7 +5,7 @@
 //
 //*************************************************************************************************************************************
 // 
-// Copyright (C) 2023 Vizrt NDI AB. All rights reserved.
+// Copyright (C) 2023-2025 Vizrt NDI AB. All rights reserved.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
 // files(the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, 
@@ -42,18 +42,25 @@ namespace NewTek
 			// For instamce, this value will be returned from NDIlib_recv_capture_v2 and NDIlib_recv_capture
 			// when the device is known to have new settings, for instance the web-url has changed ot the device
 			// is now known to be a PTZ camera.
-			frame_type_status_change = 100
-		}
+			frame_type_status_change = 100,
+
+            // This indicates that the source has changed. This value will be returned from one of the
+            // NDIlib_recv_capture functions when the source that the receiver is connected to has changed.
+			frame_type_source_change = 101,
+
+            // Make sure this is a 32-bit enumeration.
+            frame_type_max = 0x7fffffff
+        }
 
 		public enum FourCC_type_e
 		{
 			// YCbCr color space
 			FourCC_type_UYVY = 0x59565955,
 
-            // 4:2:0 formats
-            NDIlib_FourCC_video_type_YV12 = 0x32315659,
-            NDIlib_FourCC_video_type_NV12 = 0x3231564E,
-            NDIlib_FourCC_video_type_I420 = 0x30323449,
+			// 4:2:0 formats
+			NDIlib_FourCC_video_type_YV12 = 0x32315659,
+			NDIlib_FourCC_video_type_NV12 = 0x3231564E,
+			NDIlib_FourCC_video_type_I420 = 0x30323449,
 
 			// BGRA
 			FourCC_type_BGRA = 0x41524742,
@@ -62,6 +69,10 @@ namespace NewTek
 			// RGBA
 			FourCC_type_RGBA = 0x41424752,
 			FourCC_type_RGBX = 0x58424752,
+
+			// P216/PA16
+			FourCC_type_P216 = 0x36313250,
+			FourCC_type_PA16 = 0x36314150,
 
 			// This is a UYVY buffer followed immediately by an alpha channel buffer.
 			// If the stride of the YCbCr component is "stride", then the alpha channel
@@ -83,19 +94,19 @@ namespace NewTek
 			frame_format_type_field_1 = 3
 		}
 
-        // FourCC values for audio frames
-        public enum FourCC_audio_type_e
-        {
-            // Planar 32-bit floating point. Be sure to specify the channel stride.
-            FourCC_audio_type_FLTP = 0x70544c46,
-            FourCC_type_FLTP = FourCC_audio_type_FLTP,
+		// FourCC values for audio frames
+		public enum FourCC_audio_type_e
+		{
+			// Planar 32-bit floating point. Be sure to specify the channel stride.
+			FourCC_audio_type_FLTP = 0x70544c46,
+			FourCC_type_FLTP = FourCC_audio_type_FLTP,
 
-            // Ensure that the size is 32bits
-            FourCC_audio_type_max = 0x7fffffff
-        }
+			// Ensure that the size is 32bits
+			FourCC_audio_type_max = 0x7fffffff
+		}
 
-        // This is a descriptor of a NDI source available on the network.
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+		// This is a descriptor of a NDI source available on the network.
+		[StructLayoutAttribute(LayoutKind.Sequential)]
 		public struct source_t
 		{
 			// A UTF8 string that provides a user readable name for this source.
@@ -106,11 +117,11 @@ namespace NewTek
 			// specific ip addres adn port number from below is used.
 			public IntPtr	p_ndi_name;
 
-            // A UTF8 string that provides the actual network address and any parameters. 
-            // This is not meant to be application readable and might well change in the future.
-            // This can be nullptr if you do not know it and the API internally will instantiate
-            // a finder that is used to discover it even if it is not yet available on the network.
-            public IntPtr p_url_address;
+			// A UTF8 string that provides the actual network address and any parameters. 
+			// This is not meant to be application readable and might well change in the future.
+			// This can be nullptr if you do not know it and the API internally will instantiate
+			// a finder that is used to discover it even if it is not yet available on the network.
+			public IntPtr p_url_address;
 		}
 
 		// This describes a video frame
@@ -186,46 +197,46 @@ namespace NewTek
 			public Int64	timestamp;
 		}
 
-        // This describes an audio frame
-        [StructLayoutAttribute(LayoutKind.Sequential)]
-        public struct audio_frame_v3_t
-        {
-            // The sample-rate of this buffer
-            public int sample_rate;
+		// This describes an audio frame
+		[StructLayoutAttribute(LayoutKind.Sequential)]
+		public struct audio_frame_v3_t
+		{
+			// The sample-rate of this buffer
+			public int sample_rate;
 
-            // The number of audio channels
-            public int no_channels;
+			// The number of audio channels
+			public int no_channels;
 
-            // The number of audio samples per channel
-            public int no_samples;
+			// The number of audio samples per channel
+			public int no_samples;
 
-            // The timecode of this frame in 100ns intervals
-            public Int64 timecode;
+			// The timecode of this frame in 100ns intervals
+			public Int64 timecode;
 
-            // What FourCC describing the type of data for this frame
-            FourCC_audio_type_e FourCC;
+			// What FourCC describing the type of data for this frame
+			FourCC_audio_type_e FourCC;
 
-            // The audio data
-            public IntPtr p_data;
+			// The audio data
+			public IntPtr p_data;
 
-            // If the FourCC is not a compressed type and the audio format is planar,
-            // then this will be the stride in bytes for a single channel.
-            // If the FourCC is a compressed type, then this will be the size of the
-            // p_data buffer in bytes.
-            public int channel_stride_in_bytes;
+			// If the FourCC is not a compressed type and the audio format is planar,
+			// then this will be the stride in bytes for a single channel.
+			// If the FourCC is a compressed type, then this will be the size of the
+			// p_data buffer in bytes.
+			public int channel_stride_in_bytes;
 
-            // Per frame metadata for this frame. This is a NULL terminated UTF8 string that should be
-            // in XML format. If you do not want any metadata then you may specify NULL here.
-            public IntPtr p_metadata;
+			// Per frame metadata for this frame. This is a NULL terminated UTF8 string that should be
+			// in XML format. If you do not want any metadata then you may specify NULL here.
+			public IntPtr p_metadata;
 
-            // This is only valid when receiving a frame and is specified as a 100ns time that was the exact
-            // moment that the frame was submitted by the sending side and is generated by the SDK. If this
-            // value is NDIlib_recv_timestamp_undefined then this value is not available and is NDIlib_recv_timestamp_undefined.
-            public Int64 timestamp;
-        }
+			// This is only valid when receiving a frame and is specified as a 100ns time that was the exact
+			// moment that the frame was submitted by the sending side and is generated by the SDK. If this
+			// value is NDIlib_recv_timestamp_undefined then this value is not available and is NDIlib_recv_timestamp_undefined.
+			public Int64 timestamp;
+		}
 
-        // The data description for metadata
-        [StructLayoutAttribute(LayoutKind.Sequential)]
+		// The data description for metadata
+		[StructLayoutAttribute(LayoutKind.Sequential)]
 		public struct metadata_frame_t
 		{
 			// The length of the string in UTF8 characters. This includes the NULL terminating character.
@@ -278,7 +289,7 @@ namespace NewTek
 		// last ones known and the time since it was sent.
 		//
 		public static Int64 send_timecode_synthesize =  Int64.MaxValue;
-        
+		
 		// If the time-stamp is not available (i.e. a version of a sender before v2.5)
 		public static Int64 recv_timestamp_undefined =  Int64.MaxValue;
 

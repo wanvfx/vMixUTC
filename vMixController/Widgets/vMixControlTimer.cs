@@ -1,19 +1,16 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixController.Classes;
 using System.Windows.Controls;
-using vMixController.PropertiesControls;
 using vMixController.ViewModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using GalaSoft.MvvmLight.Messaging;
 using HighPrecisionTimer;
+using System.Windows;
 
 namespace vMixController.Widgets
 {
@@ -21,7 +18,7 @@ namespace vMixController.Widgets
     {
         static long _workingTimers = 0;
         static Stopwatch _stopwatch = new Stopwatch();
-        static TimeSpan _second = TimeSpan.FromSeconds(1/10f);
+        static TimeSpan _second = TimeSpan.FromSeconds(1 / 10f);
         static double _tickSecond = 0;
 
         public static long WorkingTimers
@@ -65,7 +62,7 @@ namespace vMixController.Widgets
                 Messenger.Default.Send(TimeSpan.FromMilliseconds(_tickSecond));
                 _tickSecond = 0;
             }
-            
+
             //Debug.WriteLine(_stopwatch.Elapsed);
             _stopwatch.Restart();
         }
@@ -73,6 +70,7 @@ namespace vMixController.Widgets
     [Serializable]
     public class vMixControlTimer : vMixControlTextField
     {
+        bool _changingTime = false;
         public override string Type
         {
             get
@@ -160,6 +158,8 @@ namespace vMixController.Widgets
             if (!string.IsNullOrWhiteSpace(Links[4]))
                 Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[4], null));
         }
+
+
 
         private void UpdateTimer()
         {
@@ -388,6 +388,8 @@ namespace vMixController.Widgets
             }
         }
 
+
+
         /// <summary>
         /// The <see cref="Time" /> property's name.
         /// </summary>
@@ -425,10 +427,12 @@ namespace vMixController.Widgets
                         t[0] = string.Format("{0:00}", _time.Hours * 60 + _time.Minutes);
                         _text = t.Aggregate((a, b) => a + ":" + b);
                     }
+                    _changingTime = true;
                     if (SplitText)
                         Text = _text.Select(x => x.ToString()).Aggregate((x, y) => x + "|" + y);
                     else
                         Text = _text;
+                    _changingTime = false;
                 }
                 catch (Exception)
                 {
@@ -436,6 +440,26 @@ namespace vMixController.Widgets
                 }
 
                 RaisePropertyChanged(TimePropertyName);
+            }
+        }
+
+        //Timer recovering
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.Property == TextProperty)
+            {
+                if (!_changingTime)
+                {
+                    TimeSpan parsed = TimeSpan.Zero;
+                    if (TimeSpan.TryParse((string)e.NewValue, out parsed))
+                    {
+                        _time = parsed;
+                        RaisePropertyChanged(TimePropertyName);
+                        if (_time != TimeSpan.Zero)
+                            Paused = true;
+                    }
+                }
             }
         }
 

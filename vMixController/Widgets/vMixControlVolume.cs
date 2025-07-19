@@ -2,28 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using vMixController.Classes;
 using System.Windows.Controls;
-using vMixController.PropertiesControls;
-using vMixController.Extensions;
 using vMixAPI;
-using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Threading;
-using System.Net;
-using System.Diagnostics;
-using System.IO;
 using System.Xml;
-using vMixController.Converters;
-using Microsoft.VisualBasic.Devices;
-using System.Timers;
-using vMixController.ViewModel;
-using System.Threading;
-using GalaSoft.MvvmLight.Messaging;
 using System.Globalization;
 
 namespace vMixController.Widgets
@@ -98,35 +83,6 @@ namespace vMixController.Widgets
             _updating = false;
         }
 
-        /*private void _meterTimer_Tick(object sender, EventArgs e)
-        {
-            if (_instances == 0) return;
-            var t = DateTime.Now - _previousQuery;
-            if ((t.TotalMilliseconds >= (ShowMeters ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds)) && !_querying)
-            {
-                _previousQuery = DateTime.Now;
-                
-                _querying = true;
-                WebClient _webClient = new vMixWebClient();
-                _webClient.DownloadStringAsync(new Uri((CommonServiceLocator.ServiceLocator.Current.GetInstance<MainViewModel>().Model?.GetUrl() ?? "http://127.0.0.1:8088") + "/api"));
-                _webClient.DownloadStringCompleted += Client_DownloadStringCompleted;
-            }
-        }
-
-        private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            
-            if (e.Error == null)
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(e.Result);
-                Messenger.Default.Send(new DocumentMessage() { Document = doc, Type = MessageType.Volume, Timestamp = DateTime.Now });
-                _querying = false;
-            }
-            _previousQuery = DateTime.Now;
-            ((WebClient)sender).Dispose();
-        }*/
-
         [NonSerialized]
         private RelayCommand<object> _updateBusses;
 
@@ -189,17 +145,10 @@ namespace vMixController.Widgets
 
         protected override void Dispose(bool managed)
         {
-
             base.Dispose(managed);
-            /*if (_meterTimer != null)
-                _meterTimer.Tick -= _meterTimer_Tick;
-            //if (_meterState != null)
-            Messenger.Default.Unregister(this);*/
             XmlDocumentMessenger.OnDocumentDownloaded -= XmlDocumentMessenger_OnDocumentDownloaded;
             XmlDocumentMessenger.Rate--;
             _instances--;
-            //_meterState.OnStateCreated -= _meterState_OnStateCreated;
-
         }
 
         public override void Dispose()
@@ -534,61 +483,6 @@ namespace vMixController.Widgets
         internal override void UpdateText(IList<Pair<string, string>> _paths)
         {
 
-            /*if (!_updating)
-            {
-                _updating = true;
-
-                //BindingOperations.ClearBinding(this, ValueProperty);
-
-                //update text
-                if (State != null)
-                //foreach (var item in _paths)
-                {
-                    object input = null;
-                    switch (Target)
-                    {
-                        case "Input": input = GetValueByPath(State, string.Format("Inputs[{0}]", InputKey)); break;
-                        case "Master": input = GetValueByPath(State, string.Format("Audio[Master]", InputKey)); break;
-                        case "Bus A": input = GetValueByPath(State, string.Format("Audio[BusA]", InputKey)); break;
-                        case "Bus B": input = GetValueByPath(State, string.Format("Audio[BusB]", InputKey)); break;
-                        case "Bus C": input = GetValueByPath(State, string.Format("Audio[BusC]", InputKey)); break;
-                        case "Bus D": input = GetValueByPath(State, string.Format("Audio[BusD]", InputKey)); break;
-                        case "Bus E": input = GetValueByPath(State, string.Format("Audio[BusE]", InputKey)); break;
-                        case "Bus F": input = GetValueByPath(State, string.Format("Audio[BusF]", InputKey)); break;
-                        case "Bus G": input = GetValueByPath(State, string.Format("Audio[BusG]", InputKey)); break;
-                    }
-                    if (input != null)
-                    {
-                        Binding b = new Binding("Volume")
-                        {
-                            Source = input,
-                            Mode = BindingMode.TwoWay,
-                            UpdateSourceTrigger = UpdateSourceTrigger.Default
-                        };
-                        BindingOperations.SetBinding(this, ValueProperty, b);
-
-                        if (input is Input)
-                        {
-                            Binding b1 = new Binding("Audiobusses")
-                            {
-                                Source = input,
-                                Mode = BindingMode.TwoWay,
-                                UpdateSourceTrigger = UpdateSourceTrigger.Default
-                            };
-                            BindingOperations.SetBinding(this, AudioBussesProperty, b1);
-                        }
-
-                        Binding b2 = new Binding("Muted")
-                        {
-                            Source = input,
-                            Mode = BindingMode.TwoWay,
-                            UpdateSourceTrigger = UpdateSourceTrigger.Default
-                        };
-                        BindingOperations.SetBinding(this, IsMutedProperty, b2);
-                    }
-                }
-                _updating = false;
-            }*/
         }
 
 
