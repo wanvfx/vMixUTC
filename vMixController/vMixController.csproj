@@ -816,6 +816,10 @@
   <Import Project="..\packages\Melanchall.DryWetMidi.8.0.1\build\Melanchall.DryWetMidi.targets" Condition="Exists('..\packages\Melanchall.DryWetMidi.8.0.1\build\Melanchall.DryWetMidi.targets')" />
   <Import Project="..\packages\NLog.Schema.6.0.1\build\NLog.Schema.targets" Condition="Exists('..\packages\NLog.Schema.6.0.1\build\NLog.Schema.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>del $(TargetDir)Melanchall*.dll
+del $(TargetDir)Melanchall*.dylib</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
