@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using vMixController.Classes;
 
 namespace vMixController.PropertiesControls
@@ -29,9 +17,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(SourcesProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Sources.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SourcesProperty =
-            DependencyProperty.Register("Sources", typeof(ObservableCollection<string>), typeof(DataSourceControl), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Sources), typeof(ObservableCollection<string>), typeof(DataSourceControl), new PropertyMetadata(null));
 
         public ObservableCollection<string> Properties
         {
@@ -39,11 +26,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(PropertiesProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Sources.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PropertiesProperty =
-            DependencyProperty.Register("Properties", typeof(ObservableCollection<string>), typeof(DataSourceControl), new PropertyMetadata(null));
-
-
+            DependencyProperty.Register(nameof(Properties), typeof(ObservableCollection<string>), typeof(DataSourceControl), new PropertyMetadata(null));
 
         public string DataSource
         {
@@ -51,12 +35,9 @@ namespace vMixController.PropertiesControls
             set { SetValue(DataSourceProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for DataSource.  This enables animation, styling, binding, etc...
+        
         public static readonly DependencyProperty DataSourceProperty =
-            DependencyProperty.Register("DataSource", typeof(string), typeof(DataSourceControl), new PropertyMetadata(""));
-
-
-
+            DependencyProperty.Register(nameof(DataSource), typeof(string), typeof(DataSourceControl), new PropertyMetadata(""));
 
         public string DataProperty
         {
@@ -64,11 +45,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(DataPropertyProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for DataProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataPropertyProperty =
-            DependencyProperty.Register("DataProperty", typeof(string), typeof(DataSourceControl), new PropertyMetadata(""));
-
-
+            DependencyProperty.Register(nameof(DataProperty), typeof(string), typeof(DataSourceControl), new PropertyMetadata(""));
 
 
         public bool Active
@@ -77,10 +55,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(ActiveProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Active.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ActiveProperty =
-            DependencyProperty.Register("Active", typeof(bool), typeof(DataSourceControl), new PropertyMetadata(false));
-
+            DependencyProperty.Register(nameof(Active), typeof(bool), typeof(DataSourceControl), new PropertyMetadata(false));
 
 
         public void Update()

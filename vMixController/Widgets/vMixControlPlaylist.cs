@@ -19,11 +19,6 @@ namespace vMixController.Widgets
 
         public override string Type => "Playlist";
 
-        /// <summary>
-        /// The <see cref="Items" /> property's name.
-        /// </summary>
-        public const string ItemsPropertyName = "Items";
-
         private ObservableCollection<string> _items = new ObservableCollection<string>();
 
         /// <summary>
@@ -45,14 +40,9 @@ namespace vMixController.Widgets
                 }
 
                 _items = value;
-                RaisePropertyChanged(ItemsPropertyName);
+                RaisePropertyChanged(nameof(Items));
             }
         }
-
-        /// <summary>
-        /// The <see cref="SelectedIndex" /> property's name.
-        /// </summary>
-        public const string SelectedIndexPropertyName = "SelectedIndex";
 
         private int _selectedIndex = 0;
 
@@ -83,14 +73,9 @@ namespace vMixController.Widgets
                         "Input", InputKey);
                 }
                 _selectedIndex = value;
-                RaisePropertyChanged(SelectedIndexPropertyName);
+                RaisePropertyChanged(nameof(SelectedIndex));
             }
         }
-
-        /// <summary>
-        /// The <see cref="InputKey" /> property's name.
-        /// </summary>
-        public const string InputKeyPropertyName = "InputKey";
 
         private string _inputKey = "";
 
@@ -113,7 +98,7 @@ namespace vMixController.Widgets
                 }
 
                 _inputKey = value;
-                RaisePropertyChanged(InputKeyPropertyName);
+                RaisePropertyChanged(nameof(InputKey));
             }
         }
 
@@ -175,8 +160,8 @@ namespace vMixController.Widgets
                     }
 
                     //_updating = false;
-                    RaisePropertyChanged(ItemsPropertyName);
-                    RaisePropertyChanged(SelectedIndexPropertyName);
+                    RaisePropertyChanged(nameof(Items));
+                    RaisePropertyChanged(nameof(SelectedIndex));
                 }
                 else
                     Items.Clear();

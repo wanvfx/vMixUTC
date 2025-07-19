@@ -21,12 +21,7 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="Style" /> property's name.
-        /// </summary>
-        public const string StylePropertyName = "Style";
-
-        private string _style = "Basic";//Basic, Basketball, American Football
+        private string _style = Constants.SCORE_BASIC;//"Basic";//Basic, Basketball, American Football
 
         /// <summary>
         /// Sets and gets the Style property.
@@ -47,15 +42,9 @@ namespace vMixController.Widgets
                 }
 
                 _style = value;
-                RaisePropertyChanged(StylePropertyName);
+                RaisePropertyChanged(nameof(Style));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="EnabledButtons" /> property's name.
-        /// </summary>
-        public const string EnabledButtonsPropertyName = "EnabledButtons";
 
         private byte _enabledButtons = 1;
 
@@ -78,7 +67,7 @@ namespace vMixController.Widgets
                 }
 
                 _enabledButtons = value;
-                RaisePropertyChanged(EnabledButtonsPropertyName);
+                RaisePropertyChanged(nameof(EnabledButtons));
             }
         }
 
@@ -91,7 +80,7 @@ namespace vMixController.Widgets
             DependencyProperty.Register(
                 nameof(FormatString),
                 typeof(string),
-                typeof(StringControl), // <-- ЗАМЕНИТЕ MyUserControl НА ИМЯ ВАШЕГО КЛАССА
+                typeof(StringControl),
                 new PropertyMetadata("0")); // "0" - это значение по умолчанию
 
         /// <summary>
@@ -184,11 +173,6 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="Value" /> property's name.
-        /// </summary>
-        public const string ValuePropertyName = "Value";
-
         private int _value = 0;
 
         /// <summary>
@@ -210,7 +194,7 @@ namespace vMixController.Widgets
                 }
                 Text = value.ToString(FormatString);
                 _value = value;
-                RaisePropertyChanged(ValuePropertyName);
+                RaisePropertyChanged(nameof(Value));
             }
         }
 
@@ -273,7 +257,7 @@ namespace vMixController.Widgets
         {
             int.TryParse(Text, out int val);
             _value = val;
-            RaisePropertyChanged("Value");
+            RaisePropertyChanged(nameof(Value));
             base.OnStateSynced();
         }
 

@@ -42,11 +42,6 @@ namespace vMixController.ViewModel
             new Triple<Color, Color, string>(Color.FromRgb(255, 215, 0), Color.FromRgb(255, 255, 0), "Yellow")
         };
 
-        /// <summary>
-        /// The <see cref="WindowProperties" /> property's name.
-        /// </summary>
-        public const string WindowPropertiesPropertyName = "WindowProperties";
-
         private Quadriple<double?, double?, double?, double?> _windowProperties = new Quadriple<double?, double?, double?, double?>() { A = 512, B = 512, C = 0, D = 0 };
 
         /// <summary>
@@ -68,14 +63,9 @@ namespace vMixController.ViewModel
                 }
 
                 _windowProperties = value;
-                RaisePropertyChanged(WindowPropertiesPropertyName);
+                RaisePropertyChanged(nameof(WindowProperties));
             }
         }
-
-        /// <summary>
-        /// The <see cref="PeriodVisibility" /> property's name.
-        /// </summary>
-        public const string PeriodVisibilityPropertyName = "PeriodVisibility";
 
         private Visibility _periodVisibility = Visibility.Visible;
 
@@ -98,14 +88,9 @@ namespace vMixController.ViewModel
                 }
 
                 _periodVisibility = value;
-                RaisePropertyChanged(PeriodVisibilityPropertyName);
+                RaisePropertyChanged(nameof(PeriodVisibility));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Model" /> property's name.
-        /// </summary>
-        public const string ModelPropertyName = "Model";
 
         private vMixAPI.State _model = null;
 
@@ -128,14 +113,9 @@ namespace vMixController.ViewModel
                 }
 
                 _model = value;
-                RaisePropertyChanged(ModelPropertyName);
+                RaisePropertyChanged(nameof(Model));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Name" /> property's name.
-        /// </summary>
-        public const string NamePropertyName = "Name";
 
         private string _name = "";
 
@@ -158,14 +138,9 @@ namespace vMixController.ViewModel
                 }
 
                 _name = value;
-                RaisePropertyChanged(NamePropertyName);
+                RaisePropertyChanged(nameof(Name));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Color" /> property's name.
-        /// </summary>
-        public const string ColorPropertyName = "Color";
 
         private Color _color = Colors[0].A;
 
@@ -188,14 +163,9 @@ namespace vMixController.ViewModel
                 }
 
                 _color = value;
-                RaisePropertyChanged(ColorPropertyName);
+                RaisePropertyChanged(nameof(Color));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Hotkey" /> property's name.
-        /// </summary>
-        public const string HotkeyPropertyName = "Hotkey";
 
         private ObservableCollection<Hotkey> _hotkey = new ObservableCollection<Classes.Hotkey>();
 
@@ -218,14 +188,9 @@ namespace vMixController.ViewModel
                 }
 
                 _hotkey = value;
-                RaisePropertyChanged(HotkeyPropertyName);
+                RaisePropertyChanged(nameof(Hotkey));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsHotkeysVisible" /> property's name.
-        /// </summary>
-        public const string IsHotkeysVisiblePropertyName = "IsHotkeysVisible";
 
         private bool _isHotkeysVisible = true;
 
@@ -248,14 +213,9 @@ namespace vMixController.ViewModel
                 }
 
                 _isHotkeysVisible = value;
-                RaisePropertyChanged(IsHotkeysVisiblePropertyName);
+                RaisePropertyChanged(nameof(IsHotkeysVisible));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Period" /> property's name.
-        /// </summary>
-        public const string PeriodPropertyName = "Period";
 
         private int _period = 0;
 
@@ -278,15 +238,9 @@ namespace vMixController.ViewModel
                 }
 
                 _period = value;
-                RaisePropertyChanged(PeriodPropertyName);
+                RaisePropertyChanged(nameof(Period));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="WidgetPropertiesControls" /> property's name.
-        /// </summary>
-        public const string WidgetPropertiesControlsPropertyName = "WidgetPropertiesControls";
 
         private UserControl[] _widgetPropertiesControls = null;
 
@@ -309,15 +263,9 @@ namespace vMixController.ViewModel
                 }
 
                 _widgetPropertiesControls = value;
-                RaisePropertyChanged(WidgetPropertiesControlsPropertyName);
+                RaisePropertyChanged(nameof(WidgetPropertiesControls));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="Type" /> property's name.
-        /// </summary>
-        public const string TypePropertyName = "Type";
 
         private string _type = "";
 
@@ -340,14 +288,9 @@ namespace vMixController.ViewModel
                 }
 
                 _type = value;
-                RaisePropertyChanged(TypePropertyName);
+                RaisePropertyChanged(nameof(Type));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Widget" /> property's name.
-        /// </summary>
-        public const string WidgetPropertyName = "Widget";
 
         private vMixControl _widget = null;
 
@@ -370,7 +313,7 @@ namespace vMixController.ViewModel
                 }
 
                 _widget = value;
-                RaisePropertyChanged(WidgetPropertyName);
+                RaisePropertyChanged(nameof(Widget));
             }
         }
 
@@ -467,7 +410,7 @@ namespace vMixController.ViewModel
             PeriodVisibility = p is IvMixAutoUpdateWidget ? Visibility.Visible : Visibility.Collapsed;
 
             WidgetPropertiesControls = p.GetPropertiesControls();
-            
+
         }
 
         private RelayCommand _closingCommand;
@@ -528,7 +471,7 @@ namespace vMixController.ViewModel
             }
             else
             {
-                
+
                 list = new List<Triple<Color, Color, string>>()
                 {
                     new Triple<Color, Color, string>(Color.FromRgb(255, 255, 255), Color.FromRgb(255, 255, 255), "White")

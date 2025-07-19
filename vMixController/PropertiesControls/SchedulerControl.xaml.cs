@@ -29,9 +29,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _removePathCommand;
 
-        /// <summary>
-        /// Gets the RemoveControlCommand.
-        /// </summary>
         public RelayCommand<ScheduledEvent> RemovePathCommand
         {
             get
@@ -47,9 +44,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkM;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckM
         {
             get
@@ -65,9 +59,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkT;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckT
         {
             get
@@ -83,9 +74,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkW;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckW
         {
             get
@@ -101,9 +89,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkTH;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckTH
         {
             get
@@ -119,9 +104,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkF;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckF
         {
             get
@@ -137,9 +119,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkS;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckS
         {
             get
@@ -155,9 +134,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<ScheduledEvent> _checkSU;
 
-        /// <summary>
-        /// Gets the CheckM.
-        /// </summary>
         public RelayCommand<ScheduledEvent> CheckSU
         {
             get
@@ -176,13 +152,9 @@ namespace vMixController.PropertiesControls
         public event PropertyChangedEventHandler PropertyChanged;
         internal void RaisePropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        /// <summary>
-        /// Gets the AddPathCommand.
-        /// </summary>
         public RelayCommand AddPathCommand
         {
             get
@@ -200,7 +172,6 @@ namespace vMixController.PropertiesControls
         public SchedulerControl()
         {
             InitializeComponent();
-            //DataContext = this;
         }
     }
 }

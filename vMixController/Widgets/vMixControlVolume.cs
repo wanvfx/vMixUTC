@@ -168,11 +168,6 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="Style" /> property's name.
-        /// </summary>
-        public const string StylePropertyName = "Style";
-
         private string _style = "Horizontal";//Basic, Basketball, American Football
 
         /// <summary>
@@ -194,14 +189,9 @@ namespace vMixController.Widgets
                 }
 
                 _style = value;
-                RaisePropertyChanged(StylePropertyName);
+                RaisePropertyChanged(nameof(Style));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ShowMeters" /> property's name.
-        /// </summary>
-        public const string ShowMetersPropertyName = "ShowMeters";
 
         private bool _showMeters = false;
 
@@ -229,14 +219,9 @@ namespace vMixController.Widgets
                     F1 = 0;
                     F2 = 0;
                 }
-                RaisePropertyChanged(ShowMetersPropertyName);
+                RaisePropertyChanged(nameof(ShowMeters));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ShowSlider" /> property's name.
-        /// </summary>
-        public const string ShowSliderPropertyName = "ShowSlider";
 
         private bool _showSlider = true;
 
@@ -259,14 +244,9 @@ namespace vMixController.Widgets
                 }
 
                 _showSlider = value;
-                RaisePropertyChanged(ShowSliderPropertyName);
+                RaisePropertyChanged(nameof(ShowSlider));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Target" /> property's name.
-        /// </summary>
-        public const string TargetPropertyName = "Target";
 
         private string _target = "Master";
 
@@ -289,14 +269,9 @@ namespace vMixController.Widgets
                 }
 
                 _target = value;
-                RaisePropertyChanged(TargetPropertyName);
+                RaisePropertyChanged(nameof(Target));
             }
         }
-
-        /// <summary>
-        /// The <see cref="InputKey" /> property's name.
-        /// </summary>
-        public const string InputKeyPropertyName = "InputKey";
 
         private string _inputKey = "";
 
@@ -319,7 +294,7 @@ namespace vMixController.Widgets
                 }
 
                 _inputKey = value;
-                RaisePropertyChanged(InputKeyPropertyName);
+                RaisePropertyChanged(nameof(InputKey));
             }
         }
 
@@ -327,7 +302,7 @@ namespace vMixController.Widgets
         {
             if (!((vMixControlTextField)d).IsLive)
                 return;
-            if (e.Property.Name == "Value" && !((vMixControlVolume)d)._disposing)
+            if (e.Property.Name == nameof(Value) && !((vMixControlVolume)d)._disposing)
             {
                 try
                 {
@@ -399,7 +374,7 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
+            DependencyProperty.Register(nameof(Value), typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
 
         public double Value
         {
@@ -410,7 +385,7 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty F1Property =
-            DependencyProperty.Register("F1", typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
+            DependencyProperty.Register(nameof(F1), typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
 
         public double F1
         {
@@ -421,7 +396,7 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty F2Property =
-            DependencyProperty.Register("F2", typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
+            DependencyProperty.Register(nameof(F2), typeof(double), typeof(vMixControlVolume), new PropertyMetadata(default(double), InternalSliderPropertyChanged));
 
         public double F2
         {
@@ -439,7 +414,7 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for AudioBusses.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AudioBussesProperty =
-            DependencyProperty.Register("AudioBusses", typeof(string), typeof(vMixControlVolume), new PropertyMetadata("M"));
+            DependencyProperty.Register(nameof(AudioBusses), typeof(string), typeof(vMixControlVolume), new PropertyMetadata("M"));
 
 
 
@@ -451,7 +426,7 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for IsMuted.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsMutedProperty =
-            DependencyProperty.Register("IsMuted", typeof(bool), typeof(vMixControlVolume), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsMuted), typeof(bool), typeof(vMixControlVolume), new PropertyMetadata(false));
 
         public List<Input> Inputs { get => State?.Inputs; }
 

@@ -12,11 +12,6 @@ namespace vMixController.Widgets
     [Serializable]
     public class vMixControlButtonCommand : ObservableObject, ICloneable
     {
-        /// <summary>
-        /// The <see cref="Action" /> property's name.
-        /// </summary>
-        public const string ActionPropertyName = "Action";
-
         private vMixFunctionReference _action = null;
 
         /// <summary>
@@ -38,14 +33,9 @@ namespace vMixController.Widgets
                 }
 
                 _action = value;
-                RaisePropertyChanged(ActionPropertyName);
+                RaisePropertyChanged(nameof(Action));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Parameter" /> property's name.
-        /// </summary>
-        public const string ParameterPropertyName = "Parameter";
 
         private string _parameter = "-1";
 
@@ -68,14 +58,9 @@ namespace vMixController.Widgets
                 }
 
                 _parameter = value;
-                RaisePropertyChanged(ParameterPropertyName);
+                RaisePropertyChanged(nameof(Parameter));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Input" /> property's name.
-        /// </summary>
-        public const string InputPropertyName = "Input";
 
         private int _input = -1;
 
@@ -98,14 +83,9 @@ namespace vMixController.Widgets
                 }
 
                 _input = value;
-                RaisePropertyChanged(InputPropertyName);
+                RaisePropertyChanged(nameof(Input));
             }
         }
-
-        /// <summary>
-        /// The <see cref="InputKey" /> property's name.
-        /// </summary>
-        public const string InputKeyPropertyName = "InputKey";
 
         private string _inputKey = null;
 
@@ -128,14 +108,9 @@ namespace vMixController.Widgets
                 }
 
                 _inputKey = value;
-                RaisePropertyChanged(InputKeyPropertyName);
+                RaisePropertyChanged(nameof(InputKey));
             }
         }
-
-        /// <summary>
-        /// The <see cref="StringParameter" /> property's name.
-        /// </summary>
-        public const string StringParameterPropertyName = "StringParameter";
 
         private string _stringParameter = "";
 
@@ -158,15 +133,9 @@ namespace vMixController.Widgets
                 }
 
                 _stringParameter = value;
-                RaisePropertyChanged(StringParameterPropertyName);
+                RaisePropertyChanged(nameof(StringParameter));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="AdditionalParameters" /> property's name.
-        /// </summary>
-        public const string AdditionalParametersPropertyName = "AdditionalParameters";
 
         private List<One<string>> _additionalParameters = new List<One<string>>();
 
@@ -189,14 +158,9 @@ namespace vMixController.Widgets
                 }
 
                 _additionalParameters = value;
-                RaisePropertyChanged(AdditionalParametersPropertyName);
+                RaisePropertyChanged(nameof(AdditionalParameters));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Collapsed" /> property's name.
-        /// </summary>
-        public const string CollapsedPropertyName = "Collapsed";
 
         private bool _collapsed = false;
 
@@ -219,15 +183,10 @@ namespace vMixController.Widgets
                 }
 
                 _collapsed = value;
-                RaisePropertyChanged(CollapsedPropertyName);
-                RaisePropertyChanged(AdditionalParametersPropertyName);
+                RaisePropertyChanged(nameof(Collapsed));
+                RaisePropertyChanged(nameof(AdditionalParameters));
             }
         }
-
-        /// <summary>
-        /// The <see cref="NoInputAssigned" /> property's name.
-        /// </summary>
-        public const string NoInputAssignedPropertyName = "NoInputAssigned";
 
         private bool _noInputAssigned = false;
 
@@ -250,14 +209,10 @@ namespace vMixController.Widgets
                 }
 
                 _noInputAssigned = value;
-                RaisePropertyChanged(NoInputAssignedPropertyName);
+                RaisePropertyChanged(nameof(NoInputAssigned));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Ident" /> property's name.
-        /// </summary>
-        public const string IdentPropertyName = "Ident";
         [NonSerialized]
         private Thickness _ident = new Thickness(0);
 
@@ -280,14 +235,9 @@ namespace vMixController.Widgets
                 }
 
                 _ident = value;
-                RaisePropertyChanged(IdentPropertyName);
+                RaisePropertyChanged(nameof(Ident));
             }
         }
-
-        /// <summary>
-        /// The <see cref="UseInActiveState" /> property's name.
-        /// </summary>
-        public const string UseInActiveStatePropertyName = "UseInActiveState";
 
         private bool _useInActiveState = true;
 
@@ -310,14 +260,9 @@ namespace vMixController.Widgets
                 }
 
                 _useInActiveState = value;
-                RaisePropertyChanged(UseInActiveStatePropertyName);
+                RaisePropertyChanged(nameof(UseInActiveState));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsExecutable" /> property's name.
-        /// </summary>
-        public const string IsExecutablePropertyName = "IsExecutable";
 
         private bool _isExecutable = true;
 
@@ -340,7 +285,7 @@ namespace vMixController.Widgets
                 }
 
                 _isExecutable = value;
-                RaisePropertyChanged(IsExecutablePropertyName);
+                RaisePropertyChanged(nameof(IsExecutable));
             }
         }
 

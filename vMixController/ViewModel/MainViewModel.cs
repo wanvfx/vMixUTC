@@ -48,21 +48,12 @@ namespace vMixController.ViewModel
         //LowLevelInput.Hooks.LowLevelMouseHook mouseHook = new LowLevelInput.Hooks.LowLevelMouseHook(true);
         vMixWidgetSettingsView _settings = new vMixWidgetSettingsView();
         NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        /// <summary>
-        /// The <see cref="Model" /> property's name.
-        /// </summary>
-        public const string ModelPropertyName = "Model";
 
         Point _clickPoint;
         Point _relativeClickPoint;
         Thickness _rawSelectorPosition = new Thickness();
         bool _skipClick = false;
 
-
-        /// <summary>
-        /// The <see cref="IsHotkeysEnabled" /> property's name.
-        /// </summary>
-        public const string IsHotkeysEnabledPropertyName = "IsHotkeysEnabled";
 
         private bool _isHotkeysEnabled = true;
 
@@ -84,15 +75,10 @@ namespace vMixController.ViewModel
                 }
 
                 _isHotkeysEnabled = value;
-                RaisePropertyChanged(IsHotkeysEnabledPropertyName);
+                RaisePropertyChanged(nameof(IsHotkeysEnabled));
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="IsLoading" /> property's name.
-        /// </summary>
-        public const string IsLoadingPropertyName = "IsLoading";
 
         private bool _isLoading = false;
 
@@ -115,14 +101,9 @@ namespace vMixController.ViewModel
                 }
 
                 _isLoading = value;
-                RaisePropertyChanged(IsLoadingPropertyName);
+                RaisePropertyChanged(nameof(IsLoading));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ControllerPath" /> property's name.
-        /// </summary>
-        public const string ControllerPathPropertyName = "ControllerPath";
 
         private string _controllerPath = Directory.GetCurrentDirectory();
 
@@ -145,14 +126,9 @@ namespace vMixController.ViewModel
                 }
 
                 _controllerPath = value;
-                RaisePropertyChanged(ControllerPathPropertyName);
+                RaisePropertyChanged(nameof(ControllerPath));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsFiltersRegistered" /> property's name.
-        /// </summary>
-        public const string IsFiltersRegisteredPropertyName = "IsFiltersRegistered";
 
         private bool _isFiltersRegistered = false;
 
@@ -175,16 +151,11 @@ namespace vMixController.ViewModel
                 }
 
                 _isFiltersRegistered = value;
-                RaisePropertyChanged(IsFiltersRegisteredPropertyName);
+                RaisePropertyChanged(nameof(IsFiltersRegistered));
             }
         }
 
         /*Selector*/
-        /// <summary>
-        /// The <see cref="SelectorPosition" /> property's name.
-        /// </summary>
-        public const string SelectorPositionPropertyName = "SelectorPosition";
-
         private Thickness _selectorPosition = new Thickness(0);
 
         /// <summary>
@@ -206,15 +177,10 @@ namespace vMixController.ViewModel
                 }
 
                 _selectorPosition = value;
-                RaisePropertyChanged(SelectorPositionPropertyName);
+                RaisePropertyChanged(nameof(SelectorPosition));
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="SelectorWidth" /> property's name.
-        /// </summary>
-        public const string SelectorWidthPropertyName = "SelectorWidth";
 
         private double _selectorWidth = 0;
 
@@ -237,14 +203,9 @@ namespace vMixController.ViewModel
                 }
 
                 _selectorWidth = value;
-                RaisePropertyChanged(SelectorWidthPropertyName);
+                RaisePropertyChanged(nameof(SelectorWidth));
             }
         }
-
-        /// <summary>
-        /// The <see cref="SelectorHeight" /> property's name.
-        /// </summary>
-        public const string SelectorHeightPropertyName = "SelectorHeight";
 
         private double _selectorHeight = 0;
 
@@ -267,15 +228,10 @@ namespace vMixController.ViewModel
                 }
 
                 _selectorHeight = value;
-                RaisePropertyChanged(SelectorHeightPropertyName);
+                RaisePropertyChanged(nameof(SelectorHeight));
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="SelectorEnabled" /> property's name.
-        /// </summary>
-        public const string SelectorEnabledPropertyName = "SelectorEnabled";
 
         private bool _selectorEnabled = false;
 
@@ -298,15 +254,10 @@ namespace vMixController.ViewModel
                 }
 
                 _selectorEnabled = value;
-                RaisePropertyChanged(SelectorEnabledPropertyName);
+                RaisePropertyChanged(nameof(SelectorEnabled));
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="IsUrlValid" /> property's name.
-        /// </summary>
-        public const string IsUrlValidPropertyName = "IsUrlValid";
 
         private bool _isUrlValid = true;
 
@@ -329,7 +280,7 @@ namespace vMixController.ViewModel
                 }
 
                 _isUrlValid = value;
-                RaisePropertyChanged(IsUrlValidPropertyName);
+                RaisePropertyChanged(nameof(IsUrlValid));
             }
         }
 
@@ -362,14 +313,9 @@ namespace vMixController.ViewModel
                 else
                     Status = "Offline";*/
 
-                RaisePropertyChanged(ModelPropertyName);
+                RaisePropertyChanged(nameof(Model));
             }
         }
-
-        /// <summary>
-        /// The <see cref="WindowSettings" /> property's name.
-        /// </summary>
-        public const string WindowSettingsPropertyName = "WindowSettings";
 
         private MainWindowSettings _windowSettings = null;
 
@@ -407,7 +353,7 @@ namespace vMixController.ViewModel
                 }
 
                 _windowSettings.PropertyChanged += WindowSettings_PropertyChanged;
-                RaisePropertyChanged(WindowSettingsPropertyName);
+                RaisePropertyChanged(nameof(WindowSettings));
             }
         }
 
@@ -420,11 +366,6 @@ namespace vMixController.ViewModel
             });
 
         }
-
-        /// <summary>
-        /// The <see cref="Status" /> property's name.
-        /// </summary>
-        public const string StatusPropertyName = "Status";
 
         private Status _status = Classes.Status.Offline;
 
@@ -452,15 +393,10 @@ namespace vMixController.ViewModel
 
                 _logger.Debug("Status changed to {0}.", value);
 
-                RaisePropertyChanged(StatusPropertyName);
+                RaisePropertyChanged(nameof(Status));
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="PollingStatus" /> property's name.
-        /// </summary>
-        public const string PollingStatusPropertyName = "PollingStatus";
 
         private Status _pollingstatus = Classes.Status.Offline;
 
@@ -484,14 +420,9 @@ namespace vMixController.ViewModel
 
                 _pollingstatus = value;
 
-                RaisePropertyChanged(PollingStatusPropertyName);
+                RaisePropertyChanged(nameof(PollingStatus));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ExecLinks" /> property's name.
-        /// </summary>
-        public const string ExecLinksPropertyName = "ExecLinks";
 
         private ObservableCollection<Triple<vMixControl, vMixControl, string>> _execLinks = new ObservableCollection<Triple<vMixControl, vMixControl, string>>();
 
@@ -514,14 +445,9 @@ namespace vMixController.ViewModel
                 }
 
                 _execLinks = value;
-                RaisePropertyChanged(ExecLinksPropertyName);
+                RaisePropertyChanged(nameof(ExecLinks));
             }
         }
-
-        /// <summary>
-        /// The <see cref="WidgetTemplates" /> property's name.
-        /// </summary>
-        public const string WidgetTemplatesPropertyName = "WidgetTemplates";
 
         private ObservableCollection<Pair<string, vMixControl>> _widgetTemplates = new ObservableCollection<Pair<string, vMixControl>>();
 
@@ -544,14 +470,9 @@ namespace vMixController.ViewModel
                 }
 
                 _widgetTemplates = value;
-                RaisePropertyChanged(WidgetTemplatesPropertyName);
+                RaisePropertyChanged(nameof(WidgetTemplates));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ExternalDataProviders" /> property's name.
-        /// </summary>
-        public const string ExternalDataProvidersPropertyName = "ExternalDataProviders";
 
         private ObservableCollection<Pair<string, vMixControl>> _externalDataProviders = new ObservableCollection<Pair<string, vMixControl>>();
 
@@ -574,14 +495,9 @@ namespace vMixController.ViewModel
                 }
 
                 _externalDataProviders = value;
-                RaisePropertyChanged(ExternalDataProvidersPropertyName);
+                RaisePropertyChanged(nameof(ExternalDataProviders));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Functions" /> property's name.
-        /// </summary>
-        public const string FunctionsPropertyName = "Functions";
 
         private ObservableCollection<vMixFunctionReference> _functions = null;
 
@@ -604,14 +520,9 @@ namespace vMixController.ViewModel
                 }
 
                 _functions = value;
-                RaisePropertyChanged(FunctionsPropertyName);
+                RaisePropertyChanged(nameof(Functions));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Widgets" /> property's name.
-        /// </summary>
-        public const string WidgetsPropertyName = "Widgets";
 
         private ObservableCollection<vMixController.Widgets.vMixControl> _widgets = new ObservableCollection<vMixController.Widgets.vMixControl>();
 
@@ -634,14 +545,9 @@ namespace vMixController.ViewModel
                 }
 
                 _widgets = value;
-                RaisePropertyChanged(WidgetsPropertyName);
+                RaisePropertyChanged(nameof(Widgets));
             }
         }
-
-        /// <summary>
-        /// The <see cref="UndoState" /> property's name.
-        /// </summary>
-        public const string UndoStatePropertyName = "UndoState";
 
         private MemoryStream _undoState = null;
 
@@ -664,14 +570,9 @@ namespace vMixController.ViewModel
                 }
 
                 _undoState = value;
-                RaisePropertyChanged(UndoStatePropertyName);
+                RaisePropertyChanged(nameof(UndoState));
             }
         }
-
-        /// <summary>
-        /// The <see cref="UndoReason" /> property's name.
-        /// </summary>
-        public const string UndoReasonPropertyName = "UndoReason";
 
         private string _undoReason = "";
 
@@ -694,14 +595,9 @@ namespace vMixController.ViewModel
                 }
 
                 _undoReason = value;
-                RaisePropertyChanged(UndoReasonPropertyName);
+                RaisePropertyChanged(nameof(UndoReason));
             }
         }
-
-        /// <summary>
-        /// The <see cref="EditorCursor" /> property's name.
-        /// </summary>
-        public const string CursorPropertyName = "EditorCursor";
 
         private string _editorCursor = "Arrow";
 
@@ -724,14 +620,9 @@ namespace vMixController.ViewModel
                 }
 
                 _editorCursor = value;
-                RaisePropertyChanged(CursorPropertyName);
+                RaisePropertyChanged(nameof(EditorCursor));
             }
         }
-
-        /// <summary>
-        /// The <see cref="LIVE" /> property's name.
-        /// </summary>
-        public const string LIVEPropertyName = "LIVE";
 
         private bool _LIVE = true;
 
@@ -761,7 +652,7 @@ namespace vMixController.ViewModel
                     }
 
                 _LIVE = value;
-                RaisePropertyChanged(LIVEPropertyName);
+                RaisePropertyChanged(nameof(LIVE));
             }
         }
 
@@ -1015,7 +906,7 @@ namespace vMixController.ViewModel
                 _widgets.Insert(0, widget);
             else
                 _widgets.Add(widget);
-            RaisePropertyChanged(WidgetsPropertyName);
+            RaisePropertyChanged(nameof(Widgets));
             //}
             //else
             //    _widgets.Add(widget);

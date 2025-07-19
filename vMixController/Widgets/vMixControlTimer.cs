@@ -172,11 +172,6 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="SplitText" /> property's name.
-        /// </summary>
-        public const string SplitTextPropertyName = "SplitText";
-
         private bool _splitText = false;
 
         /// <summary>
@@ -198,14 +193,9 @@ namespace vMixController.Widgets
                 }
 
                 _splitText = value;
-                RaisePropertyChanged(SplitTextPropertyName);
+                RaisePropertyChanged(nameof(SplitText));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsHighPrecision" /> property's name.
-        /// </summary>
-        public const string IsHighPrecisionPropertyName = "IsHighPrecision";
 
         private bool _isHighPrecision = false;
 
@@ -228,14 +218,9 @@ namespace vMixController.Widgets
                 }
 
                 _isHighPrecision = value;
-                RaisePropertyChanged(IsHighPrecisionPropertyName);
+                RaisePropertyChanged(nameof(IsHighPrecision));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Format" /> property's name.
-        /// </summary>
-        public const string FormatPropertyName = "Format";
 
         private string _format = @"hh\:mm\:ss";
 
@@ -258,15 +243,9 @@ namespace vMixController.Widgets
                 }
 
                 _format = value;
-                RaisePropertyChanged(FormatPropertyName);
+                RaisePropertyChanged(nameof(Format));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="Links" /> property's name.
-        /// </summary>
-        public const string LinksPropertyName = "Links";
 
         private string[] _links = new string[] { "", "", "", "", "" };
 
@@ -289,14 +268,9 @@ namespace vMixController.Widgets
                 }
 
                 _links = value;
-                RaisePropertyChanged(LinksPropertyName);
+                RaisePropertyChanged(nameof(Links));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Reverse" /> property's name.
-        /// </summary>
-        public const string ReversePropertyName = "Reverse";
 
         private bool _reverse = false;
 
@@ -322,14 +296,10 @@ namespace vMixController.Widgets
 
                 UpdateTimer();
 
-                RaisePropertyChanged(ReversePropertyName);
+                RaisePropertyChanged(nameof(Reverse));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Active" /> property's name.
-        /// </summary>
-        public const string ActivePropertyName = "Active";
         [NonSerialized]
         private bool _active = false;
 
@@ -353,14 +323,10 @@ namespace vMixController.Widgets
                 }
 
                 _active = value;
-                RaisePropertyChanged(ActivePropertyName);
+                RaisePropertyChanged(nameof(Active));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Paused" /> property's name.
-        /// </summary>
-        public const string PausedPropertyName = "Paused";
         [NonSerialized]
         private bool _paused = false;
 
@@ -384,16 +350,9 @@ namespace vMixController.Widgets
                 }
 
                 _paused = value;
-                RaisePropertyChanged(PausedPropertyName);
+                RaisePropertyChanged(nameof(Paused));
             }
         }
-
-
-
-        /// <summary>
-        /// The <see cref="Time" /> property's name.
-        /// </summary>
-        public const string TimePropertyName = "Time";
 
         private TimeSpan _time = TimeSpan.Zero;
 
@@ -439,7 +398,7 @@ namespace vMixController.Widgets
                     Text = "Wrong Format";
                 }
 
-                RaisePropertyChanged(TimePropertyName);
+                RaisePropertyChanged(nameof(Time));
             }
         }
 
@@ -455,18 +414,13 @@ namespace vMixController.Widgets
                     if (TimeSpan.TryParse((string)e.NewValue, out parsed))
                     {
                         _time = parsed;
-                        RaisePropertyChanged(TimePropertyName);
+                        RaisePropertyChanged(nameof(Time));
                         if (_time != TimeSpan.Zero)
                             Paused = true;
                     }
                 }
             }
         }
-
-        /// <summary>
-        /// The <see cref="TimeTicks" /> property's name.
-        /// </summary>
-        public const string TimeTicksPropertyName = "TimeTicks";
 
         private long _timeTicks = 0;
 
@@ -491,14 +445,9 @@ namespace vMixController.Widgets
 
                 _timeTicks = value;
                 Time = new TimeSpan(value);
-                RaisePropertyChanged(TimeTicksPropertyName);
+                RaisePropertyChanged(nameof(TimeTicks));
             }
         }
-
-        /// <summary>
-        /// The <see cref="DefaultTime" /> property's name.
-        /// </summary>
-        public const string DefaultTimePropertyName = "DefaultTime";
 
         private TimeSpan _defaultTime = TimeSpan.Zero;
 
@@ -523,14 +472,9 @@ namespace vMixController.Widgets
 
                 _defaultTime = value;
                 UpdateTimer();
-                RaisePropertyChanged(DefaultTimePropertyName);
+                RaisePropertyChanged(nameof(DefaultTime));
             }
         }
-
-        /// <summary>
-        /// The <see cref="DefaultTimeTicks" /> property's name.
-        /// </summary>
-        public const string DefaultTimeTicksPropertyName = "DefaultTimeTicks";
 
         private long _defaultTimeTicks = 0;
 
@@ -555,7 +499,7 @@ namespace vMixController.Widgets
 
                 _defaultTimeTicks = value;
                 DefaultTime = new TimeSpan(value);
-                RaisePropertyChanged(DefaultTimeTicksPropertyName);
+                RaisePropertyChanged(nameof(DefaultTimeTicks));
             }
         }
 

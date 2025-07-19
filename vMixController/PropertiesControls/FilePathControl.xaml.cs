@@ -33,10 +33,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(FileNotFoundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for FileNotFound.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FileNotFoundProperty =
-            DependencyProperty.Register("FileNotFound", typeof(bool), typeof(FilePathControl), new PropertyMetadata(false));
-
+            DependencyProperty.Register(nameof(FileNotFound), typeof(bool), typeof(FilePathControl), new PropertyMetadata(false));
 
 
         public string Value
@@ -45,9 +43,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(ValueProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(string), typeof(FilePathControl), new PropertyMetadata("", propchanged));
+            DependencyProperty.Register(nameof(Value), typeof(string), typeof(FilePathControl), new PropertyMetadata("", propchanged));
 
         private static void propchanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -60,11 +57,8 @@ namespace vMixController.PropertiesControls
             set { SetValue(FilterProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Filter.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilterProperty =
-            DependencyProperty.Register("Filter", typeof(string), typeof(FilePathControl), new PropertyMetadata("External Data|*.dll"));
-
-
+            DependencyProperty.Register(nameof(Filter), typeof(string), typeof(FilePathControl), new PropertyMetadata("External Data|*.dll"));
 
         public string Title
         {
@@ -72,17 +66,13 @@ namespace vMixController.PropertiesControls
             set { SetValue(TitleProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(string), typeof(FilePathControl), new PropertyMetadata("File Path"));
+            DependencyProperty.Register(nameof(Title), typeof(string), typeof(FilePathControl), new PropertyMetadata("File Path"));
 
 
 
         private RelayCommand _selectFilePathCommand;
 
-        /// <summary>
-        /// Gets the SelectFilePathCommand.
-        /// </summary>
         public RelayCommand SelectFilePathCommand
         {
             get

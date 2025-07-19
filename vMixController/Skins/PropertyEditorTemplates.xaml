@@ -17,22 +17,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Margin="0,0,2,0" Title="Image Type" Value="{Binding ImageMax, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}}">
-                    <prop:ComboBoxControl.Items>
-                        <x:Array Type="sys:String">
-                            <sys:String>Default</sys:String>
-                            <sys:String>Default+Pressed</sys:String>
-                        </x:Array>
-                    </prop:ComboBoxControl.Items>
-                </prop:ComboBoxControl>
-                <prop:ComboBoxControl Margin="2,0,0,0" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}">
-                    <prop:ComboBoxControl.Items>
-                        <x:Array Type="sys:String">
-                            <sys:String>Momentary</sys:String>
-                            <sys:String>Press</sys:String>
-                        </x:Array>
-                    </prop:ComboBoxControl.Items>
-                </prop:ComboBoxControl>
+                <prop:ComboBoxControl Margin="0,0,2,0" Title="Image Type" Value="{Binding ImageMax, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}}" Items="{x:Static cls:Constants.ButtonImageType}"/>
+                <prop:ComboBoxControl Margin="2,0,0,0" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
+
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -58,14 +45,7 @@
                 <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
                 <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
-            <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Template, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={conv:BoolToTextOrFileConverter}}">
-                <prop:ComboBoxControl.Items>
-                    <x:Array Type="sys:String">
-                        <sys:String>File</sys:String>
-                        <sys:String>Text</sys:String>
-                    </x:Array>
-                </prop:ComboBoxControl.Items>
-            </prop:ComboBoxControl>
+            <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Template, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={conv:BoolToTextOrFileConverter}}" Items="{x:Static cls:Constants.TextFieldStyle}"/>
         </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlScorePropEditor" DataType="{x:Type widget:vMixControlScore}">
@@ -79,17 +59,7 @@
                 <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
                 <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
-            <prop:ComboBoxControl x:Name="Style" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}">
-                <prop:ComboBoxControl.Items>
-                    <x:Array Type="sys:String">
-                        <sys:String>Basic</sys:String>
-                        <sys:String>Basketball</sys:String>
-                        <sys:String>Rugby</sys:String>
-                        <sys:String>American&#032;Football</sys:String>
-                        <sys:String>Custom</sys:String>
-                    </x:Array>
-                </prop:ComboBoxControl.Items>
-            </prop:ComboBoxControl>
+            <prop:ComboBoxControl x:Name="Style" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ScoreStyle}"/>
             <!--<CheckBox IsEnabled="{Binding Value, ElementName=Style, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Custom}"/>-->
             <prop:BoolControl Title="Active Buttons" IsEnabled="{Binding Value, ElementName=Style, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Custom}">
                 <prop:BoolControl.Values>
@@ -170,14 +140,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Margin="0,0,2,0">
-                    <prop:ComboBoxControl.Items>
-                        <x:Array Type="sys:String">
-                            <sys:String>Horizontal</sys:String>
-                            <sys:String>Vertical</sys:String>
-                        </x:Array>
-                    </prop:ComboBoxControl.Items>
-                </prop:ComboBoxControl>
+                <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Margin="0,0,2,0" Items="{x:Static cls:Constants.HorizontalVertical}"/>
                 <prop:BoolControl Grid.Column="1" Grouped="True" Value="{Binding ShowMeters, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Meters" Margin="2,0,2,0"/>
                 <prop:BoolControl Grid.Column="2" Grouped="True" Value="{Binding ShowSlider, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Slider" Margin="2,0,0,0"/>
             </Grid>
@@ -188,22 +151,8 @@
     <DataTemplate x:Key="vMixControlTBarPropEditor" DataType="{x:Type widget:vMixControlTBar}">
         <StackPanel>
             <!--<prop:StringControl Title="Info" Value="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" TextWrapping="Wrap" AcceptReturn="True"/>-->
-            <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}">
-                <prop:ComboBoxControl.Items>
-                    <x:Array Type="sys:String">
-                        <sys:String>Horizontal</sys:String>
-                        <sys:String>Vertical</sys:String>
-                    </x:Array>
-                </prop:ComboBoxControl.Items>
-            </prop:ComboBoxControl>
-            <prop:ComboBoxControl Title="Mode" Value="{Binding Mode, UpdateSourceTrigger=Explicit, Mode=TwoWay}">
-                <prop:ComboBoxControl.Items>
-                    <x:Array Type="sys:String">
-                        <sys:String>A/B</sys:String>
-                        <sys:String>Snap&#032;Back</sys:String>
-                    </x:Array>
-                </prop:ComboBoxControl.Items>
-            </prop:ComboBoxControl>
+            <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.HorizontalVertical}"/>
+            <prop:ComboBoxControl Title="Mode" Value="{Binding Mode, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.TBarMode}"/>
         </StackPanel>
     </DataTemplate>
 

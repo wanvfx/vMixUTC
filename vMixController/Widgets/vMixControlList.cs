@@ -19,12 +19,6 @@ namespace vMixController.Widgets
                 return Extensions.LocalizationManager.Get("List");
             }
         }
-        /// <summary>
-        /// The <see cref="Items" /> property's name.
-        /// </summary>
-        public const string ItemsPropertyName = "Items";
-
-        //private ObservableCollection<string> _items = new ObservableCollection<string>();
 
         /// <summary>
         /// Sets and gets the Items property.
@@ -39,14 +33,7 @@ namespace vMixController.Widgets
 
             set
             {
-                /*if (_items == value)
-                {
-                    return;
-                }*/
-
-                //_items = value;
                 SetValue(ItemsProperty, value);
-                //RaisePropertyChanged(ItemsPropertyName);
             }
         }
 

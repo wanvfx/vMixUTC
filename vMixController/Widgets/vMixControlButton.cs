@@ -31,12 +31,12 @@ namespace vMixController.Widgets
     {
         public override bool IsResizeableVertical => true;
 
-        private const string MOMENTARY = "Momentary";
-        private const string TOGGLE = "Toggle";
-        private const string PRESS = "Press";
+        //private const string MOMENTARY = "Momentary";
+        //private const string TOGGLE = "Toggle";
+        //private const string PRESS = "Press";
 
-        private const string DEFAULT = "Default";
-        private const string DEFAULTPRESSED = "Default+Pressed";
+        //private const string DEFAULT = "Default";
+        //private const string DEFAULTPRESSED = "Default+Pressed";
 
         static XmlDocument _latestDocument;
 
@@ -68,12 +68,6 @@ namespace vMixController.Widgets
 
         static List<vMixControlButton> _instances = new List<vMixControlButton>();
 
-
-        /// <summary>
-        /// The <see cref="HasScriptErrors" /> property's name.
-        /// </summary>
-        public const string HasScriptErrorsPropertyName = "HasScriptErrors";
-
         private bool _hasScriptErrors = false;
 
         /// <summary>
@@ -96,7 +90,7 @@ namespace vMixController.Widgets
                 }
 
                 _hasScriptErrors = value;
-                RaisePropertyChanged(HasScriptErrorsPropertyName);
+                RaisePropertyChanged(nameof(HasScriptErrors));
             }
         }
 
@@ -120,12 +114,6 @@ namespace vMixController.Widgets
             }
         }
 
-
-        /// <summary>
-        /// The <see cref="Log" /> property's name.
-        /// </summary>
-        public const string LogPropertyName = "Log";
-
         private string _log = "";
 
         /// <summary>
@@ -147,7 +135,7 @@ namespace vMixController.Widgets
                 }
 
                 _log = value;
-                RaisePropertyChanged(LogPropertyName);
+                RaisePropertyChanged(nameof(Log));
             }
         }
 
@@ -161,10 +149,7 @@ namespace vMixController.Widgets
             Log = "";
         }
 
-        /// <summary>
-        /// The <see cref="BlinkBorderColor" /> property's name.
-        /// </summary>
-        public const string BlinkBorderColorPropertyName = "BlinkBorderColor";
+
         [NonSerialized]
         private Color _blinkBorderColor = ViewModel.vMixWidgetSettingsViewModel.Colors[0].B;
 
@@ -187,7 +172,7 @@ namespace vMixController.Widgets
                 }
 
                 _blinkBorderColor = value;
-                RaisePropertyChanged(BlinkBorderColorPropertyName);
+                RaisePropertyChanged(nameof(BlinkBorderColor));
             }
         }
 
@@ -198,11 +183,6 @@ namespace vMixController.Widgets
                 return Extensions.LocalizationManager.Get("Button");
             }
         }
-
-        /// <summary>
-        /// The <see cref="Commands" /> property's name.
-        /// </summary>
-        public const string CommandsPropertyName = "Commands";
 
         private ObservableCollection<vMixControlButtonCommand> _commands = new ObservableCollection<vMixControlButtonCommand>();
 
@@ -225,14 +205,9 @@ namespace vMixController.Widgets
                 }
 
                 _commands = value;
-                RaisePropertyChanged(CommandsPropertyName);
+                RaisePropertyChanged(nameof(Commands));
             }
         }
-
-        /// <summary>
-        /// The <see cref="AutoStart" /> property's name.
-        /// </summary>
-        public const string AutoStartPropertyName = "AutoStart";
 
         private bool _autoStart = false;
 
@@ -255,14 +230,9 @@ namespace vMixController.Widgets
                 }
 
                 _autoStart = value;
-                RaisePropertyChanged(AutoStartPropertyName);
+                RaisePropertyChanged(nameof(AutoStart));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Enabled" /> property's name.
-        /// </summary>
-        public const string EnabledPropertyName = "Enabled";
 
         private bool _enabled = true;
 
@@ -286,14 +256,9 @@ namespace vMixController.Widgets
                 }
 
                 _enabled = value;
-                RaisePropertyChanged(EnabledPropertyName);
+                RaisePropertyChanged(nameof(Enabled));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Active" /> property's name.
-        /// </summary>
-        public const string ActivePropertyName = "Active";
 
         private bool _active = false;
 
@@ -316,19 +281,13 @@ namespace vMixController.Widgets
                     return;
                 }*/
 
-                if (Style == MOMENTARY)
+                if (Style == Constants.BUTTON_STYLE_MOMENTARY)
                     IsPushed = value;
 
                 _active = value;
-                RaisePropertyChanged(ActivePropertyName);
+                RaisePropertyChanged(nameof(Active));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="IsStateDependent" /> property's name.
-        /// </summary>
-        public const string IsStateDependentPropertyName = "IsStateDependent";
 
         private bool _isStateDependent = false;
 
@@ -351,14 +310,9 @@ namespace vMixController.Widgets
                 }
 
                 _isStateDependent = value;
-                RaisePropertyChanged(IsStateDependentPropertyName);
+                RaisePropertyChanged(nameof(IsStateDependent));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsColorized" /> property's name.
-        /// </summary>
-        public const string IsColorizedPropertyName = "IsColorized";
 
         private bool _isColorized = false;
 
@@ -381,14 +335,9 @@ namespace vMixController.Widgets
                 }
 
                 _isColorized = value;
-                RaisePropertyChanged(IsColorizedPropertyName);
+                RaisePropertyChanged(nameof(IsColorized));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Image" /> property's name.
-        /// </summary>
-        public const string ImagePropertyName = "Image";
 
         private string _image = "";
 
@@ -411,14 +360,9 @@ namespace vMixController.Widgets
                 }
 
                 _image = value;
-                RaisePropertyChanged(ImagePropertyName);
+                RaisePropertyChanged(nameof(Image));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ImageMax" /> property's name.
-        /// </summary>
-        public const string ImageMaxPropertyName = "ImageMax";
 
         private int _imageMax = 1;
 
@@ -441,14 +385,9 @@ namespace vMixController.Widgets
                 }
 
                 _imageMax = value;
-                RaisePropertyChanged(ImageMaxPropertyName);
+                RaisePropertyChanged(nameof(ImageMax));
             }
         }
-
-        /// <summary>
-        /// The <see cref="ImageNumber" /> property's name.
-        /// </summary>
-        public const string ImageNumberPropertyName = "ImageNumber";
 
         private int _imageNumber = 0;
 
@@ -471,14 +410,10 @@ namespace vMixController.Widgets
                 }
 
                 _imageNumber = value;
-                RaisePropertyChanged(ImageNumberPropertyName);
+                RaisePropertyChanged(nameof(ImageNumber));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Variables" /> property's name.
-        /// </summary>
-        public const string VariablesPropertyName = "Variables";
 
         [NonSerialized]
         private List<Pair<int, object>> _variables = new List<Pair<int, object>>();
@@ -503,15 +438,9 @@ namespace vMixController.Widgets
                 }
 
                 _variables = value;
-                RaisePropertyChanged(VariablesPropertyName);
+                RaisePropertyChanged(nameof(Variables));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="IsPushed" /> property's name.
-        /// </summary>
-        public const string IsPushedPropertyName = "IsPushed";
 
         private bool _isPushed = false;
 
@@ -539,15 +468,11 @@ namespace vMixController.Widgets
                     ImageNumber = 0;
 
                 _isPushed = value;
-                RaisePropertyChanged(IsPushedPropertyName);
+                RaisePropertyChanged(nameof(IsPushed));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Style" /> property's name.
-        /// </summary>
-        public const string StylePropertyName = "Style";
-        private string _style = MOMENTARY;
+        private string _style = Constants.BUTTON_STYLE_MOMENTARY;
 
         /// <summary>
         /// Sets and gets the Style property.
@@ -568,7 +493,7 @@ namespace vMixController.Widgets
                 }
 
                 _style = value;
-                RaisePropertyChanged(StylePropertyName);
+                RaisePropertyChanged(nameof(Style));
             }
         }
 
@@ -587,7 +512,7 @@ namespace vMixController.Widgets
                     ?? (_executeScriptCommand = new RelayCommand(
                     () =>
                     {
-                        if (Style == MOMENTARY)
+                        if (Style == Constants.BUTTON_STYLE_MOMENTARY)
                             ExecuteScript();
 
                     }));
@@ -596,7 +521,7 @@ namespace vMixController.Widgets
 
         private void ExecuteScript()
         {
-            if (Style == MOMENTARY)
+            if (Style == Constants.BUTTON_STYLE_MOMENTARY)
                 Enabled = false;
             if (_executionWorker != null && _executionWorker.IsBusy)
             {
@@ -627,12 +552,12 @@ namespace vMixController.Widgets
 
                         switch (Style)
                         {
-                            case PRESS:
+                            case Constants.BUTTON_STYLE_PRESS:
                                 IsPushed = true;
                                 ExecuteScript();
                                 break;
-                            case MOMENTARY: if (!IsStateDependent) IsPushed = true; break;
-                            case TOGGLE:
+                            case Constants.BUTTON_STYLE_MOMENTARY: if (!IsStateDependent) IsPushed = true; break;
+                            case Constants.BUTTON_STYLE_TOGGLE:
                                 IsPushed = !IsPushed;
                                 ExecuteScript();
                                 break;
@@ -660,15 +585,15 @@ namespace vMixController.Widgets
                         Mouse.Capture(null);
                         switch (Style)
                         {
-                            case PRESS:
+                            case Constants.BUTTON_STYLE_PRESS:
                                 IsPushed = false;
                                 ExecuteScript();
                                 break;
-                            case MOMENTARY:
+                            case Constants.BUTTON_STYLE_MOMENTARY:
                                 if (!IsStateDependent) IsPushed = false;
                                 ExecuteScript();
                                 break;
-                            case TOGGLE: break;
+                            case Constants.BUTTON_STYLE_TOGGLE: break;
                         }
                         //p.Handled = true;
 
@@ -1049,18 +974,6 @@ namespace vMixController.Widgets
             }
         }
 
-        private object EscapeString(object o)
-        {
-            if (o is string)
-            {
-                if (!float.TryParse((string)o, out float val))
-                    return string.Format("'{0}'", o);
-                return
-                    val;
-            }
-            return o;
-        }
-
         private bool TestCondition(vMixControlButtonCommand cmd)
         {
             if (cmd.AdditionalParameters == null || cmd.AdditionalParameters.Count == 0)
@@ -1403,7 +1316,7 @@ namespace vMixController.Widgets
                 i++;
             }
 
-            if (hasGoToOrTimer && Style != MOMENTARY)
+            if (hasGoToOrTimer && Style != Constants.BUTTON_STYLE_MOMENTARY)
             {
                 var d = new Ookii.Dialogs.Wpf.TaskDialog();
                 d.WindowTitle = "Possible Script Error";

@@ -94,11 +94,6 @@ namespace vMixController.Widgets
 
         internal virtual string MappedImageProperty { get { return "Image"; } }
 
-        /// <summary>
-        /// The <see cref="IsLive" /> property's name.
-        /// </summary>
-        public const string IsLivePropertyName = "IsLive";
-
         protected bool _isLive = true;
 
         /// <summary>
@@ -131,15 +126,9 @@ namespace vMixController.Widgets
 
                 Text = _text;
 
-                RaisePropertyChanged(IsLivePropertyName);
+                RaisePropertyChanged(nameof(IsLive));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="IsTable" /> property's name.
-        /// </summary>
-        public const string IsTablePropertyName = "IsTable";
 
         private bool _isTable = false;
 
@@ -163,14 +152,9 @@ namespace vMixController.Widgets
 
                 _isTable = value;
                 UpdateText(_paths);
-                RaisePropertyChanged(IsTablePropertyName);
+                RaisePropertyChanged(nameof(IsTable));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsEditable" /> property's name.
-        /// </summary>
-        public const string IsEditablePropertyName = "IsEditable";
 
         private bool _isEditable = true;
 
@@ -193,14 +177,9 @@ namespace vMixController.Widgets
                 }
 
                 _isEditable = value;
-                RaisePropertyChanged(IsEditablePropertyName);
+                RaisePropertyChanged(nameof(IsEditable));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsMappedToGUID" /> property's name.
-        /// </summary>
-        public const string IsMappedToGUIDPropertyName = "IsMappedToGUID";
 
         private bool _isMappedToGUID = true;
 
@@ -223,7 +202,7 @@ namespace vMixController.Widgets
                 }
 
                 _isMappedToGUID = value;
-                RaisePropertyChanged(IsMappedToGUIDPropertyName);
+                RaisePropertyChanged(nameof(IsMappedToGUID));
             }
         }
 
@@ -235,13 +214,13 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(vMixControlTextField), new PropertyMetadata("", InternalPropertyChanged));
+            DependencyProperty.Register(nameof(Text), typeof(string), typeof(vMixControlTextField), new PropertyMetadata("", InternalPropertyChanged));
 
         protected static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!((vMixControlTextField)d).IsLive)
                 return;
-            if (e.Property.Name == "Text")
+            if (e.Property.Name == nameof(Text))
             {
                 try
                 {
@@ -347,11 +326,6 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="Paths" /> property's name.
-        /// </summary>
-        public const string PathsPropertyName = "Paths";
-
         private ObservableCollection<Pair<string, string>> _paths = new ObservableCollection<Pair<string, string>>();
 
         /// <summary>
@@ -373,14 +347,9 @@ namespace vMixController.Widgets
                 }
 
                 _paths = value;
-                RaisePropertyChanged(PathsPropertyName);
+                RaisePropertyChanged(nameof(Paths));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Template" /> property's name.
-        /// </summary>
-        public const string TemplatePropertyName = "Template";
 
         private bool _template = false;
 
@@ -403,7 +372,7 @@ namespace vMixController.Widgets
                 }
 
                 _template = value;
-                RaisePropertyChanged(TemplatePropertyName);
+                RaisePropertyChanged(nameof(Template));
             }
         }
 
@@ -452,7 +421,6 @@ namespace vMixController.Widgets
 
         protected override void Dispose(bool managed)
         {
-            //_paths.CollectionChanged -= _paths_CollectionChanged;
             base.Dispose(managed);
         }
 

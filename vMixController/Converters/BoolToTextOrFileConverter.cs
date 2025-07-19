@@ -19,7 +19,7 @@ namespace vMixController.Converters
         public static IValueConverter Instance => _instance ?? (_instance = new BoolToTextOrFileConverter());
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? "File" : "Text";
+            return (bool)value ? vMixController.Classes.Constants.TEXTFIELD_STYLE_FILE : vMixController.Classes.Constants.TEXTFIELD_STYLE_TEXT;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

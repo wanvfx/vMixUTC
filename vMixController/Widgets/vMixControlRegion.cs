@@ -21,11 +21,6 @@ namespace vMixController.Widgets
 
         public override bool IsResizeableVertical => true;
 
-        /// <summary>
-        /// The <see cref="Text" /> property's name.
-        /// </summary>
-        public const string TextPropertyName = "Text";
-
         private string _Text = "";
 
         /// <summary>
@@ -47,14 +42,9 @@ namespace vMixController.Widgets
                 }
 
                 _Text = value;
-                RaisePropertyChanged(TextPropertyName);
+                RaisePropertyChanged(nameof(Text));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Sticky" /> property's name.
-        /// </summary>
-        public const string StickyPropertyName = "Sticky";
 
         private bool _sticky = false;
 
@@ -77,14 +67,9 @@ namespace vMixController.Widgets
                 }
 
                 _sticky = value;
-                RaisePropertyChanged(StickyPropertyName);
+                RaisePropertyChanged(nameof(Sticky));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsEditable" /> property's name.
-        /// </summary>
-        public const string IsEditablePropertyName = "IsEditable";
 
         private bool _isEditable = false;
 
@@ -107,7 +92,7 @@ namespace vMixController.Widgets
                 }
 
                 _isEditable = value;
-                RaisePropertyChanged(IsEditablePropertyName);
+                RaisePropertyChanged(nameof(IsEditable));
             }
         }
 

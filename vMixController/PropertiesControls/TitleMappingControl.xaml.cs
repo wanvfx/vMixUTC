@@ -1,20 +1,8 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using vMixController.Classes;
 using vMixController.Interfaces;
 
@@ -26,65 +14,30 @@ namespace vMixController.PropertiesControls
     public partial class TitleMappingControl : UserControl, INotifyPropertyChanged, ICancellable
     {
 
-        /// <summary>
-        /// Регистрация DependencyProperty. 
-        /// Это статическое поле хранит метаданные свойства.
-        /// </summary>
         public static readonly DependencyProperty TitlesProperty =
             DependencyProperty.Register(
                 nameof(Titles),
                 typeof(ObservableCollection<Pair<string, string>>),
-                typeof(TitleMappingControl), // <-- ЗАМЕНИТЕ MyUserControl НА ИМЯ ВАШЕГО КЛАССА
+                typeof(TitleMappingControl),
                 new PropertyMetadata(null));
 
-        /// <summary>
-        /// CLR-обертка для доступа к свойству из кода.
-        /// Система WPF будет вызывать GetValue/SetValue напрямую,
-        /// а вы можете использовать эту обертку для удобства.
-        /// </summary>
         public ObservableCollection<Pair<string, string>> Titles
         {
             get { return (ObservableCollection<Pair<string, string>>)GetValue(TitlesProperty); }
             set { SetValue(TitlesProperty, value); }
         }
 
+        public static readonly DependencyProperty IsCancelledPropertyName =
+            DependencyProperty.Register(nameof(IsCancelled), typeof(bool), typeof(TitleMappingControl), new PropertyMetadata(false));
 
-        /// <summary>
-        /// The <see cref="IsCancelled" /> property's name.
-        /// </summary>
-        public const string IsCancelledPropertyName = "IsCancelled";
-
-        private bool _isCancelled = false;
-
-        /// <summary>
-        /// Sets and gets the IsCancelled property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public bool IsCancelled
         {
-            get
-            {
-                return _isCancelled;
-            }
-
-            set
-            {
-                if (_isCancelled == value)
-                {
-                    return;
-                }
-
-                _isCancelled = value;
-
-                RaisePropertyChanged(IsCancelledPropertyName);
-            }
+            get { return (bool)GetValue(IsCancelledPropertyName); }
+            set { SetValue(IsCancelledPropertyName, value); }
         }
 
         private RelayCommand<Pair<string, string>> _removePathCommand;
 
-        /// <summary>
-        /// Gets the RemoveControlCommand.
-        /// </summary>
         public RelayCommand<Pair<string, string>> RemovePathCommand
         {
             get
@@ -106,9 +59,6 @@ namespace vMixController.PropertiesControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        /// <summary>
-        /// Gets the AddPathCommand.
-        /// </summary>
         public RelayCommand AddPathCommand
         {
             get
@@ -122,40 +72,9 @@ namespace vMixController.PropertiesControls
             }
         }
 
-        /*/// <summary>
-        /// The <see cref="IsGUIDTargeted" /> property's name.
-        /// </summary>
-        public const string IsGUIDTargetedPropertyName = "IsGUIDTargeted";
-
-        private bool _isGUIDTargeted = true;
-
-        /// <summary>
-        /// Sets and gets the IsGUIDTargeted property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool IsGUIDTargeted
-        {
-            get
-            {
-                return _isGUIDTargeted;
-            }
-
-            set
-            {
-                if (_isGUIDTargeted == value)
-                {
-                    return; 
-                }
-
-                _isGUIDTargeted = value;
-                RaisePropertyChanged(IsGUIDTargetedPropertyName);
-            }
-        }*/
-
         public TitleMappingControl()
         {
             InitializeComponent();
-            //DataContext = this;
         }
     }
 }

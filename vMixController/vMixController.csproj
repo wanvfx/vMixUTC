@@ -334,6 +334,7 @@
     <Compile Include="Classes\BindingHelper.cs" />
     <Compile Include="Classes\BindingProxy.cs" />
     <Compile Include="Classes\ColorNamePair.cs" />
+    <Compile Include="Classes\Constants.cs" />
     <Compile Include="Classes\DummyStringProperty.cs" />
     <Compile Include="Classes\Hotkey.cs" />
     <Compile Include="Classes\MenuStyleSelector.cs" />
@@ -433,9 +434,6 @@
     </Compile>
     <Compile Include="KeyLearnWindow.xaml.cs">
       <DependentUpon>KeyLearnWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PropertiesControls\GridControl.xaml.cs">
-      <DependentUpon>GridControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertiesControls\InputSelectorControl.xaml.cs">
       <DependentUpon>InputSelectorControl.xaml</DependentUpon>
@@ -552,10 +550,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="PropertiesControls\GridControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="PropertiesControls\InputSelectorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -818,7 +812,9 @@
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <PropertyGroup>
     <PostBuildEvent>del $(TargetDir)Melanchall*.dll
-del $(TargetDir)Melanchall*.dylib</PostBuildEvent>
+del $(TargetDir)Melanchall*.dylib
+ROBOCOPY $(TargetDir) $(TargetDir) /S /MOVE
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

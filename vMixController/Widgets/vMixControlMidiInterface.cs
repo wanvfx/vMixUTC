@@ -13,10 +13,6 @@ namespace vMixController.Widgets
     public class vMixControlMidiInterface : vMixControl
     {
         private static Dictionary<int, Melanchall.DryWetMidi.Multimedia.InputDevice> _openedDevices = new Dictionary<int, Melanchall.DryWetMidi.Multimedia.InputDevice>();
-        /// <summary>
-        /// The <see cref="Midis" /> property's name.
-        /// </summary>
-        public const string MidisPropertyName = "Midis";
 
         private ObservableCollection<MidiInterfaceKey> _midis = new ObservableCollection<MidiInterfaceKey>();
 
@@ -39,7 +35,7 @@ namespace vMixController.Widgets
                 }
 
                 _midis = value;
-                RaisePropertyChanged(MidisPropertyName);
+                RaisePropertyChanged(nameof(Midis));
             }
         }
 
@@ -55,12 +51,6 @@ namespace vMixController.Widgets
 
         [XmlIgnore]
         public Melanchall.DryWetMidi.Multimedia.InputDevice Device { get; set; }
-
-
-        /// <summary>
-        /// The <see cref="MaxMIDIValue" /> property's name.
-        /// </summary>
-        public const string MaxMIDIValuePropertyName = "MaxMIDIValue";
 
         private int _maxMIDIValue = 127;
 
@@ -83,14 +73,9 @@ namespace vMixController.Widgets
                 }
 
                 _maxMIDIValue = value;
-                RaisePropertyChanged(MaxMIDIValuePropertyName);
+                RaisePropertyChanged(nameof(MaxMIDIValue));
             }
         }
-
-        /// <summary>
-        /// The <see cref="DeviceCaps" /> property's name.
-        /// </summary>
-        public const string DeviceCapsPropertyName = "DeviceCaps";
 
         private string _deviceCaps = "";
 
@@ -116,7 +101,7 @@ namespace vMixController.Widgets
                     Device.EventReceived -= Device_EventReceived;
 
                 _deviceCaps = value;
-                RaisePropertyChanged(DeviceCapsPropertyName);
+                RaisePropertyChanged(nameof(DeviceCaps));
             }
         }
 
@@ -243,28 +228,7 @@ namespace vMixController.Widgets
 
             }
 
-            /*var midiDeviceComboBox = GetPropertyControl<ComboBoxControl>();
-            midiDeviceComboBox.Title = "Device";
-            midiDeviceComboBox.Items = MidiDevices;
-            midiDeviceComboBox.Tag = "DeviceSelector";
-            var b = new Binding("DeviceCaps");
-            b.Source = this;
-            b.Mode = BindingMode.TwoWay;
-            b.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            BindingOperations.SetBinding(midiDeviceComboBox, ComboBoxControl.ValueProperty, b);
-
-
-            var midiMappingCtrl = GetPropertyControl<MidiMappingControl>();
-            midiMappingCtrl.LearnFunction = Learn;
-
-
-            midiMappingCtrl.Midis.Clear();
-            foreach (var item in Midis)
-            {
-                midiMappingCtrl.Midis.Add(item);
-            }*/
-
-            return base.GetPropertiesControls();//base.GetPropertiesControls().Union(new UserControl[] { midiDeviceComboBox, midiMappingCtrl }).ToArray();
+            return base.GetPropertiesControls();
         }
 
         [XmlIgnore]

@@ -56,11 +56,6 @@ namespace vMixController.Widgets
             }
         }
 
-        /// <summary>
-        /// The <see cref="Controls" /> property's name.
-        /// </summary>
-        public const string ControlsPropertyName = "Controls";
-
         private ObservableCollection<vMixControl> _controls = new ObservableCollection<vMixControl>();
 
         /// <summary>
@@ -82,7 +77,7 @@ namespace vMixController.Widgets
                 }
 
                 _controls = value;
-                RaisePropertyChanged(ControlsPropertyName);
+                RaisePropertyChanged(nameof(Controls));
             }
         }
 

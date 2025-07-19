@@ -49,8 +49,6 @@ namespace vMixController.Widgets
     {
 
         protected NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        internal static Dictionary<string, UserControl> ControlsStore = new Dictionary<string, UserControl>();
         internal static List<UserControl> ControlsStoreUsage = new List<UserControl>();
         internal static State _internalState;
         internal static Regex _regexInt = new Regex(@"^\d+$");
@@ -67,17 +65,17 @@ namespace vMixController.Widgets
             }
         }
 
+        static vMixControl()
+        {
+            _shadowUpdate = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(1000)
+            };
+            _shadowUpdate.Start();
+        }
 
         public vMixControl()
         {
-            if (_shadowUpdate == null)
-            {
-                _shadowUpdate = new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromMilliseconds(1000)
-                };
-                _shadowUpdate.Start();
-            }
 
             WindowProperties = ((ViewModelLocator)Application.Current.FindResource("Locator")).WidgetSettings.WindowProperties;
         }
@@ -87,12 +85,6 @@ namespace vMixController.Widgets
         public virtual bool IsResizeableVertical { get { return false; } }
 
         public virtual int MaxCount => -1;
-
-
-        /// <summary>
-        /// The <see cref="WindowProperties" /> property's name.
-        /// </summary>
-        public const string WindowPropertiesPropertyName = "WindowProperties";
 
         private Quadriple<double?, double?, double?, double?> _windowProperties = new Quadriple<double?, double?, double?, double?>();
 
@@ -115,15 +107,9 @@ namespace vMixController.Widgets
                 }
 
                 _windowProperties = value;
-                RaisePropertyChanged(WindowPropertiesPropertyName);
+                RaisePropertyChanged(nameof(WindowProperties));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="IsPasswordLockable" /> property's name.
-        /// </summary>
-        public const string IsPasswordLockablePropertyName = "IsPasswordLockable";
 
         private bool _isPasswordLockable = true;
 
@@ -146,14 +132,9 @@ namespace vMixController.Widgets
                 }
 
                 _isPasswordLockable = value;
-                RaisePropertyChanged(IsPasswordLockablePropertyName);
+                RaisePropertyChanged(nameof(IsPasswordLockable));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsPasswordLocked" /> property's name.
-        /// </summary>
-        public const string IsPasswordLockedPropertyName = "IsPasswordLocked";
 
         private bool _isPasswordLocked = false;
 
@@ -176,14 +157,9 @@ namespace vMixController.Widgets
                 }
 
                 _isPasswordLocked = value;
-                RaisePropertyChanged(IsPasswordLockedPropertyName);
+                RaisePropertyChanged(nameof(IsPasswordLocked));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Locked" /> property's name.
-        /// </summary>
-        public const string LockedPropertyName = "Locked";
 
         private bool _locked = false;
 
@@ -206,14 +182,9 @@ namespace vMixController.Widgets
                 }
 
                 _locked = value;
-                RaisePropertyChanged(LockedPropertyName);
+                RaisePropertyChanged(nameof(Locked));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsCaptionVisible" /> property's name.
-        /// </summary>
-        public const string IsCaptionVisiblePropertyName = "IsCaptionVisible";
 
         private bool _isCaptionVisible = true;
 
@@ -236,14 +207,9 @@ namespace vMixController.Widgets
                 }
 
                 _isCaptionVisible = value;
-                RaisePropertyChanged(IsCaptionVisiblePropertyName);
+                RaisePropertyChanged(nameof(IsCaptionVisible));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsCaptionOn" /> property's name.
-        /// </summary>
-        public const string IsCaptionOffPropertyName = "IsCaptionOn";
 
         private bool _isCaptionOn = true;
 
@@ -266,14 +232,9 @@ namespace vMixController.Widgets
                 }
 
                 _isCaptionOn = value;
-                RaisePropertyChanged(IsCaptionOffPropertyName);
+                RaisePropertyChanged(nameof(IsCaptionOn));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsFocused" /> property's name.
-        /// </summary>
-        public const string IsFocusedPropertyName = "IsFocused";
 
         [NonSerialized]
         private bool _isFocused = false;
@@ -298,7 +259,7 @@ namespace vMixController.Widgets
                 }
 
                 _isFocused = value;
-                RaisePropertyChanged(IsFocusedPropertyName);
+                RaisePropertyChanged(nameof(IsFocused));
             }
         }
 
@@ -306,11 +267,6 @@ namespace vMixController.Widgets
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-        /// <summary>
-        /// The <see cref="Name" /> property's name.
-        /// </summary>
-        public const string NamePropertyName = "Name";
 
         private string _name = "";
 
@@ -333,15 +289,11 @@ namespace vMixController.Widgets
                 }
 
                 _name = value;
-                RaisePropertyChanged(NamePropertyName);
+                RaisePropertyChanged(nameof(Name));
             }
         }
 
 
-        /// <summary>
-        /// The <see cref="Color" /> property's name.
-        /// </summary>
-        public const string ColorPropertyName = "Color";
         [NonSerialized]
         private Color _color = ViewModel.vMixWidgetSettingsViewModel.Colors[0].A;
 
@@ -364,14 +316,10 @@ namespace vMixController.Widgets
                 }
 
                 _color = value;
-                RaisePropertyChanged(ColorPropertyName);
+                RaisePropertyChanged(nameof(Color));
             }
         }
 
-        /// <summary>
-        /// The <see cref="BorderColor" /> property's name.
-        /// </summary>
-        public const string BorderColorPropertyName = "BorderColor";
         [NonSerialized]
         private Color _borderColor = ViewModel.vMixWidgetSettingsViewModel.Colors[0].B;
 
@@ -394,14 +342,9 @@ namespace vMixController.Widgets
                 }
 
                 _borderColor = value;
-                RaisePropertyChanged(BorderColorPropertyName);
+                RaisePropertyChanged(nameof(BorderColor));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Top" /> property's name.
-        /// </summary>
-        public const string TopPropertyName = "Top";
 
         private double _top = 0;
 
@@ -424,14 +367,9 @@ namespace vMixController.Widgets
                 }
 
                 _top = value;
-                RaisePropertyChanged(TopPropertyName);
+                RaisePropertyChanged(nameof(Top));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Left" /> property's name.
-        /// </summary>
-        public const string LeftPropertyName = "Left";
 
         private double _left = 0;
 
@@ -454,14 +392,9 @@ namespace vMixController.Widgets
                 }
 
                 _left = value;
-                RaisePropertyChanged(LeftPropertyName);
+                RaisePropertyChanged(nameof(Left));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Width" /> property's name.
-        /// </summary>
-        public const string WidthPropertyName = "Width";
 
         protected double _width = 128;
 
@@ -484,14 +417,9 @@ namespace vMixController.Widgets
                 }
 
                 _width = value;
-                RaisePropertyChanged(WidthPropertyName);
+                RaisePropertyChanged(nameof(Width));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Height" /> property's name.
-        /// </summary>
-        public const string HeightPropertyName = "Height";
 
         private double _height = double.NaN;
 
@@ -515,15 +443,9 @@ namespace vMixController.Widgets
                 }
 
                 _height = value;
-                RaisePropertyChanged(HeightPropertyName);
+                RaisePropertyChanged(nameof(Height));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="ZIndex" /> property's name.
-        /// </summary>
-        public const string ZIndexPropertyName = "ZIndex";
 
         private int _ZIndex = 0;
 
@@ -546,14 +468,9 @@ namespace vMixController.Widgets
                 }
 
                 _ZIndex = value;
-                RaisePropertyChanged(ZIndexPropertyName);
+                RaisePropertyChanged(nameof(ZIndex));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Selected" /> property's name.
-        /// </summary>
-        public const string SelectedPropertyName = "Selected";
 
         private bool _selected = false;
 
@@ -576,14 +493,9 @@ namespace vMixController.Widgets
                 }
 
                 _selected = value;
-                RaisePropertyChanged(SelectedPropertyName);
+                RaisePropertyChanged(nameof(Selected));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsGhosted" /> property's name.
-        /// </summary>
-        public const string IsGhostedPropertyName = "IsGhosted";
 
         [NonSerialized]
         private bool _isGhosted = false;
@@ -608,14 +520,9 @@ namespace vMixController.Widgets
                 }
 
                 _isGhosted = value;
-                RaisePropertyChanged(IsGhostedPropertyName);
+                RaisePropertyChanged(nameof(IsGhosted));
             }
         }
-
-        /// <summary>
-        /// The <see cref="CaptionHeight" /> property's name.
-        /// </summary>
-        public const string CaptionHeightPropertyName = "CaptionHeight";
 
         private double _captionHeight = 0;
 
@@ -639,14 +546,9 @@ namespace vMixController.Widgets
                 }
 
                 _captionHeight = value;
-                RaisePropertyChanged(CaptionHeightPropertyName);
+                RaisePropertyChanged(nameof(CaptionHeight));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Hotkey" /> property's name.
-        /// </summary>
-        public const string HotkeyPropertyName = "Hotkey";
 
         private Hotkey[] _hotkey = null;
 
@@ -670,14 +572,9 @@ namespace vMixController.Widgets
                 }
 
                 _hotkey = value;
-                RaisePropertyChanged(HotkeyPropertyName);
+                RaisePropertyChanged(nameof(Hotkey));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsTemplate" /> property's name.
-        /// </summary>
-        public const string IsTemplatePropertyName = "IsTemplate";
 
         private bool _isTemplate = false;
 
@@ -700,14 +597,9 @@ namespace vMixController.Widgets
                 }
 
                 _isTemplate = value;
-                RaisePropertyChanged(IsTemplatePropertyName);
+                RaisePropertyChanged(nameof(IsTemplate));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Scale" /> property's name.
-        /// </summary>
-        public const string ScalePropertyName = "Scale";
 
         private float _scale = 1.0f;
 
@@ -730,7 +622,7 @@ namespace vMixController.Widgets
                 }
 
                 _scale = value;
-                RaisePropertyChanged(ScalePropertyName);
+                RaisePropertyChanged(nameof(Scale));
             }
         }
 
@@ -769,15 +661,9 @@ namespace vMixController.Widgets
             set
             {
                 _info = value;
-                RaisePropertyChanged("Info");
+                RaisePropertyChanged(nameof(Info));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="Page" /> property's name.
-        /// </summary>
-        public const string PagePropertyName = "Page";
 
         private int _page = 0;
 
@@ -800,7 +686,7 @@ namespace vMixController.Widgets
                 }
 
                 _page = value;
-                RaisePropertyChanged(PagePropertyName);
+                RaisePropertyChanged(nameof(Page));
             }
         }
 
@@ -1025,29 +911,6 @@ namespace vMixController.Widgets
         protected T GetValueByPath<T>(object obj, string path)
         {
             return (T)GetValueByPath(obj, path);
-        }
-
-        protected static T GetPropertyControl<T>(string key = "") where T : UserControl
-        {
-            if (ControlsStore.ContainsKey(typeof(T).FullName + key ?? ""))
-            {
-                ControlsStore[typeof(T).FullName + key].Tag = key;
-                ControlsStoreUsage.Add(ControlsStore[typeof(T).FullName + key ?? ""]);
-                return (T)ControlsStore[typeof(T).FullName + key ?? ""];
-            }
-            else
-            {
-                var c = (T)typeof(T).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>());
-                c.Tag = key;
-                if (!ControlsStore.ContainsKey(typeof(T).FullName + key ?? ""))
-                {
-                    ControlsStore.Add(typeof(T).FullName + key ?? "", c);
-                    ControlsStoreUsage.Add(c);
-                }
-                else
-                    ControlsStoreUsage.Add(c);
-                return c;
-            }
         }
 
         public vMixControl Copy()

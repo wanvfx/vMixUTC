@@ -1,7 +1,9 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
+using Microsoft.VisualBasic;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using vMixController.Classes;
 using vMixController.Controls;
 
 namespace vMixController.Widgets
@@ -19,12 +21,7 @@ namespace vMixController.Widgets
             Height = 48;
         }
 
-        /// <summary>
-        /// The <see cref="Style" /> property's name.
-        /// </summary>
-        public const string StylePropertyName = "Style";
-
-        private string _style = "Horizontal";//Basic, Basketball, American Football
+        private string _style = Classes.Constants.HORIZONTAL;//Basic, Basketball, American Football
 
         /// <summary>
         /// Sets and gets the Style property.
@@ -45,16 +42,11 @@ namespace vMixController.Widgets
                 }
 
                 _style = value;
-                RaisePropertyChanged(StylePropertyName);
+                RaisePropertyChanged(nameof(Style));
             }
         }
 
-        /// <summary>
-        /// The <see cref="Mode" /> property's name.
-        /// </summary>
-        public const string ModePropertyName = "Mode";
-
-        private string _mode = "A/B";
+        private string _mode = Classes.Constants.TBAR_MODE_AB;
 
         /// <summary>
         /// Sets and gets the Mode property.
@@ -75,7 +67,7 @@ namespace vMixController.Widgets
                 }
 
                 _mode = value;
-                RaisePropertyChanged(ModePropertyName);
+                RaisePropertyChanged(nameof(Mode));
             }
         }
 
@@ -87,19 +79,19 @@ namespace vMixController.Widgets
 
         // Using a DependencyProperty as the backing store for Value.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(int), typeof(vMixControlTBar), new PropertyMetadata(0, ValueChanged));
+            DependencyProperty.Register(nameof(Value), typeof(int), typeof(vMixControlTBar), new PropertyMetadata(0, ValueChanged));
 
         private static void ValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var bar = ((vMixControlTBar)d);
-            if (e.Property.Name == "Value" && !bar._reset)
+            if (e.Property.Name == nameof(Value) && !bar._reset)
             {
                 int value = Math.Min((int)e.NewValue, 255);
                 //value = value > 253 ? 255 : value;
                 bool reverse = bar._reverse;
                 value = reverse ? 255 - value : value;
                 bar.SendValue(value);
-                if (value == 255 && bar.Mode != "Snap Back")
+                if (value == 255 && bar.Mode != Classes.Constants.TBAR_MODE_SNAPBACK)
                     ((vMixControlTBar)d)._reverse = !reverse;
             }
             else
@@ -162,7 +154,7 @@ namespace vMixController.Widgets
                     ?? (_valueChangedCommand = new RelayCommand<RoutedEventArgs>(
                     (p) =>
                     {
-                        if (Value >= 255 && Mode == "Snap Back")
+                        if (Value >= 255 && Mode == Classes.Constants.TBAR_MODE_SNAPBACK)
                         {
                             ((TBarSlider)p.Source).CancelDrag();                            
                             _reset = true;

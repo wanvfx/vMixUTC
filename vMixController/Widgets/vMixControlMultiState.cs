@@ -20,12 +20,6 @@ namespace vMixController.Widgets
         [XmlIgnore]
         public State DummyState { get; set; }
 
-
-        /// <summary>
-        /// The <see cref="Enabled" /> property's name.
-        /// </summary>
-        public const string EnabledPropertyName = "Enabled";
-
         private bool _enabled = true;
 
         /// <summary>
@@ -47,7 +41,7 @@ namespace vMixController.Widgets
                 }
 
                 _enabled = value;
-                RaisePropertyChanged(EnabledPropertyName);
+                RaisePropertyChanged(nameof(Enabled));
             }
         }
 

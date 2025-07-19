@@ -10,10 +10,6 @@ namespace vMixController.Widgets
     public class vMixControlStreamDeck : vMixControl
     {
         public override int MaxCount => 1;
-        /// <summary>
-        /// The <see cref="Context" /> property's name.
-        /// </summary>
-        public const string ContextPropertyName = "Context";
 
         private string _context = "[NO BUTTON PRESSED]";
 
@@ -36,14 +32,9 @@ namespace vMixController.Widgets
                 }
 
                 _context = value;
-                RaisePropertyChanged(ContextPropertyName);
+                RaisePropertyChanged(nameof(Context));
             }
         }
-
-        /// <summary>
-        /// The <see cref="Keys" /> property's name.
-        /// </summary>
-        public const string KeysPropertyName = "Keys";
 
         private ObservableCollection<StreamDeckKey> _keys = new ObservableCollection<StreamDeckKey>();
 
@@ -66,7 +57,7 @@ namespace vMixController.Widgets
                 }
 
                 _keys = value;
-                RaisePropertyChanged(KeysPropertyName);
+                RaisePropertyChanged(nameof(Keys));
             }
         }
 

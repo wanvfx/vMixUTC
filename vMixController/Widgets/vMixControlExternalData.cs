@@ -34,11 +34,6 @@ namespace vMixController.Widgets
         public static readonly DependencyProperty DataProperty =
             DependencyProperty.Register("Data", typeof(ObservableCollection<string>), typeof(vMixControlExternalData), new PropertyMetadata(null));
 
-        /// <summary>
-        /// The <see cref="Enabled" /> property's name.
-        /// </summary>
-        public const string EnabledPropertyName = "Enabled";
-
         private bool _enabled = true;
 
         /// <summary>
@@ -60,14 +55,9 @@ namespace vMixController.Widgets
                 }
 
                 _enabled = value;
-                RaisePropertyChanged(EnabledPropertyName);
+                RaisePropertyChanged(nameof(Enabled));
             }
         }
-
-        /// <summary>
-        /// The <see cref="RestartData" /> property's name.
-        /// </summary>
-        public const string RestartDataPropertyName = "RestartData";
 
         private bool _restartData = true;
 
@@ -90,7 +80,7 @@ namespace vMixController.Widgets
                 }
 
                 _restartData = value;
-                RaisePropertyChanged(RestartDataPropertyName);
+                RaisePropertyChanged(nameof(RestartData));
             }
         }
 
@@ -108,11 +98,6 @@ namespace vMixController.Widgets
             if (Enabled)
                 UpdateText(Paths);
         }
-
-        /// <summary>
-        /// The <see cref="Period" /> property's name.
-        /// </summary>
-        public const string PeriodPropertyName = "Period";
 
         private int _period = 1000;
 
@@ -138,7 +123,7 @@ namespace vMixController.Widgets
                 _timer.Interval = TimeSpan.FromMilliseconds(value);
                 if (_dataProvider != null)
                     _dataProvider.Period = _period;
-                RaisePropertyChanged(PeriodPropertyName);
+                RaisePropertyChanged(nameof(Period));
             }
         }
 
@@ -150,11 +135,6 @@ namespace vMixController.Widgets
                 return Extensions.LocalizationManager.Get("External Data");
             }
         }
-
-        /// <summary>
-        /// The <see cref="DataProvider" /> property's name.
-        /// </summary>
-        public const string DataProviderPropertyName = "DataProvider";
 
         private IvMixDataProvider _dataProvider = null;
 
@@ -178,14 +158,9 @@ namespace vMixController.Widgets
                 }
 
                 _dataProvider = value;
-                RaisePropertyChanged(DataProviderPropertyName);
+                RaisePropertyChanged(nameof(DataProvider));
             }
         }
-
-        /// <summary>
-        /// The <see cref="DataProviderProperties" /> property's name.
-        /// </summary>
-        public const string DataProviderPropertiesPropertyName = "DataProviderProperties";
 
         private List<object> _dataProviderProperties = null;
 
@@ -215,15 +190,9 @@ namespace vMixController.Widgets
                 if (_dataProvider != null)
                     _dataProvider.SetProperties(value);
 
-                RaisePropertyChanged(DataProviderPropertiesPropertyName);
+                RaisePropertyChanged(nameof(DataProviderProperties));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="DataProviderContent" /> property's name.
-        /// </summary>
-        public const string DataProviderContentPropertyName = "DataProviderContent";
 
         private string _dataProviderContent = "";
 
@@ -253,15 +222,9 @@ namespace vMixController.Widgets
 
                 }
                 _dataProviderContent = String.Intern(value);
-                RaisePropertyChanged(DataProviderContentPropertyName);
+                RaisePropertyChanged(nameof(DataProviderContent));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="DataProviderPath" /> property's name.
-        /// </summary>
-        public const string DataProviderPathPropertyName = "DataProviderPath";
 
         private string _dataProviderPath = "";
 
@@ -302,7 +265,7 @@ namespace vMixController.Widgets
                 {
 
                 }
-                RaisePropertyChanged(DataProviderPathPropertyName);
+                RaisePropertyChanged(nameof(DataProviderPath));
             }
         }
 

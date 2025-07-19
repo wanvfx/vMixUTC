@@ -12,10 +12,6 @@ namespace vMixController.ViewModel
 {
     public class GlobalVariablesViewModel: ViewModelBase
     {
-        /// <summary>
-        /// The <see cref="Variables" /> property's name.
-        /// </summary>
-        public const string VariablesPropertyName = "Variables";
 
         public static ObservableCollection<Pair<string, string>> _variables = new ObservableCollection<Pair<string, string>>();
 
@@ -38,7 +34,7 @@ namespace vMixController.ViewModel
                 }
 
                 _variables = value;
-                RaisePropertyChanged(VariablesPropertyName);
+                RaisePropertyChanged(nameof(Variables));
             }
         }
 

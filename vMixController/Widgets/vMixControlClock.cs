@@ -45,11 +45,6 @@ namespace vMixController.Widgets
         /// </summary>
         public ObservableCollection<ScheduledEvent> Events { get; set; } = new ObservableCollection<ScheduledEvent>();
 
-        /// <summary>
-        /// The <see cref="NextEventAt" /> property's name.
-        /// </summary>
-        public const string NextEvetnAtPropertyName = "NextEventAt";
-
         private string _nextEventAt = "";
 
         /// <summary>
@@ -71,7 +66,7 @@ namespace vMixController.Widgets
                 }
 
                 _nextEventAt = value;
-                RaisePropertyChanged(NextEvetnAtPropertyName);
+                RaisePropertyChanged(nameof(NextEventAt));
             }
         }
 

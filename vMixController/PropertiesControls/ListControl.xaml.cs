@@ -1,21 +1,10 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using vMixController.Classes;
 
 namespace vMixController.PropertiesControls
@@ -30,11 +19,6 @@ namespace vMixController.PropertiesControls
             InitializeComponent();
         }
 
-
-
-        /// <summary>
-        /// Регистрация DependencyProperty. Это статическое поле содержит все метаданные о свойстве.
-        /// </summary>
         public static readonly DependencyProperty ItemsProperty =
             DependencyProperty.Register(
                 nameof(Items),
@@ -42,22 +26,14 @@ namespace vMixController.PropertiesControls
                 typeof(ListControl),
                 new PropertyMetadata(null));
 
-        /// <summary>
-        /// CLR-обертка для удобного доступа к свойству из кода.
-        /// Система WPF будет напрямую вызывать GetValue/SetValue для производительности.
-        /// </summary>
         public ObservableCollection<DummyStringProperty> Items
         {
             get { return (ObservableCollection<DummyStringProperty>)GetValue(ItemsProperty); }
             set { SetValue(ItemsProperty, value); }
         }
 
-
         private RelayCommand _addItemCommand;
 
-        /// <summary>
-        /// Gets the AddItemCommand.
-        /// </summary>
         public RelayCommand AddItemCommand
         {
             get
@@ -73,9 +49,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<DummyStringProperty> _removeItemCommand;
 
-        /// <summary>
-        /// Gets the RemoveItemCommand.
-        /// </summary>
         public RelayCommand<DummyStringProperty> RemoveItemCommand
         {
             get
@@ -91,9 +64,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand _saveItemsListCommand;
 
-        /// <summary>
-        /// Gets the SaveItemsListCOmmand.
-        /// </summary>
         public RelayCommand SaveItemsListCommand
         {
             get
@@ -123,9 +93,6 @@ namespace vMixController.PropertiesControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        /// <summary>
-        /// Gets the LoadItemsListCommand.
-        /// </summary>
         public RelayCommand LoadItemsListCommand
         {
             get

@@ -1,24 +1,16 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Serialization;
-using vMixAPI;
 using vMixController.Classes;
 using vMixController.Interfaces;
 using vMixController.Widgets;
@@ -46,7 +38,6 @@ namespace vMixController.PropertiesControls
 
         private void OnCommandsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            //Re-generate code, when any of properties was changed
             if (e.NewItems != null)
                 foreach (vMixControlButtonCommand cmd in e.NewItems)
                 {
@@ -79,7 +70,7 @@ namespace vMixController.PropertiesControls
         private void GenerateCode()
         {
             if (Commands.Count > 0)
-                TextCode = Commands.Select(x=>x.ToString()).Aggregate((x, y) => x + "\r\n" + y);
+                TextCode = Commands.Select(x => x.ToString()).Aggregate((x, y) => x + "\r\n" + y);
             else
                 TextCode = "";
 
@@ -106,7 +97,6 @@ namespace vMixController.PropertiesControls
                 if (ident < 0) ident = 0;
 
                 icmd.Ident = new Thickness(ident, 0, 0, 0);
-                //GenerateCode();
 
             }
         }
@@ -147,97 +137,43 @@ namespace vMixController.PropertiesControls
             }
         }
 
-        /// <summary>
-        /// The <see cref="TextCode" /> property's name.
-        /// </summary>
-        public const string TextCodePropertyName = "TextCode";
+        public static readonly DependencyProperty TextCodePropertyName =
+             DependencyProperty.Register(nameof(TextCode), typeof(string), typeof(ScriptControl), new PropertyMetadata(""));
 
-        private string _textCode = "";
-
-        /// <summary>
-        /// Sets and gets the TextCode property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public string TextCode
         {
-            get
-            {
-                return _textCode;
-            }
-
-            set
-            {
-                if (_textCode == value)
-                {
-                    return;
-                }
-
-                _textCode = value;
-
-                RaisePropertyChanged(TextCodePropertyName);
-            }
+            get { return (string)GetValue(TextCodePropertyName); }
+            set { SetValue(TextCodePropertyName, value); }
         }
 
-        /// <summary>
-        /// The <see cref="IsCancelled" /> property's name.
-        /// </summary>
-        public const string IsCancelledPropertyName = "IsCancelled";
+        public static readonly DependencyProperty IsCancelledPropertyName =
+             DependencyProperty.Register(nameof(IsCancelled), typeof(bool), typeof(ScriptControl), new PropertyMetadata(false));
 
-        private bool _isCancelled = false;
-
-        /// <summary>
-        /// Sets and gets the IsCancelled property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
         public bool IsCancelled
         {
-            get
-            {
-                return _isCancelled;
-            }
-
-            set
-            {
-                if (_isCancelled == value)
-                {
-                    return;
-                }
-
-                _isCancelled = value;
-
-                RaisePropertyChanged(IsCancelledPropertyName);
-            }
+            get { return (bool)GetValue(IsCancelledPropertyName); }
+            set { SetValue(IsCancelledPropertyName, value); }
         }
 
-        /// <summary>
-        /// Идентифицирует свойство зависимостей <see cref="Log"/>.
-        /// </summary>
         public static readonly DependencyProperty LogProperty =
             DependencyProperty.Register(
                 nameof(Log),
                 typeof(string),
-                typeof(ScriptControl), // <-- Замените YourControl на имя вашего класса
-                new PropertyMetadata("")); // Значение по умолчанию - пустая строка
+                typeof(ScriptControl),
+                new PropertyMetadata(""));
 
-        /// <summary>
-        /// Получает или задает свойство Log.
-        /// Это свойство зависимостей.
-        /// </summary>
         public string Log
         {
             get { return (string)GetValue(LogProperty); }
             set { SetValue(LogProperty, value); }
         }
 
-        // <summary>
-        /// Идентифицирует свойство зависимостей <see cref="Commands"/>.
-        /// </summary>
         public static readonly DependencyProperty CommandsProperty =
             DependencyProperty.Register(
                 nameof(Commands),
                 typeof(ObservableCollection<vMixControlButtonCommand>),
                 typeof(ScriptControl),
-                new PropertyMetadata(null, CommandsChangedCallback)); // По умолчанию null, чтобы избежать совместного использования одной коллекции между экземплярами
+                new PropertyMetadata(null, CommandsChangedCallback));
 
         private static void CommandsChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -251,22 +187,14 @@ namespace vMixController.PropertiesControls
                 nv.CollectionChanged += ((ScriptControl)d).OnCommandsChanged;
         }
 
-        /// <summary>
-        /// Получает или задает коллекцию команд для кнопки.
-        /// Это свойство зависимостей.
-        /// </summary>
         public ObservableCollection<vMixControlButtonCommand> Commands
         {
             get { return (ObservableCollection<vMixControlButtonCommand>)GetValue(CommandsProperty); }
             set { SetValue(CommandsProperty, value); }
         }
 
-
         private RelayCommand<vMixControlButtonCommand> _removeCommandCommand;
 
-        /// <summary>
-        /// Gets the RemoveCommandCommand.
-        /// </summary>
         public RelayCommand<vMixControlButtonCommand> RemoveCommandCommand
         {
             get
@@ -277,16 +205,12 @@ namespace vMixController.PropertiesControls
                     {
                         Commands.Remove(p);
                         RearrangeCommnads();
-                        //CollectionViewSource.GetDefaultView(script.ItemsSource)?.Refresh();
                     }));
             }
         }
 
         private RelayCommand _addCommandCommand;
 
-        /// <summary>
-        /// Gets the AddCommandCommand.
-        /// </summary>
         public RelayCommand AddCommandCommand
         {
             get
@@ -303,16 +227,13 @@ namespace vMixController.PropertiesControls
                         RearrangeCommnads();
 
                         bottomMarker.BringIntoView();
-                        
+
                     }));
             }
         }
 
         private RelayCommand _exportScriptCommand;
 
-        /// <summary>
-        /// Gets the ExportScriptCommand.
-        /// </summary>
         public RelayCommand ExportScriptCommand
         {
             get
@@ -340,9 +261,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand _importScriptCommand;
 
-        /// <summary>
-        /// Gets the ImportScriptCommand.
-        /// </summary>
         public RelayCommand ImportScriptCommand
         {
             get
@@ -384,9 +302,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand _clearScriptCommand;
 
-        /// <summary>
-        /// Gets the ClearScriptCommand.
-        /// </summary>
         public RelayCommand ClearScriptCommand
         {
             get
@@ -402,9 +317,6 @@ namespace vMixController.PropertiesControls
 
         private RelayCommand<vMixControlButtonCommand> _moveCommandUpCommand;
 
-        /// <summary>
-        /// Gets the MoveCommandUpCommand.
-        /// </summary>
         public RelayCommand<vMixControlButtonCommand> MoveCommandUpCommand
         {
             get
@@ -432,9 +344,7 @@ namespace vMixController.PropertiesControls
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-        /// <summary>
-        /// Gets the MoveCommandDownCommand.
-        /// </summary>
+
         public RelayCommand<vMixControlButtonCommand> MoveCommandDownCommand
         {
             get
@@ -457,7 +367,6 @@ namespace vMixController.PropertiesControls
         {
             if ((sender as TabControl).SelectedIndex == 1)
             {
-                //GenerateCode();
                 Code.Select(0, 0);
             }
         }
@@ -471,13 +380,11 @@ namespace vMixController.PropertiesControls
                 Commands.Clear();
                 foreach (var line in code)
                     Commands.Add(vMixControlButtonCommand.FromString(line));
-                //_prevIndex = 0;
             }
         }
 
         private void BindableAvalonEditor_GotFocus(object sender, RoutedEventArgs e)
         {
-            //_prevIndex++;
         }
 
         private void Func_PreviewKeyDown(object sender, KeyEventArgs e)

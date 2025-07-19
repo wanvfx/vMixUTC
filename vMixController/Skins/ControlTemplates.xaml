@@ -301,10 +301,10 @@
                         </i:Interaction.Triggers>
                     </ctrls:TBarSlider>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Style}" Value="Horizontal">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.HORIZONTAL}">
 
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="Vertical">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.VERTICAL}">
                             <Setter Property="Orientation" TargetName="Bar" Value="Vertical"/>
                             <Setter Property="HorizontalAlignment" TargetName="Bar" Value="Center"/>
                             <Setter Property="VerticalAlignment" TargetName="Bar" Value="Stretch"/>
@@ -490,11 +490,11 @@
                         </Border>
                     </StackPanel>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Style}" Value="Horizontal">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.HORIZONTAL}">
                             <Setter TargetName="Border" Property="Height" Value="5"/>
                             <Setter TargetName="Border1" Property="Height" Value="5"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="Vertical">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.VERTICAL}">
                             <Setter TargetName="Busses" Property="VerticalAlignment" Value="Bottom"/>
                             <Setter TargetName="Busses" Property="LayoutTransform">
                                 <Setter.Value>
@@ -675,7 +675,7 @@
                         </Button>
                     </StackPanel>
                     <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding Style}" Value="Basic">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.SCORE_BASIC}">
                             <Setter Property="Visibility" TargetName="p1" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="p2" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p3" Value="Collapsed"/>
@@ -684,7 +684,7 @@
                             <Setter Property="Visibility" TargetName="p6" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p7" Value="Collapsed"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="Basketball">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.SCORE_BASKETBALL}">
                             <Setter Property="Visibility" TargetName="p1" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="p2" Value="Visible"/>
                             <Setter Property="Visibility" TargetName="p3" Value="Visible"/>
@@ -693,18 +693,18 @@
                             <Setter Property="Visibility" TargetName="p6" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p7" Value="Collapsed"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="Rugby">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.SCORE_RUGBY}">
                             <Setter Property="Visibility" TargetName="p6" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p1" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p7" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p4" Value="Collapsed"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="American Football">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.SCORE_AMERICANFOOTBALL}">
                             <Setter Property="Visibility" TargetName="p5" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p7" Value="Collapsed"/>
                             <Setter Property="Visibility" TargetName="p4" Value="Collapsed"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Style}" Value="Custom">
+                        <DataTrigger Binding="{Binding Style}" Value="{x:Static cls:Constants.SCORE_CUSTOM}">
                             <Setter Property="Visibility" Value="{Binding EnabledButtons, Converter={c:BitToVisibilityConverter}, ConverterParameter=0}" TargetName="p1"/>
                             <Setter Property="Visibility" Value="{Binding EnabledButtons, Converter={c:BitToVisibilityConverter}, ConverterParameter=1}" TargetName="p2"/>
                             <Setter Property="Visibility" Value="{Binding EnabledButtons, Converter={c:BitToVisibilityConverter}, ConverterParameter=2}" TargetName="p3"/>
