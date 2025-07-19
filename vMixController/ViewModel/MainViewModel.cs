@@ -32,6 +32,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Security.Policy;
 using vMixAPI;
 using System.Windows.Data;
+using vMixController.Extensions;
 
 namespace vMixController.ViewModel
 {
@@ -1727,12 +1728,14 @@ namespace vMixController.ViewModel
                 LIVE = true;
 
                 var ol = _windowSettings.OpenLastAtStart;
+                var recent = (ObservableCollection<string>)_windowSettings.RecentFiles.Copy();
 
                 foreach (var item in Utils.LoadController(opendlg, Functions, out _windowSettings))
                     _widgets.Add(item);
 
 
                 _windowSettings.OpenLastAtStart = ol;
+                _windowSettings.RecentFiles = recent;
 
                 foreach (var item in _widgets)
                     item.Update();

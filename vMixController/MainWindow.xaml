@@ -271,7 +271,23 @@
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Command="{Binding LoadControllerCommand}" Header="{e:Localize Open}" ItemsSource="{Binding WindowSettings.RecentFiles}">
+
+                <MenuItem Command="{Binding LoadControllerCommand}" Header="{e:Localize Open}">
+                    <MenuItem.Icon>
+                        <Border Width="16" Height="16">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
+                        </Border>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <MenuItem Header="{e:Localize Recent Files}" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
+                    <MenuItem.Resources>
+                        <ResourceDictionary>
+                        <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF15B;</TextBlock>
+                        </Border>
+                        </ResourceDictionary>
+                    </MenuItem.Resources>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
@@ -281,12 +297,7 @@
                         <Style TargetType="{x:Type MenuItem}">
                             <Setter Property="Command" Value="{Binding Main.LoadRecentControllerCommand, Source={StaticResource Locator}}"/>
                             <Setter Property="CommandParameter" Value="{Binding}"/>
-                            <Setter Property="Icon">
-                                <Setter.Value>
-                                    <Border Width="16" Height="16">
-                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF15B;</TextBlock>
-                                    </Border>
-                                </Setter.Value>
+                            <Setter Property="Icon" Value="{StaticResource Icon}">
                             </Setter>
                         </Style>
                     </MenuItem.ItemContainerStyle>
