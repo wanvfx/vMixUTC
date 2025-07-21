@@ -1,7 +1,7 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
-using CommonServiceLocator;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,30 +9,23 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml.Serialization;
-using vMixController.Classes;
-using vMixController.Widgets;
-using System.Text;
-using System.Xml;
-using Microsoft.SqlServer.Server;
-using System.Linq.Expressions;
-using System.IO.Compression;
-using vMixController.Messages;
-using vMixControllerSkin;
-using static System.Net.Mime.MediaTypeNames;
-using System.Security.Policy;
 using vMixAPI;
-using System.Windows.Data;
+using vMixController.Classes;
 using vMixController.Extensions;
+using vMixController.Messages;
+using vMixController.Widgets;
+using vMixControllerSkin;
 
 namespace vMixController.ViewModel
 {
@@ -704,10 +697,6 @@ namespace vMixController.ViewModel
 
         #endregion
 
-        /// <summary>
-        /// The <see cref="Title" /> property's name.
-        /// </summary>
-        public const string TitlePropertyName = "Title";
 
         private string _title = string.Format(CultureInfo.CreateSpecificCulture("en-US").DateTimeFormat, "vMix Universal Title Controller ({0:d})", GetBuildDateTime(Assembly.GetExecutingAssembly()));
 
@@ -726,14 +715,9 @@ namespace vMixController.ViewModel
             private set
             {
                 _title = value;
-                RaisePropertyChanged(TitlePropertyName);
+                RaisePropertyChanged(nameof(Title));
             }
         }
-
-        /// <summary>
-        /// The <see cref="IsGhosted" /> property's name.
-        /// </summary>
-        public const string IsGhostedPropertyName = "IsGhosted";
 
         private bool _isGhosted = false;
 
@@ -763,14 +747,9 @@ namespace vMixController.ViewModel
                         item.IsGhosted = _isGhosted;
                 }
 
-                RaisePropertyChanged(IsGhostedPropertyName);
+                RaisePropertyChanged(nameof(IsGhosted));
             }
         }
-
-        /// <summary>
-        /// The <see cref="UpdateLink" /> property's name.
-        /// </summary>
-        public const string UpdateLinkPropertyName = "UpdateLink";
 
         private string _updateLink = null;
 
@@ -793,14 +772,9 @@ namespace vMixController.ViewModel
                 }
 
                 _updateLink = value;
-                RaisePropertyChanged(UpdateLinkPropertyName);
+                RaisePropertyChanged(nameof(UpdateLink));
             }
         }
-
-        /// <summary>
-        /// The <see cref="AvailableVersion" /> property's name.
-        /// </summary>
-        public const string AvailableVersionPropertyName = "AvailableVersion";
 
         private DateTime _availableVersion = GetBuildDateTime(Assembly.GetExecutingAssembly());
 
@@ -823,15 +797,9 @@ namespace vMixController.ViewModel
                 }
 
                 _availableVersion = value;
-                RaisePropertyChanged(AvailableVersionPropertyName);
+                RaisePropertyChanged(nameof(AvailableVersion));
             }
         }
-
-
-        /// <summary>
-        /// The <see cref="SelectedTab" /> property's name.
-        /// </summary>
-        public const string SelectedTabPropertyName = "SelectedTab";
 
         private int _selectedTab = 1;
 
@@ -862,14 +830,9 @@ namespace vMixController.ViewModel
                 }
 
                 _selectedTab = value;
-                RaisePropertyChanged(SelectedTabPropertyName);
+                RaisePropertyChanged(nameof(SelectedTab));
             }
         }
-
-        /// <summary>
-        /// The <see cref="PageIndex" /> property's name.
-        /// </summary>
-        public const string PageIndexPropertyName = "PageIndex";
 
         private int _pageIndex = 0;
 
@@ -892,24 +855,18 @@ namespace vMixController.ViewModel
                 }
 
                 _pageIndex = value;
-                RaisePropertyChanged(PageIndexPropertyName);
+                RaisePropertyChanged(nameof(PageIndex));
             }
         }
 
         private void InsertWidgetByZIndex(vMixControl widget)
         {
             widget.IsGhosted = widget.ZIndex >= 0 && IsGhosted;
-            //var first = _widgets.Select((item, index) => new { itm = item, idx = index }).OrderBy(i => i.itm.ZIndex).FirstOrDefault();
-            //if (first != null)
-            //{
             if (widget.ZIndex < 0)
                 _widgets.Insert(0, widget);
             else
                 _widgets.Add(widget);
             RaisePropertyChanged(nameof(Widgets));
-            //}
-            //else
-            //    _widgets.Add(widget);
         }
 
 
@@ -1006,8 +963,19 @@ namespace vMixController.ViewModel
                     p =>
                     {
                         SaveUndo(string.Format("Widget {1}[{0}] removed", p.Type, p.Name));
-                        p.Dispose();
-                        Widgets.Remove(p);
+
+                        int processed = 0;
+                        foreach (var widget in Widgets.Where(x => x.Selected).ToArray())
+                        {
+                            Widgets.Remove(widget);
+                            widget.Dispose();
+                            processed++;
+                        }
+                        if (processed == 0)
+                        {
+                            p.Dispose();
+                            Widgets.Remove(p);
+                        }
                     }));
             }
         }
@@ -1027,17 +995,45 @@ namespace vMixController.ViewModel
                     {
                         try
                         {
-                            var copy = p.Copy();
-                            if (copy == null) return;
-                            copy.Name += " copy";
-                            copy.State = Model;
-                            copy.Left += 16;
-                            copy.Top += 16;
-                            copy.Update();
-                            if (copy.ZIndex < 0)
-                                InsertWidgetByZIndex(copy);
-                            else
-                                _widgets.Add(copy);
+                            vMixControl copy = null;
+                            int processed = 0;
+                            //Process selection
+                            foreach (var widget in Widgets.Where(x => x.Selected).ToArray())
+                            {
+                                copy = widget.Copy();
+                                if (copy == null) continue;
+                                copy.Name += " copy";
+                                copy.State = Model;
+                                copy.Left += 16;
+                                copy.Top += 16;
+                                copy.Update();
+                                if (copy.ZIndex < 0)
+                                    InsertWidgetByZIndex(copy);
+                                else
+                                {
+                                    copy.ZIndex++;
+                                    _widgets.Add(copy);
+                                }
+                                widget.Selected = false;
+                                processed++;
+                            }
+                            if (processed == 0)
+                            {
+                                copy = p.Copy();
+                                if (copy == null) return;
+                                copy.Name += " copy";
+                                copy.State = Model;
+                                copy.Left += 16;
+                                copy.Top += 16;
+                                copy.Update();
+                                if (copy.ZIndex < 0)
+                                    InsertWidgetByZIndex(copy);
+                                else
+                                {
+                                    copy.ZIndex++;
+                                    _widgets.Add(copy);
+                                }
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1061,6 +1057,12 @@ namespace vMixController.ViewModel
                     ?? (_moveWidgetCommand = new RelayCommand<ControlIntParameter>(
                     p =>
                     {
+                        //Process selection
+                        foreach (var widget in Widgets.Where(x => x.Selected))
+                        {
+                            widget.Page = p.B;
+                            widget.Selected = false;
+                        }
                         p.A.Page = p.B;
                     }));
             }
@@ -1079,6 +1081,11 @@ namespace vMixController.ViewModel
                     ?? (_toggleCaptionCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        //Process selection
+                        foreach (var widget in Widgets.Where(x => x.Selected))
+                        {
+                            widget.IsCaptionOn = !p.IsCaptionOn;
+                        }
                         p.IsCaptionOn = !p.IsCaptionOn;
                     }));
             }
@@ -1097,6 +1104,11 @@ namespace vMixController.ViewModel
                     ?? (_scaleUpCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        //Process selection
+                        foreach (var widget in Widgets.Where(x => x.Selected))
+                        {
+                            widget.Scale += 0.25f;
+                        }
                         p.Scale += 0.25f;
                     }));
             }
@@ -1116,6 +1128,12 @@ namespace vMixController.ViewModel
                     ?? (_scaleDownCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        //Process selection
+                        foreach (var widget in Widgets.Where(x => x.Selected))
+                        {
+                            if (widget.Scale - 0.25f >= 1.0f)
+                                widget.Scale -= 0.25f;
+                        }
                         if (p.Scale - 0.25f >= 1.0f)
                             p.Scale -= 0.25f;
 
@@ -1155,7 +1173,7 @@ namespace vMixController.ViewModel
                         {
                             SaveUndo(string.Format("Widget {1}[{0}] properties changed", p.Type, p.Name));
                             _settings.SaveConnectedWidgetProperties();
-                            p.SetProperties(viewModel);
+                            p.AfterPropertiesChanged();
                         }
                         _logger.Debug("Properties updated.");
                         _settings = null;
@@ -1201,6 +1219,7 @@ namespace vMixController.ViewModel
                                 if (widget is vMixControlTextField)
                                     ((vMixControlTextField)widget).IsLive = LIVE;
                                 widget.Update();
+                                
 
                                 SaveUndo(string.Format("Widget [{0}] created", widget.Type));
                                 UndoState.Seek(0, SeekOrigin.Begin);
@@ -1209,6 +1228,9 @@ namespace vMixController.ViewModel
                                     UndoState.CopyTo(beforeCreated);
 
                                     InsertWidgetByZIndex(widget);
+                                    if (widget.ZIndex >= 0)
+                                        widget.ZIndex = Widgets.Count;
+
                                     _logger.Debug("New {0} widget added.", widget.Type.ToLower());
 
                                     OpenPropertiesCommand.Execute(widget);
@@ -1433,6 +1455,7 @@ namespace vMixController.ViewModel
                                 ctrl.Update();
                                 _logger.Debug("Widget \"{0}\" was copied.", p.B.Name);
                                 InsertWidgetByZIndex(ctrl);
+                                ctrl.ZIndex = Widgets.Count;
                             }
                             //_widgets.Add(ctrl);
                         };
@@ -1869,7 +1892,7 @@ namespace vMixController.ViewModel
         {
             var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
 
-            if (state == null || state.Inputs.Where(x=>x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
+            if (state == null || state.Inputs.Where(x => x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
             var input = new vMixAPI.Input() { Number = -99, Title = "[Global Variables]", Key = "vmix-utc-internal-gv" };
             int index = 0;
             foreach (var v in globalSettings.Variables)
@@ -2472,58 +2495,6 @@ namespace vMixController.ViewModel
             {
                 _logger.Error(e, "Error while checking updates. {0}");
             }
-            /*HtmlAgilityPack.HtmlWeb w = new HtmlAgilityPack.HtmlWeb();
-            w.LoadFromWebAsync("https://forums.vmix.com/posts/t6468--FREE--Universal-Title-Controller").ContinueWith(doc =>
-            {
-                if (doc.Exception != null)
-                {
-                    _logger.Error(doc.Exception, "Error while checking updates. {0}");
-                    return;
-                }
-
-                try
-                {
-                    var link = doc.Result.DocumentNode.SelectSingleNode("//html/body/form/div/div[3]/div/table[3]/tr[2]/td[2]/div/div/div/span[6]/strong/span/a");
-                    var text = doc.Result.DocumentNode.SelectSingleNode("//html/body/form/div/div[3]/div/table[3]/tr[2]/td[2]/div/div/div/span[6]/strong/span");
-                    var changelog = doc.Result.DocumentNode.SelectSingleNode("//html/body/form/div/div[3]/div/table[3]/tr[2]/td[2]/div/div/div/div[2]");
-                    if (link != null && text != null)
-                    {
-                        var url = link.Attributes["href"].Value;
-                        var version = DateTime.Parse(text.InnerText.Split(' ').Last().TrimEnd(')'), new CultureInfo("RU-ru"));
-                        var build = GetBuildDateTime(Assembly.GetExecutingAssembly());
-#if DEBUG
-                        build = build.AddYears(-1);
-#endif
-                        var needUpdate = build < version;
-                        if (needUpdate)
-                        {
-                            Title += " [Update Available]";
-                            UpdateLink = url;
-                            AvailableVersion = version;
-
-                            if (changelog != null)
-                            {
-                                var changes = changelog.InnerHtml.Replace("<br>", "|").Split('|').Where(x => !string.IsNullOrEmpty(x)).Select(x => x.Trim()).ToArray();
-                                var html = "";
-                                foreach (var item in changes)
-                                {
-                                    if (item.StartsWith("+"))
-                                        html += string.Format("<p>{0}</p>", item);
-                                    else if (item.StartsWith("!"))
-                                        html += string.Format("<p>{0}</p>", item);
-                                    else
-                                        html += string.Format("<b>{0}</b>", item);
-                                }
-                                File.WriteAllText(Path.Combine(_documentsPath, "Changelog.html"), string.Format("<html><head><style>{0}</style></head><body>{1}</body></html>", css, html));
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e, "Error while checking updates. {0}");
-                }
-            });*/
         }
 
         private void MainViewModel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -2889,17 +2860,19 @@ namespace vMixController.ViewModel
                     ?? (_duplicateSelectedCommand = new RelayCommand(
                     () =>
                     {
-                        
+
                         List<vMixControl> dups = new List<vMixControl>();
                         foreach (var item in _widgets.Where(x => x.Selected))
                         {
-                            
+
                             var copy = item.Copy();
                             if (copy != null)
                             {
                                 dups.Add(copy);
                                 copy.Left += 16;
                                 copy.Top += 16;
+                                if (copy.ZIndex > 0)
+                                    copy.ZIndex++;
                                 copy.State = Model;
                                 item.Selected = false;
                             }

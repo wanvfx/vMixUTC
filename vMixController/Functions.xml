@@ -43,6 +43,14 @@
 
 	<vMixFunctionReference>
 		<Native>true</Native>
+		<Description>Draft API POST call</Description>
+		<Function>APIPOST</Function>
+		<StringDescription>http://</StringDescription>
+		<FormatString>http://{2}</FormatString>
+	</vMixFunctionReference>
+	
+	<vMixFunctionReference>
+		<Native>true</Native>
 		<Description>Execute windows application</Description>
 		<Function>Win</Function>
 		<StringDescription>Path</StringDescription>

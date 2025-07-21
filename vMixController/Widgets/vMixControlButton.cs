@@ -31,13 +31,6 @@ namespace vMixController.Widgets
     {
         public override bool IsResizeableVertical => true;
 
-        //private const string MOMENTARY = "Momentary";
-        //private const string TOGGLE = "Toggle";
-        //private const string PRESS = "Press";
-
-        //private const string DEFAULT = "Default";
-        //private const string DEFAULTPRESSED = "Default+Pressed";
-
         static XmlDocument _latestDocument;
 
         Regex _isExpression = new Regex(@"([\+|\-])\=(\d+\.?\d*)");
@@ -1078,6 +1071,20 @@ namespace vMixController.Widgets
                                 else
                                     AddLog("{1}) API WRONG URL = {0}", strparameter, _pointer + 1);
                                 break;
+                            case NativeFunctions.API_POST:
+
+                                //WebClient _webClient = new vMixWebClient();
+                                strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
+                                Uri uripost;
+                                if (Uri.TryCreate(strparameter, UriKind.Absolute, out uripost))
+                                {
+                                    vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter, post: true);
+                                    //_webClient.DownloadStringAsync(uri, null);
+                                    AddLog("{1}) API POST {0}", strparameter, _pointer + 1);
+                                }
+                                else
+                                    AddLog("{1}) API POST WRONG URL = {0}", strparameter, _pointer + 1);
+                                break;
                             case NativeFunctions.TIMER:
                                 parameter = CalculateExpression<int>(cmd.Parameter);
                                 AddLog("{2}) TIMER {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
@@ -1291,20 +1298,22 @@ namespace vMixController.Widgets
             ExecuteHotkey(index);
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
+        /*public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
         {
             base.SetProperties(viewModel);
-            BlinkBorderColor = BorderColor;
-        }
+            
+        }*/
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
+            
+            BlinkBorderColor = BorderColor;
 
             bool hasGoToOrTimer = false;
             int p;

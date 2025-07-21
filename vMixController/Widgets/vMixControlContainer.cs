@@ -98,15 +98,14 @@ namespace vMixController.Widgets
             base.ExecuteHotkey(index);
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(viewModel);
-
+            base.AfterPropertiesChanged();
             if (!string.IsNullOrWhiteSpace(FilePath))
             {
                 _controls.Clear();
@@ -118,15 +117,6 @@ namespace vMixController.Widgets
                     item.IsCaptionVisible = false;
                     item.Locked = true;
                     _controls.Add(item);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < _controls.Count; i++)
-                {
-                    if (_propIndex.Count > i)
-                    _controls[i].SetProperties(_propIndex[i]);
-                    _propIndex[i] = null;
                 }
             }
             FilePath = null;

@@ -98,17 +98,17 @@ namespace vMixController.Widgets
                 bar._reset = false;
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
             Value = 0;
             _reverse = false;
 
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
         }
 
         public override void Update()

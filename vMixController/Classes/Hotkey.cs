@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace vMixController.Classes
 {
     [Serializable]
-    public class Hotkey: INotifyPropertyChanged
+    public class Hotkey: INotifyPropertyChanged, ICloneable
     {
         public string Name { get; set; }
         public string Link { get; set; }
@@ -46,6 +46,11 @@ namespace vMixController.Classes
         private void RaisePropertyChanged(string keyPropertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(keyPropertyName));
+        }
+
+        public object Clone()
+        {
+            return new Hotkey() { Active = Active, Alt = Alt, Ctrl = Ctrl, Key = Key, Link = Link, Name = Name, OnPress = OnPress, Shift = Shift };
         }
 
         public bool Ctrl { get; set; }

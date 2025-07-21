@@ -112,9 +112,9 @@ namespace vMixController.Widgets
             new Classes.Hotkey() { Name = "-1 Second" }};
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
         private void Tick(TimeSpan e)
@@ -594,15 +594,9 @@ namespace vMixController.Widgets
             }
         }
 
-        public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(viewModel);
-
-        }
-
-        public override void SetProperties(UserControl[] _controls)
-        {
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
         }
 
         protected override void Dispose(bool managed)

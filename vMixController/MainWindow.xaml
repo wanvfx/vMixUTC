@@ -805,7 +805,7 @@
                                 </SolidColorBrush>
                             </TextBlock.Foreground>
                         </TextBlock>
-                        <ListView VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" ItemsSource="{Binding Widgets}" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening">
+                        <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening">
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="CreateContextMenu" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
                                     <ContextMenu.Resources>

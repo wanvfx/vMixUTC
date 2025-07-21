@@ -953,28 +953,26 @@ namespace vMixController.Widgets
             return Array.Empty<Hotkey>();
         }
 
-        public virtual UserControl[] GetPropertiesControls()
+        public virtual void BeforePropertiesChanged()
         {
-            return Array.Empty<UserControl>();
+            //return Array.Empty<UserControl>();
         }
 
-        public virtual void SetProperties(ViewModel.vMixWidgetSettingsViewModel viewModel)
+        /*public virtual void SetProperties(ViewModel.vMixWidgetSettingsViewModel viewModel)
         {
-            Name = viewModel.Name;
-            Color = viewModel.Color;
-            BorderColor = vMixController.ViewModel.vMixWidgetSettingsViewModel.Colors.Where(x => x.A == viewModel.Color).FirstOrDefault().B;
-            Hotkey = viewModel.Hotkey.ToArray();
+            //Name = viewModel.Name;
+            //Color = viewModel.Color;
 
-            WindowProperties = viewModel.WindowProperties;
+            //Hotkey = viewModel.Hotkey.ToArray();
+            //ZIndex = viewModel.ZIndex;
 
-            SetProperties(viewModel.WidgetPropertiesControls);
+            //WindowProperties = viewModel.WindowProperties;
+            AfterPropertiesChanged();
+            //SetProperties(viewModel.WidgetPropertiesControls);
 
             /*if (this is IvMixAutoUpdateWidget)
                 (this as IvMixAutoUpdateWidget).Period = viewModel.Period;*/
-            UpdateHotkeys();
-
-            GC.Collect(1);
-        }
+        //}
 
         private void UpdateHotkeys()
         {
@@ -1004,11 +1002,11 @@ namespace vMixController.Widgets
                 Info.Add(new Triple<string, string, string>("N/A", "N/A", "N/A"));
         }
 
-        public virtual void SetProperties(UserControl[] _controls)
+        public virtual void AfterPropertiesChanged()
         {
-            foreach (var item in _controls)
-                if (ControlsStoreUsage.Contains(item))
-                    ControlsStoreUsage.Remove(item);
+            BorderColor = vMixController.ViewModel.vMixWidgetSettingsViewModel.Colors.Where(x => x.A == this.Color).FirstOrDefault().B;
+            UpdateHotkeys();
+            GC.Collect(1);
         }
 
         [NonSerialized]

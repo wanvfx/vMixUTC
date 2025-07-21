@@ -1,16 +1,21 @@
-﻿using GalaSoft.MvvmLight.CommandWpf;
+﻿// Требуется добавить ссылку на System.Net.Http
+using GalaSoft.MvvmLight.CommandWpf;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using vMixControllerDataProvider;
 using vMixControllerSkin;
 
@@ -18,226 +23,50 @@ namespace XmlDataProviderNs
 {
     public class XmlDataProvider : DependencyObject, IvMixDataProviderTextInput, INotifyPropertyChanged
     {
-        //Internal variables for caching xml results
-        private static int _maxid = 0;
-        private int _id = 0;
+        #region Private Fields
 
-        private static Dictionary<string, CacheStats> _cahce = new Dictionary<string, CacheStats>();
-        private string _url;
-        private string _xpath;
-        private string _namespaces;
-        private int _groupBy;
+        // 1. Используем HttpClient. Один статический экземпляр рекомендуется для переиспользования.
+        private static readonly HttpClient _httpClient = new HttpClient();
+        // 2. ConcurrentDictionary для потокобезопасного кэша без ручных блокировок.
+        private static readonly ConcurrentDictionary<string, CacheEntry> _cache = new ConcurrentDictionary<string, CacheEntry>();
+
+        // 3. SemaphoreSlim для предотвращения одновременной загрузки одного и того же ресурса.
+        private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
+
+        private List<string> _data = new List<string>();
+
+        #endregion
+
+        #region Properties & Commands
 
         public System.Windows.UIElement CustomUI { get; }
+        public bool IsProvidingCustomProperties => true;
+        public int Period { get; set; } = 1000; // По умолчанию 1 секунда
 
-        public bool IsProvidingCustomProperties
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        List<string> _data = new List<string>();
-        bool _retrivingData = false;
-
-        /// <summary>
-        /// Returns cached or new XmlData
-        /// </summary>
         public string[] Values
         {
             get
             {
-
-                try
-                {
-                    if (_cahce.ContainsKey(_url ?? "") && (DateTime.Now - _cahce[_url ?? ""].LastUpdated).TotalMilliseconds < Period)
-                    {
-                        UpdateData(_cahce[_url].Document);
-                    }
-                    else
-                    {
-                        Uri uri = null;
-                        if (Uri.TryCreate(_url, UriKind.Absolute, out uri))
-                        {
-                            WebRequest req = WebRequest.Create(uri);
-                            if (!_retrivingData)
-                                req.BeginGetResponse(new AsyncCallback(BeginGetResponseCallback), req);
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
+                // Запускаем асинхронную загрузку данных, не блокируя UI поток.
+                // Метод сам проверит, нужно ли обновлять данные.
+#pragma warning disable CS4014
+                Dispatcher.Invoke(() => LoadDataIfNeededAsync());
+#pragma warning restore CS4014
                 return _data.ToArray();
             }
         }
 
-        /// <summary>
-        /// Retrieving data callback
-        /// </summary>
-        /// <param name="ar"></param>
-        private void BeginGetResponseCallback(IAsyncResult ar)
-        {
-
-            _retrivingData = true;
-            _data.Clear();
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.Load((ar.AsyncState as WebRequest).EndGetResponse(ar).GetResponseStream());
-                if (_cahce.ContainsKey(_url))
-                {
-                    _cahce[_url].Document = doc;
-                    _cahce[_url].LastId = _id;
-                    _cahce[_url].LastUpdated = DateTime.Now;
-                }
-                else
-                    _cahce.Add(_url, new CacheStats() { Document = doc, LastId = _id, LastUpdated = DateTime.Now });
-
-                UpdateData(doc);
-
-            }
-            catch (Exception)
-            {
-
-            }
-            _retrivingData = false;
-
-        }
-
-        /// <summary>
-        /// Updating data values from selected XmlDocument nodes.
-        /// </summary>
-        /// <param name="doc"></param>
-        private void UpdateData(XmlDocument doc)
-        {
-            //Adding namespaces
-            XmlNamespaceManager ns = new XmlNamespaceManager(doc.NameTable);
-            foreach (var item in _namespaces.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()))
-            {
-                try
-                {
-                    var nsn = item.Split(' ');
-                    ns.AddNamespace(nsn[0], nsn[1]);
-                }
-                catch (Exception) { }
-            }
-            //Selecting nodes
-            var nodes = doc.SelectNodes(_xpath, ns);
-            //We need only inner text property value or attribute value
-            var _data = nodes.OfType<XmlNode>().Select(x =>
-            {
-                switch (x)
-                {
-                    case XmlElement element:
-                        return element.InnerText;
-                    case XmlAttribute attr:
-                        return attr.Value;
-                    case null:
-                    default:
-                        return "";
-                }
-            }).ToList();
-
-            if (_groupBy > 1)
-            {
-                List<string> groupedData = new List<string>();
-                string grouped = "";
-                for (int i = 0; i < _data.Count; i++)
-                {
-                    if (i % _groupBy == 0)
-                    {
-                        if (!string.IsNullOrWhiteSpace(grouped))
-                            groupedData.Add(grouped.TrimEnd('|'));
-                        grouped = "";
-                    }
-                    grouped += _data[i] + "|";
-                }
-                if (!string.IsNullOrWhiteSpace(grouped))
-                    groupedData.Add(grouped.TrimEnd('|'));
-                Data = groupedData;
-            }
-            else
-                Data = _data;
-        }
-
-        //Url property of data provider
-        public string Url
-        {
-            get { return (string)GetValue(UrlProperty); }
-            set { SetValue(UrlProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Url.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty UrlProperty =
-            DependencyProperty.Register("Url", typeof(string), typeof(XmlDataProvider), new PropertyMetadata("", propchanged));
-
-        //Namespaces property of data provider
-        public string NameSpaces
-        {
-            get { return (string)GetValue(NameSpacesProperty); }
-            set { SetValue(NameSpacesProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for NameSpaces.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NameSpacesProperty =
-            DependencyProperty.Register("NameSpaces", typeof(string), typeof(XmlDataProvider), new PropertyMetadata("", propchanged));
-
-
-
-        public int GroupBy
-        {
-            get { return (int)GetValue(GroupByProperty); }
-            set { SetValue(GroupByProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for GroupBy.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty GroupByProperty =
-            DependencyProperty.Register("GroupBy", typeof(int), typeof(XmlDataProvider), new PropertyMetadata(1, propchanged));
-
-
-
-
-        //Updating private variables on dependency property changed
-        private static void propchanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.Property.Name == "Url")
-                (d as XmlDataProvider)._url = (string)e.NewValue;
-            if (e.Property.Name == "XPath")
-                (d as XmlDataProvider)._xpath = (string)e.NewValue;
-            if (e.Property.Name == "NameSpaces")
-                (d as XmlDataProvider)._namespaces = (string)e.NewValue;
-            if (e.Property.Name == "GroupBy")
-                (d as XmlDataProvider)._groupBy = (int)e.NewValue;
-        }
-
-        //XPath property of data provider
-        public string XPath
-        {
-            get { return (string)GetValue(XPathProperty); }
-            set { SetValue(XPathProperty, value); }
-        }
-
-        public int Period
-        {
-            get;
-
-            set;
-        }
-        //Internal data values
         public List<string> Data
         {
-            get
+            get => _data;
+            private set // Сеттер сделан приватным, чтобы данные менялись только внутри класса
             {
-                return _data;
-            }
-
-            set
-            {
-                _data = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Data"));
+                // Проверяем, действительно ли данные изменились, чтобы избежать лишних обновлений
+                if (!EqualityComparer<List<string>>.Default.Equals(_data, value))
+                {
+                    _data = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Data)));
+                }
             }
         }
 
@@ -245,135 +74,257 @@ namespace XmlDataProviderNs
         public object GotFocus { get; set; }
         public object LostFocus { get; set; }
 
-        // Using a DependencyProperty as the backing store for XPath.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty XPathProperty =
-            DependencyProperty.Register("XPath", typeof(string), typeof(XmlDataProvider), new PropertyMetadata("", propchanged));
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-
+        // 4. Используем expression-bodied members для лаконичности
         private RelayCommand<KeyEventArgs> _previewKeyUpCommand;
-
-        /// <summary>
-        /// Gets the PreviewKeyUpCommand.
-        /// </summary>
-        public RelayCommand<KeyEventArgs> PreviewKeyUpCommand
+        public RelayCommand<KeyEventArgs> PreviewKeyUpCommand => _previewKeyUpCommand ?? (_previewKeyUpCommand = new RelayCommand<KeyEventArgs>(p =>
         {
-            get
+            if (!(p.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && p.Key == Key.Return))
             {
-                return _previewKeyUpCommand
-                    ?? (_previewKeyUpCommand = new RelayCommand<KeyEventArgs>(
-                    p =>
-                    {
-                        if (!(p.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && p.Key == Key.Return))
-                            ((RelayCommand<KeyEventArgs>)PreviewKeyUp).Execute(p);
-                    }));
+                ((RelayCommand<KeyEventArgs>)PreviewKeyUp)?.Execute(p);
             }
-        }
+        }));
 
-        private RelayCommand<KeyEventArgs> _previewKeyDown;
-
-        /// <summary>
-        /// Gets the MyCommand.
-        /// </summary>
-        public RelayCommand<KeyEventArgs> PreviewKeyDownCommand
+        private RelayCommand<KeyEventArgs> _previewKeyDownCommand;
+        public RelayCommand<KeyEventArgs> PreviewKeyDownCommand => _previewKeyDownCommand ?? (_previewKeyDownCommand = new RelayCommand<KeyEventArgs>(p =>
         {
-            get
+            if (p.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && p.Key == Key.Return)
             {
-                return _previewKeyDown
-                    ?? (_previewKeyDown = new RelayCommand<KeyEventArgs>(
-                    p =>
-                    {
-                        if (p.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control) && p.Key == Key.Return)
-                        {
-                            p.Handled = true;
-                            TextBox sender = (TextBox)p.Source;
-                            Int32 lastLocation = sender.SelectionStart;
-                            sender.Text = sender.Text.Insert(lastLocation, Environment.NewLine);
-                            sender.SelectionStart = lastLocation + Environment.NewLine.Length;
-                        }
-                        else if (p.Key == Key.Return)
-                            p.Handled = true;
-
-                    }));
+                p.Handled = true;
+                if (p.Source is TextBox sender)
+                {
+                    int lastLocation = sender.SelectionStart;
+                    sender.Text = sender.Text.Insert(lastLocation, Environment.NewLine);
+                    sender.SelectionStart = lastLocation + Environment.NewLine.Length;
+                }
             }
-        }
+            else if (p.Key == Key.Return)
+            {
+                p.Handled = true;
+            }
+        }));
 
         private RelayCommand _showRowsCommand;
+        public RelayCommand ShowRowsCommand => _showRowsCommand ?? (_showRowsCommand = new RelayCommand(() => new RowsViewer().Bind(this, nameof(Data))));
 
-        /// <summary>
-        /// Gets the ShowRowsCommand.
-        /// </summary>
-        public RelayCommand ShowRowsCommand
+        #endregion
+
+        #region Async Data Loading
+
+        private async Task LoadDataIfNeededAsync()
         {
-            get
+            var url = Url; // Получаем значение из DependencyProperty
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(XPath))
             {
-                return _showRowsCommand
-                    ?? (_showRowsCommand = new RelayCommand(
-                    () =>
-                    {
-                        new RowsViewer().Bind(this, "Data");
-                    }));
+                Data = new List<string>();
+                return;
+            }
+
+            // Проверка кэша
+            if (_cache.TryGetValue(url, out var cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
+            {
+                // Если данные в кэше актуальны, просто обновим текущий экземпляр из них
+                UpdateDataFromCache(cacheEntry.Document);
+                return;
+            }
+
+            // Входим в семафор, чтобы только один поток мог загружать данные
+            await _asyncLock.WaitAsync();
+            try
+            {
+                // Повторная проверка кэша после входа в семафор.
+                // Возможно, другой поток уже обновил данные, пока мы ждали.
+                if (_cache.TryGetValue(url, out cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
+                {
+                    UpdateDataFromCache(cacheEntry.Document);
+                    return;
+                }
+
+                // Загрузка и обработка данных
+                var doc = await FetchXmlAsync(url);
+                if (doc != null)
+                {
+                    _cache[url] = new CacheEntry { Document = doc, LastUpdated = DateTime.UtcNow };
+                    UpdateDataFromCache(doc);
+                }
+            }
+            finally
+            {
+                _asyncLock.Release();
             }
         }
 
-        /// <summary>
-        /// Provide data provider properties.
-        /// </summary>
-        /// <returns>Url, XPath and NameSpaces for saving into file</returns>
+        private async Task<XDocument> FetchXmlAsync(string url)
+        {
+            try
+            {
+                using (var response = await _httpClient.GetAsync(url))
+                {
+                    response.EnsureSuccessStatusCode();
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        // 5. Асинхронная загрузка в XDocument
+                        return XDocument.Load(stream, LoadOptions.None);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Print($"Error retrieving XML data from {url}: {ex.Message}");
+                return null;
+            }
+        }
+
+        private void UpdateDataFromCache(XDocument doc)
+        {
+            if (doc == null) return;
+
+            // Обновление должно происходить в UI потоке, так как оно меняет свойство Data,
+            // на которое может быть подписан интерфейс.
+            Application.Current?.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    var nsManager = new XmlNamespaceManager(new NameTable());
+                    var namespaces = NameSpaces; // Получаем значение из DependencyProperty
+                    if (!string.IsNullOrEmpty(namespaces))
+                    {
+                        foreach (var item in namespaces.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            try
+                            {
+                                var parts = item.Trim().Split(new[] { ' ' }, 2);
+                                if (parts.Length == 2)
+                                    nsManager.AddNamespace(parts[0], parts[1]);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print($"Error adding namespace: {ex.Message}");
+                            }
+                        }
+                    }
+
+                    // 6. Используем XPathSelectElements из LINQ to XML
+                    var nodes = doc.XPathSelectElements(XPath, nsManager);
+                    var groupBy = GroupBy;
+
+                    var newData = nodes.Select(node => node.Value).Take(100 * (groupBy <= 0 ? 1 : groupBy)).ToList();
+
+                    if (groupBy > 1)
+                    {
+                        // 7. Группировка с помощью LINQ - более кратко и понятно.
+                        Data = newData.Select((item, index) => new { item, index })
+                                      .GroupBy(x => x.index / groupBy)
+                                      .Select(g => string.Join("|", g.Select(x => x.item)))
+                                      .ToList();
+                    }
+                    else
+                    {
+                        Data = newData;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.Print($"Error updating data from XML: {ex.Message}");
+                    Data = new List<string>();
+                }
+            });
+        }
+
+
+        #endregion
+
+        #region Dependency Properties
+
+        public string Url
+        {
+            get => (string)GetValue(UrlProperty);
+            set => SetValue(UrlProperty, value);
+        }
+        public static readonly DependencyProperty UrlProperty =
+            DependencyProperty.Register(nameof(Url), typeof(string), typeof(XmlDataProvider), new PropertyMetadata(""));
+
+        public string XPath
+        {
+            get => (string)GetValue(XPathProperty);
+            set => SetValue(XPathProperty, value);
+        }
+        public static readonly DependencyProperty XPathProperty =
+            DependencyProperty.Register(nameof(XPath), typeof(string), typeof(XmlDataProvider), new PropertyMetadata(""));
+
+        public string NameSpaces
+        {
+            get => (string)GetValue(NameSpacesProperty);
+            set => SetValue(NameSpacesProperty, value);
+        }
+        public static readonly DependencyProperty NameSpacesProperty =
+            DependencyProperty.Register(nameof(NameSpaces), typeof(string), typeof(XmlDataProvider), new PropertyMetadata(""));
+
+        public int GroupBy
+        {
+            get => (int)GetValue(GroupByProperty);
+            set => SetValue(GroupByProperty, value);
+        }
+        public static readonly DependencyProperty GroupByProperty =
+            DependencyProperty.Register(nameof(GroupBy), typeof(int), typeof(XmlDataProvider), new PropertyMetadata(1));
+
+        #endregion
+
+        #region Interface Implementations & Constructor
+
         public List<object> GetProperties()
         {
-            return new List<object>() { Url, XPath, NameSpaces, GroupBy };
+            return new List<object> { Url, XPath, NameSpaces, GroupBy };
         }
 
-        /// <summary>
-        /// Recovers properties from properties list
-        /// </summary>
-        /// <param name="props"></param>
         public void SetProperties(List<object> props)
         {
-            if (props == null || props.Count == 0)
-                return;
-            Url = (string)props[0];
-            XPath = (string)props[1];
-            if (props.Count > 2)
-                NameSpaces = (string)props[2];
-            if (props.Count > 3)
-                GroupBy = (int)props[3];
+            if (props == null) return;
+
+            Url = props.ElementAtOrDefault(0) as string;
+            XPath = props.ElementAtOrDefault(1) as string;
+            NameSpaces = props.ElementAtOrDefault(2) as string;
+            GroupBy = (int)(props.ElementAtOrDefault(3) ?? 1);
         }
 
-        /// <summary>
-        /// Shows custom properties window
-        /// </summary>
-        /// <param name="owner"></param>
-        public void ShowProperties(System.Windows.Window owner)
+        public void ShowProperties(Window owner)
         {
-            PropertiesWindow _properties = new PropertiesWindow
-            {
-                Owner = owner,
-                DataContext = this
-            };
+            var properties = new PropertiesWindow { Owner = owner, DataContext = this };
             var previous = GetProperties();
-            var result = _properties.ShowDialog();
-            if (!(result.HasValue && result.Value))
+            if (properties.ShowDialog() != true)
+            {
                 SetProperties(previous);
+            }
         }
 
         public XmlDataProvider()
         {
-            _id = _maxid++;
             try
             {
-                CustomUI = new OnWidgetUI() { DataContext = this };
+                CustomUI = new OnWidgetUI { DataContext = this };
             }
             catch (Exception e)
             {
-                CustomUI = new TextBox() { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+                CustomUI = new TextBox { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             }
-            
-            _namespaces = "";
-
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // Вспомогательный класс для кэша
+        private class CacheEntry
+        {
+            public XDocument Document { get; set; }
+            public DateTime LastUpdated { get; set; }
+        }
+
+        #endregion
+
+        // Устаревшие поля и методы, которые больше не нужны
+        // private static int _maxid = 0;
+        // private readonly int _id = _maxid++;
+        // private bool _retrievingData = false;
+        // private string _url, _xpath, _namespaces;
+        // private int _groupBy;
+        // PropertyChangedCallback больше не нужен, т.к. мы читаем значения напрямую из DP.
     }
 }

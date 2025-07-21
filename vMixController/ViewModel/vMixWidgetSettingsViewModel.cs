@@ -242,6 +242,32 @@ namespace vMixController.ViewModel
             }
         }
 
+        private int _zIndex = 0;
+
+        /// <summary>
+        /// Sets and gets the ZIndex property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int ZIndex
+        {
+            get
+            {
+                return _zIndex;
+            }
+
+            set
+            {
+                if (_zIndex == value)
+                {
+                    return;
+                }
+
+                _zIndex = value;
+                RaisePropertyChanged(nameof(ZIndex));
+            }
+        }
+
+
         private UserControl[] _widgetPropertiesControls = null;
 
         /// <summary>
@@ -370,7 +396,7 @@ namespace vMixController.ViewModel
                         var viewModel = ServiceLocator.Current.GetInstance<vMixController.ViewModel.MainViewModel>();
                         var obj = viewModel.WidgetTemplates.Select((x, i) => new { obj = x, idx = i }).Where(x => x.obj.A == Name).FirstOrDefault();
                         var cpy = Widget.Copy();
-                        cpy.SetProperties(this);
+                        //cpy.SetProperties(this);
                         cpy.IsTemplate = true;
                         if (obj != null)
                             viewModel.WidgetTemplates[obj.idx].B = cpy;
@@ -384,13 +410,14 @@ namespace vMixController.ViewModel
 
         public void SetProperties(vMixControl p)
         {
-            Model = p.State;
+            /*Model = p.State;
             Name = p.Name;
             Color = p.Color;
             Hotkey = new ObservableCollection<Classes.Hotkey>(p.Hotkey);
             Type = p.Type;
+            ZIndex = p.ZIndex;*/
 
-            WindowProperties = p.WindowProperties;
+            /*WindowProperties = p.WindowProperties;
 
             if (!WindowProperties.A.HasValue ||
                 !WindowProperties.B.HasValue ||
@@ -401,7 +428,7 @@ namespace vMixController.ViewModel
                 WindowProperties.B = 512;
                 WindowProperties.C = 0;
                 WindowProperties.D = 0;
-            }
+            }*/
 
 
             if (p is IvMixAutoUpdateWidget)
@@ -409,7 +436,7 @@ namespace vMixController.ViewModel
 
             PeriodVisibility = p is IvMixAutoUpdateWidget ? Visibility.Visible : Visibility.Collapsed;
 
-            WidgetPropertiesControls = p.GetPropertiesControls();
+            //WidgetPropertiesControls = p.GetPropertiesControls();
 
         }
 

@@ -114,7 +114,7 @@ namespace vMixAPI
         /// Асинхронно запрашивает строковый ответ по указанному адресу.
         /// Использует адаптивный кэш для запросов без параметров.
         /// </summary>
-        public Task<string> GetStringAsync(Uri address, WeakAction callback = null)
+        public Task<string> GetStringAsync(Uri address, WeakAction callback = null, bool post = false)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(vMixHttpBatcher));
@@ -136,7 +136,7 @@ namespace vMixAPI
                 }
             }
 
-            return ExecuteAndCacheRequestAsync(address, callback, useCache);
+            return ExecuteAndCacheRequestAsync(address, callback, useCache, post);
         }
 
         // --- Приватные методы ---
@@ -144,15 +144,22 @@ namespace vMixAPI
         /// <summary>
         /// Выполняет HTTP-запрос, измеряет время ответа, обновляет адаптивный кэш и возвращает результат.
         /// </summary>
-        private async Task<string> ExecuteAndCacheRequestAsync(Uri address, WeakAction callback, bool shouldCache)
+        private async Task<string> ExecuteAndCacheRequestAsync(Uri address, WeakAction callback, bool shouldCache, bool post = false)
         {
             var stopwatch = Stopwatch.StartNew();
             try
             {
-                var response = await _httpClient.GetStringAsync(address).ConfigureAwait(false);
+                string response = null;
+                if (!post)
+                    response = await _httpClient.GetStringAsync(address).ConfigureAwait(false);
+                else
+                {
+                    var hresponse = await _httpClient.PostAsync(address, null).ConfigureAwait(false);
+                    response = await hresponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
 
-                // Запрос успешен, останавливаем таймер и обновляем адаптивное время
-                stopwatch.Stop();
+                    // Запрос успешен, останавливаем таймер и обновляем адаптивное время
+                    stopwatch.Stop();
                 UpdateAdaptiveCacheDuration(stopwatch.ElapsedMilliseconds);
 
                 if (shouldCache)
@@ -249,7 +256,7 @@ namespace vMixAPI
         /// <param name="apiUrl">Базовый URL API vMix (например, "http://127.0.0.1:8088/api")</param>
         /// <param name="callback">Необязательный callback для получения результата.</param>
         /// <returns>Задача, представляющая XML-ответ от vMix.</returns>
-        public static Task<string> GetApiResponseAsync(string apiUrl, WeakAction callback = null, string auth = null)
+        public static Task<string> GetApiResponseAsync(string apiUrl, WeakAction callback = null, string auth = null, bool post = false)
         {
             if (auth != null)
             {
@@ -269,7 +276,7 @@ namespace vMixAPI
             _batchers[key] = batcherEntry;
 
             // Упрощено: напрямую вызываем GetStringAsync и возвращаем его Task
-            return batcherEntry.batcher.GetStringAsync(new Uri(apiUrl), callback);
+            return batcherEntry.batcher.GetStringAsync(new Uri(apiUrl), callback, post);
         }
 
         // Методы для подписки/отписки на события конкретного батчера

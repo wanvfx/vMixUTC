@@ -48,7 +48,7 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="{e:Localize Context}" Width="50">
+                            <GridViewColumn Header="{e:Localize Context}" Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding A}" Margin="-3,0,-5,0"/>

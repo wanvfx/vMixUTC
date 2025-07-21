@@ -126,7 +126,7 @@
                                                             </ComboBox.ItemContainerStyle>
                                                         </ComboBox>
                                                         <Label Content="{Binding SelectedValue.InputDescription, ElementName=Func, FallbackValue=N/A}"/>
-                                                        <ComboBox x:Name="In" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" DisplayMemberPath="Title" SelectedValuePath="Key" SelectedValue="{Binding InputKey, Mode=TwoWay}">
+                                                        <ComboBox x:Name="In" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}"  ItemTemplate="{StaticResource InputSelectorTemplate}" SelectedValuePath="Key" SelectedValue="{Binding InputKey, Mode=TwoWay}">
                                                             <ComboBox.ItemsSource>
                                                                 <CompositeCollection>
                                                                     <CollectionContainer Collection="{Binding Main.Model.Inputs, Source={StaticResource Locator}}"/>

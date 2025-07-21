@@ -86,15 +86,15 @@ namespace vMixController.Widgets
             }
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
 
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
         }
     }
 }

@@ -374,20 +374,14 @@ namespace vMixController.Widgets
             base.Update();
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(viewModel);
-
-        }
-
-        public override void SetProperties(UserControl[] _controls)
-        {
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
 
             if (DataProviderProperties != null)
                 DataProviderProperties.Clear();

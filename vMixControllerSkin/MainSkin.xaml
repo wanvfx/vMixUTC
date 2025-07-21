@@ -191,6 +191,18 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <DataTemplate x:Key="InputSelectorTemplate">
+        <StackPanel Orientation="Horizontal">
+            <Border BorderBrush="Black" BorderThickness="1" Width="16px" Height="Auto" MaxHeight="16" Margin="2">
+                <Viewbox>
+                    <TextBlock Text="{Binding Number}"></TextBlock>
+                </Viewbox>
+            </Border>
+            <TextBlock VerticalAlignment="Center" Text="{Binding Title}"/>
+        </StackPanel>
+    </DataTemplate>
+
     <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
         <Grid HorizontalAlignment="Center" UseLayoutRounding="True" VerticalAlignment="Center">
             <Path x:Name="grip" Data="M 0,0 C0,0 11,0 11,0 11,0 11,18 11,18 11,18 0,18 0,18 0,18 0,0 0,0 z" Fill="{StaticResource SliderThumb.Static.Background}" Stretch="Fill" SnapsToDevicePixels="True" Stroke="{StaticResource SliderThumb.Static.Border}" StrokeThickness="1" UseLayoutRounding="True" VerticalAlignment="Center"/>

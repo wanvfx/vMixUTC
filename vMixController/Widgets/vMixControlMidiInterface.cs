@@ -217,7 +217,7 @@ namespace vMixController.Widgets
             };
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
             Device = CreateDeviceByName(_midiDeviceName);
             if (Device != null)
@@ -227,17 +227,16 @@ namespace vMixController.Widgets
                 Device.EventReceived += Device_EventReceived;
 
             }
-
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
         [XmlIgnore]
         public Func<MidiInterfaceKey> Learn { get; set; }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
             MidiDeviceName = DeviceCaps;
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
         }
 
         protected override void Dispose(bool managed)

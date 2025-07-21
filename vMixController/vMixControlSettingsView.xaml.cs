@@ -61,15 +61,16 @@ namespace vMixController
 
         private void SaveTemplateClick(object sender, RoutedEventArgs e)
         {
-            if (VisualTreeHelper.GetChildrenCount(this.WidgetProperties) > 0)
+            if (VisualTreeHelper.GetChildrenCount(this) > 0)
             {
                 var templateRootElement = VisualTreeHelper.GetChild(this.WidgetProperties, 0);
 
                 // Теперь вызываем наш хелпер, но в качестве стартовой точки
                 // передаем не все окно (this), а только корневой элемент шаблона.
                 templateRootElement?.UpdateAllExplicitSources();
-
+                CommonProperties.UpdateAllExplicitSources();
             }
+            
         }
 
         private void CancelClick(object sender, RoutedEventArgs e)
@@ -79,7 +80,7 @@ namespace vMixController
 
         public void SaveConnectedWidgetProperties()
         {
-            if (VisualTreeHelper.GetChildrenCount(this.WidgetProperties) > 0)
+            if (VisualTreeHelper.GetChildrenCount(this) > 0)
             {
                 var templateRootElement = VisualTreeHelper.GetChild(this.WidgetProperties, 0);
 
@@ -87,7 +88,11 @@ namespace vMixController
                 // передаем не все окно (this), а только корневой элемент шаблона.
                 templateRootElement?.UpdateAllExplicitSources();
 
+                CommonProperties.UpdateAllExplicitSources();
+
             }
+            
+
         }
     }
 }

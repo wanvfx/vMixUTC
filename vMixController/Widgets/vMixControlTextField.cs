@@ -376,16 +376,9 @@ namespace vMixController.Widgets
             }
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            return base.GetPropertiesControls();
-        }
-
-        public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
-        {
-            base.SetProperties(viewModel);
-
-
+            base.BeforePropertiesChanged();
         }
 
         [NonSerialized]
@@ -413,9 +406,9 @@ namespace vMixController.Widgets
             }
         }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
             UpdateText(_paths);
         }
 

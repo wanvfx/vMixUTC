@@ -31,7 +31,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <TextBlock Style="{StaticResource PropertyName}">Input</TextBlock>
-            <ComboBox Grid.Column="2" x:Name="Input" DisplayMemberPath="Title" SelectedValuePath="{Binding Tag, ElementName=Me, FallbackValue=Key}" SelectedValue="{Binding InputKey, Mode=TwoWay, ElementName=Me}">
+            <ComboBox Grid.Column="2" x:Name="Input" ItemTemplate="{StaticResource InputSelectorTemplate}" SelectedValuePath="{Binding Tag, ElementName=Me, FallbackValue=Key}" SelectedValue="{Binding InputKey, Mode=TwoWay, ElementName=Me}">
                 <ComboBox.ItemsSource>
                     <CompositeCollection>
                         <CollectionContainer Collection="{Binding Main.Model.Inputs, Source={StaticResource Locator}}"/>

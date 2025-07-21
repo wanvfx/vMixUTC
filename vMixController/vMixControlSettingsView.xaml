@@ -83,170 +83,182 @@
                     <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                 </Grid>
                 <pctrl:LabelControl Foreground="Green" Title="{e:Localize Common Properties}"></pctrl:LabelControl>
-                <Grid Margin="{StaticResource TopBottomStdMargin}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Background="{StaticResource Main.Gradient}">
-                        <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf031;</Run><Run Text=" "></Run><Run Text="{e:Localize Name}"/></TextBlock>
-                    </Grid>
-                    <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Name}" AcceptsReturn="True" Height="Auto"/>
-                </Grid>
-                <Grid Margin="{StaticResource TopBottomStdMargin}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="2*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Background="{StaticResource Main.Gradient}">
-                        <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf1fc;</Run><Run Text=" "></Run><Run Text="{e:Localize Color}"/></TextBlock>
-                    </Grid>
-                    <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Color, Mode=TwoWay}" SelectedValuePath="A">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Rectangle Height="16" Width="16" Margin="{StaticResource RightStdMargin}" StrokeThickness="2" Stroke="{Binding B, Converter={Converters:ColorToSolidBrushConverter}}" Fill="{Binding A, Converter={Converters:ColorToSolidBrushConverter}}"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding C}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </Grid>
-                <StackPanel Visibility="{Binding Hotkey.Count, Converter={wpfc:ObjectToStringEqualsParameterToInverseVisibilityConverter}, ConverterParameter=0, Mode=OneWay}" Margin="{StaticResource TopBottomStdMargin}">
-                    <Grid Margin="{StaticResource StdMargin}">
+                <StackPanel x:Name="CommonProperties">
+                    <Grid Margin="{StaticResource TopBottomStdMargin}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Margin="0,0,8,0" VerticalAlignment="Center" IsChecked="{Binding IsHotkeysVisible}" Foreground="LightGray" Background="Transparent">
-                            <CheckBox.Template>
-                                <ControlTemplate TargetType="CheckBox">
-                                    <Border Width="16" Height="16" Background="{TemplateBinding Background}">
-                                        <TextBlock x:Name="Text" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{TemplateBinding Foreground}" Text="&#xf146;"></TextBlock>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Foreground" Value="Black"/>
-                                            <Setter Property="Background" Value="White"/>
-                                        </Trigger>
-                                        <Trigger Property="IsChecked" Value="False">
-                                            <Setter TargetName="Text" Property="Text" Value="&#xf0fe;"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </CheckBox.Template>
-                        </CheckBox>
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" Style="{StaticResource PropertyName}" Margin="-4,0,0,0"><Run Text="{e:Localize Hotkeys}"/></TextBlock>
-                        <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{x:Static this:Help.Hotkeys_Default}" Margin="{StaticResource LeftRightStdMargin}"/>
-                        <Border VerticalAlignment="Center"  Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
+                        <Grid Background="{StaticResource Main.Gradient}">
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf031;</Run><Run Text=" "></Run><Run Text="{e:Localize Name}"/></TextBlock>
+                        </Grid>
+                        <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.Name, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="True" Height="Auto"/>
                     </Grid>
-                    <Grid>
-                        <StackPanel>
-                            <ListView HorizontalContentAlignment="Stretch" ItemsSource="{Binding Hotkey}" Visibility="{Binding IsHotkeysVisible, Converter={wpfc:BoolToVisibilityConverter}}">
-                                <i:Interaction.Behaviors>
-                                    <e:IgnoreMouseWheelBehavior/>
-                                </i:Interaction.Behaviors>
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                    <Border Background="{TemplateBinding Background}" >
-                                                        <Border BorderThickness="4,0,0,0" BorderBrush="{TemplateBinding BorderBrush}">
-                                                            <GridViewRowPresenter Margin="-4,0,0,0"/>
+                    <Grid Margin="{StaticResource TopBottomStdMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Background="{StaticResource Main.Gradient}">
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf1fc;</Run><Run Text=" "></Run><Run Text="{e:Localize Color}"/></TextBlock>
+                        </Grid>
+                        <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Widget.Color, UpdateSourceTrigger=Explicit, Mode=TwoWay}" SelectedValuePath="A">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Rectangle Height="16" Width="16" Margin="{StaticResource RightStdMargin}" StrokeThickness="2" Stroke="{Binding B, Converter={Converters:ColorToSolidBrushConverter}}" Fill="{Binding A, Converter={Converters:ColorToSolidBrushConverter}}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding C}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                    <Grid Margin="{StaticResource TopBottomStdMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Background="{StaticResource Main.Gradient}">
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf03c;</Run><Run Text=" "></Run><Run Text="{e:Localize Z-Index}"/></TextBlock>
+                        </Grid>
+                        <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.ZIndex, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="False" Height="Auto"/>
+                    </Grid>
+                    <StackPanel Visibility="{Binding Widget.Hotkey.Length, Converter={wpfc:ObjectToStringEqualsParameterToInverseVisibilityConverter}, ConverterParameter=0, Mode=OneWay}" Margin="{StaticResource TopBottomStdMargin}">
+                        <Grid Margin="{StaticResource StdMargin}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Margin="0,0,8,0" VerticalAlignment="Center" IsChecked="{Binding IsHotkeysVisible}" Foreground="LightGray" Background="Transparent">
+                                <CheckBox.Template>
+                                    <ControlTemplate TargetType="CheckBox">
+                                        <Border Width="16" Height="16" Background="{TemplateBinding Background}">
+                                            <TextBlock x:Name="Text" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{TemplateBinding Foreground}" Text="&#xf146;"></TextBlock>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground" Value="Black"/>
+                                                <Setter Property="Background" Value="White"/>
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="False">
+                                                <Setter TargetName="Text" Property="Text" Value="&#xf0fe;"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </CheckBox.Template>
+                            </CheckBox>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" Style="{StaticResource PropertyName}" Margin="-4,0,0,0"><Run Text="{e:Localize Hotkeys}"/></TextBlock>
+                            <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{x:Static this:Help.Hotkeys_Default}" Margin="{StaticResource LeftRightStdMargin}"/>
+                            <Border VerticalAlignment="Center"  Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
+                        </Grid>
+                        <Grid>
+                            <StackPanel>
+                                <ListView HorizontalContentAlignment="Stretch" ItemsSource="{Binding Widget.Hotkey, Converter={Converters:ObservableCollectionCopyConverter}, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Visibility="{Binding IsHotkeysVisible, Converter={wpfc:BoolToVisibilityConverter}}">
+                                    <i:Interaction.Behaviors>
+                                        <e:IgnoreMouseWheelBehavior/>
+                                    </i:Interaction.Behaviors>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                        <Border Background="{TemplateBinding Background}" >
+                                                            <Border BorderThickness="4,0,0,0" BorderBrush="{TemplateBinding BorderBrush}">
+                                                                <GridViewRowPresenter Margin="-4,0,0,0"/>
+                                                            </Border>
                                                         </Border>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Active}" Value="True">
-                                                <Setter Property="BorderBrush" Value="#FF90ee90"/>
-                                                <Setter Property="Background" Value="{StaticResource Main.Gradient}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </ListView.ItemContainerStyle>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Active}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#FF90ee90"/>
+                                                    <Setter Property="Background" Value="{StaticResource Main.Gradient}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
 
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="{e:Localize A}" Width="Auto">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding Active, Mode=TwoWay}" Margin="0,0,-6,0"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="{e:Localize Name}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Label Content="{Binding Name}"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="A" ToolTipService.ToolTip="Alt">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="C" ToolTipService.ToolTip="Control">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="S" ToolTipService.ToolTip="Shift">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="P" ToolTipService.ToolTip="On Press">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding OnPress, Mode=TwoWay}" Margin="-5,0" ToolTip="On Press"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="{e:Localize Key}" Width="100">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="{e:Localize Link}" Width="100">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <TextBox Style="{StaticResource WidgetTextBox}" IsEnabled="{Binding Active}" Text="{Binding Link}" Margin="-5,0"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Width="50">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Button IsEnabled="{Binding Active}" Content="{e:Localize Learn}" Command="{Binding WidgetSettings.LearnKeyCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" Margin="-5,0,-6,0"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </StackPanel>
-                    </Grid>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="{e:Localize A}" Width="Auto">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsChecked="{Binding Active, Mode=TwoWay}" Margin="0,0,-6,0"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="{e:Localize Name}">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Label Content="{Binding Name}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="A" ToolTipService.ToolTip="Alt">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="C" ToolTipService.ToolTip="Control">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="S" ToolTipService.ToolTip="Shift">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="P" ToolTipService.ToolTip="On Press">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding OnPress, Mode=TwoWay}" Margin="-5,0" ToolTip="On Press"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="{e:Localize Key}" Width="100">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="{e:Localize Link}" Width="100">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox Style="{StaticResource WidgetTextBox}" IsEnabled="{Binding Active}" Text="{Binding Link}" Margin="-5,0"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="50">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button IsEnabled="{Binding Active}" Content="{e:Localize Learn}" Command="{Binding WidgetSettings.LearnKeyCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" Margin="-5,0,-6,0"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
-                <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding WidgetPropertiesControls.Length, Converter={wpfc:ObjectToStringEqualsParameterToInverseVisibilityConverter}, ConverterParameter=0, Mode=OneWay}"></pctrl:LabelControl>
+                <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={wpfc:ValueNullToInverseVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
                 <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
                     <ContentPresenter.ContentTemplateSelector>
                         <ctrl:TypeTemplateSelector Suffix="PropEditor"/>

@@ -8,28 +8,29 @@
                     xmlns:conv="clr-namespace:vMixController.Converters"
                     xmlns:this="clr-namespace:vMixController"
                     xmlns:ctrl="clr-namespace:vMixController.Controls"
+                    xmlns:ext="clr-namespace:vMixController.Extensions"
                     xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters">
     <DataTemplate x:Key="vMixControlButtonPropEditor" DataType="{x:Type widget:vMixControlButton}">
         <StackPanel>
             <prop:FilePathControl Filter="Images|*.bmp;*.jpg;*.png;*.ico" Title="Image" Value="{Binding Image, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Margin="0,0,2,0" Title="Image Type" Value="{Binding ImageMax, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}}" Items="{x:Static cls:Constants.ButtonImageType}"/>
-                <prop:ComboBoxControl Margin="2,0,0,0" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
+                <prop:ComboBoxControl Title="Image Type" Value="{Binding ImageMax, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}}" Items="{x:Static cls:Constants.ButtonImageType}"/>
+                <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
 
             </Grid>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Help="{x:Static this:Help.Button_StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="State Dependent" Grouped="True" Margin="0,0,2,0"></prop:BoolControl>
-                <prop:BoolControl Help="{x:Static this:Help.Button_ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Execute After Load" Grouped="True" Margin="2,0,2,0"></prop:BoolControl>
-                <prop:BoolControl  Help="{x:Static this:Help.Button_Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Colorize Button" Grouped="True" Margin="2,0,0,0"></prop:BoolControl>
+                <prop:BoolControl Help="{x:Static this:Help.Button_StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="State Dependent" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{x:Static this:Help.Button_ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Execute After Load" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl  Help="{x:Static this:Help.Button_Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Colorize Button" Grouped="True"></prop:BoolControl>
             </Grid>
             <prop:ScriptControl Commands="{Binding Commands, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Log="{Binding Log}"/>
         </StackPanel>
@@ -37,13 +38,13 @@
     <DataTemplate x:Key="vMixControlTextFieldPropEditor" DataType="{x:Type widget:vMixControlTextField}">
         <StackPanel>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
-                <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
+                <prop:BoolControl Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
+                <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
             <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Template, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={conv:BoolToTextOrFileConverter}}" Items="{x:Static cls:Constants.TextFieldStyle}"/>
         </StackPanel>
@@ -51,13 +52,13 @@
     <DataTemplate x:Key="vMixControlScorePropEditor" DataType="{x:Type widget:vMixControlScore}">
         <StackPanel>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
-                <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
+                <prop:BoolControl Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
+                <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
             <prop:ComboBoxControl x:Name="Style" Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ScoreStyle}"/>
             <!--<CheckBox IsEnabled="{Binding Value, ElementName=Style, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Custom}"/>-->
@@ -75,13 +76,13 @@
     <DataTemplate x:Key="vMixControlListPropEditor" DataType="{x:Type widget:vMixControlList}">
         <StackPanel>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
-                <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
+                <prop:BoolControl Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
+                <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
             <prop:ListControl Items="{Binding Items, UpdateSourceTrigger=Explicit, Converter={conv:StringCollectionToDummyStringPropertyCollectionConverter}, Mode=TwoWay}" Visibility="{Binding Active, ElementName=DS, Converter={wpfc:BoolToInverseVisibilityConverter}}"/>
             <prop:DataSourceControl x:Name="DS" Active="{Binding DataSource.C, UpdateSourceTrigger=Explicit, Mode=TwoWay}" DataSource="{Binding DataSource.A, UpdateSourceTrigger=Explicit, Mode=TwoWay}" DataProperty="{Binding DataSource.B, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
@@ -134,15 +135,15 @@
                     </x:Array>
                 </prop:ComboBoxControl.Items>
             </prop:ComboBoxControl>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Margin="0,0,2,0" Items="{x:Static cls:Constants.HorizontalVertical}"/>
-                <prop:BoolControl Grid.Column="1" Grouped="True" Value="{Binding ShowMeters, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Meters" Margin="2,0,2,0"/>
-                <prop:BoolControl Grid.Column="2" Grouped="True" Value="{Binding ShowSlider, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Slider" Margin="2,0,0,0"/>
+                <prop:ComboBoxControl Title="Style" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.HorizontalVertical}"/>
+                <prop:BoolControl Grid.Column="1" Grouped="True" Value="{Binding ShowMeters, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Meters"/>
+                <prop:BoolControl Grid.Column="2" Grouped="True" Value="{Binding ShowSlider, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Show Slider"/>
             </Grid>
 
         </StackPanel>
@@ -159,13 +160,13 @@
     <DataTemplate x:Key="vMixControlTimerPropEditor" DataType="{x:Type widget:vMixControlTimer}">
         <StackPanel>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
-            <Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Margin="0,0,2,0" Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
-                <prop:BoolControl Margin="2,0,0,0" Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
+                <prop:BoolControl Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Table"/>
+                <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
             <prop:StringControl Value="{Binding Format, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Format String"/>
             <prop:BoolControl Title="Split Text" Help="Split text by chars: if your text is 11:22, you will get 1|1|:|2|2. \nUseful for creating animated timers." Value="{Binding SplitText, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
@@ -216,8 +217,6 @@
             <prop:BoolControl Title="Show Variable Name" Value="{Binding ShowVariableName, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
         </StackPanel>
     </DataTemplate>
-    <DataTemplate x:Key="vMixControlLabelPropEditor" DataType="{x:Type widget:vMixControlLabel}">
-        <TextBlock>No Individual Properties Provided</TextBlock>
-    </DataTemplate>
+    <!--<DataTemplate x:Key="vMixControlLabelPropEditor" DataType="{x:Type widget:vMixControlLabel}"/>-->
 </ResourceDictionary>
     

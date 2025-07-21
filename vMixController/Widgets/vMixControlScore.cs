@@ -241,16 +241,15 @@ namespace vMixController.Widgets
             }
         }
 
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
-            var props = base.GetPropertiesControls();
-            return props;
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
 
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
         }
 
         internal override void OnStateSynced()

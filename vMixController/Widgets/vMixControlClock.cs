@@ -196,15 +196,15 @@ namespace vMixController.Widgets
         // Методы GetPropertiesControls и SetProperties потребуют адаптации под новую структуру ScheduledEvent.
         // Это зависит от реализации PropertiesControls.SchedulerControl.
         // Предположим, что он теперь работает с ObservableCollection<ScheduledEvent>.
-        public override UserControl[] GetPropertiesControls()
+        public override void BeforePropertiesChanged()
         {
             _timer.Stop();
-            return base.GetPropertiesControls();
+            base.BeforePropertiesChanged();
         }
 
-        public override void SetProperties(UserControl[] _controls)
+        public override void AfterPropertiesChanged()
         {
-            base.SetProperties(_controls);
+            base.AfterPropertiesChanged();
             UpdateSortedEvents(); // Обновляем отсортированный список
             _timer.Start();
         }
