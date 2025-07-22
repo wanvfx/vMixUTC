@@ -155,7 +155,7 @@ namespace vMixController.Widgets
                         Messenger.Default.Send(new Pair<string, object>(Links[3], null));
                 }
             }
-            if (!string.IsNullOrWhiteSpace(Links[4]))
+            if (Links.Length > 4 && !string.IsNullOrWhiteSpace(Links[4]))
                 Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[4], null));
         }
 
@@ -163,10 +163,9 @@ namespace vMixController.Widgets
 
         private void UpdateTimer()
         {
-            //Назад
             if (!Paused)
             {
-                Time = TimeSpan.Zero;//TimeSpan.FromMilliseconds(Time.Milliseconds);
+                Time = TimeSpan.Zero;
                 if (Reverse)
                     Time = DefaultTime.Add(Time);
             }
@@ -611,6 +610,5 @@ namespace vMixController.Widgets
                 GC.SuppressFinalize(this);
             }
         }
-
     }
 }

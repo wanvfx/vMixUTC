@@ -55,6 +55,7 @@ namespace UTCGoogleSheetsDataProvider
         private int _rowsCount = 0;
         private UIElement _customUI;
         private RelayCommand _showRowsCommand;
+        private RelayCommand _reloadCommand;
 
         // Семафор для предотвращения одновременного выполнения нескольких запросов на обновление для одного экземпляра.
         // Используем SemaphoreSlim(1, 1) как асинхронный аналог lock.
@@ -381,6 +382,12 @@ namespace UTCGoogleSheetsDataProvider
         }
 
         public RelayCommand ShowRowsCommand => _showRowsCommand ?? (_showRowsCommand = new RelayCommand(() => new RowsViewer().Bind(this, nameof(Cached))));
+
+        public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(() =>
+        {
+            _cancellationTokenSource.Cancel();
+            _ = UpdateData();
+        }));
 
         public string[] Cached
         {

@@ -1727,7 +1727,10 @@ namespace vMixController.ViewModel
                         };
                         var result = opendlg.ShowDialog(App.Current.MainWindow);
                         if (result.HasValue && result.Value)
+                        {
                             Utils.SaveController(opendlg.FileName, _widgets, _windowSettings);
+                            WindowSettings.AddRecentFile(opendlg.FileName);
+                        }
 
                     }));
             }

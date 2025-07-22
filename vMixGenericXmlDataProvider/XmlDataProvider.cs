@@ -106,6 +106,12 @@ namespace XmlDataProviderNs
         private RelayCommand _showRowsCommand;
         public RelayCommand ShowRowsCommand => _showRowsCommand ?? (_showRowsCommand = new RelayCommand(() => new RowsViewer().Bind(this, nameof(Data))));
 
+
+        private RelayCommand _reloadCommand;
+        public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(() =>
+        {
+            Dispatcher.Invoke(() => LoadDataIfNeededAsync());
+        }));
         #endregion
 
         #region Async Data Loading
@@ -204,10 +210,22 @@ namespace XmlDataProviderNs
                     }
 
                     // 6. Используем XPathSelectElements из LINQ to XML
-                    var nodes = doc.XPathSelectElements(XPath, nsManager);
+                    var nodes = (IEnumerable<object>)doc.XPathEvaluate(XPath, nsManager);
                     var groupBy = GroupBy;
 
-                    var newData = nodes.Select(node => node.Value).Take(100 * (groupBy <= 0 ? 1 : groupBy)).ToList();
+                    var newData = nodes.OfType<XObject>().Select(node =>
+                    {
+                        switch (node.NodeType)
+                        {
+                            case XmlNodeType.Element:
+                                return ((XElement)node).Value;
+                            case XmlNodeType.Text:
+                                return ((XText)node).Value;
+                            case XmlNodeType.Attribute:
+                                return ((XAttribute)node).Value;
+                        }
+                        return String.Empty;
+                    }).Take(100 * (groupBy <= 0 ? 1 : groupBy)).ToList();
 
                     if (groupBy > 1)
                     {

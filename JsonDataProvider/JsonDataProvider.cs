@@ -288,6 +288,15 @@ namespace JsonDataProviderNs
                 new RowsViewer().Bind(this, "Data");
             }));
 
+
+        private RelayCommand _reloadCommand;
+        public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(
+            () =>
+            {
+                _cancellationTokenSource?.Cancel();
+                _ = RetrieveDataAsync();
+            }));
+
         public JsonDataProvider()
         {
             try

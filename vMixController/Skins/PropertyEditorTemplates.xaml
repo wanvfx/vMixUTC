@@ -18,7 +18,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="Image Type" Value="{Binding ImageMax, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonImageType}"/>
+                <prop:ComboBoxControl Title="Image Type" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonImageType}"/>
                 <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
 
             </Grid>

@@ -157,9 +157,11 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}">Loaded <Run Text="{Binding RowsCount}"></Run> row(s)</TextBlock>
                 <Button Grid.Column="1" Command="{Binding ShowRowsCommand}">Show Rows</Button>
+                <Button Grid.Column="2" Command="{Binding ReloadCommand}">Reload</Button>
             </Grid>
         </StackPanel>
     </Grid>

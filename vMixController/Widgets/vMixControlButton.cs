@@ -356,8 +356,8 @@ namespace vMixController.Widgets
         /// Sets and gets the ImageMax property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        
-        public int ImageMax
+        [XmlElement(ElementName = "ImageMax")]
+        public int ImageType
         {
             get
             {
@@ -372,7 +372,7 @@ namespace vMixController.Widgets
                 }
 
                 _imageMax = value;
-                RaisePropertyChanged(nameof(ImageMax));
+                RaisePropertyChanged(nameof(ImageType));
             }
         }
 

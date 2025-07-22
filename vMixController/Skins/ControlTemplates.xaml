@@ -146,7 +146,7 @@
                                 <Image.Source>
                                     <MultiBinding Converter="{c:ImagePartConverter}">
                                         <Binding Path="Image"/>
-                                        <Binding Path="ImageMax"/>
+                                        <Binding Path="ImageType"/>
                                         <Binding Path="ImageNumber"/>
                                     </MultiBinding>
                                 </Image.Source>
@@ -156,7 +156,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageMax, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
+                        <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
                             <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
                             <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8">
                             </Ellipse>
