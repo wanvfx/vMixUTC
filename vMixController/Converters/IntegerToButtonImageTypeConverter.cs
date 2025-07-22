@@ -27,7 +27,10 @@ namespace vMixController.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is string)
+                return (string)value == vMixController.Classes.Constants.BUTTON_IMAGE_TYPE_DEFAULT ? 1 : 2;
+            return 1;
+            //throw new NotImplementedException();
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)

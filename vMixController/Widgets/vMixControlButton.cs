@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
@@ -97,13 +96,7 @@ namespace vMixController.Widgets
 
             set
             {
-                /*if (_internalState != null)
-                    _internalState.OnStateSynced -= State_OnStateUpdated;*/
-
                 base.State = value;
-
-                /*if (_internalState != null)
-                    _internalState.OnStateSynced += State_OnStateUpdated;*/
             }
         }
 
@@ -363,6 +356,7 @@ namespace vMixController.Widgets
         /// Sets and gets the ImageMax property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
+        
         public int ImageMax
         {
             get
@@ -644,22 +638,22 @@ namespace vMixController.Widgets
             {
 
                 ThreadPool.QueueUserWorkItem((t) =>
-            {
-
-                try
                 {
-                    _latestDocument = doc;
-                    Active = XPathStateDependent(doc);
 
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e, "Error while checking state dependency!");
-                }
+                    try
+                    {
+                        _latestDocument = doc;
+                        Active = XPathStateDependent(doc);
+
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e, "Error while checking state dependency!");
+                    }
 
 
 
-            });
+                });
                 if ((DateTime.Now - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
                 {
                     Dispatcher.Invoke(() =>
@@ -892,7 +886,7 @@ namespace vMixController.Widgets
                     exp = null;
                     return false;
                 }
-            
+
         }
 
         private object CalculateExpression(string s)
@@ -1058,7 +1052,7 @@ namespace vMixController.Widgets
                                 Process.Start(cmd.StringParameter);
                                 break;
                             case NativeFunctions.API:
-                                
+
                                 //WebClient _webClient = new vMixWebClient();
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uri;
@@ -1105,8 +1099,6 @@ namespace vMixController.Widgets
                             case NativeFunctions.SYNC:
                                 AddLog("{0}) STATE UPDATING", _pointer + 1);
                                 Dispatcher.Invoke(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true }));
-
-                                //Dispatcher.Invoke(() => state?.UpdateAsync());
                                 break;
                             case NativeFunctions.UPDATEINTERNALBUTTONSTATE:
                             case NativeFunctions.SYNCINTERNALBUTTONSTATE:
@@ -1125,7 +1117,6 @@ namespace vMixController.Widgets
                                 _jumpCount++;
                                 break;
                             case NativeFunctions.EXECLINK:
-                                //Calculating expressions into EXECLINKS
                                 strparameter = Dispatcher.Invoke(() => CalculateObjectParameter(cmd)).ToString();
                                 AddLog("{2}) EXECLINK {0} [{1}]", cmd.StringParameter, strparameter, _pointer + 1);
                                 Dispatcher.Invoke(() => Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(strparameter, null)));
@@ -1184,7 +1175,6 @@ namespace vMixController.Widgets
                                 var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
                                 if (gidx < 0 || gidx >= globalSettings.Variables.Count)
                                     AddLog("{2}) VARIABLE {0} NOT FOUND", gidx, gtobj, _pointer + 1);
-                                //Dispatcher.Invoke(() => _variables.Add(new Pair<int, object>() { A = CalculateExpression<int>(cmd.Parameter), B = gtobj }));
                                 else
                                 {
                                     Dispatcher.Invoke(() =>
@@ -1303,16 +1293,10 @@ namespace vMixController.Widgets
             base.BeforePropertiesChanged();
         }
 
-        /*public override void SetProperties(vMixWidgetSettingsViewModel viewModel)
-        {
-            base.SetProperties(viewModel);
-            
-        }*/
-
         public override void AfterPropertiesChanged()
         {
             base.AfterPropertiesChanged();
-            
+
             BlinkBorderColor = BorderColor;
 
             bool hasGoToOrTimer = false;
