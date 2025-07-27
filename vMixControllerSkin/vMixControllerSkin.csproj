@@ -89,10 +89,12 @@
     <Resource Include="btn_donate_SM.gif" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="FontAwesome7.ttf" />
+    <Resource Include="FontAwesome.ttf" />
+    <Resource Include="Font Awesome 7 Free-Solid-900.ttf" />
     <None Include="packages.config" />
     <Resource Include="Segoe UI Mono.ttf" />
     <Resource Include="Material Design Icons.ttf" />
-    <Resource Include="FontAwesome.ttf" />
     <None Include="Linearicons-Free.ttf" />
   </ItemGroup>
   <ItemGroup>

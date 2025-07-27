@@ -1,7 +1,9 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using Melanchall.DryWetMidi.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using System.Xml.Serialization;
@@ -142,8 +144,6 @@ namespace vMixController.Widgets
                 {
                     switch (e.Event.EventType)
                     {
-                        
-
                         case Melanchall.DryWetMidi.Core.MidiEventType.NoteOff:
                         case Melanchall.DryWetMidi.Core.MidiEventType.NoteOn:
                         case Melanchall.DryWetMidi.Core.MidiEventType.NoteAftertouch:
@@ -167,7 +167,7 @@ namespace vMixController.Widgets
                                 Messenger.Default.Send(new Pair<string, object>(item.C, (byte)pb.PitchValue));
                             break;
                         default:
-                            
+
                             break;
                     }
                 }

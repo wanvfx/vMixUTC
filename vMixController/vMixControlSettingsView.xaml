@@ -90,7 +90,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf031;</Run><Run Text=" "></Run><Run Text="{e:Localize Name}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf031;</Run><Run Text=" "></Run><Run Text="{e:Localize Name}"/></TextBlock>
                         </Grid>
                         <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.Name, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="True" Height="Auto"/>
                     </Grid>
@@ -100,7 +100,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf1fc;</Run><Run Text=" "></Run><Run Text="{e:Localize Color}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf1fc;</Run><Run Text=" "></Run><Run Text="{e:Localize Color}"/></TextBlock>
                         </Grid>
                         <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Widget.Color, UpdateSourceTrigger=Explicit, Mode=TwoWay}" SelectedValuePath="A">
                             <ComboBox.ItemTemplate>
@@ -123,7 +123,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf03c;</Run><Run Text=" "></Run><Run Text="{e:Localize Z-Index}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf160;</Run><Run Text=" "></Run><Run Text="{e:Localize Z-Index}"/></TextBlock>
                         </Grid>
                         <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.ZIndex, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="False" Height="Auto"/>
                     </Grid>
@@ -139,7 +139,7 @@
                                 <CheckBox.Template>
                                     <ControlTemplate TargetType="CheckBox">
                                         <Border Width="16" Height="16" Background="{TemplateBinding Background}">
-                                            <TextBlock x:Name="Text" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{TemplateBinding Foreground}" Text="&#xf146;"></TextBlock>
+                                            <TextBlock x:Name="Text" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}" Foreground="{TemplateBinding Foreground}" Text="&#xf146;"></TextBlock>
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
@@ -258,7 +258,7 @@
                         </Grid>
                     </StackPanel>
                 </StackPanel>
-                <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={wpfc:ValueNullToInverseVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
+                <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={Converters:ContentToVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
                 <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
                     <ContentPresenter.ContentTemplateSelector>
                         <ctrl:TypeTemplateSelector Suffix="PropEditor"/>

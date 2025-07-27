@@ -16,6 +16,7 @@ using vMixControllerSkin;
 using Json.Path;
 using Json.More;
 using System.Net.Http;
+using System.IO;
 
 namespace JsonDataProviderNs
 {
@@ -36,6 +37,7 @@ namespace JsonDataProviderNs
 
         private string _url = "";
         private string _jsonPath = "";
+        private string _error = "";
         private int _groupBy = 1;
         private UIElement _ui;
 
@@ -97,6 +99,7 @@ namespace JsonDataProviderNs
         /// </summary>
         private async Task RetrieveDataAsync()
         {
+            Error = "";
             // Блокируем, чтобы проверить и установить флаг _retrievingData атомарно
             lock (_retrievingDataLock)
             {
@@ -129,20 +132,26 @@ namespace JsonDataProviderNs
 
                 // СТАЛО (совместимо и правильно):
                 // 1. Выполняем GET запрос с токеном отмены
-                using (var response = await _httpClient.GetAsync(uri, token))
+                if (uri.Scheme == Uri.UriSchemeFile)
                 {
-                    // 2. Проверяем, что запрос успешен (статус 2xx)
-                    response.EnsureSuccessStatusCode();
-
-                    // 3. Получаем поток из контента ответа
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        // 4. Парсим JSON из потока, также передавая токен отмены
-                        // (на случай, если парсинг очень большого документа тоже нужно прервать)
+                    using (var stream = File.OpenRead(uri.LocalPath))
                         newDocument = await JsonDocument.ParseAsync(stream, default, token);
-
-                    }
                 }
+                else
+                    using (var response = await _httpClient.GetAsync(uri, token))
+                    {
+                        // 2. Проверяем, что запрос успешен (статус 2xx)
+                        response.EnsureSuccessStatusCode();
+
+                        // 3. Получаем поток из контента ответа
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            // 4. Парсим JSON из потока, также передавая токен отмены
+                            // (на случай, если парсинг очень большого документа тоже нужно прервать)
+                            newDocument = await JsonDocument.ParseAsync(stream, default, token);
+
+                        }
+                    }
 
                 // После успешного получения и парсинга, обновляем данные в потоке UI
                 Application.Current?.Dispatcher.Invoke(() =>
@@ -159,17 +168,17 @@ namespace JsonDataProviderNs
             catch (OperationCanceledException)
             {
                 // Это ожидаемое исключение при отмене запроса. Логируем для отладки.
-                Debug.Print("JSON data request was cancelled.");
+                Error = ("JSON data request was cancelled.");
             }
             catch (HttpRequestException ex)
             {
                 // Это исключение будет вызвано EnsureSuccessStatusCode при ошибке (напр. 404, 500)
-                Debug.Print($"HTTP request error: {ex.Message}");
+                Error = ($"HTTP request error: {ex.Message}");
             }
             catch (Exception ex)
             {
                 // Логируем другие ошибки (сетевые, парсинга и т.д.)
-                Debug.Print($"Error retrieving or parsing JSON data: {ex.Message}");
+                Error = ($"Error retrieving or parsing JSON data: {ex.Message}");
             }
             finally
             {
@@ -181,8 +190,9 @@ namespace JsonDataProviderNs
 
         private void UpdateData()
         {
+            Error = "";
             if (_document == null) return;
-
+            
             try
             {
                 var path = Json.Path.JsonPath.Parse(JsonPath.Replace("\r", "").Replace("\n", ""));
@@ -214,7 +224,7 @@ namespace JsonDataProviderNs
             }
             catch (Exception ex)
             {
-                Debug.Print($"Error updating data with JSONPath: {ex.Message}");
+                Error = ($"Error updating data with JSONPath: {ex.Message}");
             }
         }
 
@@ -243,6 +253,17 @@ namespace JsonDataProviderNs
                 OnPropertyChanged(nameof(JsonPath));
                 // Если документ уже загружен, просто перепарсим его с новым путем
                 UpdateData();
+            }
+        }
+
+        public string Error
+        {
+            get => _error;
+            set
+            {
+                if (_error == value) return;
+                _error = value;
+                OnPropertyChanged(nameof(Error));
             }
         }
 

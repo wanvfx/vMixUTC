@@ -381,6 +381,7 @@
       <DependentUpon>vMixPathSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VolumeSlider.cs" />
+    <Compile Include="Converters\ContentToVisibilityConverter.cs" />
     <Compile Include="Converters\BitToVisibilityConverter.cs" />
     <Compile Include="Converters\AudiobusToBoolConverter.cs" />
     <Compile Include="Converters\AudiobusToVisibilityConverter.cs" />

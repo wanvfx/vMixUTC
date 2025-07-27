@@ -16,6 +16,9 @@
         <sys:String>PAGE 5</sys:String>
     </CompositeCollection>
 
+    <FontFamily x:Key="FontAwesome">/vMixControllerSkin;Component/#Font Awesome 7 Free Solid</FontFamily>
+    <FontFamily x:Key="SegoeUI">Segoe UI</FontFamily>
+    
     <Thickness x:Key="LeftStdMargin">2,0,0,0</Thickness>
     <Thickness x:Key="RightStdMargin">0,0,2,0</Thickness>
     <Thickness x:Key="TopStdMargin">0,2,0,0</Thickness>
@@ -729,7 +732,8 @@
         <Setter Property="Width" Value="19"/>
         <Setter Property="Height" Value="19"/>
         <Setter Property="FontSize" Value="12"/>
-        <Setter Property="FontFamily" Value="/vMixControllerSkin;Component/#Material Design Icons"/>
+        <!--<Setter Property="FontFamily" Value="/vMixControllerSkin;Component/#Material Design Icons"/>-->
+        <Setter Property="FontFamily" Value="{StaticResource FontAwesome}"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="1"/>
         <Setter Property="FontWeight" Value="Normal"/>

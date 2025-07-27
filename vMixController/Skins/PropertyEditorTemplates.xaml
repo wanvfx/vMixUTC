@@ -169,8 +169,16 @@
                 <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Editable"/>
             </Grid>
             <prop:StringControl Value="{Binding Format, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Format String"/>
-            <prop:BoolControl Title="Split Text" Help="Split text by chars: if your text is 11:22, you will get 1|1|:|2|2. \nUseful for creating animated timers." Value="{Binding SplitText, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
-            <prop:BoolControl Title="High Precision" Help="1/10 millisecond" Value="{Binding IsHighPrecision, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <prop:BoolControl Grouped="True" Grid.Column="0" Title="Split Text" Help="Split text by chars: if your text is 11:22, you will get 1|1|:|2|2. \nUseful for creating animated timers." Value="{Binding SplitText, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+                <prop:BoolControl Grouped="True" Grid.Column="1" Title="High Precision" Help="1/10 millisecond" Value="{Binding IsHighPrecision, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+                <prop:BoolControl Grouped="True" Grid.Column="2" Title="Recover On Sync" Help="Recover timer value from vMix state on sync, it can not work with some format strings" Value="{Binding RecoverOnSync, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            </Grid>
             <prop:LabelControl Title="Events" Help="Execute ExecLink on corresponding event"/>
             <prop:StringControl Title="On Start" Value="{Binding Links[0], Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
             <prop:StringControl Title="On Pause" Value="{Binding Links[1], Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
@@ -215,6 +223,14 @@
         <StackPanel>
             <prop:ComboBoxControl Title="Variable" Value="{Binding Variable, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Items="{Binding VariableList}"/>
             <prop:BoolControl Title="Show Variable Name" Value="{Binding ShowVariableName, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+        </StackPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="vMixControlMultiStatePropEditor" DataType="{x:Type widget:vMixControlMultiState}">
+        <StackPanel>
+            <prop:StringControl Title="IP" Value="{Binding IP, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            <prop:StringControl Title="Port" Value="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            <prop:StringControl Title="Login" Value="{Binding Login, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            <prop:StringControl Title="Password" Value="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
         </StackPanel>
     </DataTemplate>
     <!--<DataTemplate x:Key="vMixControlLabelPropEditor" DataType="{x:Type widget:vMixControlLabel}"/>-->

@@ -70,7 +70,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="2,0,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" Content="&#xF374;" IsEnabled="{Binding DataContext.Locked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                            <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" Content="&#xF068;" IsEnabled="{Binding DataContext.Locked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                         </StackPanel>
                         <TextBlock TextTrimming="CharacterEllipsis" Style="{StaticResource CaptionText}" Text="{Binding}"/>
                     </Grid>
@@ -82,7 +82,7 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <Button Grid.Row="1" Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="{e:Localize Append Item}" IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+        <Button Grid.Row="1" Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="{e:Localize Append Item}" IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
         <Border Grid.Row="2" BorderBrush="White" BorderThickness="0,1" Margin="0,2"/>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
@@ -92,29 +92,29 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PrevItemCommand}" ToolTip="{e:Localize Previous}">
+            <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding PrevItemCommand}" ToolTip="{e:Localize Previous}">
                 <TextBlock>
-                    <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF048;"/>
+                    <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF048;"/>
                 </TextBlock>
             </Button>
             <Button Width="Auto" Grid.Column="1" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding ShuffleCommand}" ToolTip="{e:Localize Shuffle}">
                 <TextBlock>
-                    <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF074;"/>
+                    <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF074;"/>
                 </TextBlock>
             </Button>
             <Button Width="Auto" Grid.Column="2" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayOutCommand}" ToolTip="{e:Localize Play Out}">
                 <TextBlock>
-                    <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF04E;"/>
+                    <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04E;"/>
                 </TextBlock>
             </Button>
             <Button Width="Auto" Grid.Column="3" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayCommand}" ToolTip="{e:Localize Play/Pause}">
                 <TextBlock>
-                    <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF04B;"/> / <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF04C;"/>
+                    <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04B;"/> / <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04C;"/>
                 </TextBlock>
             </Button>
             <Button Width="Auto" Grid.Column="4" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding NextItemCommand}" ToolTip="{e:Localize Next}">
                 <TextBlock>
-                    <Run FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xF051;"/>
+                    <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF051;"/>
                 </TextBlock>
             </Button>
         </Grid>
@@ -280,7 +280,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </TextBox>
-        <Button Grid.Column="2" Style="{StaticResource TitleButton}" Command="{Binding SelectPathCommand}" Content="..." Visibility="{Binding Template, Converter={wpfc:BoolToVisibilityConverter}}">
+        <Button Grid.Column="2" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding SelectPathCommand}" Content="..." Visibility="{Binding Template, Converter={wpfc:BoolToVisibilityConverter}}">
             <Button.ToolTip>
                 <ToolTip Visibility="{Binding Text, Converter={c:ImagePathToVisibilityConverter}}">
                     <Image Width="128" Height="128" Source="{Binding Text}"></Image>
@@ -353,7 +353,7 @@
                             </StackPanel.Resources>
 
 
-                            <CheckBox IsChecked="{Binding IsMuted, Mode=TwoWay, Converter={wpfc:BoolToInverseBoolConverter}}" Tag="Mute" Content="&#xf028;" FontFamily="/vMixControllerSkin;Component/#FontAwesome">
+                            <CheckBox IsChecked="{Binding IsMuted, Mode=TwoWay, Converter={wpfc:BoolToInverseBoolConverter}}" Tag="Mute" Content="&#xf028;" FontFamily="{StaticResource FontAwesome}">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Click">
                                         <cmd:EventToCommand Command="{Binding UpdateBusses}" PassEventArgsToCommand="True"/>
@@ -582,7 +582,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Button Margin="{StaticResource RightStdMargin}" ToolTip="{e:Localize Reset}" Style="{StaticResource TitleButton}" Command="{Binding ResetScoreCommand}">&#xF453;</Button>
+        <Button Margin="{StaticResource RightStdMargin}" ToolTip="{e:Localize Reset}" Style="{StaticResource TitleButton}" Command="{Binding ResetScoreCommand}">&#xF01e;</Button>
         <!--Style="{StaticResource WidgetTextBox}"-->
         <toolkit:IntegerUpDown IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetIntegerUpDown}" Grid.Column="1" ext:FocusExtension.IsFocused="{Binding IsFocused}" FontWeight="Normal" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" FormatString="{Binding FormatString}">
             <i:Interaction.Triggers>
@@ -601,7 +601,7 @@
             <ContentPresenter.ContentTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="{StaticResource LeftStdMargin}">
-                        <Button x:Name="p1" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+1
+                        <Button x:Name="p1" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+1
                             <Button.Tag>
                                 <sys:Int32>1</sys:Int32>
                             </Button.Tag>
@@ -612,7 +612,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p2" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+2
+                        <Button x:Name="p2" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+2
                             <Button.Tag>
                                 <sys:Int32>2</sys:Int32>
                             </Button.Tag>
@@ -623,7 +623,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p3" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+3
+                        <Button x:Name="p3" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+3
                             <Button.Tag>
                                 <sys:Int32>3</sys:Int32>
                             </Button.Tag>
@@ -634,7 +634,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p4" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+4
+                        <Button x:Name="p4" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+4
                             <Button.Tag>
                                 <sys:Int32>4</sys:Int32>
                             </Button.Tag>
@@ -645,7 +645,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p5" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+5
+                        <Button x:Name="p5" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+5
                             <Button.Tag>
                                 <sys:Int32>5</sys:Int32>
                             </Button.Tag>
@@ -656,7 +656,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p6" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+6
+                        <Button x:Name="p6" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+6
                             <Button.Tag>
                                 <sys:Int32>6</sys:Int32>
                             </Button.Tag>
@@ -667,7 +667,7 @@
                                 </MultiBinding>
                             </Button.CommandParameter>
                         </Button>
-                        <Button x:Name="p7" Width="32" Style="{StaticResource TitleButton}" Command="{Binding AddScoreCommand}" Visibility="Visible">+10
+                        <Button x:Name="p7" Width="32" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddScoreCommand}" Visibility="Visible">+10
                             <Button.Tag>
                                 <sys:Int32>10</sys:Int32>
                             </Button.Tag>
@@ -744,7 +744,7 @@
         </Grid.ColumnDefinitions>
         <skin:PropertiesListView Grid.ColumnSpan="3">
             <CompositeCollection>
-                <toolkit:TimeSpanUpDown FractionalSecondsDigitsCount="{Binding IsHighPrecision}" Tag="Default Time" FontWeight="Normal" Style="{StaticResource WidgetTimeSpanUpDown}" Grid.Row="2" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" ext:FocusExtension.IsFocused="{Binding IsFocused}">
+                <toolkit:TimeSpanUpDown FractionalSecondsDigitsCount="{Binding IsHighPrecision}" Tag="Target Time" FontWeight="Normal" Style="{StaticResource WidgetTimeSpanUpDown}" Grid.Row="2" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" ext:FocusExtension.IsFocused="{Binding IsFocused}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewKeyUp">
                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -788,9 +788,9 @@
             </CompositeCollection>
         </skin:PropertiesListView>
         <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Grid.Row="4">
-            <Button Command="{Binding TimerCommand}" CommandParameter="Start" Style="{StaticResource TitleButton}" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="Start">&#xF40A;</Button>
-            <Button Command="{Binding TimerCommand}" IsEnabled="{Binding Active}" CommandParameter="Pause" Style="{StaticResource TitleButton}" ToolTip="Pause">&#xF3E4;</Button>
-            <Button Command="{Binding TimerCommand}" CommandParameter="Stop" Style="{StaticResource TitleButton}" ToolTip="Stop/Reset">&#xF4DB;</Button>
+            <Button Command="{Binding TimerCommand}" CommandParameter="Start" Style="{StaticResource TitleButton}" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="Start">&#xF04b;</Button>
+            <Button Command="{Binding TimerCommand}" IsEnabled="{Binding Active}" CommandParameter="Pause" Style="{StaticResource TitleButton}" ToolTip="Pause">&#xF04c;</Button>
+            <Button Command="{Binding TimerCommand}" CommandParameter="Stop" Style="{StaticResource TitleButton}" ToolTip="Stop/Reset">&#xF04d;</Button>
             <Border BorderBrush="White" Margin="{StaticResource LeftRightStdMargin}" BorderThickness="1,0,0,0"/>
             <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize -1 Hour}" Command="{Binding TimerCommand}" CommandParameter="-1 Hour" Content="{e:Localize -H}"></Button>
             <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize -1 Minute}" Command="{Binding TimerCommand}" CommandParameter="-1 Minute" Content="{e:Localize -M}"></Button>
@@ -811,7 +811,7 @@
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
                     <Ellipse x:Name="hasErrors" Width="4" Height="4" Margin="{StaticResource RightStdMargin}"/>
-                    <Button ToolTip="{e:Localize Stop script}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding StopScriptCommand}" IsEnabled="{Binding Enabled, Converter={wpfc:BoolToInverseBoolConverter}, Mode=OneWay}">&#xF4DB;</Button>
+                    <Button ToolTip="{e:Localize Stop script}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding StopScriptCommand}" IsEnabled="{Binding Enabled, Converter={wpfc:BoolToInverseBoolConverter}, Mode=OneWay}">&#xF256;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
@@ -967,7 +967,7 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="CheckBox">
                                             <Border x:Name="border" Background="{StaticResource Button.Static.Background}" BorderBrush="{StaticResource Button.Static.Border}" BorderThickness="1" Width="19" Height="19">
-                                                <TextBlock FontSize="{TemplateBinding FontSize}" FontWeight="Regular" x:Name="textBox" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF24A;" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                <TextBlock FontSize="{TemplateBinding FontSize}" FontWeight="Regular" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF24A;" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
@@ -1040,7 +1040,7 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF2D1;</Button>
+                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
@@ -1083,7 +1083,7 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF2D1;</Button>
+                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>

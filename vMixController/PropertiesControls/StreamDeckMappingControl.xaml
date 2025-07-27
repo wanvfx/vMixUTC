@@ -25,9 +25,9 @@
         <StackPanel Margin="{StaticResource StdMargin}">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center">
-                    <Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf11c;</Run>
+                    <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf11c;</Run>
                     <Run Text="{e:Localize Stream Deck Mapping}"/></TextBlock>
-                <Button ToolTip="{e:Localize Add stream deck mapping}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#xF415;"/>
+                <Button ToolTip="{e:Localize Add stream deck mapping}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding StreamDeck_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Keys, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -72,7 +72,7 @@
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF374;"/>
+                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF068;"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -80,7 +80,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Add Stream Deck Mapping"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Add Stream Deck Mapping"/>
         </StackPanel>
     </Border>
 </UserControl>

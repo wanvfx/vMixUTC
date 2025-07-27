@@ -211,7 +211,7 @@
                 <CheckBox IsChecked="{Binding IsAudioEnabled, Mode=TwoWay}" Foreground="White" FontSize="12">Audio</CheckBox>
                 <!--<Slider Value="{Binding Volume, ElementName=Preview, Mode=TwoWay}" Grid.Column="1" Margin="4,3,4,0" Maximum="1" Minimum="0"></Slider>-->
                 <CheckBox Grid.Column="2" FontSize="12" Foreground="White" IsChecked="{Binding IsLowBandwidth}" HorizontalAlignment="Right" VerticalAlignment="Bottom">Low Bandwidth Mode</CheckBox>
-                <Button Margin="4,0,0,0" Grid.Column="3" Command="{Binding ResetCommand}" Style="{StaticResource TitleButton}" ToolTip="Reset">&#xF453;</Button>
+                <Button Margin="4,0,0,0" Grid.Column="3" Command="{Binding ResetCommand}" Style="{StaticResource TitleButton}" ToolTip="Reset">&#xF2f9;</Button>
             </Grid>
         </Border>
 

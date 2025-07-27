@@ -2777,20 +2777,23 @@ namespace vMixController.ViewModel
                         {
                             WindowTitle = "About",
 
-                            MainInstruction = "One controller to rule them all.",
+                            MainInstruction = "One controller to rule them all.\nDonate if you like it 😉",
                             MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Information,
                             ExpandedInformation = @"This software using Antlr3 (c) 2010 Terence Parr; Avalonedit (c) AvalonEdit Contributors; Common.Logging by Aleksandar Seovic, Mark Pollack, Erich Eichinger, Stephen Bohlen; Extended.Wpf.Toolkit (c) Xceed Software, Inc. -2019; Fody, Costura.Fody (c) 2012 Simon Cropp and contributors; HtmlAgilityPack (c) ZZZ Projects, Simon Mourrier, Jeff Klawiter, Stephan Grell; MouseKeyHook (c) 2004-2015, George Mamaladze; MvvmLightLibs (c) 2009-2018 Laurent Bugnion; NAudio by Mark Heath & Contributors; NLog (c) 2004-2020 Jaroslaw Kowalski, Kim Christensen, Julian Verdurmen; Ookii.Dialogs by Sven Groot; Sanford.Multimedia.Midi by Leslie Sanford, Tebjan Halm, Andreas Grimme, Andres Fernandez de Prado; WpfScreenHelper (c) 2014 Michael Denny; WriteableBitmapEx (c) Schulte Software Development; NDI SDK (c) NewTek Inc.",
                             ExpandFooterArea = true,
-                            Footer = Title
+                            Footer = Title,
+                            ButtonStyle = Ookii.Dialogs.Wpf.TaskDialogButtonStyle.CommandLinks
                         };
 
                         var forumbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "vMix Forum" };
                         var githubbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "GitHub" };
+                        var redditbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "Reddit" };
                         var donatebtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "Donate" };
                         td.Buttons.Add(forumbtn);
                         td.Buttons.Add(githubbtn);
+                        td.Buttons.Add(redditbtn);
                         td.Buttons.Add(donatebtn);
-                        td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Close) { Default = true });
+                        td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Close) { Default = true, Text = "Close" });
 
                         var btn = td.ShowDialog();
                         if (btn == forumbtn)
@@ -2799,6 +2802,8 @@ namespace vMixController.ViewModel
                             Process.Start(new ProcessStartInfo("https://coindrop.to/elgarf"));
                         else if (btn == githubbtn)
                             Process.Start(new ProcessStartInfo("https://github.com/elgarf/vMixUTC"));
+                        else if (btn == redditbtn)
+                            Process.Start(new ProcessStartInfo("https://www.reddit.com/r/vMixUTC/"));
 
                     }));
             }

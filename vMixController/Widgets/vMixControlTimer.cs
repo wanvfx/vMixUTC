@@ -11,6 +11,7 @@ using System.Diagnostics;
 using GalaSoft.MvvmLight.Messaging;
 using HighPrecisionTimer;
 using System.Windows;
+using System.Globalization;
 
 namespace vMixController.Widgets
 {
@@ -221,6 +222,31 @@ namespace vMixController.Widgets
             }
         }
 
+        private bool _recoverOnSync = true;
+
+        /// <summary>
+        /// Sets and gets the IsHighPrecision property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool RecoverOnSync
+        {
+            get
+            {
+                return _recoverOnSync;
+            }
+
+            set
+            {
+                if (_recoverOnSync == value)
+                {
+                    return;
+                }
+
+                _recoverOnSync = value;
+                RaisePropertyChanged(nameof(RecoverOnSync));
+            }
+        }
+
         private string _format = @"hh\:mm\:ss";
 
         /// <summary>
@@ -407,10 +433,11 @@ namespace vMixController.Widgets
             base.OnPropertyChanged(e);
             if (e.Property == TextProperty)
             {
-                if (!_changingTime)
+                if (!_changingTime && _recoverOnSync)
                 {
                     TimeSpan parsed = TimeSpan.Zero;
-                    if (TimeSpan.TryParse((string)e.NewValue, out parsed))
+                    if (TimeSpan.TryParseExact((string)e.NewValue, _format, CultureInfo.InvariantCulture, out parsed))
+                    //if (TimeSpan.TryParse((string)e.NewValue, out parsed))
                     {
                         _time = parsed;
                         RaisePropertyChanged(nameof(Time));

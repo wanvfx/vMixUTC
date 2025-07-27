@@ -5,8 +5,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +44,8 @@ namespace XmlDataProviderNs
         public System.Windows.UIElement CustomUI { get; }
         public bool IsProvidingCustomProperties => true;
         public int Period { get; set; } = 1000; // По умолчанию 1 секунда
+
+
 
         public string[] Values
         {
@@ -161,21 +165,37 @@ namespace XmlDataProviderNs
 
         private async Task<XDocument> FetchXmlAsync(string url)
         {
+            Dispatcher.Invoke(() =>
+            {
+                Error = "";
+            });
             try
             {
-                using (var response = await _httpClient.GetAsync(url))
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                    return null;
+
+                if (uri.Scheme == Uri.UriSchemeFile)
                 {
-                    response.EnsureSuccessStatusCode();
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        // 5. Асинхронная загрузка в XDocument
+                    using (var stream = File.OpenRead(uri.LocalPath))
                         return XDocument.Load(stream, LoadOptions.None);
-                    }
                 }
+                else
+                    using (var response = await _httpClient.GetAsync(url))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        {
+                            // 5. Асинхронная загрузка в XDocument
+                            return XDocument.Load(stream, LoadOptions.None);
+                        }
+                    }
             }
             catch (Exception ex)
             {
-                Debug.Print($"Error retrieving XML data from {url}: {ex.Message}");
+                Dispatcher.Invoke(() =>
+                {
+                    Error = ($"Error retrieving XML data from {url}: {ex.Message}");
+                });
                 return null;
             }
         }
@@ -188,6 +208,7 @@ namespace XmlDataProviderNs
             // на которое может быть подписан интерфейс.
             Application.Current?.Dispatcher.Invoke(() =>
             {
+                Error = "";
                 try
                 {
                     var nsManager = new XmlNamespaceManager(new NameTable());
@@ -204,7 +225,7 @@ namespace XmlDataProviderNs
                             }
                             catch (Exception ex)
                             {
-                                Debug.Print($"Error adding namespace: {ex.Message}");
+                                Error = ($"Error adding namespace: {ex.Message}");
                             }
                         }
                     }
@@ -242,7 +263,7 @@ namespace XmlDataProviderNs
                 }
                 catch (Exception ex)
                 {
-                    Debug.Print($"Error updating data from XML: {ex.Message}");
+                    Error = ($"Error updating data from XML: {ex.Message}");
                     Data = new List<string>();
                 }
             });
@@ -276,6 +297,14 @@ namespace XmlDataProviderNs
         }
         public static readonly DependencyProperty NameSpacesProperty =
             DependencyProperty.Register(nameof(NameSpaces), typeof(string), typeof(XmlDataProvider), new PropertyMetadata(""));
+
+        public string Error
+        {
+            get => (string)GetValue(ErrorProperty);
+            set => SetValue(ErrorProperty, value);
+        }
+        public static readonly DependencyProperty ErrorProperty =
+            DependencyProperty.Register(nameof(Error), typeof(string), typeof(XmlDataProvider), new PropertyMetadata(""));
 
         public int GroupBy
         {

@@ -78,6 +78,7 @@
                 </CompositeCollection>
             </skin:PropertiesListView>
         </Grid>
+        <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Error}"/>
         <Separator/>
         <Grid>
             <Grid.ColumnDefinitions>

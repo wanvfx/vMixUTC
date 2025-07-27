@@ -18,7 +18,7 @@
             <conv:ObjectToTypeStringConverter x:Key="ObjToType"/>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items, ElementName=propsViewer}" x:Name="container">
+    <ListView Padding="-1" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items, ElementName=propsViewer}" x:Name="container">
         <ListView.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel HorizontalAlignment="Stretch"/>
@@ -29,10 +29,18 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListViewItem">
-                            <ContentPresenter/>
+                            <Border Background="{TemplateBinding Background}" x:Name="border">
+                                <ContentPresenter/>
+                            </Border>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="{StaticResource Button.Disabled.Background}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
@@ -65,8 +73,5 @@
                 <Setter Property="Background" Value="Transparent"/>
             </Style>
         </ListView.Style>
-        <ListView.Triggers>
-            
-        </ListView.Triggers>
     </ListView>
 </UserControl>

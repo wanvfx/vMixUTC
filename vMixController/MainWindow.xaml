@@ -76,28 +76,28 @@
                 <MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="{e:Localize Button}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Material Design Icons">&#xF131;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF205;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Label" Command="{Binding CreateWidgetCommand}" CommandParameter="Label" Header="{e:Localize Label}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF02B;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="{e:Localize Variable Viewer}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF02B;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Region" Command="{Binding CreateWidgetCommand}" CommandParameter="Region" Header="{e:Localize Region}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF2D0;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF2D0;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -105,56 +105,56 @@
                 <MenuItem x:Name="List" Command="{Binding CreateWidgetCommand}" CommandParameter="List" Header="{e:Localize List}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF03A;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF03A;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Score" Command="{Binding CreateWidgetCommand}" CommandParameter="Score" Header="{e:Localize Score}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF005;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF005;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="TextField" Command="{Binding CreateWidgetCommand}" CommandParameter="TextField" Header="{e:Localize Text Field}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Material Design Icons">&#xF60E;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF031;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Timer" Command="{Binding CreateWidgetCommand}" CommandParameter="Timer" Header="{e:Localize Timer}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Material Design Icons">&#xF51B;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xE06F;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Clock" Command="{Binding CreateWidgetCommand}" CommandParameter="Clock" Header="{e:Localize Clock}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Material Design Icons">&#xF150;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF34E;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Volume" Command="{Binding CreateWidgetCommand}" CommandParameter="Volume" Header="{e:Localize Volume}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF1DE;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1DE;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="TBar" Command="{Binding CreateWidgetCommand}" CommandParameter="TBar" Header="{e:Localize T-Bar}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">T</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">T</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Playlist" Command="{Binding CreateWidgetCommand}" CommandParameter="Playlist" Header="{e:Localize Playlist}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf00b;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xf00b;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -162,14 +162,14 @@
                 <MenuItem x:Name="Container" Command="{Binding CreateWidgetCommand}" CommandParameter="Container" Header="{e:Localize Container}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF1B2;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1B2;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="ExternalData" Command="{Binding CreateWidgetCommand}" ItemsSource="{Binding ExternalDataProviders}" CommandParameter="ExternalData" Header="{e:Localize External Data}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF1C0;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1C0;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                     <MenuItem.ItemTemplate>
@@ -190,21 +190,21 @@
                 <MenuItem x:Name="MidiInterface" Command="{Binding CreateWidgetCommand}" CommandParameter="MidiInterface" Header="{e:Localize MIDI Device}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF0E7;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0E7;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="StreamDeck" Command="{Binding CreateWidgetCommand}" CommandParameter="StreamDeck" Header="{e:Localize StreamDeck Device}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF11C;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF11C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="MultiState" Command="{Binding CreateWidgetCommand}" CommandParameter="MultiState" Header="{e:Localize Multi State}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF233;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF233;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -262,12 +262,12 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Menu VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+        <Menu KeyboardNavigation.TabNavigation="None" IsTabStop="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
             <MenuItem Header="{e:Localize File}">
                 <MenuItem Command="{Binding NewControllerCommand}" Header="{e:Localize New}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF016;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF016;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -275,7 +275,7 @@
                 <MenuItem Command="{Binding LoadControllerCommand}" Header="{e:Localize Open}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF07C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -284,13 +284,13 @@
                     <MenuItem.Resources>
                         <ResourceDictionary>
                         <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF15B;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF15B;</TextBlock>
                         </Border>
                         </ResourceDictionary>
                     </MenuItem.Resources>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF07C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                     <MenuItem.ItemContainerStyle>
@@ -307,9 +307,9 @@
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <Grid>
-                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF07C;</TextBlock>
-                                <TextBlock Foreground="White" FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF111;</TextBlock>
-                                <TextBlock FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF055;</TextBlock>
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF07C;</TextBlock>
+                                <TextBlock Foreground="White" FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontFamily="{StaticResource FontAwesome}">&#xF111;</TextBlock>
+                                <TextBlock FontSize="10" VerticalAlignment="Bottom" HorizontalAlignment="Right" FontFamily="{StaticResource FontAwesome}">&#xF055;</TextBlock>
                             </Grid>
                         </Border>
                     </MenuItem.Icon>
@@ -318,7 +318,7 @@
                 <MenuItem Command="{Binding SaveControllerCommand}"  Header="{e:Localize Save}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF0C7;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0C7;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -326,7 +326,7 @@
                 <!--<MenuItem Command="{Binding GlobalVariablesCommand}" Header="{e:Localize Global Variables}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF02D;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02D;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>-->
@@ -336,7 +336,7 @@
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF019;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF019;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                     <MenuItem.Style>
@@ -355,7 +355,7 @@
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF15C;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF15C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                     <MenuItem.Style>
@@ -371,7 +371,7 @@
                 <MenuItem Command="{Binding AboutCommand}" Header="{e:Localize About}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF05A;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF05A;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -379,7 +379,7 @@
                 <MenuItem Command="{Binding ExitCommand}"  Header="{e:Localize Exit}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF08B;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF08B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -394,7 +394,7 @@
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF0E2;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0E2;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -405,7 +405,7 @@
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF0c5;</TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0c5;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
@@ -423,15 +423,15 @@
                 <MenuItem.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Material Design Icons" x:Name="LockedIcon"></TextBlock>
+                            <TextBlock Width="16px" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}" x:Name="LockedIcon"></TextBlock>
                             <TextBlock Text="Lock"/>
                         </StackPanel>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding}" Value="True">
-                                <Setter Property="Text" Value="&#xF33E;" TargetName="LockedIcon"/>
+                                <Setter Property="Text" Value="&#xF023;" TargetName="LockedIcon"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding}" Value="False">
-                                <Setter Property="Text" Value="&#xF340;" TargetName="LockedIcon"/>
+                                <Setter Property="Text" Value="&#xF3C1;" TargetName="LockedIcon"/>
                             </DataTrigger>
                         </DataTemplate.Triggers>
                     </DataTemplate>
@@ -463,7 +463,7 @@
         </Menu>
         <ScrollViewer Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Background="Black">
             <TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
-                <TabItem Style="{StaticResource GrayItemStyle}" Header="Settings" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                <TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="Settings" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                     <StackPanel Margin="{StaticResource StdMargin}">
                         <Grid Margin="{StaticResource TopBottomStdMargin}">
                             <Grid.ColumnDefinitions>
@@ -474,7 +474,7 @@
                             <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
 
-                        <skin:PropertiesListView HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0">
+                        <skin:PropertiesListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0">
                             <!--<ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel HorizontalAlignment="Stretch"/>
@@ -506,7 +506,7 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>-->
                             <CompositeCollection>
-                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="IP" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
+                                <TextBox TabIndex="1" Style="{StaticResource WidgetTextBox}" Tag="IP" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -519,34 +519,7 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </TextBox>
-                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Port" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-
-                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="API Login" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="API Password" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox TabIndex="2" Style="{StaticResource WidgetTextBox}" Tag="Port" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -560,8 +533,20 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-
-                                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Poll Time, msec" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+                                <TextBox TabIndex="3" Style="{StaticResource WidgetTextBox}" Tag="API Login" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox TabIndex="4" Style="{StaticResource WidgetTextBox}" Tag="API Password" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -575,27 +560,42 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-                                <Grid Tag="Scaling">
+
+                                <TextBox TabIndex="5" Style="{StaticResource WidgetTextBox}" Tag="Poll Time, msec" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+
+                                <Grid KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" Tag="Scaling">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="Auto" MinWidth="64"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <Slider Value="{Binding WindowSettings.UIScale, Mode=TwoWay}" Minimum="0.5" Maximum="5"/>
+                                    <Slider TabIndex="6" Value="{Binding WindowSettings.UIScale, Mode=TwoWay}" Minimum="0.5" Maximum="5"/>
                                     <TextBlock Grid.Column="1" Style="{StaticResource PropertyName}" Margin="{StaticResource LeftStdMargin}" Text="{Binding WindowSettings.UIScale, StringFormat=0.00}"/>
-                                    <Button Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}">Reset</Button>
+                                    <Button TabIndex="7" Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}">Reset</Button>
                                 </Grid>
-                                <CheckBox Tag="Open Last At Start" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
-                                <CheckBox Tag="Is Topmost" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="8" Tag="Open Last At Start" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="9" Tag="Is Topmost" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
                                 <Border Tag="Enable Log">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsChecked="{Binding WindowSettings.EnableLog, Mode=TwoWay}"/>
-                                        <Button Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}">Open Log Folder</Button>
+                                        <CheckBox TabIndex="10" IsChecked="{Binding WindowSettings.EnableLog, Mode=TwoWay}"/>
+                                        <Button TabIndex="11" Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}">Open Log Folder</Button>
                                     </StackPanel>
                                 </Border>
 
-                                <CheckBox Tag="Show Widget Lock" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
-                                <CheckBox Tag="Blink Lights (need restart)" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="12" Tag="Show Widget Lock" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="13" Tag="Blink Lights (need restart)" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
                             </CompositeCollection>
                         </skin:PropertiesListView>
                         <Grid Background="Transparent" DataContext="{Binding GlobalSettings, Source={StaticResource Locator}}">
@@ -634,7 +634,7 @@
                                         </Grid.RowDefinitions>
                                         <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{e:Localize Global Variables}" FontSize="14"/>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                            <Button ToolTip="{e:Localize Add Variable}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#xF415;"/>
+                                            <Button ToolTip="{e:Localize Add Variable}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
                                             <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{x:Static this:Help.StaticVariables_Default}"/>
                                         </StackPanel>
                                         <Border VerticalAlignment="Center" Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
@@ -649,7 +649,7 @@
                                             <TextBlock HorizontalAlignment="Center" Grid.Column="2">Value</TextBlock>
                                         </Grid>
                                     </Grid>
-                                    <ListView BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
+                                    <ListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <DataTemplate.Resources>
@@ -698,7 +698,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </TextBox>
-                                                    <Button ToolTip="{e:Localize Remove Variable}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF374;" Grid.Column="3"/>
+                                                    <Button ToolTip="{e:Localize Remove Variable}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF068;" Grid.Column="3"/>
                                                 </Grid>
 
                                             </DataTemplate>
@@ -717,6 +717,7 @@
                                                                     </ControlTemplate>
                                                                 </Setter.Value>
                                                             </Setter>
+                                                            <Setter Property="IsTabStop" Value="False"/>
                                                         </Style>
                                                     </Setter.Value>
                                                 </Setter>
@@ -738,13 +739,13 @@
                                             </Style>
                                         </ListView.Style>
                                     </ListView>
-                                    <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="Append Variable"/>
+                                    <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="Append Variable"/>
                                 </StackPanel>
                             </ScrollViewer>
                         </Grid>
                     </StackPanel>
                 </TabItem>
-                <TabItem IsSelected="True" Style="{StaticResource GrayItemStyle}" Foreground="White">
+                <TabItem IsTabStop="False" IsSelected="True" Style="{StaticResource GrayItemStyle}" Foreground="White">
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock VerticalAlignment="Center">Layout</TextBlock>
@@ -782,7 +783,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                             <Button ToolTip="{e:Localize Rename Page}" Style="{StaticResource TitleButton}" Command="{Binding EditPageNameCommand}" CommandParameter="{Binding PageIndex}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
-                                <TextBlock FontFamily="/vMixControllerSkin;Component/#FontAwesome" Text="&#xf040;"/>
+                                <TextBlock FontFamily="{StaticResource FontAwesome}" Text="&#xf044;"/>
                             </Button>
                         </StackPanel>
                     </TabItem.Header>
@@ -1027,7 +1028,7 @@
                                             <ControlTemplate TargetType="CheckBox">
                                                 <Grid Background="Aqua">
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock FontFamily="/vMixControllerSkin;Component/#FontAwesome" VerticalAlignment="Center" x:Name="Icon"/>
+                                                        <TextBlock FontFamily="{StaticResource FontAwesome}" VerticalAlignment="Center" x:Name="Icon"/>
                                                         <ContentPresenter VerticalAlignment="Center" Margin="2"/>
                                                     </StackPanel>
                                                 </Grid>

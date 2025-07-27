@@ -25,8 +25,8 @@
     <Border BorderBrush="#0087FF" Background="#18CAFF" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
         <StackPanel Margin="{StaticResource StdMargin}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Foreground="Black" Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf017;</Run><Run Text=" "></Run><Run Text="{e:Localize Scheduler}"/></TextBlock>
-                <Button ToolTip="{e:Localize Add clock time}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#xF415;"/>
+                <TextBlock Foreground="Black" Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf017;</Run><Run Text=" "></Run><Run Text="{e:Localize Scheduler}"/></TextBlock>
+                <Button ToolTip="{e:Localize Add clock time}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Scheduler_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Events, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -147,7 +147,7 @@
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF374;" Margin="-5,0,0,0"/>
+                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF068;" Margin="-5,0,0,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -155,7 +155,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Append Event"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Append Event"/>
         </StackPanel>
     </Border>
 </UserControl>

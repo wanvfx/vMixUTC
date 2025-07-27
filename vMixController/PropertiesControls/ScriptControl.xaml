@@ -37,12 +37,12 @@
         <Border BorderBrush="#D01818" Background="#8B0000" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
             <StackPanel Margin="{StaticResource StdMargin}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xf233;</Run><Run Text=" "/><Run Text="{e:Localize Script}"/></TextBlock>
-                    <Button ToolTip="{e:Localize Add Script Command}" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#xF415;"/>
-                    <Button ToolTip="{e:Localize Clear Script}" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF214;"/>
+                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="{e:Localize Script}"/></TextBlock>
+                    <Button ToolTip="{e:Localize Add Script Command}" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Button ToolTip="{e:Localize Clear Script}" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF51A;"/>
                     <Border BorderThickness="1,0,0,0" Margin="1" BorderBrush="White"/>
-                    <Button ToolTip="{e:Localize Export Script}" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF21d;"/>
-                    <Button ToolTip="{e:Localize Import Script}" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF220;"/>
+                    <Button ToolTip="{e:Localize Export Script}" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
+                    <Button ToolTip="{e:Localize Import Script}" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
                     <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Script_Default, Source={StaticResource Help}}"/>
                 </StackPanel>
 
@@ -145,7 +145,7 @@
                                                                 <ColumnDefinition Width="Auto"/>
                                                             </Grid.ColumnDefinitions>
                                                             <TextBox Height="Auto" Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" Text="{Binding Parameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                            <Button Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Grid.Column="1" Height="Auto" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=In}" Content="T" Click="Button_Click" ToolTip="Fill Title Index" ContextMenuOpening="Button_ContextMenuOpening">
+                                                            <Button Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Grid.Column="1" Height="Auto" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=In}" FontFamily="{StaticResource SegoeUI}" Content="T" Click="Button_Click" ToolTip="Fill Title Index" ContextMenuOpening="Button_ContextMenuOpening">
                                                                 <Button.ContextMenu>
                                                                     <ContextMenu ItemsSource="{Binding Elements}">
                                                                         <ContextMenu.ItemTemplate>
@@ -209,7 +209,7 @@
                                                     </ctrls:TwoColumnGrid>
                                                 </Grid>
                                                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="2,0,0,0" Orientation="{Binding Collapsed, Converter={conv:BoolToOrientationConverter}}" HorizontalAlignment="Right">
-                                                    <TextBlock Margin="{StaticResource StdMargin}" ToolTip="No Input Assigned To This Function!" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="NoInputAssigned" Foreground="Yellow" Visibility="Collapsed" FontFamily="/vMixControllerSkin;Component/#FontAwesome">&#xF071;</TextBlock>
+                                                    <TextBlock Margin="{StaticResource StdMargin}" ToolTip="No Input Assigned To This Function!" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="NoInputAssigned" Foreground="Yellow" Visibility="Collapsed" FontFamily="{StaticResource FontAwesome}">&#xF071;</TextBlock>
 
                                                     <CheckBox IsChecked="{Binding IsExecutable}" ToolTip="Execute This Function" Margin="{StaticResource StdMargin}" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                         <CheckBox.Style>
@@ -219,7 +219,7 @@
                                                                     <Setter.Value>
                                                                         <ControlTemplate TargetType="CheckBox">
                                                                             <Border>
-                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF05D;"/>
+                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF05D;"/>
                                                                             </Border>
                                                                             <ControlTemplate.Triggers>
                                                                                 <Trigger Property="IsChecked" Value="True">
@@ -241,7 +241,7 @@
                                                                     <Setter.Value>
                                                                         <ControlTemplate TargetType="CheckBox">
                                                                             <Border>
-                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="/vMixControllerSkin;Component/#FontAwesome" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF006;"/>
+                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF006;"/>
                                                                             </Border>
                                                                             <ControlTemplate.Triggers>
                                                                                 <Trigger Property="IsChecked" Value="True">
@@ -255,10 +255,10 @@
                                                         </CheckBox.Style>
                                                     </CheckBox>
                                                     
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandUpCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Up}" Content="&#xF143;"/>
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandDownCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Down}" Content="&#xF140;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandUpCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Up}" Content="&#xF30C;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandDownCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Down}" Content="&#xF309;"/>
 
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemoveCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="{e:Localize Remove}" Content="&#xF374;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemoveCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="{e:Localize Remove}" Content="&#xF068;"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -303,7 +303,7 @@
                                     </Style>
                                 </ListView.ItemContainerStyle>
                             </ListView>
-                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="{e:Localize Append Command}"/>
+                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="{e:Localize Append Command}"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemStyle}" Header="Code">
