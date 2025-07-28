@@ -37,6 +37,6 @@ namespace vMixController.Classes
 
         // Using a DependencyProperty as the backing store for C.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DProperty =
-            DependencyProperty.Register("D", typeof(T4), typeof(Quadriple<T1, T2, T3, T4>), new PropertyMetadata(default(T4)));
+            DependencyProperty.Register("D", typeof(T4), typeof(Quadriple<T1, T2, T3, T4>), new PropertyMetadata(default(T4), InternalPropertyChanged));
     }
 }

@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -352,7 +353,7 @@ namespace vMixController.ViewModel
 
         private void WindowSettings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem((x) =>
+            _ = Task.Run(() =>
             {
                 if (e.PropertyName == "IP" || e.PropertyName == "Port" || e.PropertyName == "HttpLogin" || e.PropertyName == "HttpPassword")
                     CheckvMixConnection(null, new EventArgs());
@@ -1522,6 +1523,8 @@ namespace vMixController.ViewModel
                         WindowSettings.UserName = null;
                         WindowSettings.Locked = false;
 
+                        ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables.Clear();
+
                         _widgets.Clear();
                     }));
             }
@@ -2075,13 +2078,14 @@ namespace vMixController.ViewModel
                         using (var fs = new FileStream(Path.Combine(_documentsPath, "WindowSettings.xml"), FileMode.Create))
                             s.Serialize(fs, _windowSettings);
 
-                        _logger.Info("Saving variables.");
+                        //Save global variables only in controller now because it can confuse someone working with many controllers
+                        /*_logger.Info("Saving variables.");
                         s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
                         using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Create))
                         {
                             var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
                             s.Serialize(fs, globalSettings.Variables);
-                        }
+                        }*/
 
 
                         _logger.Info("Saving last controller");
@@ -2279,7 +2283,7 @@ namespace vMixController.ViewModel
                 _windowSettings.Pages.Add(Utils.PAGE5PAGENAME);
             }
 
-            try
+            /*try
             {
                 _logger.Info("Loading variables.");
                 s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
@@ -2294,7 +2298,7 @@ namespace vMixController.ViewModel
             catch (Exception)
             {
 
-            }
+            }*/
 
             if (Model == null)
                 vMixAPI.StateFabrique.CreateAsync();

@@ -250,14 +250,14 @@
 
 	<vMixFunctionReference>
 		<Native>true</Native>
-		<Description>Set global variable by index.</Description>
+		<Description>Set global variable by index or name, name should be enquoted.</Description>
 		<Function>SetGlobalVariable</Function>
 		<HasInputProperty>true</HasInputProperty>
 		<HasIntProperty>true</HasIntProperty>
 		<HasStringProperty>true</HasStringProperty>
 		<StringDescription>Value</StringDescription>
 		<InputDescription>Input</InputDescription>
-		<IntDescription>Index</IntDescription>
+		<IntDescription>Index/Name (enquoted)</IntDescription>
 	</vMixFunctionReference>	
 
 	<vMixFunctionReference>

@@ -500,6 +500,7 @@
     </Compile>
     <Compile Include="ViewModel\GlobalVariablesViewModel.cs" />
     <Compile Include="vMixControlUtils.cs" />
+    <Compile Include="Widgets\Button\vMixControlButtonHelper.cs" />
     <Compile Include="Widgets\IvMixAutoUpdateWidget.cs" />
     <Compile Include="Classes\MainWindowSettings.cs" />
     <Compile Include="Widgets\vMixControlVariableViewer.cs" />

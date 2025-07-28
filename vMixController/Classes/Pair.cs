@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using Melanchall.DryWetMidi.Core;
 using NLog.Filters;
 using System;
 using System.Collections.Generic;
@@ -94,9 +95,15 @@ namespace vMixController.Classes
         public static readonly DependencyProperty AProperty =
             DependencyProperty.Register("A", typeof(T1), typeof(Pair<T1, T2>), new PropertyMetadata(default(T1), InternalPropertyChanged));
 
-        private static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            
+            //((Pair<T1, T2>)d).OnPropertyChanged(e);
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            PropertyChanged?.Invoke(this, e);
         }
 
         public object Clone()
@@ -114,7 +121,9 @@ namespace vMixController.Classes
         // Using a DependencyProperty as the backing store for B.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BProperty =
             DependencyProperty.Register("B", typeof(T2), typeof(Pair<T1, T2>), new PropertyMetadata(default(T2), InternalPropertyChanged));
-    }
+
+        public event DependencyPropertyChangedEventHandler PropertyChanged;
+     }
 
     public class ControlIntParameter : Pair<Widgets.vMixControl, int>
     {

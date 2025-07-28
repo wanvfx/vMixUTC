@@ -20,14 +20,20 @@ using System.Diagnostics;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Reflection;
 using vMixController.Messages;
+using vMixController.Widgets.Button;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace vMixController.Widgets
 {
+
     [Serializable]
     public class vMixControlButton : vMixControl
     {
+        private ConcurrentDictionary<string, string> _cachedVariables;
+        private readonly object _cacheLock = new object();
+
         public override bool IsResizeableVertical => true;
 
         static XmlDocument _latestDocument;
@@ -143,6 +149,7 @@ namespace vMixController.Widgets
         /// Sets and gets the BorderColor property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
+        [XmlIgnore]
         public Color BlinkBorderColor
         {
             get
@@ -403,14 +410,14 @@ namespace vMixController.Widgets
 
 
         [NonSerialized]
-        private List<Pair<int, object>> _variables = new List<Pair<int, object>>();
+        private ConcurrentDictionary<int, object> _variables = new ConcurrentDictionary<int, object>();
 
         /// <summary>
         /// Sets and gets the Variables property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
         [XmlIgnore]
-        public List<Pair<int, object>> Variables
+        public ConcurrentDictionary<int, object> Variables
         {
             get
             {
@@ -628,173 +635,52 @@ namespace vMixController.Widgets
             _culture.NumberFormat.NumberDecimalDigits = 5;
             _culture.NumberFormat.CurrencyDecimalDigits = 5;
 
-            XmlDocumentMessenger.OnDocumentDownloaded += XmlDocumentMessenger_OnDocumentDownloaded;
-
-        }
-
-        private void XmlDocumentMessenger_OnDocumentDownloaded(XmlDocument doc, DateTime timestamp)
-        {
-            if (IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
+            XmlDocumentMessenger.OnDocumentDownloaded += OnXmlDocumentDownloaded;
+            Messenger.Default.Register<UpdateGlobalVariable>(this, (t) =>
             {
-
-                ThreadPool.QueueUserWorkItem((t) =>
+                lock (_cacheLock)
                 {
-
-                    try
+                    _cachedVariables = _cachedVariables ?? new ConcurrentDictionary<string, string>();
+                    switch (t.State)
                     {
-                        _latestDocument = doc;
-                        Active = XPathStateDependent(doc);
-
+                        case VariableState.Add:
+                        case VariableState.Update:
+                            _cachedVariables.AddOrUpdate(t.Name, t.Value, (k, v) => t.Value);
+                            break;
+                        case VariableState.Delete:
+                            _cachedVariables.TryRemove(t.Name, out _);
+                            break;
+                        case VariableState.Clear:
+                            _cachedVariables.Clear();
+                            break;
                     }
-                    catch (Exception e)
-                    {
-                        _logger.Error(e, "Error while checking state dependency!");
-                    }
-
-
-
-                });
-                if ((DateTime.Now - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        _internalState?.UpdateAsync();
-                    });
-                    _previousInternalStateUpdating = DateTime.Now;
                 }
-
-                _previousQuery = DateTime.Now;
-            }
-        }
-
-        private void ExecutionWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            ExecutionThread((State)e.Argument);
-        }
-
-
-        private bool XPathStateDependent(XmlDocument doc)
-        {
-            if (doc == null) return false;
-
-            var result = false;
-
-            HasScriptErrors = false;
-
-
-            Stack<bool> conds = new Stack<bool>();
-            for (int i = 0; i < _commands.Count; i++)
-            {
-                var item = _commands[i];
-
-                if (item.UseInActiveState && (conds.Count == 0 || conds.Peek()))
-                {
-
-                    var inputKey = item.InputKey;
-                    //Expand [VAR] input key
-                    Dispatcher.Invoke(() =>
-                    {
-                        var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-                        foreach (var variable in globalSettings.Variables)
-                        {
-                            if (inputKey == variable.A)
-                            {
-                                inputKey = variable.B;
-                                break;
-                            }
-                        }
-                    });
-
-
-                    var input = Convert.ToInt32(doc.SelectSingleNode(string.Format(@"//inputs/input[@key='{0}']/@number", inputKey))?.Value ?? "-1");
-
-                    int intp = CalculateExpression<int>(item.Parameter);
-                    object strp = CalculateExpression(item.StringParameter);
-                    int strpasint = -1;
-                    if (strp != null)
-                        if (!int.TryParse(strp.ToString(), out strpasint))
-                            strpasint = int.MinValue;
-
-                    string keybystring = doc.SelectSingleNode(string.Format(@"//inputs/input[@number='{0}']/@key", strpasint))?.Value;
-                    string keybyint = doc.SelectSingleNode(string.Format(@"//inputs/input[@number='{0}']/@key", intp))?.Value;
-
-
-
-                    if (string.IsNullOrWhiteSpace(item.Action.ActiveStateXPath) && item.Action.ActiveStateXPathIntDependence == null) continue;
-                    var path = "";
-
-                    if (!string.IsNullOrWhiteSpace(item.Action.ActiveStateXPath))
-                        path = string.Format(item.Action.ActiveStateXPath, inputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
-
-                    if (item.Action.ActiveStateXPathIntDependence != null)
-                        path = string.Format(item.Action.ActiveStateXPathIntDependence[intp], inputKey, intp, strp, intp - 1, input, "", keybyint, keybystring);
-
-                    if (string.IsNullOrWhiteSpace(path)) return false;
-
-                    var nval = "";
-
-                    var tempval = doc.SelectSingleNode(path);
-
-                    if (tempval == null) continue;
-
-                    if (tempval is XmlAttribute)
-                        nval = tempval.Value;
-                    else
-                        nval = tempval.InnerText;
-
-                    var val = nval == null ? "" : nval.ToString();
-                    HasScriptErrors = HasScriptErrors || nval == null;
-                    var aval = string.Format(item.Action.ActiveStateValue, input, intp, strp, intp - 1, input, "", keybyint, keybystring);
-                    var realval = aval;
-                    aval = aval.TrimStart('!', '~');
-                    //! - not
-                    //~ - contains
-                    //` - not contains
-                    bool mult = (aval == "-" && ((val is string && string.IsNullOrWhiteSpace((string)val)) || (val == null))) ||
-                        (aval == "*") ||
-                        (val != null && !(val is string) && aval == val.ToString()) ||
-                        (val is string && (string)val == aval) ||
-                        ((string.IsNullOrWhiteSpace(realval) ? '-' : realval[0]) == '~' && (val is string && ((string)val).IndexOf(aval) >= 0)) ||
-                        ((string.IsNullOrWhiteSpace(realval) ? '-' : realval[0]) == '`' && (val is string && ((string)val).IndexOf(aval) < 0));
-                    if (!string.IsNullOrWhiteSpace(aval) && (string.IsNullOrWhiteSpace(realval) ? '-' : realval[0]) == '!')
-                        mult = !mult;
-                    result = result || mult;
-                }
-
-            }
-            return result;
-        }
-
-        public override Hotkey[] GetHotkeys()
-        {
-            return new Classes.Hotkey[] {
-                new Classes.Hotkey { Name = "Execute" },
-                new Classes.Hotkey { Name = "Reset" },
-                new Classes.Hotkey { Name = "Clear Variables" },
-                new Classes.Hotkey { Name = "Press" },
-                new Classes.Hotkey { Name = "Release" }
-            };
+            });
+            Messenger.Default.Send(new FillGlobalVariables() { Caller = this });
         }
 
         private void PopulateVariables(NCalc.Expression exp)
         {
             foreach (var item in _variables)
             {
-                var x = Dispatcher.Invoke(() => new { item.A, item.B });
-                exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, x.A), x.B);
+                //var x = Dispatcher.Invoke(() => new { item.A, item.B });
+                exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
             }
-            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-            foreach (var item in globalSettings.Variables)
+
+            lock (_cacheLock)
             {
-                var x = Dispatcher.Invoke(() => new { item.A, item.B });
-                if (!exp.Parameters.ContainsKey(x.A))
-                    exp.Parameters.Add(x.A, x.B);
+                if (_cachedVariables != null)
+                    foreach (var item in _cachedVariables)
+                    {
+                        if (!exp.Parameters.ContainsKey(item.Key))
+                            exp.Parameters.Add(item.Key, item.Value);
+                    }
             }
             exp.Parameters.Add(parameterName, parameterValue);
-            exp.EvaluateFunction += Exp_EvaluateFunction;
+            exp.EvaluateFunction += ExpressionEvaluateFunction;
         }
 
-        private void Exp_EvaluateFunction(string name, NCalc.FunctionArgs args)
+        private void ExpressionEvaluateFunction(string name, NCalc.FunctionArgs args)
         {
             var p = args.EvaluateParameters();
             args.HasResult = false;
@@ -859,106 +745,62 @@ namespace vMixController.Widgets
             }
         }
 
-        private bool Calculate(string s)
+        private void OnXmlDocumentDownloaded(XmlDocument doc, DateTime timestamp)
         {
-            if (string.IsNullOrWhiteSpace(s)) return false;
-            NCalc.Expression exp = new NCalc.Expression(s);
-            PopulateVariables(exp);
-
-            bool result = false;
-
-            if (exp.HasErrors())
-                return false;
-            else
-                try
-                {
-
-                    result = (bool)exp.Evaluate();
-                    exp.EvaluateFunction -= Exp_EvaluateFunction;
-                    exp.EvaluateParameter -= Exp_EvaluateParameter;
-                    exp = null;
-                    return result;
-                }
-                catch (Exception)
-                {
-                    exp.EvaluateFunction -= Exp_EvaluateFunction;
-                    exp.EvaluateParameter -= Exp_EvaluateParameter;
-                    exp = null;
-                    return false;
-                }
-
-        }
-
-        private object CalculateExpression(string s)
-        {
-            if (string.IsNullOrWhiteSpace(s)) return s;
-            NCalc.Expression exp = new NCalc.Expression(s);
-            exp.EvaluateParameter += Exp_EvaluateParameter;
-            PopulateVariables(exp);
-            object result = null;
-            if (exp.HasErrors())
-                return s;
-            else
+            if (IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
+                _ = Task.Run(() =>
+                {
 
-                try
+                    try
+                    {
+                        _latestDocument = doc;
+                        var result = _commands.CalculateStateDependency(doc, (inputKey) =>
+                        {
+                            lock (_cacheLock)
+                            {
+                                if (_cachedVariables.ContainsKey(inputKey))
+                                    return _cachedVariables[inputKey];
+                            }
+                            return inputKey;
+                        }, PopulateVariables, ExpressionEvaluateFunction);
+                        Active = result.IsStateDependent;
+                        HasScriptErrors = result.HasErrors;
+
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e, "Error while checking state dependency!");
+                    }
+                });
+
+                if ((DateTime.Now - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
                 {
-                    result = exp.Evaluate();
-                    exp.EvaluateFunction -= Exp_EvaluateFunction;
-                    exp.EvaluateParameter -= Exp_EvaluateParameter;
-                    exp = null;
-                    return result;
+                    Dispatcher.Invoke(() =>
+                    {
+                        _internalState?.UpdateAsync();
+                    });
+                    _previousInternalStateUpdating = DateTime.Now;
                 }
-                catch (Exception)
-                {
-                    exp.EvaluateFunction -= Exp_EvaluateFunction;
-                    exp.EvaluateParameter -= Exp_EvaluateParameter;
-                    exp = null;
-                    return s;
-                }
+
+                _previousQuery = DateTime.Now;
             }
         }
 
-        private void Exp_EvaluateParameter(string name, NCalc.ParameterArgs args)
+        private void ExecutionWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            //Avoid non-defined parameters with their names
-            args.Result = name;
+            ExecutionThread((State)e.Argument);
         }
 
-        private T CalculateExpression<T>(string s)
+        public override Hotkey[] GetHotkeys()
         {
-            var result = CalculateExpression(s);
-            try
-            {
-                //If types are equal
-                if (result is T) return (T)result;
-
-                //Try convert
-                MethodInfo parse = null;
-                Type targetType = typeof(T);
-                Type ut = typeof(T);
-                if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    ut = Nullable.GetUnderlyingType(targetType);
-                parse = ut.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(x => x.Name == "TryParse" && x.DeclaringType == ut && x.GetParameters().FirstOrDefault()?.ParameterType == typeof(string)).FirstOrDefault();
-                if (parse != null && result is string)
-                {
-                    object[] parameters = new object[] { result, null };
-                    object parseResult = parse.Invoke(targetType, parameters);
-                    if ((bool)parseResult)
-                        return (T)parameters[1];
-                    else
-                        //return default value if parsing was failed
-                        if (ut.IsValueType)
-                        return (T)Activator.CreateInstance(ut);
-                }
-
-                //Try change type
-                return (T)Convert.ChangeType(result, typeof(T));
-            }
-            catch
-            {
-                return default;
-            }
+            return new Classes.Hotkey[] {
+                new Classes.Hotkey { Name = "Execute" },
+                new Classes.Hotkey { Name = "Reset" },
+                new Classes.Hotkey { Name = "Clear Variables" },
+                new Classes.Hotkey { Name = "Press" },
+                new Classes.Hotkey { Name = "Release" }
+            };
         }
 
         private bool TestCondition(vMixControlButtonCommand cmd)
@@ -970,9 +812,9 @@ namespace vMixController.Widgets
             var part2 = string.Format(cmd.AdditionalParameters[3].A, cmd.InputKey, cmd.AdditionalParameters[0].A)?.ToString() ?? "";
             Thread.CurrentThread.CurrentCulture = _culture;
             Thread.CurrentThread.CurrentUICulture = _culture;
-
-            var expr1 = CalculateExpression(part1);
-            var expr2 = CalculateExpression(part2);
+            
+            vMixControlButtonHelper.CalculateExpression<object>(part1, PopulateVariables, ExpressionEvaluateFunction, out object expr1);
+            vMixControlButtonHelper.CalculateExpression<object>(part2, PopulateVariables, ExpressionEvaluateFunction, out object expr2);
 
             //put expressions into variables for comparing
             var idx1 = GetVariableIndex(65534);
@@ -980,28 +822,25 @@ namespace vMixController.Widgets
 
             if (idx1 < 0 || idx2 < 0)
             {
-                Dispatcher.Invoke(() => _variables.Add(new Pair<int, object>() { A = 65534, B = expr1 }));
-                Dispatcher.Invoke(() => _variables.Add(new Pair<int, object>() { A = 65535, B = expr2 }));
+                _variables.AddOrUpdate(65534, expr1, (k, v) => expr1);
+                _variables.AddOrUpdate(65535, expr2, (k, v) => expr2);
             }
             else
             {
-                Dispatcher.Invoke(() => _variables[idx1].B = expr1);
-                Dispatcher.Invoke(() => _variables[idx2].B = expr2);
+                _variables.AddOrUpdate(idx1, expr1, (k, v) => expr1);
+                _variables.AddOrUpdate(idx2, expr2, (k, v) => expr2);
             }
 
             string expression = string.Format("{0}{1}{2}", "_var65534", cmd.AdditionalParameters[2].A, "_var65535");
             AddLog("CONDITION CHECK {0}{1}{2}", expr1, cmd.AdditionalParameters[2].A, expr2);
-            return Calculate(expression);
+            bool result = false;
+            vMixControlButtonHelper.CalculateExpression<bool>(expression, PopulateVariables, ExpressionEvaluateFunction, out result);
+            return result;
         }
 
         private int GetVariableIndex(int number)
         {
-            for (int i = 0; i < _variables.Count; i++)
-            {
-                if (Dispatcher.Invoke(() => _variables[i].A) == number)
-                    return i;
-            }
-            return -1;
+            return _variables.ContainsKey(number) ? number : -1;
         }
 
         private void ExecutionThread(object _state)
@@ -1080,7 +919,7 @@ namespace vMixController.Widgets
                                     AddLog("{1}) API POST WRONG URL = {0}", strparameter, _pointer + 1);
                                 break;
                             case NativeFunctions.TIMER:
-                                parameter = CalculateExpression<int>(cmd.Parameter);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
                                 AddLog("{2}) TIMER {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
                                 var bs = DateTime.Now;
                                 while (parameter > 0)
@@ -1111,7 +950,7 @@ namespace vMixController.Widgets
                                     ClearLog();
                                     _jumpCount = 0;
                                 }
-                                parameter = CalculateExpression<int>(cmd.Parameter);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
                                 AddLog("{2}) GOTO {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
                                 _pointer = parameter - 1;
                                 _jumpCount++;
@@ -1119,19 +958,19 @@ namespace vMixController.Widgets
                             case NativeFunctions.EXECLINK:
                                 strparameter = Dispatcher.Invoke(() => CalculateObjectParameter(cmd)).ToString();
                                 AddLog("{2}) EXECLINK {0} [{1}]", cmd.StringParameter, strparameter, _pointer + 1);
-                                Dispatcher.Invoke(() => Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(strparameter, null)));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new Pair<string, object>(strparameter, null)));
                                 break;
                             case NativeFunctions.LIVETOGGLE:
                                 AddLog("{0}) LIVETOGGLE", _pointer + 1);
-                                Dispatcher.Invoke(() => Messenger.Default.Send<LIVEToggleMessage>(new LIVEToggleMessage() { State = 2 }));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 2 }));
                                 break;
                             case NativeFunctions.LIVEOFF:
                                 AddLog("{0}) LIVEOFF", _pointer + 1);
-                                Dispatcher.Invoke(() => Messenger.Default.Send<LIVEToggleMessage>(new LIVEToggleMessage() { State = 0 }));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 0 }));
                                 break;
                             case NativeFunctions.LIVEON:
                                 AddLog("{0}) LIVEON", _pointer + 1);
-                                Dispatcher.Invoke(() => Messenger.Default.Send<LIVEToggleMessage>(new LIVEToggleMessage() { State = 1 }));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 1 }));
                                 break;
                             case NativeFunctions.CONDITION:
                                 conditionResult = cond.HasValue && cond.Value ? new bool?(TestCondition(cmd)) : null;
@@ -1143,7 +982,7 @@ namespace vMixController.Widgets
                                 _conditions.Push(!_conditions.Pop());
                                 break;
                             case NativeFunctions.HASVARIABLE:
-                                parameter = CalculateExpression<int>(cmd.Parameter);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
                                 conditionResult = cond.HasValue && cond.Value ? new bool?(GetVariableIndex(parameter) != -1) : null;
                                 AddLog("{2}) HASVARIABLE {0} IS {1}", parameter, conditionResult, _pointer + 1);
                                 _conditions.Push(conditionResult);
@@ -1158,30 +997,27 @@ namespace vMixController.Widgets
                                 break;
                             case NativeFunctions.SETVARIABLE:
 
-                                var idx = GetVariableIndex(CalculateExpression<int>(cmd.Parameter));
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out int calc);
+                                var idx = GetVariableIndex(calc);
                                 var tobj = CalculateObjectParameter(cmd);
                                 AddLog("{2}) SETVARIABLE {0} TO {1}", idx, tobj, _pointer + 1);
                                 if (idx == -1)
-                                    Dispatcher.Invoke(() => _variables.Add(new Pair<int, object>() { A = CalculateExpression<int>(cmd.Parameter), B = tobj }));
-                                else
                                 {
-                                    Dispatcher.Invoke(() => _variables[idx].B = tobj);
+                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var variableValue);
+                                    _variables.AddOrUpdate(variableValue, tobj, (k, v) => tobj);
                                 }
+                                else
+                                    _variables.AddOrUpdate(idx, tobj, (k, v) => tobj);
                                 break;
                             case NativeFunctions.SETGLOBALVARIABLE:
-                                var gidx = CalculateExpression<int>(cmd.Parameter);
+                                var isgidx = vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var gidx);
+                                var isgstr = vMixControlButtonHelper.CalculateExpression<string>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var gname);
                                 var gtobj = CalculateObjectParameter(cmd);
-                                AddLog("{2}) SETGLOBALVARIABLE {0} TO {1}", gidx, gtobj, _pointer + 1);
-                                var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-                                if (gidx < 0 || gidx >= globalSettings.Variables.Count)
-                                    AddLog("{2}) VARIABLE {0} NOT FOUND", gidx, gtobj, _pointer + 1);
+                                AddLog("{2}) SETGLOBALVARIABLE {0} TO {1}", isgidx ? gidx.ToString() : gname, gtobj, _pointer + 1);
+                                if (!isgidx)
+                                    Messenger.Default.Send(new SetGlobalVariable() { Index = gidx, Value = gtobj.ToString() });
                                 else
-                                {
-                                    Dispatcher.Invoke(() =>
-                                    {
-                                        globalSettings.Variables[gidx].B = gtobj.ToString();
-                                    });
-                                }
+                                    Messenger.Default.Send(new SetGlobalVariable() { Name = gname, Value = gtobj.ToString() });
                                 break;
                             case NativeFunctions.VALUECHANGED:
 
@@ -1198,14 +1034,18 @@ namespace vMixController.Widgets
                     {
                         var key = Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher);
 
+                        int p1 = 0;
+
                         var input = state.Inputs.Where(x => x.Key == key).FirstOrDefault()?.Number;
-                        var command = string.Format(cmd.Action.FormatString, key, CalculateExpression<int>(cmd.Parameter), System.Web.HttpUtility.UrlEncode(Convert.ToString(Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CultureInfo.InvariantCulture)), CalculateExpression<int>(cmd.Parameter) - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
+                        vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                        var command = string.Format(cmd.Action.FormatString, key, p1, System.Web.HttpUtility.UrlEncode(Convert.ToString(Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CultureInfo.InvariantCulture)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
 
                         if (!cmd.Action.StateDirect)
                             AddLog("{2}) SEND {0} WITH RESULT {1}", command, state.SendFunction(command, false, timeout: cmd.Action.Timeout), _pointer + 1);
                         else
                         {
-                            var path = string.Format(cmd.Action.StatePath, key, CalculateExpression<int>(cmd.Parameter), Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CalculateExpression<int>(cmd.Parameter) - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
+                            vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                            var path = string.Format(cmd.Action.StatePath, key, p1, Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
                             object value;
                             switch (cmd.Action.StateValue)
                             {
@@ -1216,7 +1056,8 @@ namespace vMixController.Widgets
                                     value = Dispatcher.Invoke(() => CalculateObjectParameter(cmd))?.ToString() ?? "";
                                     break;
                                 default:
-                                    value = (object)CalculateExpression<int>(cmd.Parameter);
+                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                                    value = p1;
                                     break;
                             }
                             AddLog("{2}) SET {0} TO {1}", path, value, _pointer + 1);
@@ -1226,7 +1067,9 @@ namespace vMixController.Widgets
                             if (value is string strvalue && _isExpression.IsMatch(strvalue))
                             {
                                 var expr = _isExpression.Split(strvalue);
-                                value = Dispatcher.Invoke(() => CalculateExpression(string.Format("1 * _('{0}') {1} {2}", path, expr[1], expr[2])))?.ToString() ?? "";
+                                object p2 = null;
+                                Dispatcher.Invoke(() => vMixControlButtonHelper.CalculateExpression<object>(string.Format("1 * _('{0}') {1} {2}", path, expr[1], expr[2]), PopulateVariables, ExpressionEvaluateFunction, out p2));
+                                value = p2?.ToString() ?? "";
                             }
 
                             SetValueByPath(state, path, value);
@@ -1253,7 +1096,9 @@ namespace vMixController.Widgets
 
         private object CalculateObjectParameter(vMixControlButtonCommand cmd)
         {
-            return CalculateExpression(string.Format(cmd.StringParameter, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "");
+            object result = null;
+            vMixControlButtonHelper.CalculateExpression<object>(string.Format(cmd.StringParameter, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "", PopulateVariables, ExpressionEvaluateFunction, out result);
+            return result;
         }
 
         public override void ExecuteHotkey(int index)
@@ -1330,7 +1175,8 @@ namespace vMixController.Widgets
         protected override void Dispose(bool managed)
         {
             if (_disposed) return;
-            XmlDocumentMessenger.OnDocumentDownloaded -= XmlDocumentMessenger_OnDocumentDownloaded;
+            Messenger.Default.Unregister(this);
+            XmlDocumentMessenger.OnDocumentDownloaded -= OnXmlDocumentDownloaded;
             _executionWorker.DoWork -= ExecutionWorker_DoWork;
             Messenger.Default.Unregister(this);
             if (managed)
