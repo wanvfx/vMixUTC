@@ -16,7 +16,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("List");
+                return "List";
             }
         }
 

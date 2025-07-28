@@ -17,7 +17,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Score");
+                return "Score";
             }
         }
 

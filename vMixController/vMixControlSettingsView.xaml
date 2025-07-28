@@ -18,7 +18,7 @@
         xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
         xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
         mc:Ignorable="d ignore"
-        Title="{e:Localize Properties}"
+        Title="Properties"
         Closing="Window_Closing" d:DesignWidth="382.485" d:DesignHeight="364.71"
         Width="{Binding Path=WidgetSettings.WindowProperties.A, Source={StaticResource Locator}, Mode=TwoWay, FallbackValue=382}"
         Height="{Binding Path=WidgetSettings.WindowProperties.B, Source={StaticResource Locator}, Mode=TwoWay, FallbackValue=364}"
@@ -79,10 +79,10 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="16"><InlineUIContainer>
 							<TextBlock Text="{Binding Type}"/>
-						</InlineUIContainer><Run Text=" " /><Run Text="{e:Localize Widget}"/></TextBlock>
+						</InlineUIContainer><Run Text=" " /><Run Text="Widget"/></TextBlock>
                     <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                 </Grid>
-                <pctrl:LabelControl Foreground="Green" Title="{e:Localize Common Properties}"></pctrl:LabelControl>
+                <pctrl:LabelControl Foreground="Green" Title="Common Properties"></pctrl:LabelControl>
                 <StackPanel x:Name="CommonProperties">
                     <Grid Margin="{StaticResource TopBottomStdMargin}">
                         <Grid.ColumnDefinitions>
@@ -90,7 +90,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf031;</Run><Run Text=" "></Run><Run Text="{e:Localize Name}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf031;</Run><Run Text=" "></Run><Run Text="Name"/></TextBlock>
                         </Grid>
                         <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.Name, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="True" Height="Auto"/>
                     </Grid>
@@ -100,7 +100,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf1fc;</Run><Run Text=" "></Run><Run Text="{e:Localize Color}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf1fc;</Run><Run Text=" "></Run><Run Text="Color"/></TextBlock>
                         </Grid>
                         <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Widget.Color, UpdateSourceTrigger=Explicit, Mode=TwoWay}" SelectedValuePath="A">
                             <ComboBox.ItemTemplate>
@@ -123,7 +123,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Background="{StaticResource Main.Gradient}">
-                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf160;</Run><Run Text=" "></Run><Run Text="{e:Localize Z-Index}"/></TextBlock>
+                            <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf160;</Run><Run Text=" "></Run><Run Text="Z-Index"/></TextBlock>
                         </Grid>
                         <TextBox Style="{StaticResource WidgetTextBox}" Grid.Column="1" Text="{Binding Widget.ZIndex, UpdateSourceTrigger=Explicit, Mode=TwoWay}" AcceptsReturn="False" Height="Auto"/>
                     </Grid>
@@ -153,7 +153,7 @@
                                     </ControlTemplate>
                                 </CheckBox.Template>
                             </CheckBox>
-                            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" Style="{StaticResource PropertyName}" Margin="-4,0,0,0"><Run Text="{e:Localize Hotkeys}"/></TextBlock>
+                            <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" Style="{StaticResource PropertyName}" Margin="-4,0,0,0"><Run Text="Hotkeys"/></TextBlock>
                             <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{x:Static this:Help.Hotkeys_Default}" Margin="{StaticResource LeftRightStdMargin}"/>
                             <Border VerticalAlignment="Center"  Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
@@ -188,14 +188,14 @@
 
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Header="{e:Localize A}" Width="Auto">
+                                            <GridViewColumn Header="A" Width="Auto">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <CheckBox IsChecked="{Binding Active, Mode=TwoWay}" Margin="0,0,-6,0"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="{e:Localize Name}">
+                                            <GridViewColumn Header="Name">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <Label Content="{Binding Name}"/>
@@ -230,14 +230,14 @@
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="{e:Localize Key}" Width="100">
+                                            <GridViewColumn Header="Key" Width="100">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="{e:Localize Link}" Width="100">
+                                            <GridViewColumn Header="Link" Width="100">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBox Style="{StaticResource WidgetTextBox}" IsEnabled="{Binding Active}" Text="{Binding Link}" Margin="-5,0"/>
@@ -247,7 +247,7 @@
                                             <GridViewColumn Width="50">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Button IsEnabled="{Binding Active}" Content="{e:Localize Learn}" Command="{Binding WidgetSettings.LearnKeyCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" Margin="-5,0,-6,0"/>
+                                                        <Button IsEnabled="{Binding Active}" Content="Learn" Command="{Binding WidgetSettings.LearnKeyCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}" Margin="-5,0,-6,0"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -258,7 +258,7 @@
                         </Grid>
                     </StackPanel>
                 </StackPanel>
-                <pctrl:LabelControl Foreground="Orange" Title="{e:Localize Individual Properties}" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={Converters:ContentToVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
+                <pctrl:LabelControl Foreground="Orange" Title="Individual Properties" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={Converters:ContentToVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
                 <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
                     <ContentPresenter.ContentTemplateSelector>
                         <ctrl:TypeTemplateSelector Suffix="PropEditor"/>
@@ -274,9 +274,9 @@
             </StackPanel>
         </ScrollViewer>
         <StackPanel Margin="2" HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="1">
-            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="{e:Localize Save Template}" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}" Click="SaveTemplateClick"/>
-            <Button Margin="0,0,4,0" Command="{Binding CancelCommand}" IsCancel="True" Content="{e:Localize Cancel}" Click="CancelClick"/>
-            <Button Command="{Binding OkCommand}" Content="{e:Localize Ok}" IsDefault="True" Click="OkClick"/>
+            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="Save Template" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}" Click="SaveTemplateClick"/>
+            <Button Margin="0,0,4,0" Command="{Binding CancelCommand}" IsCancel="True" Content="Cancel" Click="CancelClick"/>
+            <Button Command="{Binding OkCommand}" Content="Ok" IsDefault="True" Click="OkClick"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -201,12 +201,21 @@
     <DataTemplate x:Key="vMixControlContainerPropEditor" DataType="{x:Type widget:vMixControlContainer}">
         <StackPanel>
             <prop:FilePathControl Filter="vMix Title Controller|*.vmc" Value="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
-            <ItemsControl ItemsSource="{Binding Controls}">
+            <!--Properties can be changed internally-->
+            <!--<ItemsControl ItemsSource="{Binding Controls}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderThickness="4" BorderBrush="{Binding BorderColor, Converter={conv:ColorToSolidBrushConverter}}" Padding="4" Margin="2">
-                            <StackPanel>
-                                <prop:LabelControl Title="{Binding Name}"/>
+                            <StackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <prop:LabelControl Margin="4,0,4,0" Title="{Binding Type}"/>
+                                    <prop:LabelControl Grid.Column="1" Title="{Binding Name}"/>
+                                </Grid>
+                                
                                 <ContentPresenter x:Name="WidgetProperties" Content="{Binding}">
                                     <ContentPresenter.ContentTemplateSelector>
                                         <ctrl:TypeTemplateSelector Suffix="PropEditor"/>
@@ -216,7 +225,7 @@
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            </ItemsControl>-->
         </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlVariableViewerPropEditor" DataType="{x:Type widget:vMixControlVariableViewer}">

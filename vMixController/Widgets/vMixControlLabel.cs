@@ -9,7 +9,7 @@
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Label");
+                return "Label";
             }
         }
     }

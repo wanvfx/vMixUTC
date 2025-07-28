@@ -24,8 +24,8 @@
     <Border BorderBrush="#1A3CB1" BorderThickness="1" Background="#18488C" Margin="{StaticResource TopBottomStdMargin}">
         <StackPanel Margin="{StaticResource StdMargin}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf039;</Run><Run Text=" "/><Run Text="{e:Localize Title Mapping}"/></TextBlock>
-                <Button ToolTip="{e:Localize Add title mapping}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf039;</Run><Run Text=" "/><Run Text="Title Mapping"/></TextBlock>
+                <Button ToolTip="Add title mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}">
                     <Control.ToolTip>
                         <StackPanel>
@@ -66,7 +66,7 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="{e:Localize Append Title Mapping}"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Append Title Mapping"/>
         </StackPanel>
     </Border>
 </UserControl>

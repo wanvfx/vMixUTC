@@ -15,7 +15,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Region");
+                return "Region";
             }
         }
 

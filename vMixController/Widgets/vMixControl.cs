@@ -167,7 +167,7 @@ namespace vMixController.Widgets
         /// Sets and gets the Locked property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public bool Locked
+        public virtual bool Locked
         {
             get
             {

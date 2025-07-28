@@ -49,7 +49,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Multi State");
+                return "Multi State";
             }
         }
 

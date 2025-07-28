@@ -76,7 +76,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Timer");
+                return "Timer";
             }
         }
         public vMixControlTimer()

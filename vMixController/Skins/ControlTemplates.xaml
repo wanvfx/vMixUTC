@@ -82,7 +82,7 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <Button Grid.Row="1" Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="{e:Localize Append Item}" IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+        <Button Grid.Row="1" Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="Append Item" IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
         <Border Grid.Row="2" BorderBrush="White" BorderThickness="0,1" Margin="0,2"/>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
@@ -92,27 +92,27 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding PrevItemCommand}" ToolTip="{e:Localize Previous}">
+            <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding PrevItemCommand}" ToolTip="Previous">
                 <TextBlock>
                     <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF048;"/>
                 </TextBlock>
             </Button>
-            <Button Width="Auto" Grid.Column="1" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding ShuffleCommand}" ToolTip="{e:Localize Shuffle}">
+            <Button Width="Auto" Grid.Column="1" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding ShuffleCommand}" ToolTip="Shuffle">
                 <TextBlock>
                     <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF074;"/>
                 </TextBlock>
             </Button>
-            <Button Width="Auto" Grid.Column="2" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayOutCommand}" ToolTip="{e:Localize Play Out}">
+            <Button Width="Auto" Grid.Column="2" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayOutCommand}" ToolTip="Play Out">
                 <TextBlock>
                     <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04E;"/>
                 </TextBlock>
             </Button>
-            <Button Width="Auto" Grid.Column="3" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayCommand}" ToolTip="{e:Localize Play/Pause}">
+            <Button Width="Auto" Grid.Column="3" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding PlayCommand}" ToolTip="Play/Pause">
                 <TextBlock>
                     <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04B;"/> / <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF04C;"/>
                 </TextBlock>
             </Button>
-            <Button Width="Auto" Grid.Column="4" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding NextItemCommand}" ToolTip="{e:Localize Next}">
+            <Button Width="Auto" Grid.Column="4" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding NextItemCommand}" ToolTip="Next">
                 <TextBlock>
                     <Run FontFamily="{StaticResource FontAwesome}" Text="&#xF051;"/>
                 </TextBlock>
@@ -582,7 +582,7 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Button Margin="{StaticResource RightStdMargin}" ToolTip="{e:Localize Reset}" Style="{StaticResource TitleButton}" Command="{Binding ResetScoreCommand}">&#xF01e;</Button>
+        <Button Margin="{StaticResource RightStdMargin}" ToolTip="Reset" Style="{StaticResource TitleButton}" Command="{Binding ResetScoreCommand}">&#xF01e;</Button>
         <!--Style="{StaticResource WidgetTextBox}"-->
         <toolkit:IntegerUpDown IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetIntegerUpDown}" Grid.Column="1" ext:FocusExtension.IsFocused="{Binding IsFocused}" FontWeight="Normal" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" FormatString="{Binding FormatString}">
             <i:Interaction.Triggers>
@@ -726,7 +726,7 @@
 
     <StackPanel x:Shared="false" x:Key="ExternalDataWidgetControl" d:DataContext="{d:DesignInstance widget:vMixControlExternalData}">
         <ContentControl Content="{Binding DataProvider.CustomUI}"/>
-        <Button IsEnabled="{Binding DataProvider.IsProvidingCustomProperties}" Visibility="{Binding DataProvider.IsProvidingCustomProperties, Converter={wpfc:BoolToVisibilityConverter}}" Margin="{StaticResource StdMargin}" Command="{Binding OpenPropertiesCommand}" Content="{e:Localize Properties}"></Button>
+        <Button IsEnabled="{Binding DataProvider.IsProvidingCustomProperties}" Visibility="{Binding DataProvider.IsProvidingCustomProperties, Converter={wpfc:BoolToVisibilityConverter}}" Margin="{StaticResource StdMargin}" Command="{Binding OpenPropertiesCommand}" Content="Properties"></Button>
     </StackPanel>
 
     <Grid x:Shared="false"  x:Key="TimerWidgetControl" Margin="{StaticResource StdMargin}" d:DataContext="{d:DesignInstance widget:vMixControlTimer}">
@@ -792,13 +792,13 @@
             <Button Command="{Binding TimerCommand}" IsEnabled="{Binding Active}" CommandParameter="Pause" Style="{StaticResource TitleButton}" ToolTip="Pause">&#xF04c;</Button>
             <Button Command="{Binding TimerCommand}" CommandParameter="Stop" Style="{StaticResource TitleButton}" ToolTip="Stop/Reset">&#xF04d;</Button>
             <Border BorderBrush="White" Margin="{StaticResource LeftRightStdMargin}" BorderThickness="1,0,0,0"/>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize -1 Hour}" Command="{Binding TimerCommand}" CommandParameter="-1 Hour" Content="{e:Localize -H}"></Button>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize -1 Minute}" Command="{Binding TimerCommand}" CommandParameter="-1 Minute" Content="{e:Localize -M}"></Button>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize -1 Second}" Command="{Binding TimerCommand}" CommandParameter="-1 Second" Content="{e:Localize -S}"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="-1 Hour" Command="{Binding TimerCommand}" CommandParameter="-1 Hour" Content="-H"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="-1 Minute" Command="{Binding TimerCommand}" CommandParameter="-1 Minute" Content="-M"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="-1 Second" Command="{Binding TimerCommand}" CommandParameter="-1 Second" Content="-S"></Button>
             <Border BorderBrush="White" Margin="{StaticResource LeftRightStdMargin}" BorderThickness="1,0,0,0"/>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize +1 Hour}" Command="{Binding TimerCommand}" CommandParameter="+1 Hour" Content="{e:Localize +H}"></Button>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize +1 Minute}" Command="{Binding TimerCommand}" CommandParameter="+1 Minute" Content="{e:Localize +M}"></Button>
-            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="{e:Localize +1 Second}" Command="{Binding TimerCommand}" CommandParameter="+1 Second" Content="{e:Localize +S}"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="+1 Hour" Command="{Binding TimerCommand}" CommandParameter="+1 Hour" Content="+H"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="+1 Minute" Command="{Binding TimerCommand}" CommandParameter="+1 Minute" Content="+M"></Button>
+            <Button Width="24" Margin="1" HorizontalContentAlignment="Center" ToolTip="+1 Second" Command="{Binding TimerCommand}" CommandParameter="+1 Second" Content="+S"></Button>
         </StackPanel>
     </Grid>
 
@@ -811,7 +811,7 @@
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
                     <Ellipse x:Name="hasErrors" Width="4" Height="4" Margin="{StaticResource RightStdMargin}"/>
-                    <Button ToolTip="{e:Localize Stop script}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding StopScriptCommand}" IsEnabled="{Binding Enabled, Converter={wpfc:BoolToInverseBoolConverter}, Mode=OneWay}">&#xF256;</Button>
+                    <Button ToolTip="Stop script" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding StopScriptCommand}" IsEnabled="{Binding Enabled, Converter={wpfc:BoolToInverseBoolConverter}, Mode=OneWay}">&#xF256;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
@@ -960,7 +960,7 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox ToolTip="{e:Localize Sticky}" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsChecked="{Binding Sticky}" IsEnabled="True">
+                    <CheckBox ToolTip="Sticky" HorizontalAlignment="Left" VerticalContentAlignment="Center" IsChecked="{Binding Sticky}" IsEnabled="True">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox">
                                 <Setter Property="Template">
@@ -1040,7 +1040,7 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
+                    <Button ToolTip="Toggle enabled" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
@@ -1062,18 +1062,48 @@
         <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.MainContent>
-                <ItemsControl ItemsSource="{Binding Controls}" HorizontalContentAlignment="Stretch">
-                    <!--<ItemsControl.Resources>
-                        <ResourceDictionary>
-                            <ResourceDictionary.MergedDictionaries>
-                                <ResourceDictionary Source="/vMixController;component/Skins/ControlTemplates.xaml"/>
-                            </ResourceDictionary.MergedDictionaries>
-                        </ResourceDictionary>
-                    </ItemsControl.Resources>-->
-                    <ItemsControl.ItemTemplateSelector>
-                        <ctrls:TypeTemplateSelector/>
-                    </ItemsControl.ItemTemplateSelector>
-                </ItemsControl>
+                <ListView Padding="2" e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Controls}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="{Binding Color, Converter={c:ColorToSolidBrushConverter}}">
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Setter Property="ItemTemplateSelector">
+                                <Setter.Value>
+                                    <ctrls:TypeTemplateSelector Page="0"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.Style>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" IsItemsHost="True" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Grid.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}" ScaleY="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}"/>
+                                </Grid.LayoutTransform>
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListViewItem}">
+                            <Setter Property="Margin">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{c:DoubleToThicknessConverter}">
+                                        <Binding Path="Left"/>
+                                        <Binding Path="Top"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <Setter Property="VerticalAlignment" Value="Top"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                        <ContentPresenter />
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+
+                </ListView>
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>
@@ -1083,11 +1113,11 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <Button ToolTip="{e:Localize Toggle enabled}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
+                    <Button ToolTip="Toggle enabled" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
-                <TextBlock IsEnabled="{Binding Enabled}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}" Text="{e:Localize Multi State}"></TextBlock>
+                <TextBlock IsEnabled="{Binding Enabled}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}" Text="Multi State"></TextBlock>
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>

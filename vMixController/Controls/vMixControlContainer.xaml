@@ -215,7 +215,7 @@
                             <Binding Path="Main.WindowSettings.ShowIndividualLock" Source="{StaticResource Locator}" Converter="{wpfc:BoolToVisibilityConverter}"/>
                         </Grid.Visibility>
 
-                        <Button Visibility="{Binding ParentContainer.Control.IsCaptionVisible, Converter={wpfc:BoolToVisibilityConverter}, ElementName=CC}" Style="{StaticResource TitleButton}" x:Name="LockButton" ToolTip="{e:Localize Lock widget}" Command="{Binding Main.SwitchLockCommand, Source={StaticResource Locator}}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}" Content="{Binding ParentContainer.Control.Locked, Converter={StaticResource LockButtonConverter}, ElementName=CC}" IsEnabled="{Binding ParentContainer.Control.IsPasswordLocked, ElementName=CC, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                        <Button Visibility="{Binding ParentContainer.Control.IsCaptionVisible, Converter={wpfc:BoolToVisibilityConverter}, ElementName=CC}" Style="{StaticResource TitleButton}" x:Name="LockButton" ToolTip="Lock widget" Command="{Binding Main.SwitchLockCommand, Source={StaticResource Locator}}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}" Content="{Binding ParentContainer.Control.Locked, Converter={StaticResource LockButtonConverter}, ElementName=CC}" IsEnabled="{Binding ParentContainer.Control.IsPasswordLocked, ElementName=CC, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                     </Grid>
 
                     <TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource CaptionText}" Text="{Binding ParentContainer.Caption, ElementName=CC}" Foreground="{Binding ParentContainer.Control.Color, ElementName=CC, Converter={conv:ColorToBlackOrWhiteConverter}}"></TextBlock>
@@ -223,11 +223,11 @@
                         <local:vMixControlMoveThumb.ToolTip>
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}">
                                 <StackPanel>
-                                    <TextBlock Text="{e:Localize Active Exec Links:}" FontWeight="Bold"/>
+                                    <TextBlock Text="Active Exec Links:" FontWeight="Bold"/>
                                     <ItemsControl ItemsSource="{Binding Tag}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock><Run Text="{Binding A}" FontWeight="Bold"/>: <Run Text="{Binding B}"/>, <Run FontWeight="Bold" Text="{e:Localize Hotkey:}"/> <Run Text="{Binding C}"/></TextBlock>
+                                                <TextBlock><Run Text="{Binding A}" FontWeight="Bold"/>: <Run Text="{Binding B}"/>, <Run FontWeight="Bold" Text="Hotkey:"/> <Run Text="{Binding C}"/></TextBlock>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -238,12 +238,12 @@
 
                     <StackPanel Opacity="0" x:Name="RightButtons" Margin="1" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding ParentContainer.Control.Locked, Converter={wpfc:BoolToInverseVisibilityConverter}, ConverterParameter=Hidden, ElementName=CC}">
                         <ContentControl Content="{Binding ParentContainer.CaptionContent, ElementName=CC}"/>
-                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="{e:Localize Scale up}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleUpCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf31e;</Button>
-                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="{e:Localize Scale down}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleDownCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf78c;</Button>
+                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="Scale up" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleUpCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf31e;</Button>
+                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="Scale down" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleDownCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf78c;</Button>
 
-                        <Button ToolTip="{e:Localize Duplicate widget}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.CopyCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf24d;</Button>
-                        <Button ToolTip="{e:Localize Widget properties}" Style="{StaticResource TitleButton}" Margin="0,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.SettingsCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf013;</Button>
-                        <Button ToolTip="{e:Localize Remove widget}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ParentContainer.CloseCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf00d;</Button>
+                        <Button ToolTip="Duplicate widget" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.CopyCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf24d;</Button>
+                        <Button ToolTip="Widget properties" Style="{StaticResource TitleButton}" Margin="0,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.SettingsCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf013;</Button>
+                        <Button ToolTip="Remove widget" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ParentContainer.CloseCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf00d;</Button>
                     </StackPanel>
                 </Grid>
                 <ContentControl x:Name="ContentControl" Content="{Binding ParentContainer.MainContent, ElementName=CC}">

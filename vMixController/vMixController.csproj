@@ -431,8 +431,6 @@
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Extensions\HideCloseButtonOnWindow.cs" />
     <Compile Include="Extensions\IgnoreMouseWheelBehavior.cs" />
-    <Compile Include="Extensions\LocalizationManager.cs" />
-    <Compile Include="Extensions\Localize.cs" />
     <Compile Include="Extensions\ScrollViewerHelper.cs" />
     <Compile Include="Extensions\VisualTreeUtils.cs" />
     <Compile Include="Help.Designer.cs">

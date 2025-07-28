@@ -173,7 +173,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Button");
+                return "Button";
             }
         }
 

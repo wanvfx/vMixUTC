@@ -37,12 +37,12 @@
         <Border BorderBrush="#D01818" Background="#8B0000" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
             <StackPanel Margin="{StaticResource StdMargin}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="{e:Localize Script}"/></TextBlock>
-                    <Button ToolTip="{e:Localize Add Script Command}" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#x2b;"/>
-                    <Button ToolTip="{e:Localize Clear Script}" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF51A;"/>
+                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="Script"/></TextBlock>
+                    <Button ToolTip="Add Script Command" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Button ToolTip="Clear Script" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF51A;"/>
                     <Border BorderThickness="1,0,0,0" Margin="1" BorderBrush="White"/>
-                    <Button ToolTip="{e:Localize Export Script}" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
-                    <Button ToolTip="{e:Localize Import Script}" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
+                    <Button ToolTip="Export Script" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
+                    <Button ToolTip="Import Script" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
                     <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Script_Default, Source={StaticResource Help}}"/>
                 </StackPanel>
 
@@ -104,7 +104,7 @@
 
                                                     </TextBlock>
                                                     <ctrls:TwoColumnGrid Grid.Column="2" RowSpacing="4" ColumnSpacing="4" Visibility="{Binding Collapsed, Converter={wpfc:BoolToInverseVisibilityConverter}}">
-                                                        <Label Content="{e:Localize Command}"/>
+                                                        <Label Content="Command"/>
                                                         <ComboBox x:Name="Func" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Action, Mode=TwoWay}" DisplayMemberPath="Function" ItemsSource="{Binding Main.Functions, Source={StaticResource Locator}}" PreviewKeyDown="Func_PreviewKeyDown">
                                                             <ComboBox.ItemContainerStyle>
                                                                 <Style TargetType="ComboBoxItem">
@@ -188,7 +188,7 @@
                                                                 </CompositeCollection>
                                                             </ComboBox.ItemsSource>
                                                         </ComboBox>
-                                                        <Label Visibility="Collapsed" x:Name="CondLabel" Content="{e:Localize Condition}"/>
+                                                        <Label Visibility="Collapsed" x:Name="CondLabel" Content="Condition"/>
                                                         <Grid Visibility="Collapsed" x:Name="Cond">
                                                             <Grid.ColumnDefinitions>
                                                                 <ColumnDefinition/>
@@ -255,10 +255,10 @@
                                                         </CheckBox.Style>
                                                     </CheckBox>
                                                     
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandUpCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Up}" Content="&#xF30C;"/>
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandDownCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="{e:Localize Move Down}" Content="&#xF309;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandUpCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="Move Up" Content="&#xF30C;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandDownCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="Move Down" Content="&#xF309;"/>
 
-                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemoveCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="{e:Localize Remove}" Content="&#xF068;"/>
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemoveCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="Remove" Content="&#xF068;"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Grid>
@@ -303,7 +303,7 @@
                                     </Style>
                                 </ListView.ItemContainerStyle>
                             </ListView>
-                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="{e:Localize Append Command}"/>
+                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="Append Command"/>
                         </StackPanel>
                     </TabItem>
                     <TabItem Style="{StaticResource TabItemStyle}" Header="Code">

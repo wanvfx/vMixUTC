@@ -21,22 +21,22 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Container");
+                return "Container";
             }
         }
 
-        public override double Width
+        public override bool Locked
         {
             get
             {
-                return base.Width;
+                return base.Locked;
             }
 
             set
             {
                 foreach (var item in _controls)
-                    item.Width = value - 2;
-                base.Width = value;
+                    item.Locked = value;
+                base.Locked = value;
             }
         }
 
@@ -109,13 +109,19 @@ namespace vMixController.Widgets
             if (!string.IsNullOrWhiteSpace(FilePath))
             {
                 _controls.Clear();
-
-                foreach (var item in Utils.LoadController(FilePath, null, out MainWindowSettings _tmp).OrderBy(x => x.Top))
+                var loaded = Utils.LoadController(FilePath, null, out MainWindowSettings _tmp).OrderBy(x => x.Top);
+                var minx = loaded.Select(x => x.Left).Min();
+                var miny = loaded.Select(x => x.Top).Min();
+                var w = loaded.Select(x => x.Left + x.Width).Max();
+                Width = w - minx + 8;
+                foreach (var item in loaded)
                 {
-                    item.Width = Width - 2;
+                    //item.Width = Width - 2;
                     item.State = State;
-                    item.IsCaptionVisible = false;
-                    item.Locked = true;
+                    item.Left -= minx;
+                    item.Top -= miny;
+                    //item.IsCaptionVisible = false;
+                    item.Locked = false;
                     _controls.Add(item);
                 }
             }

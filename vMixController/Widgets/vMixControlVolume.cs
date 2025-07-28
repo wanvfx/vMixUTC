@@ -164,7 +164,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Volume");
+                return "Volume";
             }
         }
 

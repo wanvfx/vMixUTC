@@ -26,8 +26,8 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center">
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf11c;</Run>
-                    <Run Text="{e:Localize Stream Deck Mapping}"/></TextBlock>
-                <Button ToolTip="{e:Localize Add stream deck mapping}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Run Text="Stream Deck Mapping"/></TextBlock>
+                <Button ToolTip="Add stream deck mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding StreamDeck_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Keys, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -48,14 +48,14 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="{e:Localize Context}" Width="Auto">
+                            <GridViewColumn Header="Context" Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding A}" Margin="-3,0,-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="{e:Localize Execution Link}" Width="150">
+                            <GridViewColumn Header="Execution Link" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding B}" Margin="-5,0"/>

@@ -69,7 +69,7 @@ namespace vMixController.Widgets
         {
             get
             {
-                return Extensions.LocalizationManager.Get("Text Field");
+                return "Text Field";
             }
         }
 

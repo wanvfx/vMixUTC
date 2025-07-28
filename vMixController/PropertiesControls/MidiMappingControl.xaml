@@ -33,8 +33,8 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center">
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf001;</Run>
-                    <Run Text="{e:Localize Midi Mapping}"/></TextBlock>
-                <Button ToolTip="{e:Localize Add midi mapping}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Run Text="Midi Mapping"/></TextBlock>
+                <Button ToolTip="Add midi mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Midi_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Midis, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -55,28 +55,28 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="{e:Localize Channel}" Width="50">
+                            <GridViewColumn Header="Channel" Width="50">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding A}" Margin="-3,0,-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="{e:Localize Control/Note}" Width="100">
+                            <GridViewColumn Header="Control/Note" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding B}" Margin="-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="{e:Localize Execution Link}" Width="150">
+                            <GridViewColumn Header="Execution Link" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding C}" Margin="-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="{e:Localize MIDI Event Type}">
+                            <GridViewColumn Header="MIDI Event Type">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox SelectedValue="{Binding D, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource MidiValues}}" Margin="-5,0"/>
