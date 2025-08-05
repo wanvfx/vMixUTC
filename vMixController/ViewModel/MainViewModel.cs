@@ -1764,17 +1764,37 @@ namespace vMixController.ViewModel
                             WindowSettings.UserName = null;
                             if (Keyboard.IsKeyDown(Key.LeftShift))
                             {
-                                Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
+
+
+                                TextInputWindow twi = new TextInputWindow()
+                                {
+                                    Mode = InputTextWindowMode.NewPassword,
+                                    Title = "Enter password to lock controller",
+                                    InputTitle = "User Name",
+                                };
+
+                                /*Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
                                 {
                                     ShowSaveCheckBox = false,
                                     ShowUIForSavedCredentials = false,
                                     Target = "vMixUTC",
                                     MainInstruction = "Enter password to lock controller"
-                                };
-                                if (cred.ShowDialog())
+                                };*/
+                                if (twi.ShowDialog() ?? false)
                                 {
-                                    WindowSettings.Password = ToMD5Hash(cred.Password);
-                                    WindowSettings.UserName = ToMD5Hash(cred.UserName);
+                                    if (twi.Password == twi.PasswordConfirmation)
+                                    {
+                                        WindowSettings.Password = ToMD5Hash(twi.Password);
+                                        WindowSettings.UserName = ToMD5Hash(twi.Text);
+                                    }
+                                    else
+                                    {
+                                        Ookii.Dialogs.Wpf.TaskDialog td = new Ookii.Dialogs.Wpf.TaskDialog();
+                                        td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
+                                        td.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Error;
+                                        td.MainInstruction = "Passwords doesn't match!\nLocket without password.";
+                                        td.ShowDialog();
+                                    }
                                 }
                             }
                             SelectedTab = 1;
@@ -1783,18 +1803,24 @@ namespace vMixController.ViewModel
                         else
                         if (!string.IsNullOrWhiteSpace(WindowSettings.UserName) || !string.IsNullOrWhiteSpace(WindowSettings.Password))
                         {
-                            Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
+                            TextInputWindow twi = new TextInputWindow()
+                            {
+                                Mode = InputTextWindowMode.Password,
+                                Title = "Enter password to unlock controller",
+                                InputTitle = "User Name"
+                            };
+                            /*Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
                             {
                                 ShowSaveCheckBox = false,
                                 ShowUIForSavedCredentials = false,
                                 MainInstruction = "Enter password to unlock controller",
                                 Target = "UTC",
                                 WindowTitle = "Universal Title Controller"
-                            };
-                            if (cred.ShowDialog())
+                            };*/
+                            if (twi.ShowDialog() ?? false)
                             {
 
-                                if (ToMD5Hash(cred.Password) == WindowSettings.Password && ToMD5Hash(cred.UserName) == WindowSettings.UserName)
+                                if (ToMD5Hash(twi.Password) == WindowSettings.Password && ToMD5Hash(twi.Text) == WindowSettings.UserName)
                                 {
                                     WindowSettings.Password = null;
                                     WindowSettings.UserName = null;
@@ -2847,7 +2873,7 @@ namespace vMixController.ViewModel
                     p =>
                     {
                         //WindowSettings.Pages[p] = "PAGE 2";
-                        TextInputWindow ti = new TextInputWindow() { Text = WindowSettings.Pages[p] };
+                        TextInputWindow ti = new TextInputWindow() { Title = "Input Request", InputTitle = "Page Name",  Text = WindowSettings.Pages[p], Mode = InputTextWindowMode.Default };
                         IsHotkeysEnabled = false;
                         if (ti.ShowDialog() ?? false)
                         {

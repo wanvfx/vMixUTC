@@ -1057,6 +1057,9 @@
                     <Hyperlink ToolTip="Support vMix Universal Title Controller!" NavigateUri="https://coindrop.to/elgarf" RequestNavigate="Hyperlink_RequestNavigate">
                         <Image Height="18px" Source="/vMixControllerSkin;component\btn_donate_SM.png" Stretch="Uniform" Cursor="Hand"/>
                     </Hyperlink>
+                    <Hyperlink>
+                         
+                    </Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </StatusBarItem>

@@ -188,6 +188,20 @@
 
                                     <ListView.View>
                                         <GridView>
+                                            <GridView.ColumnHeaderContainerStyle>
+                                                <Style TargetType="GridViewColumnHeader">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                                                                <Border ToolTip="{TemplateBinding ToolTip}">
+                                                                    <TextBlock VerticalAlignment="Center" Foreground="White" x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="5,5,5,0" Width="{TemplateBinding Width}" />
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GridView.ColumnHeaderContainerStyle>
+
                                             <GridViewColumn Header="A" Width="Auto">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
@@ -202,35 +216,41 @@
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="A" ToolTipService.ToolTip="Alt">
+                                            <GridViewColumn Width="20" Header="Alt" ToolTipService.ToolTip="Alt">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
+                                                        <Grid>
+                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="C" ToolTipService.ToolTip="Control">
+                                            <GridViewColumn Width="24" Header="Ctrl" ToolTipService.ToolTip="Control">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
+                                                        <Grid>
+                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="S" ToolTipService.ToolTip="Shift">
+                                            <GridViewColumn Width="32" Header="Shift" ToolTipService.ToolTip="Shift">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
+                                                        <Grid>
+                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
                                             <GridViewColumn Header="P" ToolTipService.ToolTip="On Press">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsEnabled="{Binding Active}" IsChecked="{Binding OnPress, Mode=TwoWay}" Margin="-5,0" ToolTip="On Press"/>
+                                                        <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding OnPress, Mode=TwoWay}" Margin="-5,0" ToolTip="On Press"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
-                                            <GridViewColumn Header="Key" Width="100">
+                                            <GridViewColumn Header="Key" Width="80">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0"/>

@@ -15,6 +15,12 @@ using System.Windows.Shapes;
 
 namespace vMixController
 {
+    public enum InputTextWindowMode
+    {
+        Default = 0,
+        NewPassword = 1,
+        Password = 2
+    }
     /// <summary>
     /// Логика взаимодействия для TextInputWindow.xaml
     /// </summary>
@@ -58,14 +64,122 @@ namespace vMixController
                 }
 
                 _text = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+                OnPropertyChanged(nameof(Text)); // Используем вспомогательный метод
             }
+        }
+
+        // Добавляем свойства Password, PasswordConfirmation, Title
+
+        /// <summary>
+        /// The <see cref="Password" /> property's name.
+        /// </summary>
+        public const string PasswordPropertyName = "Password";
+
+        private string _password = "";
+
+        /// <summary>
+        /// Sets and gets the Password property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string Password
+        {
+            get
+            {
+                return _password;
+            }
+
+            set
+            {
+                if (_password == value)
+                {
+                    return;
+                }
+
+                _password = value;
+                OnPropertyChanged(nameof(Password));
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="PasswordConfirmation" /> property's name.
+        /// </summary>
+        public const string PasswordConfirmationPropertyName = "PasswordConfirmation";
+
+        private string _passwordConfirmation = "";
+
+        /// <summary>
+        /// Sets and gets the PasswordConfirmation property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string PasswordConfirmation
+        {
+            get
+            {
+                return _passwordConfirmation;
+            }
+
+            set
+            {
+                if (_passwordConfirmation == value)
+                {
+                    return;
+                }
+
+                _passwordConfirmation = value;
+                OnPropertyChanged(nameof(PasswordConfirmation));
+            }
+        }
+
+        private string _title = "Input Page Name Text";
+
+        /// <summary>
+        /// Sets and gets the Title property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string InputTitle
+        {
+            get
+            {
+                return _title;
+            }
+
+            set
+            {
+                if (_title == value)
+                {
+                    return;
+                }
+
+                _title = value;
+                OnPropertyChanged(nameof(InputTitle));
+            }
+        }
+
+        InputTextWindowMode _mode = InputTextWindowMode.Default;
+        public InputTextWindowMode Mode
+        {
+            get => _mode;
+            set
+            {
+                if (_mode == value) return;
+                _mode = value;
+                OnPropertyChanged(nameof(Mode));
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that changed.</param>
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void Me_Activated(object sender, EventArgs e)
         {
-            tb.Focus();
-            tb.SelectAll();
+            //tb.Focus();
+            //tb.SelectAll();
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

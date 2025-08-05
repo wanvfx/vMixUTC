@@ -4,27 +4,85 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vMixController"
+        xmlns:conv="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
+        xmlns:self="clr-namespace:vMixController"
         mc:Ignorable="d"
         x:Name="Me"
-        Title="Input Request" Height="450" Width="600" SizeToContent="Height" Background="#1e2328" WindowStartupLocation="CenterScreen" Activated="Me_Activated" WindowStyle="None" ResizeMode="NoResize">
+        Title="Input Request" Height="450" Width="600" SizeToContent="Height" Background="#1e2328" WindowStartupLocation="CenterScreen" Activated="Me_Activated" WindowStyle="None" ResizeMode="NoResize"
+        DataContext="{Binding ElementName=Me}" Tag="{Binding Mode, ElementName=Me}">
     <Window.Resources>
-        <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="PasswordBox"  TargetType="TextBox" BasedOn="{StaticResource WidgetTextBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border x:Name="border" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" 
+                                SnapsToDevicePixels="True">
+                                <ScrollViewer x:Name="PART_ContentHost" 
+                                          Focusable="False" 
+                                          HorizontalScrollBarVisibility="Hidden" 
+                                          VerticalScrollBarVisibility="Hidden">
+                                    <!-- Здесь мы применяем BlurEffect к ScrollViewer,
+                                     который содержит текст TextBox.
+                                     Это наиболее надежный способ, так как ScrollViewer
+                                     является внутренним элементом, отображающим текст. -->
+                                    <ScrollViewer.Effect>
+                                        <BlurEffect Radius="10"/>
+                                    </ScrollViewer.Effect>
+                                </ScrollViewer>
+                            </Border>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
-    <Border BorderThickness="2" BorderBrush="{StaticResource Main.Border}">
-        <StackPanel>
-            <Border Padding="4" Background="{StaticResource Main.Border}" Margin="0,0,0,4" MouseLeftButtonDown="Border_MouseLeftButtonDown">
-                <TextBlock Style="{StaticResource CaptionText}">Input Page Name</TextBlock>
+    <Window.Template>
+        <ControlTemplate>
+            <Border BorderThickness="2" BorderBrush="{StaticResource Main.Border}">
+                <StackPanel>
+                    <Border Padding="4" Background="{StaticResource Main.Border}" Margin="0,0,0,4" MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                        <Grid>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{Binding Title}"></TextBlock>
+                            <Button IsCancel="True" HorizontalAlignment="Right" Style="{StaticResource TitleButton}" >X</Button>
+                        </Grid>
+                    </Border>
+                    <TextBlock Style="{StaticResource CaptionText}" Text="{Binding InputTitle}"></TextBlock>
+                    <TextBox Margin="{StaticResource StdMargin}" x:Name="tb" Style="{StaticResource WidgetTextBox}" Text="{Binding Text}"/>
+                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwname">Password</TextBlock>
+                    <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pw" Text="{Binding Password}"/>
+                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwnameconfirm" >Password Confirmation</TextBlock>
+                    <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pwconfirm" Text="{Binding PasswordConfirmation}"/>
+                    <Grid Margin="{StaticResource StdMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Height="Auto" Padding="4" IsCancel="True" Grid.Column="1" Margin="{StaticResource LeftRightStdMargin}">_Cancel</Button>
+                        <Button Height="Auto" Padding="4" IsDefault="True" Grid.Column="2" Click="Button_Click">_OK</Button>
+                    </Grid>
+                </StackPanel>
             </Border>
-            <TextBox Margin="{StaticResource StdMargin}" x:Name="tb" Style="{StaticResource WidgetTextBox}" Text="{Binding Text, ElementName=Me}"/>
-            <Grid Margin="{StaticResource StdMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Button IsCancel="True" Grid.Column="1" Margin="{StaticResource LeftRightStdMargin}">_Cancel</Button>
-                <Button IsDefault="True" Grid.Column="2" Click="Button_Click">_OK</Button>
-            </Grid>
-        </StackPanel>
-    </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Tag" Value="{x:Static self:InputTextWindowMode.Default}">
+                    <Setter TargetName="pw" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="pwname" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="pwnameconfirm" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="pwconfirm" Property="Visibility" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="Tag" Value="{x:Static self:InputTextWindowMode.Password}">
+                    <Setter TargetName="pwnameconfirm" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="pwconfirm" Property="Visibility" Value="Collapsed"/>                    
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Template>
 </Window>
