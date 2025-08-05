@@ -58,7 +58,7 @@
                     <TextBox Margin="{StaticResource StdMargin}" x:Name="tb" Style="{StaticResource WidgetTextBox}" Text="{Binding Text}"/>
                     <TextBlock Style="{StaticResource CaptionText}" x:Name="pwname">Password</TextBlock>
                     <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pw" Text="{Binding Password}"/>
-                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwnameconfirm" >Password Confirmation</TextBlock>
+                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwnameconfirm" >Confirm Password</TextBlock>
                     <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pwconfirm" Text="{Binding PasswordConfirmation}"/>
                     <Grid Margin="{StaticResource StdMargin}">
                         <Grid.ColumnDefinitions>
