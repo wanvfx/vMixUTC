@@ -5,7 +5,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security;
+using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +22,51 @@ using vMixController.Widgets;
 
 namespace vMixController.Classes
 {
+    public class XorCryptoServiceProvider : ICryptoTransform
+    {
+        private readonly byte[] _key;
+        private int _keyIndex;
+
+        public XorCryptoServiceProvider(byte[] key)
+        {
+            if (key == null || key.Length == 0)
+            {
+                throw new ArgumentException("Key cannot be null or empty", nameof(key));
+            }
+
+            _key = (byte[])key.Clone();
+            _keyIndex = 0;
+        }
+
+        public bool CanReuseTransform => true;
+        public bool CanTransformMultipleBlocks => true;
+        public int InputBlockSize => 1;
+        public int OutputBlockSize => 1;
+
+        public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
+        {
+            for (int i = 0; i < inputCount; i++)
+            {
+                outputBuffer[outputOffset + i] = (byte)(inputBuffer[inputOffset + i] ^ _key[_keyIndex]);
+                _keyIndex = (_keyIndex + 1) % _key.Length;
+            }
+
+            return inputCount;
+        }
+
+        public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
+        {
+            byte[] outputBuffer = new byte[inputCount];
+            TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, 0);
+            return outputBuffer;
+        }
+
+        public void Dispose()
+        {
+            // Clear the key from memory
+            Array.Clear(_key, 0, _key.Length);
+        }
+    }
 
     public enum Status
     {
@@ -97,9 +144,11 @@ namespace vMixController.Classes
                 _logger.Error(e, "Error while loading controller!");
                 windowSettings = new MainWindowSettings() { Width = 512 + 16 + 16 + 8, Height = 512 + 196 + 48 };
                 var btn = new vMixControlButton() { IsColorized = true, Color = vMixWidgetSettingsViewModel.Colors[11].A, BorderColor = vMixWidgetSettingsViewModel.Colors[11].B, Name = "Report Bug", Top = 16 + 16 + 8 + 512, Left = 8, Width = 512, IsCaptionVisible = false, IsCaptionOn = false };
-                btn.Commands.Add(new vMixControlButtonCommand() {
+                btn.Commands.Add(new vMixControlButtonCommand()
+                {
                     Action = new vMixFunctionReference() { Function = NativeFunctions.WIN, Native = true },
-                    StringParameter = "https://forums.vmix.com/postmessage?t=6468&f=8" });
+                    StringParameter = "https://forums.vmix.com/postmessage?t=6468&f=8"
+                });
                 return new ObservableCollection<vMixControl>() {
                     new vMixControlRegion() { Text = string.Format("{0}\n\n\nP.S. Don't be afraid, your controller is OK.\nReport about it on forum.", string.Join("", SecurityElement.Escape(e.ToString()).Select(x=>(XmlConvert.IsXmlChar(x)?x.ToString():"0x" + Convert.ToByte(x).ToString())).ToArray())), Width = 512, Height = 512, Top = 8, Left = 8, Color = Colors.Red, Name = "Error while loading controller!" },
                     btn
@@ -110,9 +159,34 @@ namespace vMixController.Classes
 
         public static ObservableCollection<vMixControl> LoadController(Stream stream, IList<vMixFunctionReference> functions, out MainWindowSettings windowSettings)
         {
+
+            byte[] signature = new byte[3];
+            stream.Read(signature, 0, 3);
+            Stream memstream = null;
+            
+            if (signature[0] == 0x44 && signature[1] == 0x77 && signature[2] == 0xCC)
+            {
+                memstream = new MemoryStream();
+                byte[] buffer = new byte[8];
+                using (var cs = new CryptoStream(stream, new XorCryptoServiceProvider(Constants.XORKEY), CryptoStreamMode.Read))
+                {
+                    int l = -1;
+                    while ((l = cs.Read(buffer, 0, buffer.Length)) != 0)
+                    {
+                        memstream.Write(buffer, 0, l);
+                    }
+                    memstream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+            else
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                memstream = stream;
+            }
+
             var _controls = new ObservableCollection<vMixControl>();
             _logger.Info("Controller loading.");
-            var reader = XmlReader.Create(stream);
+            var reader = XmlReader.Create(memstream);
             {
                 reader.ReadStartElement();
                 reader.ReadStartElement();
@@ -184,42 +258,72 @@ namespace vMixController.Classes
 
         public static void SaveController(string fileName, ObservableCollection<vMixControl> _controls, MainWindowSettings _windowSettings)
         {
-            using (var stream = new FileStream(fileName, FileMode.Create))
+            try
             {
-                SaveController(stream, _controls, _windowSettings);
+                using (var stream = new FileStream(fileName, FileMode.Create))
+                {
+                    SaveController(stream, _controls, _windowSettings);
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
         public static void SaveController(Stream stream, ObservableCollection<vMixControl> _controls, MainWindowSettings _windowSettings)
         {
             _logger.Info("Saving controller.");
-            var writer = XmlWriter.Create(stream);
+
+            Stream memstream = new MemoryStream();
+            Stream ms = null;
+            if (!string.IsNullOrWhiteSpace(_windowSettings.Password))
+                ms = new CryptoStream(memstream, new XorCryptoServiceProvider(Constants.XORKEY), CryptoStreamMode.Write);
+            else
+                ms = memstream;
+
+            using (ms)
             {
-                writer.WriteStartDocument();
-                writer.WriteStartElement("Root");
-                writer.WriteStartElement("Controls");
-                XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixControl>));
-                _logger.Info("Writing widgets.");
-                s.Serialize(writer, _controls);
-                writer.WriteEndElement();
-                writer.WriteStartElement("WindowSettings");
-                s = new XmlSerializer(typeof(MainWindowSettings));
-                _logger.Info("Writing window settings.");
-                s.Serialize(writer, _windowSettings);
-                writer.WriteEndElement();
+                var writer = XmlWriter.Create(ms, new XmlWriterSettings() { Encoding = new UTF8Encoding(false) });
+                {
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement("Root");
+                    writer.WriteStartElement("Controls");
+                    XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixControl>));
+                    _logger.Info("Writing widgets.");
+                    s.Serialize(writer, _controls);
+                    writer.WriteEndElement();
+                    writer.WriteStartElement("WindowSettings");
+                    s = new XmlSerializer(typeof(MainWindowSettings));
+                    _logger.Info("Writing window settings.");
+                    s.Serialize(writer, _windowSettings);
+                    writer.WriteEndElement();
 
 
-                var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-                writer.WriteStartElement("GlobalVariables");
-                s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
-                _logger.Info("Writing global variables.");
-                s.Serialize(writer, globalSettings.Variables);
-                writer.WriteEndElement();
+                    var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
+                    writer.WriteStartElement("GlobalVariables");
+                    s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
+                    _logger.Info("Writing global variables.");
+                    s.Serialize(writer, globalSettings.Variables);
+                    writer.WriteEndElement();
 
-                writer.WriteEndElement();
-                writer.WriteEndDocument();
-                writer.Flush();
+                    writer.WriteEndElement();
+                    writer.WriteEndDocument();
+                    writer.Flush();
+                }
+                if (!string.IsNullOrWhiteSpace(_windowSettings.Password))
+                {
+                    stream.WriteByte(0x44);
+                    stream.WriteByte(0x77);
+                    stream.WriteByte(0xCC);
+                }
+
+                memstream.Seek(0, SeekOrigin.Begin);
+                memstream.CopyTo(stream);
             }
+
+
+
         }
 
         public static string FindInputKeyByVariable(string varName, Dispatcher d = null)
@@ -235,7 +339,7 @@ namespace vMixController.Classes
                     return inputKey;
                 });
             return varName;
-            
+
         }
 
         public static string SearchFile(string path, string cpath)
@@ -263,7 +367,8 @@ namespace vMixController.Classes
 
         public static T FindPropertyControl<T>(this UserControl[] controls, string key) where T : UserControl
         {
-            var ctrl = controls.Where(x => {
+            var ctrl = controls.Where(x =>
+            {
                 if (x.Tag is string k) return k == key;
                 return false;
             }).FirstOrDefault();

@@ -120,21 +120,7 @@
     <DataTemplate x:Key="vMixControlVolumePropEditor" DataType="{x:Type widget:vMixControlVolume}">
         <StackPanel>
             <prop:InputSelectorControl IsEnabled="{Binding Value, ElementName=TCB, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Input}" Title="Input" Items="{Binding Inputs}" Value="{Binding InputKey, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
-            <prop:ComboBoxControl x:Name="TCB" Title="Target" Value="{Binding Target, UpdateSourceTrigger=Explicit, Mode=TwoWay}">
-                <prop:ComboBoxControl.Items>
-                    <x:Array Type="sys:String">
-                        <sys:String>Input</sys:String>
-                        <sys:String>Master</sys:String>
-                        <sys:String>Bus&#032;A</sys:String>
-                        <sys:String>Bus&#032;B</sys:String>
-                        <sys:String>Bus&#032;C</sys:String>
-                        <sys:String>Bus&#032;D</sys:String>
-                        <sys:String>Bus&#032;E</sys:String>
-                        <sys:String>Bus&#032;F</sys:String>
-                        <sys:String>Bus&#032;G</sys:String>
-                    </x:Array>
-                </prop:ComboBoxControl.Items>
-            </prop:ComboBoxControl>
+            <prop:ComboBoxControl x:Name="TCB" Title="Target" Value="{Binding Target, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.AudioBusses}"></prop:ComboBoxControl>
             <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
