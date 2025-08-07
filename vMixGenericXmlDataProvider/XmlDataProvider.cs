@@ -176,7 +176,7 @@ namespace XmlDataProviderNs
 
                 if (uri.Scheme == Uri.UriSchemeFile)
                 {
-                    using (var stream = File.OpenRead(uri.LocalPath))
+                    using (var stream = File.Open(uri.LocalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         return XDocument.Load(stream, LoadOptions.None);
                 }
                 else

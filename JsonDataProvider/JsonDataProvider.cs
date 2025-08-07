@@ -134,7 +134,7 @@ namespace JsonDataProviderNs
                 // 1. Выполняем GET запрос с токеном отмены
                 if (uri.Scheme == Uri.UriSchemeFile)
                 {
-                    using (var stream = File.OpenRead(uri.LocalPath))
+                    using (var stream = File.Open(uri.LocalPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         newDocument = await JsonDocument.ParseAsync(stream, default, token);
                 }
                 else
