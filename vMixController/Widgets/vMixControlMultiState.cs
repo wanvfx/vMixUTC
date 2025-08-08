@@ -12,8 +12,34 @@ namespace vMixController.Widgets
     public class vMixControlMultiState : vMixControl
     {
 
-        public string IP { get; set; }
-        public string Port { get; set; }
+        private string _ip;
+        private string _port;
+
+        public string IP
+        {
+            get => _ip;
+            set
+            {
+                if (_ip != value)
+                {
+                    _ip = value;
+                    RaisePropertyChanged(nameof(IP));
+                }
+            }
+        }
+
+        public string Port
+        {
+            get => _port;
+            set
+            {
+                if (_port != value)
+                {
+                    _port = value;
+                    RaisePropertyChanged(nameof(Port));
+                }
+            }
+        }
         public string Login { get; set; }
         public string Password { get; set; }
 
