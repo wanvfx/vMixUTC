@@ -113,7 +113,10 @@ namespace vMixController.Widgets.Button
 
                 if (expression.HasErrors())
                 {
-                    result = default(T);
+                    if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
+                        result = (T)((object)expressionString);
+                    else
+                        result = default(T);
                     return true;
                 }
 

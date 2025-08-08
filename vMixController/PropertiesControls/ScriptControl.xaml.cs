@@ -209,6 +209,27 @@ namespace vMixController.PropertiesControls
             }
         }
 
+        private RelayCommand<vMixControlButtonCommand> _duplicateCommandCommand;
+
+        public RelayCommand<vMixControlButtonCommand> DuplicateCommandCommand
+        {
+            get
+            {
+                return _duplicateCommandCommand
+                    ?? (_duplicateCommandCommand = new RelayCommand<vMixControlButtonCommand>(
+                    p =>
+                    {
+                        var idx = Commands.IndexOf(p);
+                        //var moveTo = idx - 1 >= 0 ? idx - 1 : idx;
+                        var copy = (vMixControlButtonCommand)p.Clone();
+                        Commands.Insert(idx, copy);
+                        CollectionViewSource.GetDefaultView(script.ItemsSource)?.Refresh();
+                        RearrangeCommnads();
+                        ShowMovedItem(idx + 1);
+                    }));
+            }
+        }
+
         private RelayCommand _addCommandCommand;
 
         public RelayCommand AddCommandCommand

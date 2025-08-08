@@ -1117,7 +1117,11 @@
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
-                <TextBlock IsEnabled="{Binding Enabled}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}" Text="Multi State"></TextBlock>
+                <StackPanel Background="{Binding Color, Converter={c:ColorToSolidBrushConverter}}">
+                    <TextBlock Foreground="{Binding Color, Converter={c:ColorToBlackOrWhiteConverter}}" IsEnabled="{Binding Enabled}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}" Text="Multi State"></TextBlock>
+                    <TextBlock Foreground="{Binding Color, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}"><Run Text="{Binding IP}"></Run><Run>:</Run><Run Text="{Binding Port}"></Run></TextBlock>
+                </StackPanel>
+                
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>

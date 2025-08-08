@@ -219,11 +219,12 @@
                                                                     <Setter.Value>
                                                                         <ControlTemplate TargetType="CheckBox">
                                                                             <Border>
-                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF05D;"/>
+                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF05D;"/>
                                                                             </Border>
                                                                             <ControlTemplate.Triggers>
                                                                                 <Trigger Property="IsChecked" Value="True">
                                                                                     <Setter TargetName="textBox" Property="Text" Value="&#xF058;" />
+                                                                                    <Setter TargetName="textBox" Property="Foreground" Value="White"/>
                                                                                 </Trigger>
                                                                             </ControlTemplate.Triggers>
                                                                         </ControlTemplate>
@@ -241,11 +242,12 @@
                                                                     <Setter.Value>
                                                                         <ControlTemplate TargetType="CheckBox">
                                                                             <Border>
-                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="{StaticResource ComboBox.Static.Glyph}" Text="&#xF006;"/>
+                                                                                <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF006;"/>
                                                                             </Border>
                                                                             <ControlTemplate.Triggers>
                                                                                 <Trigger Property="IsChecked" Value="True">
                                                                                     <Setter TargetName="textBox" Property="Text" Value="&#xF005;" />
+                                                                                    <Setter TargetName="textBox" Property="Foreground" Value="White"/>
                                                                                 </Trigger>
                                                                             </ControlTemplate.Triggers>
                                                                         </ControlTemplate>
@@ -257,7 +259,7 @@
                                                     
                                                     <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandUpCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="Move Up" Content="&#xF30C;"/>
                                                     <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding MoveCommandDownCommand, ElementName=Me}" CommandParameter="{Binding}" ToolTip="Move Down" Content="&#xF309;"/>
-
+                                                    <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DuplicateCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="Duplicate" Content="&#xF24D;"/>
                                                     <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemoveCommandCommand, ElementName=Me}" CommandParameter="{Binding}"  ToolTip="Remove" Content="&#xF068;"/>
                                                 </StackPanel>
                                             </Grid>
