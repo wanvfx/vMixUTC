@@ -300,7 +300,8 @@ namespace vMixController.Widgets
 
         protected static void InternalSliderPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (!((vMixControlTextField)d).IsLive)
+            
+            if (!((vMixControlTextField)d).IsLive || ((vMixControlVolume)d)._updating)
                 return;
             if (e.Property.Name == nameof(Value) && !((vMixControlVolume)d)._disposing)
             {
