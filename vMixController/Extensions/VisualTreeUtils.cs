@@ -11,6 +11,36 @@ namespace vMixController.Extensions
     public static class VisualTreeUtils
     {
         /// <summary>
+        /// Looks for a child control within a parent by type
+        /// </summary>
+        public static List<T> FindChild<T>(this DependencyObject parent)
+            where T : DependencyObject
+        {
+            // Confirm parent is valid.
+            if (parent == null) return null;
+
+            //T foundChild = null;
+            List<T> foundChilds = new List<T>();
+
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                // If the child is not of the request child type child
+                if (!(child is T childType))
+                    // recursively drill down the tree
+                    foundChilds = foundChilds.Union(FindChild<T>(child)).ToList();
+                else
+                {
+                    // child element found.
+                    foundChilds.Add((T)child);
+
+                }
+            }
+            return foundChilds;
+        }
+
+        /// <summary>
         /// Рекурсивно находит все дочерние элементы, у которых есть свойство "IsCancelled",
         /// и устанавливает его в 'true'.
         /// </summary>

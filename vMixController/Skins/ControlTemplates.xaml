@@ -6,10 +6,9 @@
         xmlns:c="clr-namespace:vMixController.Converters"
         xmlns:ctrls="clr-namespace:vMixController.Controls"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:e="clr-namespace:vMixController.Extensions"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
-        xmlns:ext="clr-namespace:vMixController.Extensions"
+        xmlns:e="clr-namespace:vMixController.Extensions"
         xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
@@ -62,6 +61,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ListView DataContext="{Binding}" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items}" SelectedIndex="{Binding SelectedIndex}" HorizontalContentAlignment="Stretch" x:Name="Me" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <i:Interaction.Behaviors>
+                <e:ScrollIntoViewBehavior IsEnabled="{Binding ShouldScrollIntoView}"/>
+            </i:Interaction.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -72,15 +74,33 @@
                         <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="2,0,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" Content="&#xF068;" IsEnabled="{Binding DataContext.Locked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                         </StackPanel>
-                        <TextBlock TextTrimming="CharacterEllipsis" Style="{StaticResource CaptionText}" Text="{Binding}"/>
+                        <TextBlock TextTrimming="CharacterEllipsis" Style="{StaticResource CaptionText}" FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Text="{Binding}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Margin" Value="0,1,0,1"/>
+                    <Setter Property="FontWeight" Value="Normal"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.Template>
+                <ControlTemplate>
+                    <ctrls:WheelControlledScrollViewer>
+                        <ItemsPresenter></ItemsPresenter>
+                    </ctrls:WheelControlledScrollViewer>
+                </ControlTemplate>
+            </ListView.Template>
         </ListView>
         <Button Grid.Row="1" Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="Append Item" IsEnabled="{Binding Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
         <Border Grid.Row="2" BorderBrush="White" BorderThickness="0,1" Margin="0,2"/>
@@ -267,7 +287,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <!--Background="{Binding Color, Converter={c:ColorToSolidBrushConverter}}"-->
-        <TextBox IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetTextBox}" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" ext:FocusExtension.IsFocused="{Binding IsFocused}" Foreground="{Binding Background.Color, RelativeSource={RelativeSource Self}, Converter={c:ColorToBlackOrWhiteConverter}}">
+        <TextBox IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetTextBox}" Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" e:FocusExtension.IsFocused="{Binding IsFocused}" Foreground="{Binding Background.Color, RelativeSource={RelativeSource Self}, Converter={c:ColorToBlackOrWhiteConverter}}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="PreviewKeyUp">
                     <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -418,7 +438,7 @@
                                 </i:Interaction.Triggers>
                             </CheckBox>
                         </StackPanel>
-                        <ctrls:VolumeSlider Style="{DynamicResource {x:Type Slider}}" Visibility="{Binding ShowSlider, Converter={wpfc:BoolToVisibilityConverter}}" TickPlacement="Both" Ticks="0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100" Minimum="0" Maximum="100" LargeChange="0.01" SmallChange="0.001" x:Name="Slider" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, Converter={c:LogarithmicConverter}}" ext:FocusExtension.IsFocused="{Binding IsFocused}" e:ThumbColorizer.Color="Red">
+                        <ctrls:VolumeSlider Style="{DynamicResource {x:Type Slider}}" Visibility="{Binding ShowSlider, Converter={wpfc:BoolToVisibilityConverter}}" TickPlacement="Both" Ticks="0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100" Minimum="0" Maximum="100" LargeChange="0.01" SmallChange="0.001" x:Name="Slider" Value="{Binding Value, UpdateSourceTrigger=PropertyChanged, Converter={c:LogarithmicConverter}}" e:FocusExtension.IsFocused="{Binding IsFocused}" e:ThumbColorizer.Color="Red">
 
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="PreviewKeyUp">
@@ -545,7 +565,7 @@
         </ContentPresenter>
     </Grid>
 
-    <ctrls:ComboBox VirtualizingStackPanel.IsVirtualizing="True"  Style="{DynamicResource {x:Type ComboBox}}" IsEditable="{Binding IsEditable}" HorizontalContentAlignment="Stretch" x:Shared="false" x:Key="ListWidgetControl" Margin="{StaticResource StdMargin}" ItemsSource="{Binding Items}" Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ext:FocusExtension.IsFocused="{Binding IsFocused}" d:DataContext="{d:DesignInstance widget:vMixControlList}">
+    <ctrls:ComboBox VirtualizingStackPanel.IsVirtualizing="True"  Style="{DynamicResource {x:Type ComboBox}}" IsEditable="{Binding IsEditable}" HorizontalContentAlignment="Stretch" x:Shared="false" x:Key="ListWidgetControl" Margin="{StaticResource StdMargin}" ItemsSource="{Binding Items}" Grid.Column="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" e:FocusExtension.IsFocused="{Binding IsFocused}" d:DataContext="{d:DesignInstance widget:vMixControlList}">
         <ComboBox.ItemsPanel>
             <ItemsPanelTemplate>
                 <VirtualizingStackPanel />
@@ -584,7 +604,7 @@
         </Grid.ColumnDefinitions>
         <Button Margin="{StaticResource RightStdMargin}" ToolTip="Reset" Style="{StaticResource TitleButton}" Command="{Binding ResetScoreCommand}">&#xF01e;</Button>
         <!--Style="{StaticResource WidgetTextBox}"-->
-        <toolkit:IntegerUpDown IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetIntegerUpDown}" Grid.Column="1" ext:FocusExtension.IsFocused="{Binding IsFocused}" FontWeight="Normal" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" FormatString="{Binding FormatString}">
+        <toolkit:IntegerUpDown IsEnabled="{Binding IsEditable}" Style="{StaticResource WidgetIntegerUpDown}" Grid.Column="1" e:FocusExtension.IsFocused="{Binding IsFocused}" FontWeight="Normal" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" FormatString="{Binding FormatString}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="PreviewKeyUp">
                     <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -744,7 +764,7 @@
         </Grid.ColumnDefinitions>
         <skin:PropertiesListView Grid.ColumnSpan="3">
             <CompositeCollection>
-                <toolkit:TimeSpanUpDown FractionalSecondsDigitsCount="{Binding IsHighPrecision}" Tag="Target Time" FontWeight="Normal" Style="{StaticResource WidgetTimeSpanUpDown}" Grid.Row="2" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" ext:FocusExtension.IsFocused="{Binding IsFocused}">
+                <toolkit:TimeSpanUpDown FractionalSecondsDigitsCount="{Binding IsHighPrecision}" Tag="Target Time" FontWeight="Normal" Style="{StaticResource WidgetTimeSpanUpDown}" Grid.Row="2" IsEnabled="{Binding Active, Converter={wpfc:BoolToInverseBoolConverter}}" e:FocusExtension.IsFocused="{Binding IsFocused}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewKeyUp">
                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -1121,7 +1141,7 @@
                     <TextBlock Foreground="{Binding Color, Converter={c:ColorToBlackOrWhiteConverter}}" IsEnabled="{Binding Enabled}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}" Text="Multi State"></TextBlock>
                     <TextBlock Foreground="{Binding Color, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Style="{StaticResource PropertyName}"><Run Text="{Binding IP}"></Run><Run>:</Run><Run Text="{Binding Port}"></Run></TextBlock>
                 </StackPanel>
-                
+
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
     </DataTemplate>

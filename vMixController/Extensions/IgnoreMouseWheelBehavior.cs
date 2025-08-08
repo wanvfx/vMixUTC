@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 using System.Windows.Media;
+using vMixController.Controls;
 
 namespace vMixController.Extensions
 {
@@ -28,36 +29,6 @@ namespace vMixController.Extensions
 
 
 
-        /// <summary>
-        /// Looks for a child control within a parent by type
-        /// </summary>
-        private List<T> FindChild<T>(DependencyObject parent)
-            where T : DependencyObject
-        {
-            // Confirm parent is valid.
-            if (parent == null) return null;
-
-            //T foundChild = null;
-            List<T> foundChilds = new List<T>();
-
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childrenCount; i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                // If the child is not of the request child type child
-                if (!(child is T childType))
-                    // recursively drill down the tree
-                    foundChilds = foundChilds.Union(FindChild<T>(child)).ToList();
-                else
-                {
-                    // child element found.
-                    foundChilds.Add((T)child);
-
-                }
-            }
-            return foundChilds;
-        }
-
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -72,7 +43,7 @@ namespace vMixController.Extensions
 
         void AssociatedObject_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var popup = FindChild<Popup>((DependencyObject)sender);
+            var popup = ((DependencyObject)sender).FindChild<Popup>();
             if (popup.Count(x=>x.IsOpen) == 0 && !IgnoreBehavior)
             {
                 e.Handled = true;

@@ -102,6 +102,32 @@ namespace vMixController.Widgets
             }
         }
 
+        private bool _shouldScrollIntoView = false;
+
+        /// <summary>
+        /// Sets and gets the ShouldScrollIntoView property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        [XmlIgnore]
+        public bool ShouldScrollIntoView
+        {
+            get
+            {
+                return _shouldScrollIntoView;
+            }
+
+            set
+            {
+                if (_shouldScrollIntoView == value)
+                {
+                    return;
+                }
+
+                _shouldScrollIntoView = value;
+                RaisePropertyChanged(nameof(ShouldScrollIntoView));
+            }
+        }
+
         public List<Input> Inputs { get => _internalState?.Inputs; }
 
         public vMixControlPlaylist()
@@ -142,6 +168,7 @@ namespace vMixController.Widgets
             var node = doc?.SelectSingleNode(string.Format("//vmix/inputs/input[@key=\"{0}\"]/list", InputKey));
             Dispatcher.Invoke(() =>
             {
+                var oldIndex = _selectedIndex;
                 if (node != null)
                 {
                     int index = 0;
@@ -161,6 +188,7 @@ namespace vMixController.Widgets
 
                     //_updating = false;
                     RaisePropertyChanged(nameof(Items));
+                        ShouldScrollIntoView = oldIndex != _selectedIndex;
                     RaisePropertyChanged(nameof(SelectedIndex));
                 }
                 else
@@ -253,6 +281,7 @@ namespace vMixController.Widgets
                     {
                         /*State?.SendFunction("Function", "NextItem",
                 "Input", InputKey);*/
+                        ShouldScrollIntoView = true;
                         if (SelectedIndex + 1 < Items.Count)
                             SelectedIndex++;
                     }));
@@ -274,6 +303,7 @@ namespace vMixController.Widgets
                     {
                         /*State?.SendFunction("Function", "PreviousItem",
                     "Input", InputKey);*/
+                        ShouldScrollIntoView = true;
                         if (SelectedIndex - 1 >= 0)
                             SelectedIndex--;
                     }));

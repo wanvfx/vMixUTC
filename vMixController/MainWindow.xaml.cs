@@ -1,10 +1,15 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using vMixController.Controls;
+using vMixController.Extensions;
 using vMixController.Messages;
 using vMixController.ViewModel;
 
@@ -70,6 +75,23 @@ namespace vMixController
 
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
+
+            var wheel = ((DependencyObject)sender).FindChild<WheelControlledScrollViewer>().Where(x => x.IsMouseOver);
+            foreach (var wheelControl in wheel)
+            {
+                var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.MouseWheelEvent
+                };
+                wheelControl.RaiseEvent(e2);
+            }
+            if (wheel.Count() > 0)
+            {
+                e.Handled = true;
+                return;
+            }
+
+
             var scrollViewer = (ScrollViewer)sender;
 
             if (scrollViewer == null || (scrollViewer.Tag is bool && (bool)scrollViewer.Tag))

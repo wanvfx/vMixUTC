@@ -381,6 +381,7 @@
       <DependentUpon>vMixPathSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VolumeSlider.cs" />
+    <Compile Include="Controls\WheelControlledScrollViewer.cs" />
     <Compile Include="Converters\ContentToVisibilityConverter.cs" />
     <Compile Include="Converters\BitToVisibilityConverter.cs" />
     <Compile Include="Converters\AudiobusToBoolConverter.cs" />
@@ -427,6 +428,7 @@
     <Compile Include="Extensions\GridColumnMargin.cs" />
     <Compile Include="Extensions\ListViewSortBehavior.cs" />
     <Compile Include="Extensions\ObjectUtils.cs" />
+    <Compile Include="Extensions\ScrollIntoViewBehavior.cs" />
     <Compile Include="Extensions\ThumbColorizer.cs" />
     <Compile Include="Extensions\FocusExtension.cs" />
     <Compile Include="Extensions\HideCloseButtonOnWindow.cs" />
