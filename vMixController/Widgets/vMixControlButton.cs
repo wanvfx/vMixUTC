@@ -31,8 +31,8 @@ namespace vMixController.Widgets
     [Serializable]
     public class vMixControlButton : vMixControl
     {
-        private ConcurrentDictionary<string, string> _cachedVariables;
-        private readonly object _cacheLock = new object();
+        //private ConcurrentDictionary<string, string> _cachedVariables;
+        //private readonly object _cacheLock = new object();
 
         public override bool IsResizeableVertical => true;
 
@@ -636,7 +636,7 @@ namespace vMixController.Widgets
             _culture.NumberFormat.CurrencyDecimalDigits = 5;
 
             XmlDocumentMessenger.OnDocumentDownloaded += OnXmlDocumentDownloaded;
-            Messenger.Default.Register<UpdateGlobalVariable>(this, (t) =>
+            /*Messenger.Default.Register<UpdateGlobalVariable>(this, (t) =>
             {
                 lock (_cacheLock)
                 {
@@ -656,7 +656,7 @@ namespace vMixController.Widgets
                     }
                 }
             });
-            Messenger.Default.Send(new FillGlobalVariables() { Caller = this });
+            Messenger.Default.Send(new FillGlobalVariables() { Caller = this });*/
         }
 
         private void PopulateVariables(NCalc.Expression exp)
@@ -667,15 +667,16 @@ namespace vMixController.Widgets
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
             }
 
-            lock (_cacheLock)
+            Dispatcher.Invoke(() =>
             {
+                var _cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
                 if (_cachedVariables != null)
                     foreach (var item in _cachedVariables)
                     {
-                        if (!exp.Parameters.ContainsKey(item.Key))
-                            exp.Parameters.Add(item.Key, item.Value);
+                        if (!exp.Parameters.ContainsKey(item.A))
+                            exp.Parameters.Add(item.A, item.B);
                     }
-            }
+            });
             exp.Parameters.Add(parameterName, parameterValue);
             exp.EvaluateFunction += ExpressionEvaluateFunction;
         }
@@ -757,12 +758,15 @@ namespace vMixController.Widgets
                         _latestDocument = doc;
                         var result = _commands.CalculateStateDependency(doc, (inputKey) =>
                         {
-                            lock (_cacheLock)
+                            return Dispatcher.Invoke<string>(() =>
                             {
-                                if (_cachedVariables.ContainsKey(inputKey))
-                                    return _cachedVariables[inputKey];
-                            }
-                            return inputKey;
+                                var _cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
+                                if (_cachedVariables != null)
+                                    foreach (var item in _cachedVariables)
+                                        if (item.A == inputKey)
+                                            return item.B;
+                                return inputKey;
+                            });
                         }, PopulateVariables, ExpressionEvaluateFunction);
                         Active = result.IsStateDependent;
                         HasScriptErrors = result.HasErrors;
@@ -812,7 +816,7 @@ namespace vMixController.Widgets
             var part2 = string.Format(cmd.AdditionalParameters[3].A, cmd.InputKey, cmd.AdditionalParameters[0].A)?.ToString() ?? "";
             Thread.CurrentThread.CurrentCulture = _culture;
             Thread.CurrentThread.CurrentUICulture = _culture;
-            
+
             vMixControlButtonHelper.CalculateExpression<object>(part1, PopulateVariables, ExpressionEvaluateFunction, out object expr1);
             vMixControlButtonHelper.CalculateExpression<object>(part2, PopulateVariables, ExpressionEvaluateFunction, out object expr2);
 

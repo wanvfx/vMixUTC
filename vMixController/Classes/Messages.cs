@@ -22,7 +22,7 @@ namespace vMixController.Messages
         public string Value { get; set; }
     }
 
-    public enum VariableState
+    /*public enum VariableState
     {
         None,
         Delete,
@@ -41,6 +41,6 @@ namespace vMixController.Messages
     public class FillGlobalVariables
     {
         public object Caller { get; set; }
-    }
+    }*/
 
 }
