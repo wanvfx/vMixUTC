@@ -32,7 +32,7 @@ namespace UTCGoogleSheetsDataProvider
         }
     }
     // Реализуем IDisposable для корректного освобождения ресурсов (таймера и токена отмены)
-    public class GoogleSheetsDataProvider : DependencyObject, vMixControllerDataProvider.IvMixDataProviderTextInput, INotifyPropertyChanged, IDataErrorInfo, IDisposable
+    public class GoogleSheetsDataProvider : DependencyObject, vMixControllerDataProvider.IvMixDataProviderTextInput, INotifyPropertyChanged, IDisposable
     {
         // Статические кэши для совместного использования между экземплярами провайдера.
         // Это экономит запросы на авторизацию и дублирующую загрузку одних и тех же таблиц.
@@ -42,7 +42,6 @@ namespace UTCGoogleSheetsDataProvider
 
         private readonly DispatcherTimer _webTimer;
         private string[] _cached = Array.Empty<string>();
-        private bool _hasError = false;
         private int _period = 5000; // Установлено значение по умолчанию
         private string _apiKey = "";
         private string _sheetKey = "";
@@ -66,6 +65,18 @@ namespace UTCGoogleSheetsDataProvider
         public object GotFocus { get; set; }
         public object LostFocus { get; set; }
         public bool IsProvidingCustomProperties => false;
+
+        string _error = string.Empty;
+        public string Error
+        {
+            get => _error;
+            set
+            {
+                if (_error == value) return;
+                _error = value;
+                OnPropertyChanged(nameof(Error));
+            }
+        }
 
         public int Period
         {
@@ -157,7 +168,7 @@ namespace UTCGoogleSheetsDataProvider
                         _lastModifiedCache.TryGetValue(SheetKey, out var lastModified);
                         if ((DateTime.Now - lastModified).TotalMilliseconds > Period)
                         {
-                            Debug.WriteLine($"Loading {SheetKey} at {DateTime.Now}");
+                            //Error = ($"Loading {SheetKey} at {DateTime.Now}");
                             var sst = await Popcron.Sheets.Spreadsheet.Get(SheetKey, auth);
                             _spreadsheetCache[SheetKey] = sst;
                             _lastModifiedCache[SheetKey] = DateTime.Now;
@@ -167,17 +178,15 @@ namespace UTCGoogleSheetsDataProvider
 
                         // 3. Обработка данных и обновление UI
                         ProcessAndCacheData();
-                        _hasError = false;
                     }
                     catch (OperationCanceledException)
                     {
                         // Это ожидаемое исключение при закрытии, игнорируем его.
-                        Debug.Print("Data update was canceled.");
+                        Error = ("Data update was canceled.");
                     }
                     catch (Exception ex)
                     {
-                        _hasError = true;
-                        Debug.Print($"Error loading or processing spreadsheet: {ex.Message}");
+                        Error = ($"Error loading or processing spreadsheet: {ex.Message}");
                         // В случае ошибки сбрасываем кэш, чтобы показать пустое значение
                         UpdateCachedData(Array.Empty<string>());
                     }
@@ -259,7 +268,7 @@ namespace UTCGoogleSheetsDataProvider
             set
             {
                 if (_apiKey == value) return;
-                _apiKey = value;
+                _apiKey = value.Trim();
                 OnPropertyChanged(nameof(APIKey));
                 _ = UpdateData(); // Запускаем обновление при смене ключа
             }
@@ -271,7 +280,17 @@ namespace UTCGoogleSheetsDataProvider
             set
             {
                 if (_sheetKey == value) return;
-                _sheetKey = value;
+                if (Uri.TryCreate(value, UriKind.Absolute, out var k))
+                {
+                    var parts = k.LocalPath.Split('/', '\\').ToList();
+                    int idx = parts.IndexOf("edit");
+                    int idx1 = parts.IndexOf("d");
+                    if (idx == -1)
+                        idx = idx1 + 2;
+                    _sheetKey = parts[(idx == -1 ? parts.Count : idx) - 1];
+                }
+                else
+                    _sheetKey = value;
                 OnPropertyChanged(nameof(SheetKey));
                 _ = UpdateData(); // Запускаем обновление при смене ключа
             }
@@ -357,27 +376,6 @@ namespace UTCGoogleSheetsDataProvider
                 if (_rowsCount == value) return;
                 _rowsCount = value;
                 OnPropertyChanged(nameof(RowsCount));
-            }
-        }
-
-        public string Error => null;
-
-        public string this[string columnName]
-        {
-            get
-            {
-                string error = string.Empty;
-                if (_hasError)
-                {
-                    switch (columnName)
-                    {
-                        case nameof(APIKey):
-                        case nameof(SheetKey):
-                            error = "Invalid API or Sheet Key!";
-                            break;
-                    }
-                }
-                return error;
             }
         }
 
