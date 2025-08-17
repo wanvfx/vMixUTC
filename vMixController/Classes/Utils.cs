@@ -253,6 +253,21 @@ namespace vMixController.Classes
 
                 _logger.Info("Configuring API.");
             }
+
+            //renumber z-index for old controllers
+            var zeroIndexNonRegion = _controls.Where(x => !(x is vMixControlRegion) && x.ZIndex == 0).Count();
+            var indexRegion = _controls.Where(x => (x is vMixControlRegion) && x.ZIndex == -1).Count();
+            if (zeroIndexNonRegion + indexRegion == _controls.Count)
+            {
+                var index = 0;
+                var mindex = -indexRegion;
+                foreach (var item in _controls)
+                    if (item is vMixControlRegion)
+                        item.ZIndex = mindex++;
+                    else
+                        item.ZIndex = index++;
+            }
+
             return _controls;
         }
 
