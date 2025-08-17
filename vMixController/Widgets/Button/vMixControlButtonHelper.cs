@@ -113,10 +113,7 @@ namespace vMixController.Widgets.Button
 
                 if (expression.HasErrors())
                 {
-                    if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
-                        result = (T)((object)expressionString);
-                    else
-                        result = default(T);
+                    result = ExpressionOrDefaultValue<T>(expressionString);
                     return true;
                 }
 
@@ -136,10 +133,9 @@ namespace vMixController.Widgets.Button
             }
             catch (Exception)
             {
-
                 // Ловим любые ошибки (при вычислении, приведении типов и т.д.)
                 // и возвращаем значение по умолчанию для типа T.
-                result = default (T);
+                result = ExpressionOrDefaultValue<T>(expressionString);
                 return true;
             }
             finally
@@ -151,6 +147,16 @@ namespace vMixController.Widgets.Button
                 }
                 expression.EvaluateParameter -= OnEvaluateParameter;
             }
+        }
+
+        private static T ExpressionOrDefaultValue<T>(string expressionString)
+        {
+            T result;
+            if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
+                result = (T)((object)expressionString);
+            else
+                result = default(T);
+            return result;
         }
 
         private static void OnEvaluateParameter(string name, NCalc.ParameterArgs args)
