@@ -7,6 +7,13 @@
              mc:Ignorable="d" 
              Width="400" Height="400"
              d:DesignHeight="400" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Border BorderBrush="White" BorderThickness="2">
         <Grid>
             <Grid.Background>
@@ -16,6 +23,7 @@
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center">vMix</TextBlock>
                     <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center">Universal Title Controller</TextBlock>
+                    <!--<TextBlock FontSize="30" Foreground="White" FontWeight="Regular" HorizontalAlignment="Center">Today icon <TextBlock x:Name="Icon" FontFamily="{StaticResource FontAwesome}">&#xf6be;</TextBlock></TextBlock>-->
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right">
                     <TextBlock TextAlignment="Right" Foreground="White" x:Name="Build">line 1<LineBreak/>
