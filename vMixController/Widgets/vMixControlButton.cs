@@ -1013,16 +1013,25 @@ namespace vMixController.Widgets
                         var key = Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher);
 
                         int p1 = 0;
+                        float p1f = 0.0f;
 
                         var input = state.Inputs.Where(x => x.Key == key).FirstOrDefault()?.Number;
-                        vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
-                        var command = string.Format(cmd.Action.FormatString, key, p1, System.Web.HttpUtility.UrlEncode(Convert.ToString(Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CultureInfo.InvariantCulture)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
+                        
+                        vMixControlButtonHelper.CalculateExpression(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                        vMixControlButtonHelper.CalculateExpression(cmd.FloatParameter, PopulateVariables, ExpressionEvaluateFunction, out p1f);
+                        string p1fs = p1f.ToString(CultureInfo.InvariantCulture);
+                        if (cmd.Action.CommaFloatDelimiter)
+                            p1fs = p1fs.Replace('.', ',');
+
+                        var command = string.Format(cmd.Action.FormatString, key, p1, System.Web.HttpUtility.UrlEncode(Convert.ToString(Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CultureInfo.InvariantCulture)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=", p1fs);
 
                         if (!cmd.Action.StateDirect)
                             AddLog("{2}) SEND {0} WITH RESULT {1}", command, state.SendFunction(command, false, timeout: cmd.Action.Timeout), _pointer + 1);
                         else
                         {
-                            vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                            vMixControlButtonHelper.CalculateExpression(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+
+
                             var path = string.Format(cmd.Action.StatePath, key, p1, Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
                             object value;
                             switch (cmd.Action.StateValue)

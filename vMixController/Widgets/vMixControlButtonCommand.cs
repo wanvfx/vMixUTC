@@ -65,6 +65,32 @@ namespace vMixController.Widgets
             }
         }
 
+
+        private string _floatParameter = "-1";
+
+        /// <summary>
+        /// Sets and gets the FloatParameter property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string FloatParameter
+        {
+            get
+            {
+                return _floatParameter;
+            }
+
+            set
+            {
+                if (_floatParameter == value)
+                {
+                    return;
+                }
+
+                _floatParameter = value;
+                RaisePropertyChanged(nameof(FloatParameter));
+            }
+        }
+
         private int _input = -1;
 
         /// <summary>
@@ -328,6 +354,10 @@ namespace vMixController.Widgets
             {
                 parameters.Add(Escape(StringParameter));
             }
+            if (Action.HasFloatProperty)
+            {
+                parameters.Add(Escape(FloatParameter));
+            }
             if (Action.AdditionalCount > 0 && AdditionalParameters != null)
             {
                 parameters.AddRange(AdditionalParameters.Take(Action.AdditionalCount).Select(p => Escape(p.A)));
@@ -417,6 +447,12 @@ namespace vMixController.Widgets
             {
                 if (currentParamIndex < parameters.Count)
                     cmd.StringParameter = Unescape(parameters[currentParamIndex++]);
+            }
+
+            if (cmd.Action.HasFloatProperty)
+            {
+                if (currentParamIndex < parameters.Count)
+                    cmd.FloatParameter = Unescape(parameters[currentParamIndex++]);
             }
 
             if (cmd.Action.AdditionalCount > 0)

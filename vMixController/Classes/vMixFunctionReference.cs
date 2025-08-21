@@ -22,15 +22,19 @@ namespace vMixController.Classes
                     HasInputProperty = _formatString.Contains("{0}");
                     HasIntProperty = _formatString.Contains("{1}");
                     HasStringProperty = _formatString.Contains("{2}");
+                    HasFloatProperty = _formatString.Contains("{6}");
                     if (!HasInputProperty)
                         InputDescription = "N/A";
                     if (!HasIntProperty)
                         IntDescription = "N/A";
                     if (!HasStringProperty)
                         StringDescription = "N/A";
+                    if (!HasFloatProperty)
+                        FloatDescription = "N/A";
                 }
             } }
 
+        public bool HasFloatProperty { get; set; }
         public bool HasInputProperty { get; set; }
         public bool HasStringProperty { get; set; }
         public bool HasIntProperty { get; set; }
@@ -49,7 +53,8 @@ namespace vMixController.Classes
 
         public int TransitionNumber { get; set; }
 
-
+        public bool CommaFloatDelimiter { get; set; } = false;
+        public string FloatDescription { get; set; }
         public string IntDescription { get; set; }
         public string StringDescription { get; set; }
         public string InputDescription { get; set; }
@@ -85,6 +90,7 @@ namespace vMixController.Classes
             InputDescription = "Input";
             IntDescription = "Integer";
             StringDescription = "String";
+            FloatDescription = "Float";
             Color = System.Windows.Media.Colors.Black;
         }
 
@@ -97,6 +103,8 @@ namespace vMixController.Classes
                 result += string.Format("#{0}, ", IntDescription);
             if (HasStringProperty)
                 result += string.Format("#{0}, ", StringDescription);
+            if (HasFloatProperty)
+                result += string.Format("#{0}, ", FloatDescription);
             for (int i = 0; i < AdditionalCount; i++)
                 result += string.Format("#par{0}, ", i + 1);
             if (result.EndsWith(", "))

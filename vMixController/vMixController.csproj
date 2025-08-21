@@ -423,6 +423,7 @@
     <Compile Include="Converters\StringToCursorConverter.cs" />
     <Compile Include="Converters\ListItemTagConverter.cs" />
     <Compile Include="Converters\ImagePathToVisibilityConverter.cs" />
+    <Compile Include="Extensions\AutoGridRowBehavior.cs" />
     <Compile Include="Extensions\ControlBox.cs" />
     <Compile Include="Extensions\DeepCopyCancelBehavior.cs" />
     <Compile Include="Extensions\GridColumnMargin.cs" />

@@ -40,11 +40,12 @@ namespace vMixController.Widgets.Button
         public string InputKey { get; }
         public int InputNumber { get; }
         public int IntParameter { get; }
+        public string FloatParameter { get; }
         public object StringParameter { get; }
         public string KeyByInt { get; }
         public string KeyByString { get; }
 
-        public XPathFormattingArgs(string inputKey, int inputNumber, int intParameter, object stringParameter, string keyByInt, string keyByString)
+        public XPathFormattingArgs(string inputKey, int inputNumber, int intParameter, object stringParameter, string keyByInt, string keyByString, string floatParameter)
         {
             InputKey = inputKey;
             InputNumber = inputNumber;
@@ -52,6 +53,7 @@ namespace vMixController.Widgets.Button
             StringParameter = stringParameter;
             KeyByInt = keyByInt;
             KeyByString = keyByString;
+            FloatParameter = floatParameter;
         }
     }
 
@@ -344,6 +346,7 @@ namespace vMixController.Widgets.Button
 
                 CalculateExpression<int>(item.Parameter, PopulateVariables, Exp_EvaluateFunction, out int intParam);
                 CalculateExpression<object>(item.StringParameter, PopulateVariables, Exp_EvaluateFunction, out object strParam);
+                CalculateExpression<float>(item.Parameter, PopulateVariables, Exp_EvaluateFunction, out float floatParam);
 
                 int strParamAsInt;
                 // Использование 'out var' доступно в C# 7.0, поддерживаемом .NET 4.7.2
@@ -355,7 +358,9 @@ namespace vMixController.Widgets.Button
                 string keyByInt = GetNodeValue(doc, string.Format(@"//inputs/input[@number='{0}']/@key", intParam));
                 string keyByString = GetNodeValue(doc, string.Format(@"//inputs/input[@number='{0}']/@key", strParamAsInt));
 
-                var args = new XPathFormattingArgs(expandedInputKey, inputNumber, intParam, strParam, keyByInt, keyByString);
+                var fps = floatParam.ToString(CultureInfo.InvariantCulture);
+
+                var args = new XPathFormattingArgs(expandedInputKey, inputNumber, intParam, strParam, keyByInt, keyByString, item.Action.CommaFloatDelimiter ? fps.Replace('.', ',') : fps);
                 return new PrepareArgsResult(args, false);
             }
             catch (Exception) // Ловим ошибки парсинга или вычислений
@@ -370,6 +375,8 @@ namespace vMixController.Widgets.Button
         private static string GetEffectiveXPath(vMixFunctionReference action, XPathFormattingArgs args)
         {
             string pathTemplate = null;
+
+            if (action == null) return null;
 
             if (action.ActiveStateXPathIntDependence != null && args.IntParameter >= 0 && args.IntParameter < action.ActiveStateXPathIntDependence.Length)
             {
@@ -387,7 +394,7 @@ namespace vMixController.Widgets.Button
 
             return string.Format(pathTemplate,
                 args.InputKey, args.IntParameter, args.StringParameter, args.IntParameter - 1,
-                args.InputNumber, "", args.KeyByInt, args.KeyByString);
+                args.InputNumber, "", args.KeyByInt, args.KeyByString, args.FloatParameter);
         }
 
         /// <summary>

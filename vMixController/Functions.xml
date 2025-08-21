@@ -7,8 +7,9 @@
   {3} - Parameter - 1
   {4} - Number of Input
   {5} - Input= if input is not null
-  {6} - InputKey by int
+  {6} - InputKey by int // {6} - Float property in command
   {7} - InputKey by string
+  {8} - Float property
   
   ActiveStateValue prefixes
   
@@ -2737,7 +2738,10 @@
 			<string>A</string>
 			<string>B</string>
 		</StringValues>
+		<ActiveStateXPath>//inputs/input/replay/@camera{2}</ActiveStateXPath>
+		<ActiveStateValue>{1}</ActiveStateValue>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>ReplayChangeDirection</Function>
 		<FormatString>Function=ReplayChangeDirection&amp;Channel={2}</FormatString>
@@ -2749,14 +2753,15 @@
 	</vMixFunctionReference>
 	<vMixFunctionReference>
 		<Function>ReplayChangeSpeed</Function>
-		<FormatString>Function=ReplayChangeSpeed&amp;Value={1}&amp;Channel={2}</FormatString>
-		<IntDescription>Speed</IntDescription>
+		<FormatString>Function=ReplayChangeSpeed&amp;Value={6}&amp;Channel={2}</FormatString>
 		<StringDescription>Bus</StringDescription>
 		<StringValues>
 			<string>A</string>
 			<string>B</string>
 		</StringValues>
+		<FloatDescription>Speed</FloatDescription>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>ReplayCopyLastEvent</Function>
 		<FormatString>Function=ReplayCopyLastEvent&amp;Value={1}&amp;Channel={2}</FormatString>
