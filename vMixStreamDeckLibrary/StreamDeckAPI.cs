@@ -388,7 +388,7 @@ namespace vMixStreamDeckLibrary
             {
                 result = Process.GetProcessById(id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = null;
             }
@@ -450,7 +450,7 @@ namespace vMixStreamDeckLibrary
                     this.EventReceived(this, new StreamDeckEventArgs(StreamDeckEvent.Info, message, null, 0));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -465,7 +465,7 @@ namespace vMixStreamDeckLibrary
                     this.EventReceived(this, new StreamDeckEventArgs(StreamDeckEvent.Error, message, null, 0));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }
@@ -546,7 +546,7 @@ namespace vMixStreamDeckLibrary
                     {
                         this.m_Socket.Dispose();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                     }
                     finally

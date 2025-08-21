@@ -72,7 +72,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel VerticalAlignment="Center" Grid.Column="1" Margin="2,0,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" Content="&#xF068;" IsEnabled="{Binding DataContext.Locked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                            <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding DataContext.RemoveItemCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" Content="&#xF2ED;" IsEnabled="{Binding DataContext.Locked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                         </StackPanel>
                         <TextBlock TextTrimming="CharacterEllipsis" Style="{StaticResource CaptionText}" FontWeight="{Binding FontWeight, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Text="{Binding}"/>
                     </Grid>

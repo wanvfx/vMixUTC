@@ -79,9 +79,13 @@ namespace vMixController
         {
             Task.Run(() =>
             {
-                Thread.Sleep(100);
-
-                Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Activate());
+                bool activated = false;
+                while (!activated)
+                {
+                    Thread.Sleep(50);
+                    
+                    activated = Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Activate());
+                }
             });
         }
 

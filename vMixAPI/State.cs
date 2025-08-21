@@ -370,6 +370,9 @@ namespace vMixAPI
                         Inputs.Clear();
                         foreach (var item in _temp.Inputs)
                             Inputs.Add(item);
+                        Outputs.Clear();
+                        foreach (var item in _temp.Outputs)
+                            Outputs.Add(item);
                         Overlays.Clear();
                         foreach (var item in _temp.Overlays)
                             Overlays.Add(item);
@@ -613,6 +616,8 @@ namespace vMixAPI
 
         [XmlArray("inputs"), XmlArrayItem(ElementName = "input")]
         public List<Input> Inputs { get; set; }
+        [XmlArray("outputs"), XmlArrayItem(ElementName = "output")]
+        public List<Output> Outputs { get; set; }
         [XmlArray("overlays"), XmlArrayItem(ElementName = "overlay")]
         public List<Overlay> Overlays { get; set; }
         [XmlArray("transitions"), XmlArrayItem(ElementName = "transition")]

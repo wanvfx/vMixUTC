@@ -37,8 +37,6 @@ namespace vMixController.Classes
 
         public static int Rate { get; set; }
 
-        //static HttpClient _client;
-
         static event DocumentDownloaded _onDocumentDownloaded;
         public static event DocumentDownloaded OnDocumentDownloaded
         {
@@ -59,7 +57,6 @@ namespace vMixController.Classes
         static int _queries = 0;
         static DateTime _previousQuery = DateTime.Now;
         static System.Threading.Timer _stateDependentTimer;
-        static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger(typeof(XmlDocumentMessenger));
         private static string url;
         private static string credentials;
 

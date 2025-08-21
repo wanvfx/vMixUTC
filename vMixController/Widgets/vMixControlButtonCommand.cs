@@ -3,7 +3,10 @@ using GalaSoft.MvvmLight.Ioc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Threading;
 using vMixController.Classes;
 using vMixController.ViewModel;
 
@@ -289,182 +292,169 @@ namespace vMixController.Widgets
             }
         }
 
-        private string Enquote(string par)
-        {
-            if (par == null) return par;
-            int commas = 0;
-            int quotes = 0;
-            for (int i = 0; i<par.Length; i++)
-            {
-                if (par[i] == '\'')
-                    quotes++;
-                if (par[i] == ',' && quotes % 2 == 0)
-                    commas++;
-            }
-            if (commas > 0)
-                par = string.Format("\"{0}\"", par);
-            return par;
-        }
-
+        /// <summary>
+        /// Сериализует команду в строку, учитывая сигнатуру функции для включения только необходимых параметров.
+        /// Формат: [атрибуты] Функция(параметры)
+        /// </summary>
         public override string ToString()
         {
-            var result = new String('\t', (int)(Ident.Left / 8));
-            if (Collapsed)
-                result += ">";
-            if (!IsExecutable)
-                result += "!";
-            if (UseInActiveState)
-                result += "*";
+            if (Action == null || string.IsNullOrWhiteSpace(Action.Function))
+                return string.Empty;
 
-            if (Action == null) return "";
+            var sb = new StringBuilder();
 
-            result += Action.Function + "(";
-            if (Action.HasInputProperty)
-                result += Enquote(InputKey) + ", ";
-            if (Action.HasIntProperty)
-                result += Enquote(Parameter) + ", ";
-            if (Action.HasStringProperty)
-                result += Enquote(StringParameter) + ", ";
+            // 1. Атрибуты (добавляем только отличающиеся от дефолтных)
+            if (Collapsed) sb.Append("[C] ");
+            if (!IsExecutable) sb.Append("[!E] ");
+            if (!UseInActiveState) sb.Append("[!S] ");
 
-            var lastMean = 0;
-            for (int i = 0; i < AdditionalParameters.Count; i++)
-                if (!string.IsNullOrWhiteSpace(AdditionalParameters[i].A))
-                    lastMean = i;
+            // 2. Имя функции
+            sb.Append(Action.Function);
+            sb.Append("(");
 
-            foreach (var item in AdditionalParameters)
+            // 3. Параметры (добавляем только те, что определены в сигнатуре Action)
+            var parameters = new List<string>();
+
+            if (Action.HasInputProperty && !NoInputAssigned)
             {
-                if (!string.IsNullOrWhiteSpace(item.A) || lastMean - 1 >= 0)
-                    result += Enquote(item.A) + ", ";
-                lastMean--;
+                // Предпочитаем InputKey, если он задан, иначе используем Input
+                parameters.Add(!string.IsNullOrEmpty(InputKey) ? Escape(InputKey) : Input.ToString());
+            }
+            if (Action.HasIntProperty)
+            {
+                parameters.Add(Escape(Parameter));
+            }
+            if (Action.HasStringProperty)
+            {
+                parameters.Add(Escape(StringParameter));
+            }
+            if (Action.AdditionalCount > 0 && AdditionalParameters != null)
+            {
+                parameters.AddRange(AdditionalParameters.Take(Action.AdditionalCount).Select(p => Escape(p.A)));
             }
 
-            if (result.EndsWith(", "))
-                result = result.Substring(0, result.Length - 2);
+            sb.Append(string.Join(",", parameters));
+            sb.Append(")");
 
-            result += ")";
-
-            return result;
+            return sb.ToString();
         }
 
-        public static vMixControlButtonCommand FromString(string s)
+        /// <summary>
+        /// Создает объект vMixControlButtonCommand из строки, используя сигнатуру функции для корректного парсинга параметров.
+        /// </summary>
+        public static vMixControlButtonCommand FromString(string commandString)
         {
-            var result = new vMixControlButtonCommand();
-            result.UseInActiveState = false;
+            var allFunctions = SimpleIoc.Default.GetInstance<MainViewModel>().Functions;
+            if (string.IsNullOrWhiteSpace(commandString))
+                return null;
 
-            for (int i = 0; i < 10; i++)
-                result.AdditionalParameters.Add(new One<string>() { A = "" });
+            var cmd = new vMixControlButtonCommand();
+            var remainingString = commandString.Trim();
 
-            var functions = SimpleIoc.Default.GetInstance<MainViewModel>().Functions;
-            result.Action = functions.Where(x => x.Function == "None").FirstOrDefault();
-
-            
-            var bracketIndex = s.IndexOf('(');
-            if (bracketIndex <= 0)
+            // 1. Парсинг атрибутов
+            bool attributesParsed = true;
+            while (attributesParsed)
             {
-                var action = functions.Where(x => x.Function == s.Substring(0, s.Length).Trim().TrimStart('>', '*', '!')).FirstOrDefault();
-                if (action != null)
-                    result.Action = action;
-                return result;
+                attributesParsed = false;
+                if (remainingString.StartsWith("[C] ")) { cmd.Collapsed = true; remainingString = remainingString.Substring(4); attributesParsed = true; }
+                if (remainingString.StartsWith("[!E] ")) { cmd.IsExecutable = false; remainingString = remainingString.Substring(5); attributesParsed = true; }
+                if (remainingString.StartsWith("[!S] ")) { cmd.UseInActiveState = false; remainingString = remainingString.Substring(5); attributesParsed = true; }
             }
-            var act = functions.Where(x => x.Function == s.Substring(0, bracketIndex).Trim().TrimStart('>', '*', '!')).FirstOrDefault();
-            if (act == null)
-                return result;
-            else
-                result.Action = act;
 
-            int ident = 0;
-            for (int i = 0; i < s.Length; i++)
+            // 2. Парсинг имени функции и поиск Action
+            var openParenIndex = remainingString.IndexOf('(');
+            var closeParenIndex = remainingString.LastIndexOf(')');
+            if (openParenIndex == -1 || closeParenIndex == -1 || closeParenIndex < openParenIndex)
+                return null; // Некорректный формат
+
+            var functionName = remainingString.Substring(0, openParenIndex);
+            cmd.Action = allFunctions.FirstOrDefault(f => f.Function.Equals(functionName, StringComparison.OrdinalIgnoreCase));
+            if (cmd.Action == null)
+                return null; // Функция не найдена
+
+            // 3. Парсинг параметров
+            var paramsString = remainingString.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1);
+            List<string> parameters = new List<string>();
+            if (!string.IsNullOrEmpty(paramsString))
             {
-                bool brk = false;
-                switch (s[i])
+                parameters = Regex.Matches(paramsString, @"(""[^""\\]*(?:\\.[^""\\]*)*""|[^,]+)")
+                                  .Cast<Match>()
+                                  .Select(m => m.Value.Trim())
+                                  .ToList();
+            }
+
+            int currentParamIndex = 0;
+
+            // 4. Распределение параметров по свойствам согласно сигнатуре Action
+            if (cmd.Action.HasInputProperty && !cmd.NoInputAssigned)
+            {
+                if (currentParamIndex < parameters.Count)
                 {
-                    case '\t':
-                        ident += 8;
-                        break;
-                    case '>':
-                        result.Collapsed = true;
-                        break;
-                    case '!':
-                        result.IsExecutable = false;
-                        break;
-                    case '*':
-                        result.UseInActiveState = true;
-                        break;
-                    default:
-                        brk = true;
-                        break;
+                    var inputParam = Unescape(parameters[currentParamIndex]);
+                    // Если параметр - число без кавычек, считаем его Input, иначе - InputKey
+                    if (int.TryParse(inputParam, out int inputNum) && parameters[currentParamIndex].Trim() == inputParam)
+                    {
+                        cmd.Input = inputNum;
+                        cmd.InputKey = null;
+                    }
+                    else
+                    {
+                        cmd.InputKey = inputParam;
+                        // Можно установить Input в 0 или -1 как индикатор, что используется ключ
+                        cmd.Input = 0;
+                    }
+                    currentParamIndex++;
                 }
-                if (brk) break;
             }
-            result.Ident = new Thickness(ident, 0, 0, 0);
-            if (s.Length - bracketIndex - 2 > 0)
-                s = s.Substring(bracketIndex + 1, s.Length - bracketIndex - 2);
-            else
-                return result;
 
-            List<string> arguments = new List<string>();
-
-            var arg = "";
-            var br = 0;
-            var bc = 0;
-            var str = 0;
-            for (int i = 0; i < s.Length; i++)
+            if (cmd.Action.HasIntProperty)
             {
-                switch (s[i])
+                if (currentParamIndex < parameters.Count)
+                    cmd.Parameter = Unescape(parameters[currentParamIndex++]);
+            }
+
+            if (cmd.Action.HasStringProperty)
+            {
+                if (currentParamIndex < parameters.Count)
+                    cmd.StringParameter = Unescape(parameters[currentParamIndex++]);
+            }
+
+            if (cmd.Action.AdditionalCount > 0)
+            {
+                cmd.AdditionalParameters = new List<One<string>>();
+                for (int i = 0; i < cmd.Action.AdditionalCount; i++)
                 {
-                    case '\"':
-                        str++;
-                        break;
-                    case '(':
-                        br++;
-                        break;
-                    case ')':
-                        br--;
-                        break;
-                    case '[':
-                        bc++;
-                        break;
-                    case ']':
-                        bc--;
-                        break;
-                    case ',':
-                        if (str % 2 == 0)
-                        {
-                            arguments.Add(arg.Trim().Trim('"'));
-                            arg = "";
-                            continue;
-                        }
-                        break;
-                    default:
-                        break;
+                    if (currentParamIndex < parameters.Count)
+                        cmd.AdditionalParameters.Add(new One<string>() { A = Unescape(parameters[currentParamIndex++]) });
+                    else
+                        break; // Параметров в строке меньше, чем ожидает функция
                 }
-                arg += s[i];
             }
-            arguments.Add(arg.Trim().Trim('"'));
 
-            if (act.HasInputProperty)
-            {
-                result.InputKey = arguments[0];
-                arguments.RemoveAt(0);
-            }
-            if (act.HasIntProperty)
-            {
-                result.Parameter = arguments[0];
-                arguments.RemoveAt(0);
-            }
-            if (act.HasStringProperty)
-            {
-                result.StringParameter = arguments[0];
-                arguments.RemoveAt(0);
-            }
-            var parameter = 0;
+            while (cmd.AdditionalParameters.Count < 10)
+                cmd.AdditionalParameters.Add(new One<string>() { A = "" });
 
-            while (arguments.Count > 0)
+            return cmd;
+        }
+
+        private static string Escape(string s)
+        {
+            if (s == null) return "\"\"";
+            // Оборачиваем в кавычки, если содержит запятую, пробел или уже является строкой в кавычках
+            if (s.Contains(",") || s.Contains(" ") || s.StartsWith("\"") || s.Length == 0)
+                return "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+            return s; // Числа и простые строки можно не оборачивать
+        }
+
+        private static string Unescape(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            if (s.StartsWith("\"") && s.EndsWith("\""))
             {
-                result.AdditionalParameters[parameter++].A = arguments[0];
-                arguments.RemoveAt(0);
+                string inner = s.Substring(1, s.Length - 2);
+                return inner.Replace("\\\"", "\"").Replace("\\\\", "\\");
             }
-            return result;
+            return s; // Возвращаем как есть, если это неэкранированная строка (например, число)
         }
 
         public object Clone()

@@ -264,6 +264,7 @@
 		<Native>true</Native>
 		<Description>Wait some time in milliseconds.</Description>
 		<Function>Timer</Function>
+		<!--<Aliases>Timer</Aliases>-->
 		<HasInputProperty>false</HasInputProperty>
 		<HasIntProperty>true</HasIntProperty>
 		<HasStringProperty>false</HasStringProperty>
@@ -271,7 +272,7 @@
 		<InputDescription>N/A</InputDescription>
 		<StringDescription>N/A</StringDescription>
 	</vMixFunctionReference>
-
+	
 	<vMixFunctionReference>
 		<Native>true</Native>
 		<Description>Sync vMix state to UTC.</Description>
@@ -476,7 +477,7 @@
 		<FormatString>Function=AudioOff&amp;Input={0}</FormatString>
 		<ActiveStatePath>Inputs[{0}].Muted</ActiveStatePath>
 		<ActiveStateXPath>//inputs/input[@key='{0}']/@muted</ActiveStateXPath>
-		<ActiveStateValue>False</ActiveStateValue>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -528,7 +529,7 @@
 		<FormatString>Function=MasterAudioOff</FormatString>
 		<ActiveStatePath>Audio[Master].Muted</ActiveStatePath>
 		<ActiveStateXPath>//audio/master/@muted</ActiveStateXPath>
-		<ActiveStateValue>False</ActiveStateValue>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -567,7 +568,7 @@
 		<StringDescription>Bus</StringDescription>
 		<ActiveStatePath>Audio[Bus{2}].Muted</ActiveStatePath>
 		<ActiveStateXPath>//audio/bus{2}/@muted</ActiveStateXPath>
-		<ActiveStateValue>False</ActiveStateValue>
+		<ActiveStateValue>True</ActiveStateValue>
 		<StringValues>
 			<string>A</string>
 			<string>B</string>
@@ -582,7 +583,7 @@
 	<vMixFunctionReference>
 		<Description>Toggle Bus X Audio On</Description>
 		<Function>BusXAudioOn</Function>
-		<FormatString>Function=BusXAudioOn</FormatString>
+		<FormatString>Function=BusXAudioOn&amp;Value={2}</FormatString>
 		<StringDescription>Bus</StringDescription>
 		<ActiveStatePath>Audio[Bus{2}].Muted</ActiveStatePath>
 		<ActiveStateXPath>//audio/bus{2}/@muted</ActiveStateXPath>
@@ -704,6 +705,8 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@sendToMaster</ActiveStateXPath>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -720,6 +723,8 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@sendToMaster</ActiveStateXPath>
+		<ActiveStateValue>False</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -736,6 +741,8 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@sendToMaster</ActiveStateXPath>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -752,6 +759,8 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@solo</ActiveStateXPath>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -768,6 +777,8 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@solo</ActiveStateXPath>
+		<ActiveStateValue>False</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -784,17 +795,26 @@
 			<string>F</string>
 			<string>G</string>
 		</StringValues>
+		<ActiveStateXPath>//audio/bus{2}/@solo</ActiveStateXPath>
+		<ActiveStateValue>True</ActiveStateValue>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>SetBalance</Function>
 		<FormatString>Function=SetBalance&amp;Value={2}&amp;Input={0}</FormatString>
 		<StringDescription>Balance</StringDescription>
+		<ActiveStateXPath>//inputs/input[@key='{0}']/@balance</ActiveStateXPath>
+		<ActiveStateValue>{2}</ActiveStateValue>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>SetGain</Function>
 		<FormatString>Function=SetGain&amp;Value={1}&amp;Input={0}</FormatString>
-		<IntDescription>Gain</IntDescription>
+		<IntDescription>Gain (0-24)</IntDescription>
+		<ActiveStateXPath>//inputs/input[@key='{0}']/@gainDb</ActiveStateXPath>
+		<ActiveStateValue>{1}</ActiveStateValue>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>SetGainChannel1</Function>
 		<FormatString>Function=SetGainChannel1&amp;Value={1}&amp;Input={0}</FormatString>
@@ -805,10 +825,13 @@
 		<FormatString>Function=SetGainChannel2&amp;Value={1}&amp;Input={0}</FormatString>
 		<IntDescription>Gain</IntDescription>
 	</vMixFunctionReference>
+	
 	<vMixFunctionReference>
 		<Function>SetHeadphonesVolume</Function>
 		<FormatString>Function=SetHeadphonesVolume&amp;Value={1}</FormatString>
 		<IntDescription>Volume</IntDescription>
+		<!--<ActiveStateXPath>//audio/master/@headphonesVolume</ActiveStateXPath>
+		<ActiveStateValue>{1}</ActiveStateValue>-->
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -827,6 +850,8 @@
 			<string>BusG</string>
 		</StringValues>
 		<IntDescription>Volume</IntDescription>
+		<!--<ActiveStateXPath>//audio/{2}/@volume</ActiveStateXPath>
+		<ActiveStateValue>{1}</ActiveStateValue>-->
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -834,6 +859,8 @@
 		<Function>SetVolume</Function>
 		<FormatString>Function=SetVolume&amp;Input={0}&amp;Value={1}</FormatString>
 		<IntDescription>Volume</IntDescription>
+		<!--<ActiveStateXPath>//inputs/input[@key='{0}']/@volume</ActiveStateXPath>
+		<ActiveStateValue>{1}</ActiveStateValue>-->
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>
@@ -888,7 +915,7 @@
 		<FormatString>Function=SoloOff&amp;Input={0}</FormatString>
 		<ActiveStatePath>Inputs[{0}].Solo</ActiveStatePath>
 		<ActiveStateXPath>//inputs/input[@key='{0}']/@solo</ActiveStateXPath>
-		<ActiveStateValue>True</ActiveStateValue>
+		<ActiveStateValue>False</ActiveStateValue>
 	</vMixFunctionReference>
 
 	<!--Transitions-->

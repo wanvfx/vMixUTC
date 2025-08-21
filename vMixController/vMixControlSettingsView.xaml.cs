@@ -23,6 +23,12 @@ namespace vMixController
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+        static vMixWidgetSettingsView _instance;
+        public static vMixWidgetSettingsView Instance { get {
+                return _instance ?? (_instance = new vMixWidgetSettingsView());
+
+            } }
+
         /// <summary>
         /// Initializes a new instance of the vMixWidgetSettingsView class.
         /// </summary>

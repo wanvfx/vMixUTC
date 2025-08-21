@@ -126,6 +126,15 @@ namespace vMixController.Widgets.Button
                     return false;
                 }
 
+                //Обработка для случая возврата строк в числовом параметре
+                if (typeof(T) == typeof(int))
+                {
+                    if (!int.TryParse((string)rawResult, out var intResult))
+                    {
+                        result = ExpressionOrDefaultValue<T>(expressionString);
+                        return true;
+                    }
+                }
                 // Попытка универсального и безопасного преобразования типа.
                 // Convert.ChangeType хорошо работает с базовыми типами и Nullable<T>.
                 result = (T)Convert.ChangeType(rawResult, typeof(T), CultureInfo.InvariantCulture);

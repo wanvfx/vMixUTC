@@ -72,7 +72,7 @@
                             <GridViewColumn>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF068;"/>
+                                        <Button Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding RemovePathCommand, ElementName=Me}" CommandParameter="{Binding}" Content="&#xF2ED;"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

@@ -54,6 +54,34 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <DrawingBrush x:Key="BYTile" TileMode="Tile" 
+                          Viewport="0,0,64,64" ViewportUnits="Absolute">
+                <DrawingBrush.Drawing>
+
+                    <GeometryDrawing>
+
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,64,64" />
+                        </GeometryDrawing.Geometry>
+
+                        <GeometryDrawing.Brush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <!-- Резкие переходы создаются путем указания двух 
+                                     GradientStop в одной и той же точке (Offset) -->
+                                <GradientStop Color="Gray" Offset="0.0" />
+                                <GradientStop Color="Gray" Offset="0.25" />
+                                <GradientStop Color="Black"  Offset="0.25" />
+                                <GradientStop Color="Black"  Offset="0.5" />
+                                <GradientStop Color="Gray" Offset="0.5" />
+                                <GradientStop Color="Gray" Offset="0.75" />
+                                <GradientStop Color="Black"  Offset="0.75" />
+                                <GradientStop Color="Black"  Offset="1.0" />
+                            </LinearGradientBrush>
+                        </GeometryDrawing.Brush>
+                    </GeometryDrawing>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
         </ResourceDictionary>
     </Window.Resources>
     <Window.DataContext>
@@ -70,8 +98,8 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="8">
+        <ScrollViewer VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <VirtualizingStackPanel Margin="8">
                 <Grid Margin="{StaticResource TopBottomStdMargin}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -157,9 +185,29 @@
                             <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{x:Static this:Help.Hotkeys_Default}" Margin="{StaticResource LeftRightStdMargin}"/>
                             <Border VerticalAlignment="Center"  Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
-                        <Grid>
-                            <StackPanel>
-                                <ListView HorizontalContentAlignment="Stretch" ItemsSource="{Binding Widget.Hotkey, Converter={Converters:ObservableCollectionCopyConverter}, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Visibility="{Binding IsHotkeysVisible, Converter={wpfc:BoolToVisibilityConverter}}">
+                        <Grid Background="{StaticResource BYTile}">
+                            <Border x:Name="HotkeysPlaceholder">
+                                <ListView VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" HorizontalContentAlignment="Stretch" ItemsSource="{Binding Widget.Hotkey, Converter={Converters:ObservableCollectionCopyConverter}, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Visibility="{Binding IsHotkeysVisible, Converter={wpfc:BoolToVisibilityConverter}}">
+                                    <ListView.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard Storyboard.TargetName="HotkeysPlaceholder" Storyboard.TargetProperty="Visibility">
+                                                    <ObjectAnimationUsingKeyFrames>
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <Visibility>Hidden</Visibility>
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.01">
+                                                            <DiscreteObjectKeyFrame.Value>
+                                                                <Visibility>Visible</Visibility>
+                                                            </DiscreteObjectKeyFrame.Value>
+                                                        </DiscreteObjectKeyFrame>
+                                                    </ObjectAnimationUsingKeyFrames>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </ListView.Triggers>
                                     <i:Interaction.Behaviors>
                                         <e:IgnoreMouseWheelBehavior/>
                                     </i:Interaction.Behaviors>
@@ -219,27 +267,21 @@
                                             <GridViewColumn Width="20" Header="Alt" ToolTipService.ToolTip="Alt">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
-                                                        </Grid>
+                                                        <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Alt, Mode=TwoWay}" Margin="-5,0" ToolTip="Alt"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
                                             <GridViewColumn Width="24" Header="Ctrl" ToolTipService.ToolTip="Control">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
-                                                        </Grid>
+                                                        <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Ctrl, Mode=TwoWay}" Margin="-5,0" ToolTip="Ctrl"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
                                             <GridViewColumn Width="32" Header="Shift" ToolTipService.ToolTip="Shift">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
-                                                        </Grid>
+                                                        <CheckBox HorizontalAlignment="Center" IsEnabled="{Binding Active}" IsChecked="{Binding Shift, Mode=TwoWay}" Margin="-5,0" ToolTip="Shift"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -253,7 +295,13 @@
                                             <GridViewColumn Header="Key" Width="80">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0"/>
+                                                        <ComboBox IsEnabled="{Binding Active}" SelectedItem="{Binding Key, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource KeyValues}}" Margin="-5,0">
+                                                            <ComboBox.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <VirtualizingStackPanel/>
+                                                                </ItemsPanelTemplate>
+                                                            </ComboBox.ItemsPanel>
+                                                        </ComboBox>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -273,25 +321,60 @@
                                             </GridViewColumn>
                                         </GridView>
                                     </ListView.View>
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
                                 </ListView>
-                            </StackPanel>
+                            </Border>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
                 <pctrl:LabelControl Foreground="Orange" Title="Individual Properties" Visibility="{Binding Content, ElementName=WidgetProperties, Converter={Converters:ContentToVisibilityConverter}, Mode=OneWay}"></pctrl:LabelControl>
-                <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
-                    <ContentPresenter.ContentTemplateSelector>
-                        <ctrl:TypeTemplateSelector Suffix="PropEditor"/>
-                    </ContentPresenter.ContentTemplateSelector>
-                </ContentPresenter>
-                <ItemsControl VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VerticalContentAlignment="Stretch" ItemsSource="{Binding WidgetPropertiesControls}">
+                <Border x:Name="IndividualPropertiesLoader" Background="{StaticResource BYTile}" Margin="-2" Padding="2">
+                    <ContentPresenter x:Name="WidgetProperties" Content="{Binding Widget, UpdateSourceTrigger=PropertyChanged}">
+                        <ContentPresenter.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames>
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Hidden</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.01">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Visible</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="IndividualPropertiesLoader">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{StaticResource BYTile}"/>
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.01">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <SolidColorBrush>Transparent</SolidColorBrush>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ContentPresenter.Triggers>
+                        <ContentPresenter.ContentTemplateSelector>
+                            <ctrl:TypeTemplateSelector Suffix="PropEditor"/>
+                        </ContentPresenter.ContentTemplateSelector>
+                    </ContentPresenter>
+                </Border>
+                <!--<ItemsControl VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VerticalContentAlignment="Stretch" ItemsSource="{Binding WidgetPropertiesControls}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </StackPanel>
+                </ItemsControl>-->
+            </VirtualizingStackPanel>
         </ScrollViewer>
         <StackPanel Margin="2" HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="1">
             <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="Save Template" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}" Click="SaveTemplateClick"/>

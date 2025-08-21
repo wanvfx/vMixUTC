@@ -254,6 +254,14 @@ namespace vMixController.Classes
                 _logger.Info("Configuring API.");
             }
 
+            //ReBind variables to viewers
+            foreach (var item in _controls.OfType<vMixControlVariableViewer>())
+            {
+                string temp = item.Variable;
+                item.Variable = null;
+                item.Variable = temp;
+            }
+
             //renumber z-index for old controllers
             var zeroIndexNonRegion = _controls.Where(x => !(x is vMixControlRegion) && x.ZIndex == 0).Count();
             var indexRegion = _controls.Where(x => (x is vMixControlRegion) && x.ZIndex == -1).Count();
@@ -280,7 +288,7 @@ namespace vMixController.Classes
                     SaveController(stream, _controls, _windowSettings);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

@@ -8,6 +8,7 @@ namespace vMixController.Classes
 {
     public static class NativeFunctions
     {
+        public const string NONE = "None";
         public const string NEXTPAGE = "NextPage";
         public const string PREVPAGE = "PrevPage";
         public const string SETPAGE = "SetPage";
@@ -22,6 +23,7 @@ namespace vMixController.Classes
         public const string SETVARIABLE = "SetVariable";
         public const string SETGLOBALVARIABLE = "SetGlobalVariable";
         public const string TIMER = "Timer";
+        public const string DELAY = "Delay";
         public const string UPDATEINTERNALBUTTONSTATE = "UpdateInternalButtonState";
         public const string SYNCINTERNALBUTTONSTATE = "SyncInternalButtonState";
         public const string UPDATESTATE = "UpdateState";

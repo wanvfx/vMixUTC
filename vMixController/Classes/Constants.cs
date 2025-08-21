@@ -11,7 +11,7 @@ namespace vMixController.Classes
         public const string BUTTON_STYLE_MOMENTARY = "Momentary";
         public const string BUTTON_STYLE_TOGGLE = "Toggle";
         public const string BUTTON_STYLE_PRESS = "Press";
-        public static string[] ButtonStyle { get; } = new string[] { BUTTON_STYLE_MOMENTARY, BUTTON_STYLE_TOGGLE };
+        public static string[] ButtonStyle { get; } = new string[] { BUTTON_STYLE_MOMENTARY, BUTTON_STYLE_TOGGLE, BUTTON_STYLE_PRESS };
 
         public const string BUTTON_IMAGE_TYPE_DEFAULT = "Default";
         public const string BUTTON_IMAGE_TYPE_DEFAULTPRESSED = "Default+Pressed";

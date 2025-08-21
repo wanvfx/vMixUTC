@@ -27,7 +27,7 @@
         Height="{Binding WindowSettings.Height, Mode=TwoWay}"
         WindowState="{Binding WindowSettings.State, Mode=TwoWay}"
         Title="{Binding Title}"
-        ResizeMode="CanResizeWithGrip" d:DesignWidth="1016.552"
+        ResizeMode="CanResizeWithGrip" d:DesignWidth="1016.552" Loaded="Window_Loaded"
         >
     <Window.Resources>
         <ResourceDictionary>
@@ -698,7 +698,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </TextBox>
-                                                    <Button ToolTip="Remove Variable" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF068;" Grid.Column="3"/>
+                                                    <Button ToolTip="Remove Variable" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF2ED;" Grid.Column="3"/>
                                                 </Grid>
 
                                             </DataTemplate>

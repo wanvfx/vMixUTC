@@ -31,38 +31,30 @@ namespace vMixController.Widgets
     [Serializable]
     public class vMixControlButton : vMixControl
     {
-        //private ConcurrentDictionary<string, string> _cachedVariables;
-        //private readonly object _cacheLock = new object();
-
         public override bool IsResizeableVertical => true;
 
         static XmlDocument _latestDocument;
 
         Regex _isExpression = new Regex(@"([\+|\-])\=(\d+\.?\d*)");
-        //[NonSerialized]
-        //static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         const string VARIABLEPREFIX = "_var";
         const string parameterName = "P";
         object parameterValue = null;
-        static DateTime _lastShadowUpdate = DateTime.Now;
         Stack<bool?> _conditions = new Stack<bool?>();
         [NonSerialized]
         CultureInfo _culture;
-        /*[NonSerialized]
-        private BackgroundWorker _activeStateUpdateWorker;*/
         [NonSerialized]
-        private BackgroundWorker _executionWorker;
+        private CancellationTokenSource _executionCts;
         [NonSerialized]
-        Dictionary<string, string> _trackedValues = new Dictionary<string, string>();
+        private Task _currentExecutionTask;
+
 
         [NonSerialized]
-        bool _stopThread = false;
+        Dictionary<string, string> _trackedValues = new Dictionary<string, string>();
 
         [NonSerialized]
         DateTime _previousQuery = DateTime.Now;
         [NonSerialized]
         static DateTime _previousInternalStateUpdating = DateTime.Now;
-        static WebClient _webClient = new vMixWebClient();
 
         static List<vMixControlButton> _instances = new List<vMixControlButton>();
 
@@ -503,29 +495,64 @@ namespace vMixController.Widgets
             get
             {
                 return _executeScriptCommand
-                    ?? (_executeScriptCommand = new RelayCommand(
-                    () =>
+                    ?? (_executeScriptCommand = new RelayCommand(async () => // Make it async
                     {
                         if (Style == Constants.BUTTON_STYLE_MOMENTARY)
-                            ExecuteScript();
+                            Enabled = false; // Enabled handles Dispatcher.Invoke
 
+                        // Cancel any existing execution
+                        if (_currentExecutionTask != null && !_currentExecutionTask.IsCompleted)
+                        {
+                            _executionCts?.Cancel();
+                            try
+                            {
+                                await _currentExecutionTask; // Wait for it to finish cancelling
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                // Expected exception
+                            }
+                            catch (Exception)
+                            {
+                                // Assuming _logger is available. If not, replace with Console.WriteLine or similar.
+                                //_logger.Error(ex, "Error while waiting for previous script to cancel.");
+                            }
+                        }
+
+                        _executionCts = new CancellationTokenSource(); // Create a new CTS for the new execution
+                        _currentExecutionTask = ExecuteScriptAsync(State, _executionCts.Token); // Start the new task
                     }));
             }
         }
 
-        private void ExecuteScript()
+        private async Task ExecuteScriptAsync(State state, CancellationToken cancellationToken)
         {
-            if (Style == Constants.BUTTON_STYLE_MOMENTARY)
-                Enabled = false;
-            if (_executionWorker != null && _executionWorker.IsBusy)
-            {
-                _stopThread = true;
-                _executionWorker.CancelAsync();
-            }
-            _stopThread = false;
+            ClearLog();
+            BlinkBorderColor = Colors.Lime;
 
-            if (!_executionWorker.IsBusy)
-                _executionWorker.RunWorkerAsync(State);
+            try
+            {
+                await Task.Run(() => ExecutionThread(state, cancellationToken), cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                AddLog("Script execution cancelled.");
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Script execution error: {ex.Message}");
+            }
+            finally
+            {
+                BlinkBorderColor = BorderColor; // BlinkBorderColor handles Dispatcher.Invoke
+                Enabled = true; // Enabled handles Dispatcher.Invoke
+                _trackedValues.Clear();
+                _conditions.Clear();
+                _previousQuery = _previousQuery.AddMilliseconds(-ShadowUpdatePollTime.TotalMilliseconds * 2);
+
+                _executionCts?.Dispose();
+                _executionCts = null;
+            }
         }
 
         [NonSerialized]
@@ -548,12 +575,12 @@ namespace vMixController.Widgets
                         {
                             case Constants.BUTTON_STYLE_PRESS:
                                 IsPushed = true;
-                                ExecuteScript();
+                                ExecuteScriptCommand.Execute(null);
                                 break;
                             case Constants.BUTTON_STYLE_MOMENTARY: if (!IsStateDependent) IsPushed = true; break;
                             case Constants.BUTTON_STYLE_TOGGLE:
                                 IsPushed = !IsPushed;
-                                ExecuteScript();
+                                ExecuteScriptCommand.Execute(null);
                                 break;
                         }
                         //p.Handled = true;
@@ -581,11 +608,11 @@ namespace vMixController.Widgets
                         {
                             case Constants.BUTTON_STYLE_PRESS:
                                 IsPushed = false;
-                                ExecuteScript();
+                                ExecuteScriptCommand.Execute(null);
                                 break;
                             case Constants.BUTTON_STYLE_MOMENTARY:
                                 if (!IsStateDependent) IsPushed = false;
-                                ExecuteScript();
+                                ExecuteScriptCommand.Execute(null);
                                 break;
                             case Constants.BUTTON_STYLE_TOGGLE: break;
                         }
@@ -610,9 +637,7 @@ namespace vMixController.Widgets
                     ?? (_stopScriptCommand = new RelayCommand(
                     () =>
                     {
-                        _stopThread = true;
-                        if (_executionWorker != null && _executionWorker.IsBusy)
-                            _executionWorker.CancelAsync();
+                        _executionCts?.Cancel();
 
                         BlinkBorderColor = BorderColor;
 
@@ -625,47 +650,18 @@ namespace vMixController.Widgets
 
         public vMixControlButton()
         {
-
-            _executionWorker = new BackgroundWorker();
-            _executionWorker.DoWork += ExecutionWorker_DoWork;
-            _executionWorker.WorkerSupportsCancellation = true;
-
             _enabled = true;
             _culture = new CultureInfo(CultureInfo.InvariantCulture.Name);
             _culture.NumberFormat.NumberDecimalDigits = 5;
             _culture.NumberFormat.CurrencyDecimalDigits = 5;
 
             XmlDocumentMessenger.OnDocumentDownloaded += OnXmlDocumentDownloaded;
-            /*Messenger.Default.Register<UpdateGlobalVariable>(this, (t) =>
-            {
-                lock (_cacheLock)
-                {
-                    _cachedVariables = _cachedVariables ?? new ConcurrentDictionary<string, string>();
-                    switch (t.State)
-                    {
-                        case VariableState.Add:
-                        case VariableState.Update:
-                            _cachedVariables.AddOrUpdate(t.Name, t.Value, (k, v) => t.Value);
-                            break;
-                        case VariableState.Delete:
-                            _cachedVariables.TryRemove(t.Name, out _);
-                            break;
-                        case VariableState.Clear:
-                            _cachedVariables.Clear();
-                            break;
-                    }
-                }
-            });
-            Messenger.Default.Send(new FillGlobalVariables() { Caller = this });*/
         }
 
         private void PopulateVariables(NCalc.Expression exp)
         {
             foreach (var item in _variables)
-            {
-                //var x = Dispatcher.Invoke(() => new { item.A, item.B });
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
-            }
 
             Dispatcher.Invoke(() =>
             {
@@ -791,11 +787,6 @@ namespace vMixController.Widgets
             }
         }
 
-        private void ExecutionWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            ExecutionThread((State)e.Argument);
-        }
-
         public override Hotkey[] GetHotkeys()
         {
             return new Classes.Hotkey[] {
@@ -847,7 +838,7 @@ namespace vMixController.Widgets
             return _variables.ContainsKey(number) ? number : -1;
         }
 
-        private void ExecutionThread(object _state)
+        private void ExecutionThread(object _state, CancellationToken cancellationToken)
         {
             vMixAPI.State state = (vMixAPI.State)_state;
             Stack<bool?> _conditions = new Stack<bool?>();
@@ -857,14 +848,10 @@ namespace vMixController.Widgets
             BlinkBorderColor = Colors.Lime;
             for (int _pointer = 0; _pointer < _commands.Count; _pointer++)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 int parameter = 0;
                 string strparameter = "";
                 bool? conditionResult = null;
-                if (_stopThread)
-                {
-                    BlinkBorderColor = BorderColor;
-                    return;
-                }
                 var cmd = _commands[_pointer];
 
                 if (!cmd.IsExecutable) continue;
@@ -896,27 +883,22 @@ namespace vMixController.Widgets
                                 break;
                             case NativeFunctions.API:
 
-                                //WebClient _webClient = new vMixWebClient();
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uri;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uri))
                                 {
                                     vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter);
-                                    //_webClient.DownloadStringAsync(uri, null);
                                     AddLog("{1}) API {0}", strparameter, _pointer + 1);
                                 }
                                 else
                                     AddLog("{1}) API WRONG URL = {0}", strparameter, _pointer + 1);
                                 break;
                             case NativeFunctions.API_POST:
-
-                                //WebClient _webClient = new vMixWebClient();
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uripost;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uripost))
                                 {
                                     vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter, post: true);
-                                    //_webClient.DownloadStringAsync(uri, null);
                                     AddLog("{1}) API POST {0}", strparameter, _pointer + 1);
                                 }
                                 else
@@ -928,11 +910,6 @@ namespace vMixController.Widgets
                                 var bs = DateTime.Now;
                                 while (parameter > 0)
                                 {
-                                    if (_stopThread)
-                                    {
-                                        BlinkBorderColor = BorderColor;
-                                        return;
-                                    }
                                     Thread.Sleep(parameter > 10 ? 10 : parameter);
                                     parameter -= parameter > 10 ? 10 : parameter;
                                 }
@@ -1066,7 +1043,6 @@ namespace vMixController.Widgets
                             }
                             AddLog("{2}) SET {0} TO {1}", path, value, _pointer + 1);
 
-
                             //translate (+/-=number) into expression
                             if (value is string strvalue && _isExpression.IsMatch(strvalue))
                             {
@@ -1081,8 +1057,6 @@ namespace vMixController.Widgets
                             while (GetValueByPath(state, path) != value)
                             {
                                 Thread.Sleep(50);
-                                if (_stopThread)
-                                    return;
                                 if (++flag > 10)
                                     break;
                             }
@@ -1093,9 +1067,6 @@ namespace vMixController.Widgets
                         AddLog("{0}) {1} IS NOT EXECUTED", _pointer + 1, cmd.Action.Function);
             }
             _conditions.Clear();
-            BlinkBorderColor = BorderColor;
-            Enabled = true;
-            _previousQuery = _previousQuery.AddMilliseconds(-ShadowUpdatePollTime.TotalMilliseconds * 2);
         }
 
         private object CalculateObjectParameter(vMixControlButtonCommand cmd)
@@ -1121,11 +1092,11 @@ namespace vMixController.Widgets
                     break;
                 case 3:
                     IsPushed = true;
-                    ExecuteScript();
+                    ExecuteScriptCommand.Execute(null);
                     break;
                 case 4:
                     IsPushed = false;
-                    ExecuteScript();
+                    ExecuteScriptCommand.Execute(null);
                     break;
             }
         }
@@ -1181,19 +1152,22 @@ namespace vMixController.Widgets
             if (_disposed) return;
             Messenger.Default.Unregister(this);
             XmlDocumentMessenger.OnDocumentDownloaded -= OnXmlDocumentDownloaded;
-            _executionWorker.DoWork -= ExecutionWorker_DoWork;
             Messenger.Default.Unregister(this);
             if (managed)
             {
-                _stopThread = true;
+                // Request cancellation and dispose CancellationTokenSource
+                _executionCts?.Cancel();
+                _executionCts?.Dispose();
+                _executionCts = null;
 
-                if (_executionWorker != null && _executionWorker.IsBusy)
+                // Dispose the task if it's still running (though cancellation should handle it)
+                if (_currentExecutionTask != null && !_currentExecutionTask.IsCompleted)
                 {
-                    _executionWorker.CancelAsync();
-                    _executionWorker.Dispose();
+                    try { _currentExecutionTask.Wait(100); } // Give it a little time to finish
+                    catch (OperationCanceledException) { /* Expected */ }
+                    catch (Exception) { /* Log other exceptions */ /*_logger.Error(ex, "Error while disposing execution task.");*/ }
                 }
-
-                _executionWorker = null;
+                _currentExecutionTask = null;
 
                 base.Dispose(managed);
                 GC.SuppressFinalize(this);
