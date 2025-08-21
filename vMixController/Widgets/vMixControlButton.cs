@@ -532,7 +532,8 @@ namespace vMixController.Widgets
 
             try
             {
-                await Task.Run(() => ExecutionThread(state, cancellationToken), cancellationToken);
+                //await Task.Run(() => ExecutionThread((object)state, cancellationToken), cancellationToken);
+                await ExecutionThread((object)state, cancellationToken);
             }
             catch (OperationCanceledException)
             {
@@ -838,7 +839,7 @@ namespace vMixController.Widgets
             return _variables.ContainsKey(number) ? number : -1;
         }
 
-        private void ExecutionThread(object _state, CancellationToken cancellationToken)
+        private async Task ExecutionThread(object _state, CancellationToken cancellationToken)
         {
             vMixAPI.State state = (vMixAPI.State)_state;
             Stack<bool?> _conditions = new Stack<bool?>();
@@ -887,7 +888,7 @@ namespace vMixController.Widgets
                                 Uri uri;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uri))
                                 {
-                                    vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter);
+                                    await vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter);
                                     AddLog("{1}) API {0}", strparameter, _pointer + 1);
                                 }
                                 else
@@ -898,7 +899,7 @@ namespace vMixController.Widgets
                                 Uri uripost;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uripost))
                                 {
-                                    vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter, post: true);
+                                    await vMixAPI.APIRequestManagerV2.GetApiResponseAsync(strparameter, post: true);
                                     AddLog("{1}) API POST {0}", strparameter, _pointer + 1);
                                 }
                                 else
@@ -908,11 +909,7 @@ namespace vMixController.Widgets
                                 vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
                                 AddLog("{2}) TIMER {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
                                 var bs = DateTime.Now;
-                                while (parameter > 0)
-                                {
-                                    Thread.Sleep(parameter > 10 ? 10 : parameter);
-                                    parameter -= parameter > 10 ? 10 : parameter;
-                                }
+                                await Task.Delay(parameter);
                                 AddLog("{1}) TIMER СOMPLETED IN {0}ms", (DateTime.Now - bs).TotalMilliseconds, _pointer + 1);
                                 break;
                             case NativeFunctions.UPDATESTATE:
