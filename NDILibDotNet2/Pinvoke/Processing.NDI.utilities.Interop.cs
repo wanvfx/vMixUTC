@@ -139,7 +139,15 @@ namespace NewTek
 				 UnsafeNativeMethods.util_audio_from_interleaved_16s_v2_32(ref p_src, ref p_dst);
 		}
 
-		public static void util_audio_to_interleaved_32f_v2(ref audio_frame_v2_t p_src, ref audio_frame_interleaved_32f_t p_dst)
+        public static void util_audio_to_interleaved_32f_v3(ref audio_frame_v3_t p_src, ref audio_frame_interleaved_32f_t p_dst)
+        {
+            if (IntPtr.Size == 8)
+                UnsafeNativeMethods.util_audio_to_interleaved_32f_v3_64(ref p_src, ref p_dst);
+            else
+                UnsafeNativeMethods.util_audio_to_interleaved_32f_v3_32(ref p_src, ref p_dst);
+        }
+
+        public static void util_audio_to_interleaved_32f_v2(ref audio_frame_v2_t p_src, ref audio_frame_interleaved_32f_t p_dst)
 		{
 			if (IntPtr.Size == 8)
 				 UnsafeNativeMethods.util_audio_to_interleaved_32f_v2_64(ref p_src, ref p_dst);
@@ -232,8 +240,14 @@ namespace NewTek
 			[DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_util_audio_to_interleaved_32f_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void util_audio_to_interleaved_32f_v2_32(ref audio_frame_v2_t p_src, ref audio_frame_interleaved_32f_t p_dst);
 
-			// util_audio_from_interleaved_32f_v2 
-			[DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_util_audio_from_interleaved_32f_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+            // util_audio_to_interleaved_32f_v3 
+            [DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_util_audio_to_interleaved_32f_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+            internal static extern void util_audio_to_interleaved_32f_v3_64(ref audio_frame_v3_t p_src, ref audio_frame_interleaved_32f_t p_dst);
+            [DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_util_audio_to_interleaved_32f_v3", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
+            internal static extern void util_audio_to_interleaved_32f_v3_32(ref audio_frame_v3_t p_src, ref audio_frame_interleaved_32f_t p_dst);
+
+            // util_audio_from_interleaved_32f_v2 
+            [DllImport("Processing.NDI.Lib.x64.dll", EntryPoint = "NDIlib_util_audio_from_interleaved_32f_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void util_audio_from_interleaved_32f_v2_64(ref audio_frame_interleaved_32f_t p_src, ref audio_frame_v2_t p_dst);
 			[DllImport("Processing.NDI.Lib.x86.dll", EntryPoint = "NDIlib_util_audio_from_interleaved_32f_v2", ExactSpelling = true, CallingConvention = CallingConvention.Cdecl)]
 			internal static extern void util_audio_from_interleaved_32f_v2_32(ref audio_frame_interleaved_32f_t p_src, ref audio_frame_v2_t p_dst);

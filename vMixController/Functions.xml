@@ -831,8 +831,6 @@
 		<Function>SetHeadphonesVolume</Function>
 		<FormatString>Function=SetHeadphonesVolume&amp;Value={1}</FormatString>
 		<IntDescription>Volume</IntDescription>
-		<!--<ActiveStateXPath>//audio/master/@headphonesVolume</ActiveStateXPath>
-		<ActiveStateValue>{1}</ActiveStateValue>-->
 	</vMixFunctionReference>
 
 	<vMixFunctionReference>

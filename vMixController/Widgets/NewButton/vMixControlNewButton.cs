@@ -2,34 +2,35 @@
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using System;
-using System.Data;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
-using vMixController.ViewModel;
-using System.Globalization;
-using System.ComponentModel;
-using System.Windows.Media;
-using System.Net;
-using System.Diagnostics;
-using System.Windows.Input;
-using System.Text.RegularExpressions;
-using System.Xml;
 using vMixController.Messages;
+using vMixController.ViewModel;
 using vMixController.Widgets.Button;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+using vMixController.Widgets.NewButton;
 
 namespace vMixController.Widgets
 {
 
     [Serializable]
-    public class vMixControlButton : vMixControl
+    public class vMixControlNewButton : vMixControl
     {
         public override bool IsResizeableVertical => true;
 
@@ -84,6 +85,31 @@ namespace vMixController.Widgets
             }
         }
 
+        private bool _potentialLoopWarning = false;
+        /// <summary>
+        /// Sets and gets the HasScriptErrors property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        [XmlIgnore]
+        public bool PotentialLoopWarning
+        {
+            get
+            {
+                return _potentialLoopWarning;
+            }
+
+            set
+            {
+                if (_potentialLoopWarning == value)
+                {
+                    return;
+                }
+
+                _potentialLoopWarning = value;
+                RaisePropertyChanged(nameof(PotentialLoopWarning));
+            }
+        }
+
         [XmlIgnore]
         public override State State
         {
@@ -125,7 +151,7 @@ namespace vMixController.Widgets
 
         private void AddLog(string s, params object[] p)
         {
-            Log += "\r\n" + string.Format("[{0}]", DateTime.Now.ToLongTimeString()) + string.Format(s, p);
+            Log += "\r\n" + string.Format(s, p);
         }
 
         private void ClearLog()
@@ -169,13 +195,13 @@ namespace vMixController.Widgets
             }
         }
 
-        private ObservableCollection<vMixControlButtonCommand> _commands = new ObservableCollection<vMixControlButtonCommand>();
+        private ObservableCollection<vMixControlNewButtonCommand> _commands = new ObservableCollection<vMixControlNewButtonCommand>();
 
         /// <summary>
         /// Sets and gets the Actions property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public ObservableCollection<vMixControlButtonCommand> Commands
+        public ObservableCollection<vMixControlNewButtonCommand> Commands
         {
             get
             {
@@ -528,9 +554,11 @@ namespace vMixController.Widgets
         private async Task ExecuteScriptAsync(State state, CancellationToken cancellationToken)
         {
             ClearLog();
+            BlinkBorderColor = Colors.Lime;
+
             try
             {
-                BlinkBorderColor = Colors.Lime;
+                //await Task.Run(() => ExecutionThread((object)state, cancellationToken), cancellationToken);
                 await ExecutionThread((object)state, cancellationToken);
             }
             catch (OperationCanceledException)
@@ -647,7 +675,7 @@ namespace vMixController.Widgets
             }
         }
 
-        public vMixControlButton()
+        public vMixControlNewButton()
         {
             _enabled = true;
             _culture = new CultureInfo(CultureInfo.InvariantCulture.Name);
@@ -797,38 +825,13 @@ namespace vMixController.Widgets
             };
         }
 
-        private bool TestCondition(vMixControlButtonCommand cmd)
+        private bool TestCondition(vMixControlNewButtonCommand cmd)
         {
-            if (cmd.AdditionalParameters == null || cmd.AdditionalParameters.Count == 0)
-                return false;
-
-            var part1 = string.Format(cmd.AdditionalParameters[1].A, cmd.InputKey, cmd.AdditionalParameters[0].A)?.ToString() ?? "";
-            var part2 = string.Format(cmd.AdditionalParameters[3].A, cmd.InputKey, cmd.AdditionalParameters[0].A)?.ToString() ?? "";
-            Thread.CurrentThread.CurrentCulture = _culture;
-            Thread.CurrentThread.CurrentUICulture = _culture;
-
-            vMixControlButtonHelper.CalculateExpression<object>(part1, PopulateVariables, ExpressionEvaluateFunction, out object expr1);
-            vMixControlButtonHelper.CalculateExpression<object>(part2, PopulateVariables, ExpressionEvaluateFunction, out object expr2);
-
-            //put expressions into variables for comparing
-            var idx1 = GetVariableIndex(65534);
-            var idx2 = GetVariableIndex(65535);
-
-            if (idx1 < 0 || idx2 < 0)
-            {
-                _variables.AddOrUpdate(65534, expr1, (k, v) => expr1);
-                _variables.AddOrUpdate(65535, expr2, (k, v) => expr2);
-            }
-            else
-            {
-                _variables.AddOrUpdate(idx1, expr1, (k, v) => expr1);
-                _variables.AddOrUpdate(idx2, expr2, (k, v) => expr2);
-            }
-
-            string expression = string.Format("{0}{1}{2}", "_var65534", cmd.AdditionalParameters[2].A, "_var65535");
-            AddLog("CONDITION CHECK {0}{1}{2}", expr1, cmd.AdditionalParameters[2].A, expr2);
+            string expression = cmd.Value;
+            AddLog("CONDITION CHECK {0}", expression);
             bool result = false;
-            vMixControlButtonHelper.CalculateExpression<bool>(expression, PopulateVariables, ExpressionEvaluateFunction, out result);
+            if (vMixControlButtonHelper.CalculateExpression<bool>(expression, PopulateVariables, ExpressionEvaluateFunction, out result))
+                return false;
             return result;
         }
 
@@ -841,10 +844,9 @@ namespace vMixController.Widgets
         {
             vMixAPI.State state = (vMixAPI.State)_state;
             Stack<bool?> _conditions = new Stack<bool?>();
-            int _waitBeforeUpdate = -1;
             int _jumpCount = 0;
             ClearLog();
-            DateTime _timerStartedAt = DateTime.Now;
+            BlinkBorderColor = Colors.Lime;
             for (int _pointer = 0; _pointer < _commands.Count; _pointer++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -859,28 +861,29 @@ namespace vMixController.Widgets
                 if (_conditions.Count > 0)
                     cond = _conditions.Peek();
                 if ((cond.HasValue && cond.Value) ||
-                    (cmd.Action.Function == NativeFunctions.CONDITIONEND ||
-                     cmd.Action.Function == NativeFunctions.CONDITION ||
-                     cmd.Action.Function == NativeFunctions.HASVARIABLE ||
-                     cmd.Action.Function == NativeFunctions.ISPRESSED ||
-                     cmd.Action.Function == NativeFunctions.ELSE))
+                    (cmd.Action.Function == NewNativeFunctions.IF ||
+                     cmd.Action.Function == NewNativeFunctions.ENDIF ||
+                     cmd.Action.Function == NewNativeFunctions.HASVARIABLE ||
+                     cmd.Action.Function == NewNativeFunctions.ISPRESSED ||
+                     cmd.Action.Function == NewNativeFunctions.ELSE))
                     if (cmd.Action.Native)
                     {
                         switch (cmd.Action.Function)
                         {
-                            case NativeFunctions.NEXTPAGE:
+                            case NewNativeFunctions.NEXTPAGE:
                                 Messenger.Default.Send(new Pair<string, bool>("PAGE", true));
                                 break;
-                            case NativeFunctions.PREVPAGE:
+                            case NewNativeFunctions.PREVPAGE:
                                 Messenger.Default.Send(new Pair<string, bool>("PAGE", false));
                                 break;
-                            case NativeFunctions.SETPAGE:
-                                Messenger.Default.Send(new Pair<string, int>("PAGE", int.Parse(cmd.Parameter)));
+                            case NewNativeFunctions.SETPAGE:
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                                Messenger.Default.Send(new Pair<string, int>("PAGE", parameter));
                                 break;
-                            case NativeFunctions.WIN:
-                                Process.Start(cmd.StringParameter);
+                            case NewNativeFunctions.WIN:
+                                Process.Start(CalculateObjectParameter(cmd).ToString());
                                 break;
-                            case NativeFunctions.API:
+                            case NewNativeFunctions.API:
 
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uri;
@@ -892,7 +895,7 @@ namespace vMixController.Widgets
                                 else
                                     AddLog("{1}) API WRONG URL = {0}", strparameter, _pointer + 1);
                                 break;
-                            case NativeFunctions.API_POST:
+                            case NewNativeFunctions.API_POST:
                                 strparameter = string.Format("http://{0}", CalculateObjectParameter(cmd).ToString());
                                 Uri uripost;
                                 if (Uri.TryCreate(strparameter, UriKind.Absolute, out uripost))
@@ -903,91 +906,91 @@ namespace vMixController.Widgets
                                 else
                                     AddLog("{1}) API POST WRONG URL = {0}", strparameter, _pointer + 1);
                                 break;
-                            case NativeFunctions.TIMER:
-                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
-                                AddLog("{2}) TIMER {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
-                                _timerStartedAt = DateTime.Now;
+                            case NewNativeFunctions.DELAY:
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                                AddLog("{2}) DELAY {0} [{1}]", cmd.Value, parameter, _pointer + 1);
+                                var bs = DateTime.Now;
                                 await Task.Delay(parameter, cancellationToken);
-                                AddLog("{1}) TIMER СOMPLETED IN {0}ms", (DateTime.Now - _timerStartedAt).TotalMilliseconds, _pointer);
+                                AddLog("{1}) DELAY СOMPLETED IN {0}ms", (DateTime.Now - bs).TotalMilliseconds, _pointer + 1);
                                 break;
-                            case NativeFunctions.UPDATESTATE:
-                            case NativeFunctions.SYNC:
+                            case NewNativeFunctions.UPDATESTATE:
+                            case NewNativeFunctions.SYNC:
                                 AddLog("{0}) STATE UPDATING", _pointer + 1);
-                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true })));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true }));
                                 break;
-                            case NativeFunctions.UPDATEINTERNALBUTTONSTATE:
-                            case NativeFunctions.SYNCINTERNALBUTTONSTATE:
+                            case NewNativeFunctions.UPDATEINTERNALBUTTONSTATE:
+                            case NewNativeFunctions.SYNCINTERNALBUTTONSTATE:
                                 AddLog("{0}) INTERNAL BUTTON STATE UPDATING", _pointer + 1);
-                                Dispatcher.Invoke(new Action(() => _internalState?.UpdateAsync()));
+                                Dispatcher.Invoke(() => _internalState?.UpdateAsync());
                                 break;
-                            case NativeFunctions.GOTO:
+                            case NewNativeFunctions.GOTO:
                                 if (_jumpCount >= 5)
                                 {
                                     ClearLog();
                                     _jumpCount = 0;
                                 }
-                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
-                                AddLog("{2}) GOTO {0} [{1}]", cmd.Parameter, parameter, _pointer + 1);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                                AddLog("{2}) GOTO {0} [{1}]", cmd.Value, parameter, _pointer + 1);
                                 _pointer = parameter - 1;
                                 _jumpCount++;
                                 break;
-                            case NativeFunctions.EXECLINK:
+                            case NewNativeFunctions.EXECLINK:
                                 strparameter = Dispatcher.Invoke(() => CalculateObjectParameter(cmd)).ToString();
-                                AddLog("{2}) EXECLINK {0} [{1}]", cmd.StringParameter, strparameter, _pointer + 1);
-                                Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new Pair<string, object>(strparameter, null))));
+                                AddLog("{2}) EXECLINK {0} [{1}]", cmd.Value, strparameter, _pointer + 1);
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new Pair<string, object>(strparameter, null)));
                                 break;
-                            case NativeFunctions.LIVETOGGLE:
+                            case NewNativeFunctions.LIVETOGGLE:
                                 AddLog("{0}) LIVETOGGLE", _pointer + 1);
-                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 2 })));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 2 }));
                                 break;
-                            case NativeFunctions.LIVEOFF:
+                            case NewNativeFunctions.LIVEOFF:
                                 AddLog("{0}) LIVEOFF", _pointer + 1);
-                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 0 })));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 0 }));
                                 break;
-                            case NativeFunctions.LIVEON:
+                            case NewNativeFunctions.LIVEON:
                                 AddLog("{0}) LIVEON", _pointer + 1);
-                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 1 })));
+                                Dispatcher.Invoke(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 1 }));
                                 break;
-                            case NativeFunctions.CONDITION:
+                            case NewNativeFunctions.IF:
                                 conditionResult = cond.HasValue && cond.Value ? new bool?(TestCondition(cmd)) : null;
-                                AddLog("{1}) CONDITION IS {0}", conditionResult, _pointer + 1);
+                                AddLog("{1}) IF {0}", conditionResult, _pointer + 1);
                                 _conditions.Push(conditionResult);
                                 break;
-                            case NativeFunctions.ELSE:
+                            case NewNativeFunctions.ELSE:
                                 AddLog("{0}) ELSE EXECUTED", _pointer + 1);
                                 _conditions.Push(!_conditions.Pop());
                                 break;
-                            case NativeFunctions.HASVARIABLE:
-                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                            case NewNativeFunctions.HASVARIABLE:
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out parameter);
                                 conditionResult = cond.HasValue && cond.Value ? new bool?(GetVariableIndex(parameter) != -1) : null;
                                 AddLog("{2}) HASVARIABLE {0} IS {1}", parameter, conditionResult, _pointer + 1);
                                 _conditions.Push(conditionResult);
                                 break;
-                            case NativeFunctions.ISPRESSED:
+                            case NewNativeFunctions.ISPRESSED:
                                 AddLog("{1}) BUTTON PUSHED = {0}", IsPushed, _pointer + 1);
                                 _conditions.Push(IsPushed);
                                 break;
-                            case NativeFunctions.CONDITIONEND:
-                                AddLog("{0}) CONDITIONEND", _pointer + 1);
+                            case NewNativeFunctions.ENDIF:
+                                AddLog("{0}) END IF", _pointer + 1);
                                 _conditions.Pop();
                                 break;
-                            case NativeFunctions.SETVARIABLE:
+                            case NewNativeFunctions.SETVARIABLE:
 
-                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out int calc);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out int calc);
                                 var idx = GetVariableIndex(calc);
                                 var tobj = CalculateObjectParameter(cmd);
                                 AddLog("{2}) SETVARIABLE {0} TO {1}", idx, tobj, _pointer + 1);
                                 if (idx == -1)
                                 {
-                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var variableValue);
+                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out var variableValue);
                                     _variables.AddOrUpdate(variableValue, tobj, (k, v) => tobj);
                                 }
                                 else
                                     _variables.AddOrUpdate(idx, tobj, (k, v) => tobj);
                                 break;
-                            case NativeFunctions.SETGLOBALVARIABLE:
-                                var isgidx = vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var gidx);
-                                var isgstr = vMixControlButtonHelper.CalculateExpression<string>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out var gname);
+                            case NewNativeFunctions.SETGLOBALVARIABLE:
+                                var isgidx = vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out var gidx);
+                                var isgstr = vMixControlButtonHelper.CalculateExpression<string>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out var gname);
                                 var gtobj = CalculateObjectParameter(cmd);
                                 AddLog("{2}) SETGLOBALVARIABLE {0} TO {1}", isgidx ? gidx.ToString() : gname, gtobj, _pointer + 1);
                                 if (!isgidx)
@@ -995,10 +998,10 @@ namespace vMixController.Widgets
                                 else
                                     Messenger.Default.Send(new SetGlobalVariable() { Name = gname, Value = gtobj.ToString() });
                                 break;
-                            case NativeFunctions.VALUECHANGED:
+                            case NewNativeFunctions.VALUECHANGED:
 
                                 var obj = CalculateObjectParameter(cmd).ToString();
-                                var key = (string.Format(cmd.StringParameter, cmd.InputKey));
+                                var key = (string.Format(cmd.Value, cmd.InputKey));
                                 var hasKey = _trackedValues.ContainsKey(key);
                                 AddLog("{2}) VALUECHANGED {0} IS {1}", obj, hasKey, _pointer + 1);
                                 _conditions.Push(hasKey ? obj != _trackedValues[key] : false);
@@ -1010,29 +1013,47 @@ namespace vMixController.Widgets
                     {
                         var key = Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher);
 
-                        int p1 = 0;
-                        float p1f = 0.0f;
 
                         var input = state.Inputs.Where(x => x.Key == key).FirstOrDefault()?.Number;
-                        
-                        vMixControlButtonHelper.CalculateExpression(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
-                        vMixControlButtonHelper.CalculateExpression(cmd.FloatParameter, PopulateVariables, ExpressionEvaluateFunction, out p1f);
-                        string p1fs = p1f.ToString(CultureInfo.InvariantCulture);
-                        if (cmd.Action.CommaFloatDelimiter)
-                            p1fs = p1fs.Replace('.', ',');
 
-                        var command = string.Format(cmd.Action.FormatString, key, p1, System.Web.HttpUtility.UrlEncode(Convert.ToString(Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), CultureInfo.InvariantCulture)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=", p1fs);
 
-                        if (!cmd.Action.StateDirect)
+                        object calculatedParameter = null;
+                        switch (cmd.Action.NumericValue)
+                        {
+                            case NumericValueType.Integer:
+                                vMixControlButtonHelper.CalculateExpression(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out int p1);
+                                calculatedParameter = p1;
+                                break;
+                            case NumericValueType.Float:
+                                vMixControlButtonHelper.CalculateExpression(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out float p1f);
+                                calculatedParameter = p1f;
+                                break;
+                            default:
+                                vMixControlButtonHelper.CalculateExpression(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out string p1s);
+                                calculatedParameter = p1s;
+                                break;
+                        }
+
+                        vMixControlButtonHelper.CalculateExpression(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out string index);
+
+                        var formatter = new XPathNewFormattingArgs(key, input.HasValue ? input.Value : -2,
+                            cmd.Action.NumericValue == NumericValueType.Integer ? ((int)calculatedParameter).ToString(CultureInfo.InvariantCulture) :
+                            (cmd.Action.NumericValue == NumericValueType.Float ? ((float)calculatedParameter).ToString(CultureInfo.InvariantCulture) : (string)calculatedParameter),
+                            index,
+                            cmd.Mix, cmd.Channel, cmd.Duration);
+
+                        var command = cmd.Action.FormatString.ReplacePlaceholdersFromObject(formatter);
+
+                        if (string.IsNullOrWhiteSpace(cmd.Action.DirectPath))
                             AddLog("{2}) SEND {0} WITH RESULT {1}", command, state.SendFunction(command, false, timeout: cmd.Action.Timeout), _pointer + 1);
                         else
                         {
-                            vMixControlButtonHelper.CalculateExpression(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                            vMixControlButtonHelper.CalculateExpression(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out int p1);
 
 
-                            var path = string.Format(cmd.Action.StatePath, key, p1, Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
+                            var path = cmd.Action.DirectPath.ReplacePlaceholdersFromObject(formatter);//string.Format(cmd.Action.DirectPath, key, p1, Dispatcher.Invoke(() => CalculateObjectParameter(cmd)), p1 - 1, input ?? 0, string.IsNullOrWhiteSpace(key) ? "" : "Input=");
                             object value;
-                            switch (cmd.Action.StateValue)
+                            switch (cmd.Action.DirectValueType)
                             {
                                 case "Input":
                                     value = (object)key;
@@ -1041,7 +1062,7 @@ namespace vMixController.Widgets
                                     value = Dispatcher.Invoke(() => CalculateObjectParameter(cmd))?.ToString() ?? "";
                                     break;
                                 default:
-                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
+                                    vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out p1);
                                     value = p1;
                                     break;
                             }
@@ -1065,19 +1086,18 @@ namespace vMixController.Widgets
                                     break;
                             }
                         }
-                        _waitBeforeUpdate = Math.Max((_internalState ?? state).Transitions[cmd.Action.TransitionNumber].Duration, _waitBeforeUpdate);
+                        //_waitBeforeUpdate = Math.Max((_internalState ?? state).Transitions[cmd.Action.TransitionNumber].Duration, _waitBeforeUpdate);
                     }
                     else
                         AddLog("{0}) {1} IS NOT EXECUTED", _pointer + 1, cmd.Action.Function);
             }
             _conditions.Clear();
-            return;
         }
 
-        private object CalculateObjectParameter(vMixControlButtonCommand cmd)
+        private object CalculateObjectParameter(vMixControlNewButtonCommand cmd)
         {
             object result = null;
-            vMixControlButtonHelper.CalculateExpression<object>(string.Format(cmd.StringParameter, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "", PopulateVariables, ExpressionEvaluateFunction, out result);
+            vMixControlButtonHelper.CalculateExpression<object>(string.Format(cmd.Value, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "", PopulateVariables, ExpressionEvaluateFunction, out result);
             return result;
         }
 
@@ -1125,6 +1145,7 @@ namespace vMixController.Widgets
             BlinkBorderColor = BorderColor;
 
             bool hasGoToOrTimer = false;
+            bool hasSelfExecLink = false;
             int p;
             int i = 0;
             foreach (var item in Commands)
@@ -1132,11 +1153,12 @@ namespace vMixController.Widgets
                 if (item == null || item.Action == null) continue;
 
                 hasGoToOrTimer |= item.Action?.Function == NativeFunctions.TIMER;
-                hasGoToOrTimer |= item.Action?.Function == NativeFunctions.GOTO && ((int.TryParse(item.Parameter, out p) && p < i) || !int.TryParse(item.Parameter, out p));
+                hasGoToOrTimer |= item.Action?.Function == NativeFunctions.GOTO;
+                hasSelfExecLink |= item.Action?.Function == NativeFunctions.EXECLINK && Hotkey.Where(x => x.Active && x.Link == item.Value).Any();
                 i++;
             }
 
-            if (hasGoToOrTimer && Style != Constants.BUTTON_STYLE_MOMENTARY)
+            /*if (hasGoToOrTimer && Style != Constants.BUTTON_STYLE_MOMENTARY)
             {
                 var d = new Ookii.Dialogs.Wpf.TaskDialog();
                 d.WindowTitle = "Possible Script Error";
@@ -1144,7 +1166,9 @@ namespace vMixController.Widgets
                 d.Content = "Your script contains TIMER or possible LOOPS!\nUse Momentary buttons for this type of scripts.";
                 d.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
                 d.ShowDialog();
-            }
+            }*/
+
+            PotentialLoopWarning = hasGoToOrTimer | hasSelfExecLink;
         }
 
         public override void Update()

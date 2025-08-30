@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Ioc;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,15 +14,15 @@ using vMixController.ViewModel;
 namespace vMixController.Widgets
 {
     [Serializable]
-    public class vMixControlButtonCommand : ObservableObject, ICloneable
+    public class vMixControlNewButtonCommand : ObservableObject, ICloneable
     {
-        private vMixFunctionReference _action = null;
+        private vMixNewFunctionReference _action = null;
 
         /// <summary>
         /// Sets and gets the Action property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public vMixFunctionReference Action
+        public vMixNewFunctionReference Action
         {
             get
             {
@@ -40,79 +41,78 @@ namespace vMixController.Widgets
             }
         }
 
-        private string _parameter = "-1";
+        private string _value = "-1";
 
         /// <summary>
         /// Sets and gets the Parameter property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string Parameter
+        public string Value
         {
             get
             {
-                return _parameter;
+                return _value;
             }
 
             set
             {
-                if (_parameter == value)
+                if (_value == value)
                 {
                     return;
                 }
 
-                _parameter = value;
-                RaisePropertyChanged(nameof(Parameter));
+                _value = value;
+                RaisePropertyChanged(nameof(Value));
             }
         }
 
-
-        private string _floatParameter = "-1";
+        private string _selectedIndex = "-1";
 
         /// <summary>
-        /// Sets and gets the FloatParameter property.
+        /// Sets and gets the Parameter property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string FloatParameter
+        public string SelectedIndex
         {
             get
             {
-                return _floatParameter;
+                return _selectedIndex;
             }
 
             set
             {
-                if (_floatParameter == value)
+                if (_selectedIndex == value)
                 {
                     return;
                 }
 
-                _floatParameter = value;
-                RaisePropertyChanged(nameof(FloatParameter));
+                _selectedIndex = value;
+                RaisePropertyChanged(nameof(SelectedIndex));
             }
         }
 
-        private int _input = -1;
+        private int _inputNumber = -1;
 
         /// <summary>
         /// Sets and gets the Input property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public int Input
+        public int InputNumber
         {
             get
             {
-                return _input;
+                return _inputNumber;
             }
 
             set
             {
-                if (_input == value)
+                if (_inputNumber == value)
                 {
                     return;
                 }
 
-                _input = value;
-                RaisePropertyChanged(nameof(Input));
+                _inputNumber = value;
+                RaisePropertyChanged(nameof(InputNumber));
             }
         }
 
@@ -141,53 +141,78 @@ namespace vMixController.Widgets
             }
         }
 
-        private string _stringParameter = "";
+        private string _duration = "";
 
         /// <summary>
         /// Sets and gets the StringParameter property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string StringParameter
+        public string Duration
         {
             get
             {
-                return _stringParameter;
+                return _duration;
             }
 
             set
             {
-                if (_stringParameter == value)
+                if (_duration == value)
                 {
                     return;
                 }
 
-                _stringParameter = value;
-                RaisePropertyChanged(nameof(StringParameter));
+                _duration = value;
+                RaisePropertyChanged(nameof(Duration));
             }
         }
 
-        private List<One<string>> _additionalParameters = new List<One<string>>();
+        private string _mix = "";
 
         /// <summary>
-        /// Sets and gets the AdditionalParameters property.
+        /// Sets and gets the StringParameter property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public List<One<string>> AdditionalParameters
+        public string Mix
         {
             get
             {
-                return _additionalParameters;
+                return _mix;
             }
 
             set
             {
-                if (_additionalParameters == value)
+                if (_mix == value)
                 {
                     return;
                 }
 
-                _additionalParameters = value;
-                RaisePropertyChanged(nameof(AdditionalParameters));
+                _mix = value;
+                RaisePropertyChanged(nameof(Mix));
+            }
+        }
+
+        private string _channel = "";
+
+        /// <summary>
+        /// Sets and gets the StringParameter property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string Channel
+        {
+            get
+            {
+                return _channel;
+            }
+
+            set
+            {
+                if (_channel == value)
+                {
+                    return;
+                }
+
+                _channel = value;
+                RaisePropertyChanged(nameof(Channel));
             }
         }
 
@@ -213,32 +238,6 @@ namespace vMixController.Widgets
 
                 _collapsed = value;
                 RaisePropertyChanged(nameof(Collapsed));
-                RaisePropertyChanged(nameof(AdditionalParameters));
-            }
-        }
-
-        private bool _noInputAssigned = false;
-
-        /// <summary>
-        /// Sets and gets the NoInputAssigned property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public bool NoInputAssigned
-        {
-            get
-            {
-                return _noInputAssigned;
-            }
-
-            set
-            {
-                if (_noInputAssigned == value)
-                {
-                    return;
-                }
-
-                _noInputAssigned = value;
-                RaisePropertyChanged(nameof(NoInputAssigned));
             }
         }
 
@@ -341,26 +340,32 @@ namespace vMixController.Widgets
             // 3. Параметры (добавляем только те, что определены в сигнатуре Action)
             var parameters = new List<string>();
 
-            if (Action.HasInputProperty && !NoInputAssigned)
+            if (Action.HasInput)
             {
                 // Предпочитаем InputKey, если он задан, иначе используем Input
-                parameters.Add(!string.IsNullOrEmpty(InputKey) ? Escape(InputKey) : Input.ToString());
+                parameters.Add(!string.IsNullOrEmpty(InputKey) ? Escape(InputKey) : InputNumber.ToString());
             }
-            if (Action.HasIntProperty)
+            if (Action.HasValue)
             {
-                parameters.Add(Escape(Parameter));
+                parameters.Add(Escape(Value));
             }
-            if (Action.HasStringProperty)
+
+            if (Action.HasIndex)
             {
-                parameters.Add(Escape(StringParameter));
+                parameters.Add(Escape(SelectedIndex));
             }
-            if (Action.HasFloatProperty)
+
+            if (Action.HasDuration)
             {
-                parameters.Add(Escape(FloatParameter));
+                parameters.Add(Escape(Duration));
             }
-            if (Action.AdditionalCount > 0 && AdditionalParameters != null)
+            if (Action.HasChannel)
             {
-                parameters.AddRange(AdditionalParameters.Take(Action.AdditionalCount).Select(p => Escape(p.A)));
+                parameters.Add(Escape(Channel));
+            }
+            if (Action.HasMix)
+            {
+                parameters.Add(Escape(Mix));
             }
 
             sb.Append(string.Join(",", parameters));
@@ -372,13 +377,13 @@ namespace vMixController.Widgets
         /// <summary>
         /// Создает объект vMixControlButtonCommand из строки, используя сигнатуру функции для корректного парсинга параметров.
         /// </summary>
-        public static vMixControlButtonCommand FromString(string commandString)
+        public static vMixControlNewButtonCommand FromString(string commandString)
         {
-            var allFunctions = SimpleIoc.Default.GetInstance<MainViewModel>().Functions;
+            var allFunctions = SimpleIoc.Default.GetInstance<MainViewModel>().NewFunctions;
             if (string.IsNullOrWhiteSpace(commandString))
-                return new vMixControlButtonCommand();
+                return new vMixControlNewButtonCommand();
 
-            var cmd = new vMixControlButtonCommand();
+            var cmd = new vMixControlNewButtonCommand();
             var remainingString = commandString.Trim();
 
             // 1. Парсинг атрибутов
@@ -395,12 +400,12 @@ namespace vMixController.Widgets
             var openParenIndex = remainingString.IndexOf('(');
             var closeParenIndex = remainingString.LastIndexOf(')');
             if (openParenIndex == -1 || closeParenIndex == -1 || closeParenIndex < openParenIndex)
-                return new vMixControlButtonCommand(); // Некорректный формат
+                return new vMixControlNewButtonCommand(); // Некорректный формат
 
             var functionName = remainingString.Substring(0, openParenIndex);
             cmd.Action = allFunctions.FirstOrDefault(f => f.Function.Equals(functionName, StringComparison.OrdinalIgnoreCase));
             if (cmd.Action == null)
-                return new vMixControlButtonCommand(); // Функция не найдена
+                return new vMixControlNewButtonCommand(); // Функция не найдена
 
             // 3. Парсинг параметров
             var paramsString = remainingString.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1);
@@ -416,7 +421,7 @@ namespace vMixController.Widgets
             int currentParamIndex = 0;
 
             // 4. Распределение параметров по свойствам согласно сигнатуре Action
-            if (cmd.Action.HasInputProperty && !cmd.NoInputAssigned)
+            if (cmd.Action.HasInput)
             {
                 if (currentParamIndex < parameters.Count)
                 {
@@ -424,51 +429,46 @@ namespace vMixController.Widgets
                     // Если параметр - число без кавычек, считаем его Input, иначе - InputKey
                     if (int.TryParse(inputParam, out int inputNum) && parameters[currentParamIndex].Trim() == inputParam)
                     {
-                        cmd.Input = inputNum;
+                        cmd.InputNumber = inputNum;
                         cmd.InputKey = null;
                     }
                     else
                     {
                         cmd.InputKey = inputParam;
                         // Можно установить Input в 0 или -1 как индикатор, что используется ключ
-                        cmd.Input = 0;
+                        cmd.InputNumber = -2;
                     }
                     currentParamIndex++;
                 }
             }
 
-            if (cmd.Action.HasIntProperty)
+            if (cmd.Action.HasValue)
             {
                 if (currentParamIndex < parameters.Count)
-                    cmd.Parameter = Unescape(parameters[currentParamIndex++]);
+                    cmd.Value = Unescape(parameters[currentParamIndex++]);
             }
-
-            if (cmd.Action.HasStringProperty)
+            if (cmd.Action.HasIndex)
             {
                 if (currentParamIndex < parameters.Count)
-                    cmd.StringParameter = Unescape(parameters[currentParamIndex++]);
+                    cmd.SelectedIndex = Unescape(parameters[currentParamIndex++]);
             }
-
-            if (cmd.Action.HasFloatProperty)
+            if (cmd.Action.HasDuration)
             {
                 if (currentParamIndex < parameters.Count)
-                    cmd.FloatParameter = Unescape(parameters[currentParamIndex++]);
+                    cmd.Duration = Unescape(parameters[currentParamIndex++]);
             }
 
-            if (cmd.Action.AdditionalCount > 0)
+            if (cmd.Action.HasChannel)
             {
-                cmd.AdditionalParameters = new List<One<string>>();
-                for (int i = 0; i < cmd.Action.AdditionalCount; i++)
-                {
-                    if (currentParamIndex < parameters.Count)
-                        cmd.AdditionalParameters.Add(new One<string>() { A = Unescape(parameters[currentParamIndex++]) });
-                    else
-                        break; // Параметров в строке меньше, чем ожидает функция
-                }
+                if (currentParamIndex < parameters.Count)
+                    cmd.Channel = Unescape(parameters[currentParamIndex++]);
             }
 
-            while (cmd.AdditionalParameters.Count < 10)
-                cmd.AdditionalParameters.Add(new One<string>() { A = "" });
+            if (cmd.Action.HasMix)
+            {
+                if (currentParamIndex < parameters.Count)
+                    cmd.Mix = Unescape(parameters[currentParamIndex++]);
+            }
 
             return cmd;
         }
@@ -495,12 +495,12 @@ namespace vMixController.Widgets
 
         public object Clone()
         {
-            return vMixControlButtonCommand.FromString(this.ToString());
+            return vMixControlNewButtonCommand.FromString(this.ToString());
         }
 
-        public vMixControlButtonCommand()
+        public vMixControlNewButtonCommand()
         {
-            _action = new vMixFunctionReference();
+            _action = new vMixNewFunctionReference();
 
             /*if (_additionalParameters.Count < 10)
                 for (int i = 0; i < 10; i++)

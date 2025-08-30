@@ -280,6 +280,153 @@
         </Button.Template>
     </Button>
 
+    <Button ClickMode="Release" Height="Auto" Tag="{Binding IsColorized}" HorizontalContentAlignment="Stretch" x:Shared="false" x:Key="NewButtonWidgetControl" Margin="{StaticResource StdMargin}" IsEnabled="{Binding Enabled}" Grid.Column="1" DataContext="{Binding}" d:DataContext="{d:DesignInstance widget:vMixControlNewButton}">
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                <cmd:EventToCommand Command="{Binding ExecutePushOn}" PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+            <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                <cmd:EventToCommand Command="{Binding ExecutePushOff}" PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+            <i:EventTrigger EventName="TouchDown">
+                <cmd:EventToCommand Command="{Binding ExecutePushOn}" PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+            <i:EventTrigger EventName="TouchUp">
+                <cmd:EventToCommand Command="{Binding ExecutePushOff}" PassEventArgsToCommand="True"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+
+        <Button.Template>
+            <ControlTemplate>
+                <Button Width="Auto" Height="Auto" HorizontalContentAlignment="{TemplateBinding HorizontalAlignment}" Tag="{TemplateBinding Tag}" IsEnabled="{TemplateBinding IsEnabled}">
+                    <Grid>
+                        <Grid.Resources>
+                            <Image x:Key="IMG">
+                                <Image.Source>
+                                    <MultiBinding Converter="{c:ImagePartConverter}">
+                                        <Binding Path="Image"/>
+                                        <Binding Path="ImageType"/>
+                                        <Binding Path="ImageNumber"/>
+                                    </MultiBinding>
+                                </Image.Source>
+                            </Image>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Path Grid.Column="1" x:Name="triangle" 
+                      Data="M8,0 L8,8 L0,8 Z" 
+                      Fill="#d77d31" 
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      Opacity="1"/>
+                        <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
+                            <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
+                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8"></Ellipse>
+                                <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="Possible loop detected">&#xf071;</TextBlock>
+                            </StackPanel>
+                        </Border>
+                        <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>
+                        <Grid Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}}">
+                            <ContentControl Content="{StaticResource IMG}"/>
+                            <Viewbox Stretch="Uniform" Height="{Binding ActualHeight, Source={StaticResource IMG}}">
+                                <TextBlock Foreground="{Binding Source, Source={StaticResource IMG}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Text="{Binding Name}"/>
+                            </Viewbox>
+                        </Grid>
+                    </Grid>
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                            <Style.Setters>
+                                <Setter Property="DataContext" Value="{Binding}"/>
+                            </Style.Setters>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Image, Converter={wpfc:ValueNullToBoolConverter}}" Value="False">
+                                    <Setter Property="Height" Value="Auto"/>
+                                </DataTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Tag">
+                                            <Condition.Value>
+                                                <sys:Boolean>True</sys:Boolean>
+                                            </Condition.Value>
+                                        </Condition>
+                                        <Condition Property="IsMouseOver" Value="False"/>
+                                    </MultiTrigger.Conditions>
+                                    <MultiTrigger.Setters>
+                                        <Setter Property="Background" Value="{Binding Color, Converter={c:ColorToSolidBrushConverter}}"/>
+                                        <Setter Property="BorderBrush" Value="{Binding BorderColor, Converter={c:ColorToSolidBrushConverter}}"/>
+                                    </MultiTrigger.Setters>
+                                </MultiTrigger>
+
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Tag">
+                                            <Condition.Value>
+                                                <sys:Boolean>True</sys:Boolean>
+                                            </Condition.Value>
+                                        </Condition>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <MultiTrigger.Setters>
+                                        <Setter Property="Background" Value="{Binding BorderColor, Converter={c:ColorToSolidBrushConverter}}"/>
+                                        <Setter Property="BorderBrush" Value="{Binding Color, Converter={c:ColorToSolidBrushConverter}}"/>
+                                    </MultiTrigger.Setters>
+                                </MultiTrigger>
+
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="Tag">
+                                            <Condition.Value>
+                                                <sys:Boolean>True</sys:Boolean>
+                                            </Condition.Value>
+                                        </Condition>
+                                        <Condition Property="IsPressed" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <MultiTrigger.Setters>
+                                        <Setter Property="Background" Value="{Binding BorderColor, Converter={c:ColorToDarkerSolidBrushConverter}}"/>
+                                        <Setter Property="BorderBrush" Value="{Binding Color, Converter={c:ColorToDarkerSolidBrushConverter}}"/>
+                                    </MultiTrigger.Setters>
+                                </MultiTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <ControlTemplate.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Active}" Value="True"/>
+                            <Condition Binding="{Binding Main.WindowSettings.BlinkLights, Source={StaticResource Locator}}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter TargetName="stateDep" Property="Fill" Value="Red"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Active}" Value="False"/>
+                            <Condition Binding="{Binding Main.WindowSettings.BlinkLights, Source={StaticResource Locator}}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter TargetName="stateDep" Property="Fill" Value="SlateGray"/>
+                    </MultiDataTrigger>
+                    <DataTrigger Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding Mode="OneWay" Converter="{wpfc:AllBoolToBoolConverter}">
+                                <Binding Path="Active"/>
+                                <Binding Path="Main.WindowSettings.BlinkLights" Source="{StaticResource Locator}"/>
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Name="blinker" Storyboard="{StaticResource BlinkAnimation}"/>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <RemoveStoryboard BeginStoryboardName="blinker"/>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Button.Template>
+    </Button>
+
     <Grid x:Shared="false" x:Key="TextFieldWidgetControl" Margin="{StaticResource StdMargin}" Grid.Column="1" d:DataContext="{d:DesignInstance widget:vMixControlTextField}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -848,6 +995,29 @@
         </DataTemplate.Triggers>
     </DataTemplate>
 
+    <DataTemplate x:Key="vMixControlNewButton" DataType="widget:vMixControlNewButton">
+        <ctrls:vMixControlContainerDummy BorderColorProxy="{Binding BlinkBorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
+                                         MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
+            <ctrls:vMixControlContainerDummy.CaptionContent>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="hasErrors" Width="4" Height="4" Margin="{StaticResource RightStdMargin}"/>
+                    <Button ToolTip="Stop script" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding StopScriptCommand}" IsEnabled="{Binding Enabled, Converter={wpfc:BoolToInverseBoolConverter}, Mode=OneWay}">&#xF256;</Button>
+                </StackPanel>
+            </ctrls:vMixControlContainerDummy.CaptionContent>
+            <ctrls:vMixControlContainerDummy.MainContent>
+                <ContentControl Content="{StaticResource NewButtonWidgetControl}"/>
+            </ctrls:vMixControlContainerDummy.MainContent>
+        </ctrls:vMixControlContainerDummy>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding HasScriptErrors}" Value="False">
+                <Setter Property="Fill" TargetName="hasErrors" Value="Lime"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasScriptErrors}" Value="True">
+                <Setter Property="Fill" TargetName="hasErrors" Value="Red"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
     <DataTemplate x:Key="vMixControlTextField" DataType="widget:vMixControlTextField">
         <ctrls:vMixControlContainerDummy Caption="{Binding Name}" BorderColorProxy="{Binding BorderColor}" Control="{Binding}" ScaleUpCommand="{Binding Main.ScaleUpCommand, Source={StaticResource Locator}}" ScaleDownCommand="{Binding Main.ScaleDownCommand, Source={StaticResource Locator}}" CopyCommand="{Binding Main.CopyWidgetCommand, Source={StaticResource Locator}}" CloseCommand="{Binding Main.RemoveWidgetCommand, Source={StaticResource Locator}}" SettingsCommand="{Binding Main.OpenPropertiesCommand, Source={StaticResource Locator}}" ToggleCaptionCommand="{Binding Main.ToggleCaptionCommand, Source={StaticResource Locator}}" SwitchPasswordLockableCommand="{Binding Main.SwitchPasswordLockableCommand, Source={StaticResource Locator}}"
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
@@ -1060,13 +1230,19 @@
                                          MoveCommand="{Binding Main.MoveWidgetCommand, Source={StaticResource Locator}}">
             <ctrls:vMixControlContainerDummy.CaptionContent>
                 <StackPanel Orientation="Horizontal">
-                    <Button ToolTip="Toggle enabled" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True">&#xF204;</Button>
+                    <Button Style="{StaticResource TitleButton}" x:Name="ToggleButton" ToolTip="Toggle enabled" HorizontalAlignment="Left" Command="{Binding ToggleEnabledCommand}" IsEnabled="True" Content="&#xF205;"/>
+
                 </StackPanel>
             </ctrls:vMixControlContainerDummy.CaptionContent>
             <ctrls:vMixControlContainerDummy.MainContent>
                 <ContentControl IsEnabled="{Binding Enabled}" Content="{StaticResource ExternalDataWidgetControl}"/>
             </ctrls:vMixControlContainerDummy.MainContent>
         </ctrls:vMixControlContainerDummy>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding Enabled}" Value="False">
+                <Setter TargetName="ToggleButton" Property="Content" Value="&#xF204;"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
     <DataTemplate x:Key="vMixControlTimer" DataType="widget:vMixControlTimer">

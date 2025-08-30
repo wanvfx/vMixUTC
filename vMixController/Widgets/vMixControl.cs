@@ -44,7 +44,8 @@ namespace vMixController.Widgets
         XmlInclude(typeof(vMixControlVolume)),
         XmlInclude(typeof(vMixControlSlider)),
         XmlInclude(typeof(vMixControlTBar)),
-        XmlInclude(typeof(vMixControlPlaylist))]
+        XmlInclude(typeof(vMixControlPlaylist)),
+        XmlInclude(typeof(vMixControlNewButton))]
     public class vMixControl : DependencyObject, INotifyPropertyChanged, IDisposable
     {
 
@@ -1004,7 +1005,8 @@ namespace vMixController.Widgets
 
         public virtual void AfterPropertiesChanged()
         {
-            BorderColor = vMixController.ViewModel.vMixWidgetSettingsViewModel.Colors.Where(x => x.A == this.Color).FirstOrDefault().B;
+            var color = vMixController.ViewModel.vMixWidgetSettingsViewModel.Colors.Where(x => x.A.A == this.Color.A && x.A.R == this.Color.R && x.A.G == this.Color.G && x.A.B == this.Color.B).FirstOrDefault();
+            BorderColor = color?.B ?? this.Color;
             UpdateHotkeys();
             GC.Collect(1);
         }

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="vMixController.PropertiesControls.ScriptControl"
+﻿<UserControl x:Class="vMixController.PropertiesControls.NewScriptControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:this="clr-namespace:vMixController"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -34,7 +34,7 @@
         <e:DeepCopyCancelBehavior TargetCollection="{Binding Commands, ElementName=Me}" IsCancelled="{Binding IsCancelled, ElementName=Me}"></e:DeepCopyCancelBehavior>
     </i:Interaction.Behaviors>
     <StackPanel>
-        <Border BorderBrush="#D01818" Background="#8B0000" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
+        <Border BorderBrush="LightSlateGray" Background="DarkSlateGray" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
             <StackPanel Margin="{StaticResource StdMargin}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="Script"/></TextBlock>
@@ -46,7 +46,34 @@
                     <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Script_Default, Source={StaticResource Help}}"/>
                 </StackPanel>
 
-                <TabControl SelectionChanged="TabControl_SelectionChanged" BorderBrush="#D01818" Background="#8B0000">
+                <TabControl SelectionChanged="TabControl_SelectionChanged" BorderBrush="LightSlateGray" Background="DarkSlateGray">
+                    <TabControl.Resources>
+                        <Style x:Key="TabItemStyle" TargetType="TabItem">
+                            <Style.Setters>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="SlateGray"/>
+                                <Setter Property="BorderBrush" Value="LightSlateGray"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TabItem">
+                                            <Border Name="Panel" BorderThickness="1,1,1,0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                                                <ContentPresenter x:Name="ContentSite"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        ContentSource="Header"
+                                        Margin="10,2"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Panel" Property="Background" Value="DarkSlateGray" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style.Setters>
+                        </Style>
+                    </TabControl.Resources>
                     <TabItem Style="{StaticResource TabItemStyle}" Header="Constructor">
                         <StackPanel>
                             <ListView VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsVirtualizing="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="Transparent" BorderThickness="0" x:Name="script" AlternationCount="{Binding Commands.Count, ElementName=Me}" ItemsSource="{Binding Commands, ElementName=Me}" SelectedIndex="0" HorizontalContentAlignment="Stretch">
@@ -57,9 +84,10 @@
                                                 <Grid.Resources>
                                                     <DataTemplate x:Key="CollapsedViewTemplate">
                                                         <TextBlock VerticalAlignment="Center" Style="{StaticResource CaptionText}" TextTrimming="CharacterEllipsis">
-                                    <Run Background="White" FontWeight="Bold" Text="{Binding Action.Function, FallbackValue=None}" Foreground="{Binding Action.Color, Converter={conv:ColorToSolidBrushConverter}}">
+                                                            <TextBlock Visibility="{Binding Action.XPath, Converter={wpfc:StringNullOrEmptyToInverseVisibilityConverter}}">* </TextBlock>
+                                    <Run Background="Black" FontWeight="Bold" Text="{Binding Action.Function, FallbackValue=None}">
                                     </Run>
-                                    (&lt;<Run FontWeight="Regular" Foreground="Red" Text="{Binding InputKey}"/>&gt;, <Run Foreground="Lime" FontWeight="Regular" Text="{Binding Parameter}"/>, "<Run FontWeight="Regular" Foreground="CornflowerBlue" Text="{Binding AdditionalParameters, Converter={conv:ParametersToStringConverter}}"/><Run Foreground="CornflowerBlue" FontWeight="Regular" Text="{Binding StringParameter}"/>")
+                                    (&lt;<Run FontWeight="Regular" Foreground="Red" Text="{Binding InputKey}"/>&gt;, <Run Foreground="Lime" FontWeight="Regular" Text="{Binding Value}"/>, <Run FontWeight="Regular" Foreground="CornflowerBlue" Text="{Binding SelectedIndex}"/>, <Run Foreground="CornflowerBlue" FontWeight="Regular" Text="{Binding Channel}"/>, <Run Foreground="CornflowerBlue" FontWeight="Regular" Text="{Binding Mix}"/>)
 
                                                         </TextBlock>
 
@@ -70,8 +98,13 @@
                                                                 <ColumnDefinition/>
                                                                 <ColumnDefinition Width="2*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <Label Content="Command"/>
-                                                            <ComboBox x:Name="Func" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Action, Mode=TwoWay}" DisplayMemberPath="Function" ItemsSource="{Binding Main.Functions, Source={StaticResource Locator}}" PreviewKeyDown="Func_PreviewKeyDown">
+                                                            <Label>
+                                                                <TextBlock>
+                                                                    <TextBlock>Command</TextBlock>
+                                                                    <TextBlock Visibility="{Binding SelectedValue.XPath, ElementName=Func, Converter={wpfc:StringNullOrEmptyToInverseVisibilityConverter}}">* </TextBlock>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <ComboBox x:Name="Func" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Action, Mode=TwoWay}" DisplayMemberPath="Function" ItemsSource="{Binding Main.NewFunctions, Source={StaticResource Locator}}" PreviewKeyDown="Func_PreviewKeyDown">
                                                                 <ComboBox.ItemsPanel>
                                                                     <ItemsPanelTemplate>
                                                                         <VirtualizingStackPanel/>
@@ -80,24 +113,23 @@
                                                                 <ComboBox.ItemContainerStyle>
                                                                     <Style TargetType="ComboBoxItem">
                                                                         <Style.Setters>
-                                                                            <Setter Property="Foreground" Value="{Binding Color, Converter={conv:ColorToSolidBrushConverter}}"/>
-                                                                            <Setter Property="ContentTemplateSelector" Value="{x:Null}"/>
                                                                             <Setter Property="ToolTip" Value="{Binding Description}"/>
+                                                                            <Setter Property="ContentTemplateSelector" Value="{x:Null}"/>
                                                                         </Style.Setters>
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding ="{Binding IsGroup}" Value="True">
-                                                                                <Setter Property="ComboBoxItem.Focusable" Value="False"/>
-                                                                                <Setter Property="ComboBoxItem.IsEnabled" Value="False"/>
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding IsGroup}" Value="False">
-                                                                                <Setter Property="Margin" Value="8,0,0,0"/>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
                                                                     </Style>
                                                                 </ComboBox.ItemContainerStyle>
+                                                                <ComboBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock>
+                                                                            <TextBlock Text="{Binding Category}" FontStyle="Italic"></TextBlock>/<TextBlock FontWeight="Bold" Text="{Binding Function}"></TextBlock>
+                                                                            <TextBlock Visibility="{Binding XPath, Converter={wpfc:StringNullOrEmptyToInverseVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}">&#xf0f3; </TextBlock>
+                                                                        </TextBlock>
+                                                                    </DataTemplate>
+                                                                </ComboBox.ItemTemplate>
                                                             </ComboBox>
-                                                            <Label x:Name="InLabel" Content="{Binding SelectedValue.InputDescription, ElementName=Func, FallbackValue=N/A}"/>
-                                                            <ComboBox x:Name="In" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}"  ItemTemplate="{StaticResource InputSelectorTemplate}" SelectedValuePath="Key" SelectedValue="{Binding InputKey, Mode=TwoWay}">
+
+                                                            <Label x:Name="InputLabel" Content="Input"/>
+                                                            <ComboBox x:Name="Input" IsEnabled="{Binding SelectedValue.HasInput, ElementName=Func, FallbackValue=False}"  ItemTemplate="{StaticResource InputSelectorTemplate}" SelectedValuePath="Key" SelectedValue="{Binding InputKey, Mode=TwoWay}">
                                                                 <ComboBox.ItemsSource>
                                                                     <CompositeCollection>
                                                                         <CollectionContainer Collection="{Binding Main.Model.Inputs, Source={StaticResource Locator}}"/>
@@ -109,14 +141,18 @@
                                                                     </CompositeCollection>
                                                                 </ComboBox.ItemsSource>
                                                             </ComboBox>
-                                                            <Label x:Name="IntValuesLabel" Content="{Binding SelectedValue.IntDescription, ElementName=Func, FallbackValue=N/A}"/>
-                                                            <Grid x:Name="IntValuesGrid" IsEnabled="{Binding SelectedValue.HasIntProperty, ElementName=Func, FallbackValue=False}">
+
+                                                            <Label x:Name="ValueLabel" Content="{Binding SelectedValue.ValueName, ElementName=Func, FallbackValue=N/A}"/>
+                                                            <TextBox x:Name="Value"  TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                                            <Label x:Name="IndexLabel" Content="Index"/>
+                                                            <Grid x:Name="Index">
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <TextBox Height="Auto" Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" Text="{Binding Parameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                                <Button Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Grid.Column="1" Height="Auto" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=In}" FontFamily="{StaticResource SegoeUI}" Content="T" Click="Button_Click" ToolTip="Fill Title Index" ContextMenuOpening="Button_ContextMenuOpening">
+                                                                <TextBox Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Text="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                <Button IsEnabled="{Binding SelectedValue.HasInput, ElementName=Func, FallbackValue=False}" Grid.Column="1" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=Input}" FontFamily="{StaticResource SegoeUI}" Content="T" Click="Button_Click" ToolTip="Fill Title Index" ContextMenuOpening="Button_ContextMenuOpening">
                                                                     <Button.ContextMenu>
                                                                         <ContextMenu ItemsSource="{Binding Elements}">
                                                                             <ContextMenu.ItemTemplate>
@@ -134,102 +170,47 @@
                                                                         </ContextMenu>
                                                                     </Button.ContextMenu>
                                                                 </Button>
-                                                                <ComboBox Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToInverseVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasIntProperty, ElementName=Func, FallbackValue=False}" ItemsSource="{Binding SelectedValue.IntValues, ElementName=Func}" Text="{Binding Parameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                            </Grid>
-                                                            <Label x:Name="StringValuesLabel" Margin="0,0,0,-8" Content="{Binding SelectedValue.StringDescription, ElementName=Func, FallbackValue=N/A}"/>
-                                                            <Grid  x:Name="StringValuesGrid" Margin="0,0,0,-8">
-                                                                <TextBox Height="Auto" Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Visibility="{Binding SelectedValue.StringValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasStringProperty, ElementName=Func, FallbackValue=False}" Text="{Binding StringParameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                                <ComboBox Visibility="{Binding SelectedValue.StringValues, ElementName=Func, Converter={wpfc:ValueNullToInverseVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasStringProperty, ElementName=Func, FallbackValue=False}" ItemsSource="{Binding SelectedValue.StringValues, ElementName=Func}" Text="{Binding StringParameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                                             </Grid>
 
-                                                            <Label x:Name="FloatValuesLabel" Content="{Binding SelectedValue.FloatDescription, ElementName=Func, FallbackValue=N/A}" Visibility="{Binding SelectedValue.HasFloatProperty, ElementName=Func, Converter={wpfc:BoolToVisibilityConverter}}"/>
-                                                            <Border>
-                                                                <TextBox IsEnabled="{Binding SelectedValue.HasFloatProperty, ElementName=Func, FallbackValue=False}" x:Name="FloatValuesGrid" Height="Auto" Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Visibility="{Binding SelectedValue.HasFloatProperty, ElementName=Func, Converter={wpfc:BoolToVisibilityConverter}}" Text="{Binding FloatParameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                            </Border>
-                                                            
-                                                            <Label Visibility="Collapsed" x:Name="In2Label">
-                                                                <TextBlock>
-<Run Text="{Binding SelectedValue.InputDescription, ElementName=Func, FallbackValue=N/A}"/>
-<Run> 2</Run>
-                                                                </TextBlock>
-                                                            </Label>
-                                                            <ComboBox ItemTemplate="{StaticResource InputSelectorTemplate}" Visibility="Collapsed" x:Name="In2" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" DisplayMemberPath="Title" SelectedValuePath="Key" SelectedValue="{Binding AdditionalParameters[0].A, Mode=TwoWay}">
-                                                                <ComboBox.ItemsSource>
-                                                                    <CompositeCollection>
-                                                                        <CollectionContainer Collection="{Binding Main.Model.Inputs, Source={StaticResource Locator}}"/>
-                                                                        <CollectionContainer>
-                                                                            <CollectionContainer.Collection>
-                                                                                <Binding Path="GlobalSettings.Variables" Source="{StaticResource Locator}" Converter="{conv:VariableListToInputListConverter}"/>
-                                                                            </CollectionContainer.Collection>
-                                                                        </CollectionContainer>
-                                                                    </CompositeCollection>
-                                                                </ComboBox.ItemsSource>
+                                                            <Label x:Name="DurationLabel" Content="Duration"/>
+                                                            <TextBox x:Name="Duration" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Text="{Binding Duration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                                            <Label x:Name="MixLabel" Content="Mix"/>
+                                                            <TextBox x:Name="Mix" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Text="{Binding Mix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                                            <Label x:Name="ChannelLabel" Content="Channel"/>
+                                                            <ComboBox x:Name="Channel" Text="{Binding Channel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                                                <ComboBoxItem>AB</ComboBoxItem>
+                                                                <ComboBoxItem>A</ComboBoxItem>
+                                                                <ComboBoxItem>B</ComboBoxItem>
                                                             </ComboBox>
-                                                            <Label Visibility="Collapsed" x:Name="CondLabel" Content="Condition"/>
-                                                            <Grid Visibility="Collapsed" x:Name="Cond">
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition/>
-                                                                    <ColumnDefinition Width="64"/>
-                                                                    <ColumnDefinition/>
-                                                                </Grid.ColumnDefinitions>
-                                                                <TextBox TextWrapping="Wrap" Margin="0,3,0,2" Height="Auto" Style="{StaticResource WidgetTextBox}" Text="{Binding AdditionalParameters[1].A, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                                                <ComboBox SelectedValue="{Binding AdditionalParameters[2].A, Mode=TwoWay}" Grid.Column="1">
-                                                                    <c:String>&gt;</c:String>
-                                                                    <c:String>&lt;</c:String>
-                                                                    <c:String>&lt;=</c:String>
-                                                                    <c:String>&gt;=</c:String>
-                                                                    <c:String>==</c:String>
-                                                                    <c:String>!=</c:String>
-                                                                </ComboBox>
-                                                                <TextBox TextWrapping="Wrap" Margin="0,3,0,2" Height="Auto" Style="{StaticResource WidgetTextBox}" Text="{Binding AdditionalParameters[3].A, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2"></TextBox>
-                                                            </Grid>
                                                         </Grid>
+
                                                         <DataTemplate.Triggers>
-                                                            <DataTrigger Binding="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Value="False">
-                                                                <Setter TargetName="InLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="In" Property="Visibility" Value="Collapsed"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasIndex, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="IndexLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Index" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SelectedValue.HasIntProperty, ElementName=Func, FallbackValue=False}" Value="False">
-                                                                <Setter TargetName="IntValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="IntValuesGrid" Property="Visibility" Value="Collapsed"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasInput, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="InputLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Input" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SelectedValue.HasStringProperty, ElementName=Func, FallbackValue=False}" Value="False">
-                                                                <Setter TargetName="StringValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="StringValuesGrid" Property="Visibility" Value="Collapsed"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasValue, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="ValueLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Value" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SelectedValue.HasFloatProperty, ElementName=Func, FallbackValue=False}" Value="False">
-                                                                <Setter TargetName="FloatValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="FloatValuesGrid" Property="Visibility" Value="Collapsed"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasDuration, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="DurationLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Duration" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SelectedValue.CommandType, ElementName=Func}" Value="Condition">
-                                                                <Setter TargetName="In2Label" Property="Margin" Value="0,-8,0,0"/>
-                                                                <Setter TargetName="In2Label" Property="Visibility" Value="Visible"/>
-                                                                <Setter TargetName="In2" Property="Margin" Value="0,-8,0,0"/>
-                                                                <Setter TargetName="In2" Property="Visibility" Value="Visible"/>
-                                                                <Setter TargetName="CondLabel" Property="Visibility" Value="Visible"/>
-                                                                <Setter TargetName="Cond" Property="Visibility" Value="Visible"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasChannel, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="ChannelLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Channel" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding SelectedValue.HideParameters, ElementName=Func}" Value="3">
-                                                                <Setter TargetName="IntValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="IntValuesGrid" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="FloatValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="FloatValuesGrid" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="StringValuesLabel" Property="Visibility" Value="Collapsed"/>
-                                                                <Setter TargetName="StringValuesGrid" Property="Visibility" Value="Collapsed"/>
+                                                            <DataTrigger Binding="{Binding SelectedValue.HasMix, ElementName=Func, FallbackValue=False}" Value="False">
+                                                                <Setter TargetName="MixLabel" Property="Visibility" Value="Collapsed"/>
+                                                                <Setter TargetName="Mix" Property="Visibility" Value="Collapsed"/>
                                                             </DataTrigger>
-                                                            <MultiDataTrigger>
-                                                                <MultiDataTrigger.Conditions>
-                                                                    <Condition Binding="{Binding SelectedValue.HasInputProperty, ElementName=Func}" Value="True"/>
-                                                                    <Condition Binding="{Binding NoInputAssigned}" Value="True"/>
-                                                                </MultiDataTrigger.Conditions>
-                                                                <MultiDataTrigger.Setters>
-                                                                    <Setter Property="Tag">
-                                                                        <Setter.Value>
-                                                                            <sys:Visibility>Visible</sys:Visibility>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </MultiDataTrigger.Setters>
-                                                            </MultiDataTrigger>
                                                         </DataTemplate.Triggers>
                                                     </DataTemplate>
                                                 </Grid.Resources>
@@ -306,11 +287,11 @@
                                                                         <Setter.Value>
                                                                             <ControlTemplate TargetType="CheckBox">
                                                                                 <Border>
-                                                                                    <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF05D;"/>
+                                                                                    <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF70C;"/>
                                                                                 </Border>
                                                                                 <ControlTemplate.Triggers>
                                                                                     <Trigger Property="IsChecked" Value="True">
-                                                                                        <Setter TargetName="textBox" Property="Text" Value="&#xF058;" />
+                                                                                        <Setter TargetName="textBox" Property="Text" Value="&#xF70C;" />
                                                                                         <Setter TargetName="textBox" Property="Foreground" Value="White"/>
                                                                                     </Trigger>
                                                                                 </ControlTemplate.Triggers>
@@ -329,11 +310,11 @@
                                                                         <Setter.Value>
                                                                             <ControlTemplate TargetType="CheckBox">
                                                                                 <Border>
-                                                                                    <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF006;"/>
+                                                                                    <TextBlock FontSize="{TemplateBinding FontSize}" x:Name="textBox" FontFamily="{StaticResource FontAwesome}" Foreground="Gray" Text="&#xF0F3;"/>
                                                                                 </Border>
                                                                                 <ControlTemplate.Triggers>
                                                                                     <Trigger Property="IsChecked" Value="True">
-                                                                                        <Setter TargetName="textBox" Property="Text" Value="&#xF005;" />
+                                                                                        <Setter TargetName="textBox" Property="Text" Value="&#xF0F3;" />
                                                                                         <Setter TargetName="textBox" Property="Foreground" Value="White"/>
                                                                                     </Trigger>
                                                                                 </ControlTemplate.Triggers>

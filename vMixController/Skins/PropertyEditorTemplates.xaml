@@ -35,6 +35,31 @@
             <prop:ScriptControl Commands="{Binding Commands, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Log="{Binding Log}"/>
         </StackPanel>
     </DataTemplate>
+    <DataTemplate x:Key="vMixControlNewButtonPropEditor" DataType="{x:Type widget:vMixControlNewButton}">
+        <StackPanel>
+            <prop:FilePathControl Filter="Images|*.bmp;*.jpg;*.png;*.ico" Title="Image" Value="{Binding Image, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <prop:ComboBoxControl Title="Image Type" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonImageType}"/>
+                <prop:ComboBoxControl Title="Style" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
+
+            </Grid>
+            <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <prop:BoolControl Help="{x:Static this:Help.Button_StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="State Dependent" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{x:Static this:Help.Button_ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Execute After Load" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl  Help="{x:Static this:Help.Button_Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="Colorize Button" Grouped="True"></prop:BoolControl>
+            </Grid>
+            <prop:NewScriptControl Commands="{Binding Commands, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Log="{Binding Log}"/>
+        </StackPanel>
+    </DataTemplate>
     <DataTemplate x:Key="vMixControlTextFieldPropEditor" DataType="{x:Type widget:vMixControlTextField}">
         <StackPanel>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>

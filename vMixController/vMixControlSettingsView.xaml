@@ -130,7 +130,7 @@
                         <Grid Background="{StaticResource Main.Gradient}">
                             <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf1fc;</Run><Run Text=" "></Run><Run Text="Color"/></TextBlock>
                         </Grid>
-                        <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Widget.Color, UpdateSourceTrigger=Explicit, Mode=TwoWay}" SelectedValuePath="A">
+                        <ComboBox Grid.Column="1" ItemsSource="{x:Static views:vMixWidgetSettingsViewModel.Colors}" SelectedValue="{Binding Widget.Color, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={Converters:ColorToColorFromListConverter}}" SelectedValuePath="A">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>

@@ -52,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -363,6 +364,7 @@
     <Compile Include="Classes\StreamDeckConnector.cs" />
     <Compile Include="Classes\Triple.cs" />
     <Compile Include="Classes\Utils.cs" />
+    <Compile Include="Classes\vMixNewFunctionReference.cs" />
     <Compile Include="Classes\vMixFunctionReference.cs" />
     <Compile Include="Classes\XmlDocumentMessenger.cs" />
     <Compile Include="Classes\ScheduledEvent.cs" />
@@ -382,6 +384,7 @@
     </Compile>
     <Compile Include="Controls\VolumeSlider.cs" />
     <Compile Include="Controls\WheelControlledScrollViewer.cs" />
+    <Compile Include="Converters\ColorToColorFromListConverter.cs" />
     <Compile Include="Converters\ContentToVisibilityConverter.cs" />
     <Compile Include="Converters\BitToVisibilityConverter.cs" />
     <Compile Include="Converters\AudiobusToBoolConverter.cs" />
@@ -442,6 +445,9 @@
       <DependentUpon>Help.resx</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ICancellable.cs" />
+    <Compile Include="PropertiesControls\NewScriptControl.xaml.cs">
+      <DependentUpon>NewScriptControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PropertiesControls\StreamDeckMappingControl.xaml.cs">
       <DependentUpon>StreamDeckMappingControl.xaml</DependentUpon>
     </Compile>
@@ -504,6 +510,10 @@
     <Compile Include="Widgets\Button\vMixControlButtonHelper.cs" />
     <Compile Include="Widgets\IvMixAutoUpdateWidget.cs" />
     <Compile Include="Classes\MainWindowSettings.cs" />
+    <Compile Include="Widgets\NewButton\NewNativeFunctions.cs" />
+    <Compile Include="Widgets\NewButton\vMixControlNewButtonHelper.cs" />
+    <Compile Include="Widgets\NewButton\vMixControlNewButton.cs" />
+    <Compile Include="Widgets\NewButton\vMixControlNewButtonCommand.cs" />
     <Compile Include="Widgets\vMixControlVariableViewer.cs" />
     <Compile Include="Widgets\vMixControlPlaylist.cs" />
     <Compile Include="Widgets\vMixControlSlider.cs" />
@@ -537,6 +547,10 @@
     <Page Include="Controls\vMixPathSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PropertiesControls\NewScriptControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="PropertiesControls\StreamDeckMappingControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -686,6 +700,10 @@
     </None>
     <EmbeddedResource Include="costura-win-x86\Melanchall_DryWetMidi_Native32.dll" />
     <EmbeddedResource Include="costura-win-x64\Melanchall_DryWetMidi_Native64.dll" />
+    <Content Include="NewFunctions.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

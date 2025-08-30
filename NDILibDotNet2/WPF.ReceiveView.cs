@@ -590,10 +590,10 @@ namespace NewTek.NDI.WPF
             {
                 // The descriptors
                 NDIlib.video_frame_v2_t videoFrame = new NDIlib.video_frame_v2_t();
-                NDIlib.audio_frame_v2_t audioFrame = new NDIlib.audio_frame_v2_t();
+                NDIlib.audio_frame_v3_t audioFrame = new NDIlib.audio_frame_v3_t();
                 NDIlib.metadata_frame_t metadataFrame = new NDIlib.metadata_frame_t();
 
-                switch (NDIlib.recv_capture_v2(_recvInstancePtr, ref videoFrame, ref audioFrame, ref metadataFrame, 1000))
+                switch (NDIlib.recv_capture_v3(_recvInstancePtr, ref videoFrame, ref audioFrame, ref metadataFrame, 1000))
                 {
                     // No data
                     case NDIlib.frame_type_e.frame_type_none:
@@ -690,7 +690,7 @@ namespace NewTek.NDI.WPF
                         if (!_audioEnabled || audioFrame.p_data == IntPtr.Zero || audioFrame.no_samples == 0)
                         {
                             // alreays free received frames
-                            NDIlib.recv_free_audio_v2(_recvInstancePtr, ref audioFrame);
+                            NDIlib.recv_free_audio_v3(_recvInstancePtr, ref audioFrame);
 
                             break;
                         }
@@ -771,7 +771,7 @@ namespace NewTek.NDI.WPF
 
                             // Convert from float planar to float interleaved audio
                             // There is a matching version of this that converts to interleaved 16 bit audio frames if you need 16 bit
-                            NDIlib.util_audio_to_interleaved_32f_v2(ref audioFrame, ref interleavedFrame);
+                            NDIlib.util_audio_to_interleaved_32f_v3(ref audioFrame, ref interleavedFrame);
 
                             // release the pin on the byte[]
                             // never try to access p_data after the byte[] has been unpinned!
@@ -783,7 +783,7 @@ namespace NewTek.NDI.WPF
                         }
 
                         // free the frame that was received
-                        NDIlib.recv_free_audio_v2(_recvInstancePtr, ref audioFrame);
+                        NDIlib.recv_free_audio_v3(_recvInstancePtr, ref audioFrame);
 
                         break;
                     // Metadata

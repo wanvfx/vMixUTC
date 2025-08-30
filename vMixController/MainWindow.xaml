@@ -72,31 +72,50 @@
                     <SolidColorBrush Color="{Binding B.BorderColor, FallbackValue=Black}"/>
                 </Rectangle.Stroke>
             </Rectangle>
+            <Style TargetType="Border" x:Key="IconBorder">
+                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
             <CompositeCollection x:Key="CreateItems" x:Shared="False">
                 <MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="Button">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF205;</TextBlock>
+                        </Border>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="NewButton" Command="{Binding CreateWidgetCommand}" CommandParameter="NewButton" Header="Button+">
+                    <MenuItem.Icon>
+                        <Border Style="{StaticResource IconBorder}">
+                            <Grid Width="16" Height="16">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF205;</TextBlock>
+                                <Path Grid.Column="1" x:Name="triangle" 
+                      Data="M8,0 L8,8 L0,8 Z" 
+                      Fill="#d77d31" 
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      Opacity="1"/>
+                            </Grid>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Label" Command="{Binding CreateWidgetCommand}" CommandParameter="Label" Header="Label">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="Variable Viewer">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Region" Command="{Binding CreateWidgetCommand}" CommandParameter="Region" Header="Region">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF2D0;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
@@ -104,56 +123,56 @@
                 <!--<MenuItem Command="{Binding CreateWidgetCommand}" CommandParameter="Image" Header="Image"/>-->
                 <MenuItem x:Name="List" Command="{Binding CreateWidgetCommand}" CommandParameter="List" Header="List">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF03A;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Score" Command="{Binding CreateWidgetCommand}" CommandParameter="Score" Header="Score">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF005;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="TextField" Command="{Binding CreateWidgetCommand}" CommandParameter="TextField" Header="Text Field">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF031;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Timer" Command="{Binding CreateWidgetCommand}" CommandParameter="Timer" Header="Timer">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xE06F;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Clock" Command="{Binding CreateWidgetCommand}" CommandParameter="Clock" Header="Clock">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF34E;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Volume" Command="{Binding CreateWidgetCommand}" CommandParameter="Volume" Header="Volume">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1DE;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="TBar" Command="{Binding CreateWidgetCommand}" CommandParameter="TBar" Header="T-Bar">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">T</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="Playlist" Command="{Binding CreateWidgetCommand}" CommandParameter="Playlist" Header="Playlist">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xf00b;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
@@ -161,14 +180,14 @@
                 <Separator/>
                 <MenuItem x:Name="Container" Command="{Binding CreateWidgetCommand}" CommandParameter="Container" Header="Container">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1B2;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="ExternalData" Command="{Binding CreateWidgetCommand}" ItemsSource="{Binding ExternalDataProviders}" CommandParameter="ExternalData" Header="External Data">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1C0;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
@@ -189,21 +208,21 @@
                 </MenuItem>
                 <MenuItem x:Name="MidiInterface" Command="{Binding CreateWidgetCommand}" CommandParameter="MidiInterface" Header="MIDI Device">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0E7;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="StreamDeck" Command="{Binding CreateWidgetCommand}" CommandParameter="StreamDeck" Header="StreamDeck Device">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF11C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="MultiState" Command="{Binding CreateWidgetCommand}" CommandParameter="MultiState" Header="Multi State">
                     <MenuItem.Icon>
-                        <Border Width="16" Height="16">
+                        <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF233;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
@@ -283,9 +302,9 @@
                 <MenuItem Header="Recent Files" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
                     <MenuItem.Resources>
                         <ResourceDictionary>
-                        <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF15B;</TextBlock>
-                        </Border>
+                            <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
+                                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF15B;</TextBlock>
+                            </Border>
                         </ResourceDictionary>
                     </MenuItem.Resources>
                     <MenuItem.Icon>

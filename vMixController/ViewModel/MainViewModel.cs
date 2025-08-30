@@ -493,6 +493,27 @@ namespace vMixController.ViewModel
             }
         }
 
+        private ObservableCollection<vMixNewFunctionReference> _newFunctions = null;
+
+        public ObservableCollection<vMixNewFunctionReference> NewFunctions
+        {
+            get
+            {
+                return _newFunctions;
+            }
+
+            set
+            {
+                if (_newFunctions == value)
+                {
+                    return;
+                }
+
+                _newFunctions = value;
+                RaisePropertyChanged(nameof(NewFunctions));
+            }
+        }
+
         private ObservableCollection<vMixFunctionReference> _functions = null;
 
         /// <summary>
@@ -1220,7 +1241,7 @@ namespace vMixController.ViewModel
                                 if (widget is vMixControlTextField)
                                     ((vMixControlTextField)widget).IsLive = LIVE;
                                 widget.Update();
-                                
+
 
                                 SaveUndo(string.Format("Widget [{0}] created", widget.Type));
                                 UndoState.Seek(0, SeekOrigin.Begin);
@@ -1681,7 +1702,7 @@ namespace vMixController.ViewModel
             ExecLinks.Clear();
             foreach (var item in _widgets)
             {
-                var active = item.Hotkey.Where(x => !string.IsNullOrWhiteSpace(x.Link)).Select(x => x.Link).ToArray();
+                var active = item.Hotkey.Where(x => !string.IsNullOrWhiteSpace(x.Link) && x.Active).Select(x => x.Link).ToArray();
                 foreach (var item1 in _widgets)
                 {
                     switch (item1)
@@ -1691,6 +1712,13 @@ namespace vMixController.ViewModel
                             {
                                 if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.StringParameter))
                                     ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.StringParameter });
+                            }
+                            break;
+                        case vMixControlNewButton nb:
+                            foreach (var cmd in nb.Commands)
+                            {
+                                if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.Value))
+                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.Value });
                             }
                             break;
                         case vMixControlTimer t:
@@ -2019,12 +2047,14 @@ namespace vMixController.ViewModel
         void ProcessHotkey(string link, object parameter = null)
         {
             foreach (var ctrl in _widgets)
-                foreach (var item in ctrl.Hotkey.Select((x, i) => new { obj = x, idx = i }))
-                    if (item.obj.Link == link)
+                for (int i = 0; i < ctrl.Hotkey.Length; i++)
+                {
+                    if (ctrl.Hotkey[i].Link == link && ctrl.Hotkey[i].Active)
                         if (parameter != null)
-                            ctrl.ExecuteHotkey(item.idx, parameter);
+                            ctrl.ExecuteHotkey(i, parameter);
                         else
-                            ctrl.ExecuteHotkey(item.idx);
+                            ctrl.ExecuteHotkey(i);
+                }
         }
 
         private RelayCommand<KeyEventArgs> _previewKeyUpCommand;
@@ -2210,6 +2240,19 @@ namespace vMixController.ViewModel
             {
                 _logger.Error(ex, "Error while loading mapped functions.");
             }
+            s = new XmlSerializer(typeof(ObservableCollection<vMixNewFunctionReference>));
+            try
+            {
+                if (File.Exists("NewFunctions.xml"))
+                    using (var fs = new FileStream("NewFunctions.xml", FileMode.Open))
+                        _newFunctions = (ObservableCollection<vMixNewFunctionReference>)s.Deserialize(fs);
+                _newFunctions = new ObservableCollection<vMixNewFunctionReference>(_newFunctions.OrderBy(x => x.Function).GroupBy(x => x.Category == "Native" ? "_" : x.Category).OrderBy(x => x.Key).SelectMany(x => x.ToArray()).ToArray());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error while loading new mapped functions.");
+            }
+
             var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             _documentsPath = Path.Combine(documents, "vMix UTC");
             if (!Directory.Exists(_documentsPath))
@@ -2873,7 +2916,7 @@ namespace vMixController.ViewModel
                     p =>
                     {
                         //WindowSettings.Pages[p] = "PAGE 2";
-                        TextInputWindow ti = new TextInputWindow() { Title = "Input Request", InputTitle = "Page Name",  Text = WindowSettings.Pages[p], Mode = InputTextWindowMode.Default };
+                        TextInputWindow ti = new TextInputWindow() { Title = "Input Request", InputTitle = "Page Name", Text = WindowSettings.Pages[p], Mode = InputTextWindowMode.Default };
                         IsHotkeysEnabled = false;
                         if (ti.ShowDialog() ?? false)
                         {
