@@ -106,7 +106,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="16"><InlineUIContainer>
-							<TextBlock Text="{Binding Type}"/>
+							<TextBlock Text="{Binding Widget.Type}"/>
 						</InlineUIContainer><Run Text=" " /><Run Text="Widget"/></TextBlock>
                     <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                 </Grid>
