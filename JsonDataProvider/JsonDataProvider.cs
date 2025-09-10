@@ -37,8 +37,10 @@ namespace JsonDataProviderNs
 
         private string _url = "";
         private string _jsonPath = "";
+        private string _headers = "";
         private string _error = "";
         private int _groupBy = 1;
+        private bool _reload = false;
         private UIElement _ui;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -83,13 +85,37 @@ namespace JsonDataProviderNs
             get
             {
                 // Проверяем, нужно ли обновить данные по таймеру
-                if ((DateTime.Now - _previousQuery).TotalMilliseconds >= Period)
+                if ((DateTime.Now - _previousQuery).TotalMilliseconds >= Period || _reload)
                 {
+                    _reload = false;
                     // Запускаем асинхронное получение данных, не блокируя UI
                     // Используем "fire and forget" с отловом ошибок внутри метода
                     _ = RetrieveDataAsync();
                 }
                 return Data.ToArray();
+            }
+        }
+
+        public static void AddHeadersFromString(HttpClient client, string headersString)
+        {
+            if (string.IsNullOrWhiteSpace(headersString))
+                return;
+
+            var lines = headersString.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var line in lines)
+            {
+                var colonIndex = line.IndexOf(':');
+                if (colonIndex > 0)
+                {
+                    var key = line.Substring(0, colonIndex).Trim();
+                    var value = line.Substring(colonIndex + 1).Trim();
+
+                    if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+                    {
+                        client.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
+                    }
+                }
             }
         }
 
@@ -138,6 +164,9 @@ namespace JsonDataProviderNs
                         newDocument = await JsonDocument.ParseAsync(stream, default, token);
                 }
                 else
+                {
+
+                    AddHeadersFromString(_httpClient, Headers);
                     using (var response = await _httpClient.GetAsync(uri, token))
                     {
                         // 2. Проверяем, что запрос успешен (статус 2xx)
@@ -152,7 +181,7 @@ namespace JsonDataProviderNs
 
                         }
                     }
-
+                }
                 // После успешного получения и парсинга, обновляем данные в потоке UI
                 Application.Current?.Dispatcher.Invoke(() =>
                 {
@@ -256,6 +285,19 @@ namespace JsonDataProviderNs
             }
         }
 
+        public string Headers
+        {
+            get => _headers;
+            set
+            {
+                if (_headers == value) return;
+                _headers = value;
+                OnPropertyChanged(nameof(Headers));
+                // Если документ уже загружен, просто перепарсим его с новым путем
+                UpdateData();
+            }
+        }
+
         public string Error
         {
             get => _error;
@@ -292,7 +334,7 @@ namespace JsonDataProviderNs
 
         public List<object> GetProperties()
         {
-            return new List<object> { Url, JsonPath, GroupBy };
+            return new List<object> { Url, JsonPath, GroupBy, Headers };
         }
 
         public void SetProperties(List<object> props)
@@ -300,6 +342,7 @@ namespace JsonDataProviderNs
             Url = (string)(props?.ElementAtOrDefault(0) ?? "");
             JsonPath = (string)(props?.ElementAtOrDefault(1) ?? "");
             GroupBy = (int)(props?.ElementAtOrDefault(2) ?? 1);
+            Headers = (string)(props?.ElementAtOrDefault(3) ?? "");
         }
 
         private RelayCommand _showRowsCommand;
@@ -314,6 +357,7 @@ namespace JsonDataProviderNs
         public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(
             () =>
             {
+                _reload = true;
                 _cancellationTokenSource?.Cancel();
                 _ = RetrieveDataAsync();
             }));

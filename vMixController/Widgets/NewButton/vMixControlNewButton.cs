@@ -1,6 +1,7 @@
 ﻿//#define OBJECTDEPENDENCY
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using NCalc;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -109,6 +110,8 @@ namespace vMixController.Widgets
                 RaisePropertyChanged(nameof(PotentialLoopWarning));
             }
         }
+
+        private bool _isPropertiesEditing;
 
         [XmlIgnore]
         public override State State
@@ -704,16 +707,16 @@ namespace vMixController.Widgets
             exp.EvaluateFunction += ExpressionEvaluateFunction;
         }
 
-        private void ExpressionEvaluateFunction(string name, NCalc.FunctionArgs args)
+        private void ExpressionEvaluateFunction(string name, FunctionArgs args)
         {
             var p = args.EvaluateParameters();
-            args.HasResult = false;
+            //args.HasResult = false;
             switch (name)
             {
                 case "_":
                     if (p.Length > 0)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         if (_isStateDependent && _internalState != null)
                             args.Result = GetValueByPath(_internalState, p[0].ToString());
                         else
@@ -723,7 +726,7 @@ namespace vMixController.Widgets
                 case "expandvariables":
                     if (p.Length > 0)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = Environment.ExpandEnvironmentVariables(p[0].ToString());
                     }
                     break;
@@ -731,14 +734,14 @@ namespace vMixController.Widgets
                 case "split":
                     if (p.Length > 1 && p[0] is string && p[1] is string)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((string)p[0]).Split(new string[] { (string)p[1] }, StringSplitOptions.RemoveEmptyEntries);
                     }
                     break;
                 case "trim":
                     if (p.Length > 0 && p[0] is string)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((string)p[0]).Trim();
                     }
                     break;
@@ -746,7 +749,7 @@ namespace vMixController.Widgets
                 case "xpath":
                     if (_latestDocument != null)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         if (p.Length > 0 && p[0] is string par)
                         {
                             var node = _latestDocument.SelectSingleNode(par);
@@ -762,7 +765,7 @@ namespace vMixController.Widgets
                 case "getvalue":
                     if (p.Length > 1 && p[0] is Array && p[1] is int)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((Array)p[0]).GetValue((int)p[1]);
                     }
                     break;
@@ -771,7 +774,7 @@ namespace vMixController.Widgets
 
         private void OnXmlDocumentDownloaded(XmlDocument doc, DateTime timestamp)
         {
-            if (IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
+            if (!_isPropertiesEditing && IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
                 _ = Task.Run(() =>
                 {
@@ -929,8 +932,8 @@ namespace vMixController.Widgets
                                     ClearLog();
                                     _jumpCount = 0;
                                 }
-                                vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out parameter);
-                                AddLog("{2}) GOTO {0} [{1}]", cmd.Value, parameter, _pointer + 1);
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                                AddLog("{2}) GOTO {0} [{1}]", cmd.SelectedIndex, parameter, _pointer + 1);
                                 _pointer = parameter - 1;
                                 _jumpCount++;
                                 break;
@@ -1006,6 +1009,18 @@ namespace vMixController.Widgets
                                 AddLog("{2}) VALUECHANGED {0} IS {1}", obj, hasKey, _pointer + 1);
                                 _conditions.Push(hasKey ? obj != _trackedValues[key] : false);
                                 _trackedValues[key] = obj;
+                                break;
+                            case NewNativeFunctions.SETBUTTONCOLOR:
+                                vMixControlButtonHelper.CalculateExpression<int>(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out parameter);
+                                Dispatcher.Invoke(new Action(() =>
+                                {
+                                    if (parameter >= 0 && vMixWidgetSettingsViewModel.Colors.Count > parameter)
+                                    {
+                                        Color = vMixWidgetSettingsViewModel.Colors[parameter].A;
+                                        BorderColor = vMixWidgetSettingsViewModel.Colors[parameter].B;
+                                    }
+                                }));
+
                                 break;
                         }
                     }
@@ -1135,6 +1150,7 @@ namespace vMixController.Widgets
 
         public override void BeforePropertiesChanged()
         {
+            _isPropertiesEditing = true;
             base.BeforePropertiesChanged();
         }
 
@@ -1169,6 +1185,8 @@ namespace vMixController.Widgets
             }*/
 
             PotentialLoopWarning = hasGoToOrTimer | hasSelfExecLink;
+
+            _isPropertiesEditing = false;
         }
 
         public override void Update()

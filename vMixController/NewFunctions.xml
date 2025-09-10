@@ -9,7 +9,15 @@
 		<Category>Native</Category>
 		<Native>true</Native>
 	</vMixNewFunctionReference>
-
+	
+	<vMixNewFunctionReference>
+		<Description></Description>
+		<Function>GoTo</Function>
+		<FormatString>Function=GoTo&amp;Value=$SelectedIndex</FormatString>
+		<Category>Native</Category>
+		<Native>true</Native>
+	</vMixNewFunctionReference>
+	
 	<vMixNewFunctionReference>
 		<Description></Description>
 		<Function>If</Function>
@@ -169,6 +177,14 @@
 		<Function>ExecLink</Function>
 		<FormatString>$Value</FormatString>
 		<ValueName>Link</ValueName>
+		<Category>Native</Category>
+	</vMixNewFunctionReference>
+	
+	<vMixNewFunctionReference>
+		<Native>true</Native>
+		<Description>Set button color</Description>
+		<Function>SetButtonColor</Function>
+		<FormatString>$SelectedIndex</FormatString>
 		<Category>Native</Category>
 	</vMixNewFunctionReference>
 	

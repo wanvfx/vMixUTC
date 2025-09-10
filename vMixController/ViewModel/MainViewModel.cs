@@ -1189,14 +1189,14 @@ namespace vMixController.ViewModel
                             {
                                 Owner = App.Current.MainWindow
                             };
-
+                        p.BeforePropertiesChanged();
                         var result = _settings.ShowDialog();
                         if (result.HasValue && result.Value)
                         {
                             SaveUndo(string.Format("Widget {1}[{0}] properties changed", p.Type, p.Name));
                             _settings.SaveConnectedWidgetProperties();
-                            p.AfterPropertiesChanged();
                         }
+                        p.AfterPropertiesChanged();
                         _logger.Debug("Properties updated.");
                         _settings = null;
 

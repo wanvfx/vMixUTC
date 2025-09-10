@@ -343,7 +343,7 @@ namespace vMixController.Widgets.Button
             return result;
         }
 
-        private static void OnEvaluateParameter(string name, NCalc.ParameterArgs args)
+        private static void OnEvaluateParameter(string name, ParameterArgs args)
         {
             //Avoid non-defined parameters with their names
             args.Result = name;
@@ -356,7 +356,7 @@ namespace vMixController.Widgets.Button
         /// <param name="doc">XML-документ для проверки.</param>
         /// <param name="variableExpander">Функция для раскрытия переменных (например, "[VAR]").</param>
         /// <returns>Объект XPathStateResult, содержащий результат и флаг наличия ошибок.</returns>
-        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlNewButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, NCalc.EvaluateFunctionHandler Exp_EvaluateFunction)
+        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlNewButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             if (doc == null || variableExpander == null)
             {
@@ -411,7 +411,7 @@ namespace vMixController.Widgets.Button
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, NCalc.EvaluateFunctionHandler Exp_EvaluateFunction)
+        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             try
             {

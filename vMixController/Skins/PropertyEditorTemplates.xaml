@@ -118,6 +118,7 @@
             <prop:IntControl Value="{Binding Period, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Title="Update Period"/>
             <prop:FilePathControl Filter="External Data|*.dll" Value="{Binding DataProviderPath, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
             <prop:BoolControl Value="{Binding RestartData, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Title="Loop Data"/>
+            <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
         </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlClockPropEditor" DataType="{x:Type widget:vMixControlClock}">

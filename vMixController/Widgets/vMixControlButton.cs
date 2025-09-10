@@ -24,6 +24,7 @@ using vMixController.Messages;
 using vMixController.Widgets.Button;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using NCalc;
 
 namespace vMixController.Widgets
 {
@@ -623,6 +624,7 @@ namespace vMixController.Widgets
 
         [NonSerialized]
         private RelayCommand _stopScriptCommand;
+        private bool _isPropertiesEditing;
 
         /// <summary>
         /// Gets the StopScriptCommand.
@@ -676,16 +678,16 @@ namespace vMixController.Widgets
             exp.EvaluateFunction += ExpressionEvaluateFunction;
         }
 
-        private void ExpressionEvaluateFunction(string name, NCalc.FunctionArgs args)
+        private void ExpressionEvaluateFunction(string name, FunctionArgs args)
         {
             var p = args.EvaluateParameters();
-            args.HasResult = false;
+            //args.HasResult = false;
             switch (name)
             {
                 case "_":
                     if (p.Length > 0)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         if (_isStateDependent && _internalState != null)
                             args.Result = GetValueByPath(_internalState, p[0].ToString());
                         else
@@ -695,7 +697,7 @@ namespace vMixController.Widgets
                 case "expandvariables":
                     if (p.Length > 0)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = Environment.ExpandEnvironmentVariables(p[0].ToString());
                     }
                     break;
@@ -703,14 +705,14 @@ namespace vMixController.Widgets
                 case "split":
                     if (p.Length > 1 && p[0] is string && p[1] is string)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((string)p[0]).Split(new string[] { (string)p[1] }, StringSplitOptions.RemoveEmptyEntries);
                     }
                     break;
                 case "trim":
                     if (p.Length > 0 && p[0] is string)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((string)p[0]).Trim();
                     }
                     break;
@@ -718,7 +720,7 @@ namespace vMixController.Widgets
                 case "xpath":
                     if (_latestDocument != null)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         if (p.Length > 0 && p[0] is string par)
                         {
                             var node = _latestDocument.SelectSingleNode(par);
@@ -734,7 +736,7 @@ namespace vMixController.Widgets
                 case "getvalue":
                     if (p.Length > 1 && p[0] is Array && p[1] is int)
                     {
-                        args.HasResult = true;
+                        //args.HasResult = true;
                         args.Result = ((Array)p[0]).GetValue((int)p[1]);
                     }
                     break;
@@ -743,7 +745,7 @@ namespace vMixController.Widgets
 
         private void OnXmlDocumentDownloaded(XmlDocument doc, DateTime timestamp)
         {
-            if (IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
+            if (!_isPropertiesEditing && IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
                 _ = Task.Run(() =>
                 {
@@ -1115,6 +1117,7 @@ namespace vMixController.Widgets
 
         public override void BeforePropertiesChanged()
         {
+            _isPropertiesEditing = true;
             base.BeforePropertiesChanged();
         }
 
@@ -1145,6 +1148,8 @@ namespace vMixController.Widgets
                 d.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
                 d.ShowDialog();
             }
+
+            _isPropertiesEditing = false;
         }
 
         public override void Update()

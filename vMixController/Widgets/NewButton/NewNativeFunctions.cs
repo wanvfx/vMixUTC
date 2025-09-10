@@ -36,5 +36,7 @@ namespace vMixController.Widgets.NewButton
         public const string API = "API";
         public const string API_POST = "APIPOST";
         public const string VALUECHANGED = "ValueChanged";
+
+        public const string SETBUTTONCOLOR = "SetButtonColor";
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -96,9 +97,9 @@ namespace vMixController.Widgets.Button
                 result = default(T);
                 return false;
             }
-
+            
             var expression = new Expression(expressionString);
-
+            
             // Подписываемся на события. Отписка будет в блоке finally, что гарантирует ее выполнение.
             if (evaluateFunctionHandler != null)
             {
@@ -131,7 +132,7 @@ namespace vMixController.Widgets.Button
                 //Обработка для случая возврата строк в числовом параметре
                 if (typeof(T) == typeof(int))
                 {
-                    if (!int.TryParse((string)rawResult, out var intResult))
+                    if (!int.TryParse(rawResult.ToString(), out var intResult))
                     {
                         result = ExpressionOrDefaultValue<T>(expressionString);
                         return true;
@@ -170,7 +171,7 @@ namespace vMixController.Widgets.Button
             return result;
         }
 
-        private static void OnEvaluateParameter(string name, NCalc.ParameterArgs args)
+        private static void OnEvaluateParameter(string name, ParameterArgs args)
         {
             //Avoid non-defined parameters with their names
             args.Result = name;
@@ -278,7 +279,7 @@ namespace vMixController.Widgets.Button
         /// <param name="doc">XML-документ для проверки.</param>
         /// <param name="variableExpander">Функция для раскрытия переменных (например, "[VAR]").</param>
         /// <returns>Объект XPathStateResult, содержащий результат и флаг наличия ошибок.</returns>
-        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, NCalc.EvaluateFunctionHandler Exp_EvaluateFunction)
+        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             if (doc == null || variableExpander == null)
             {
@@ -335,7 +336,7 @@ namespace vMixController.Widgets.Button
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, NCalc.EvaluateFunctionHandler Exp_EvaluateFunction)
+        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             try
             {

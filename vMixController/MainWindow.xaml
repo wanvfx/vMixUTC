@@ -197,7 +197,7 @@
                         </DataTemplate>
                     </MenuItem.ItemTemplate>
                     <MenuItem.Resources>
-                        <Style TargetType="{x:Type MenuItem}">
+                        <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="{x:Type MenuItem}">
                             <Setter Property="Command" Value="{Binding Main.CreateWidgetFromTemplateCommand, Source={StaticResource Locator}}"/>
                             <Setter Property="CommandParameter" Value="{Binding}"/>
                             <Setter Property="HorizontalContentAlignment" Value="Left"/>

@@ -4,7 +4,7 @@
         xmlns:toolkit="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
         xmlns:themes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
                     xmlns:local="clr-namespace:vMixControllerSkin"
-        xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes;assembly=Xceed.Wpf.Toolkit" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+        xmlns:chrome="clr-namespace:Xceed.Wpf.Toolkit.Chromes;assembly=Xceed.Wpf.Toolkit" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:themes1="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
     <CompositeCollection x:Key="Pages">
         <sys:String>MAIN</sys:String>
@@ -1489,5 +1489,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>
