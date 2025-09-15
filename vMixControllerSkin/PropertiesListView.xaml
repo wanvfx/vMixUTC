@@ -18,7 +18,7 @@
             <conv:ObjectToTypeStringConverter x:Key="ObjToType"/>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ListView Padding="-1" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items, ElementName=propsViewer}" x:Name="container">
+    <ListView Padding="-1" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0" ItemsSource="{Binding Items, ElementName=propsViewer}" x:Name="container" d:ItemsSource="{d:SampleData ItemCount=5}">
         <ListView.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel HorizontalAlignment="Stretch"/>

@@ -26,6 +26,37 @@ namespace UTCGoogleSheetsDataProvider
         public int Period { get; set; }
         public bool IsProvidingCustomProperties => false;
 
+        private int ParseExcelColumn(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return -1;
+
+            input = input.Trim();
+
+            // Если входная строка состоит только из цифр - это номер столбца
+            if (int.TryParse(input, out int number))
+            {
+                /*if (number <= 0)
+                    throw new ArgumentException("Column number must be positive");*/
+                return number;
+            }
+
+            // Если есть буквы - это буквенное обозначение
+            input = input.ToUpper();
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(input, "^[A-Z]+$"))
+                return -1;//throw new ArgumentException("Input must contain only letters A-Z or only digits");
+
+            int result = 0;
+
+            foreach (char c in input)
+            {
+                result = result * 26 + (c - 'A' + 1);
+            }
+
+            return result - 1;
+        }
+
         public string[] Values
         {
             get
@@ -33,6 +64,7 @@ namespace UTCGoogleSheetsDataProvider
                 _hasError = false;
                 try
                 {
+
                     if (File.Exists(FilePath))
                     {
                         var fileInfo = new FileInfo(FilePath);
@@ -49,15 +81,18 @@ namespace UTCGoogleSheetsDataProvider
                                         List<string> results = new List<string>();
                                         int row = 0;
                                         int sheet = 0;
+                                        int startColIndex = ParseExcelColumn(StartCol);
+                                        int endColIndex = ParseExcelColumn(EndCol);
                                         do
                                         {
-                                            if (sheet == SheetIndex)
+                                            int sheetIndex = 0;
+                                            if ((int.TryParse(SheetIndex, out sheetIndex) && sheet == sheetIndex) || reader.Name == SheetIndex)
                                                 while (reader.Read())
                                                 {
                                                     if (row >= StartRow)
                                                     {
                                                         string line = "";
-                                                        for (int i = StartCol; i < (EndCol >= 0 ? Math.Min(reader.FieldCount, EndCol) : reader.FieldCount); i++)
+                                                        for (int i = startColIndex; i < (endColIndex >= 0 ? Math.Min(reader.FieldCount, endColIndex) : reader.FieldCount); i++)
                                                             if (IsTable)
                                                                 line += "|" + (reader.GetValue(i)?.ToString() ?? "");
                                                             else
@@ -182,7 +217,7 @@ namespace UTCGoogleSheetsDataProvider
         }
         private int _endRow = -1;
 
-        public int StartCol
+        public string StartCol
         {
             get => _startCol;
             set
@@ -197,9 +232,9 @@ namespace UTCGoogleSheetsDataProvider
                 RaisePropertyChanged(nameof(StartCol));
             }
         }
-        private int _startCol = 0;
+        private string _startCol = "0";
 
-        public int EndCol
+        public string EndCol
         {
             get => _endCol;
             set
@@ -214,9 +249,9 @@ namespace UTCGoogleSheetsDataProvider
                 RaisePropertyChanged(nameof(EndCol));
             }
         }
-        private int _endCol = -1;
+        private string _endCol = "-1";
 
-        public int SheetIndex
+        public string SheetIndex
         {
             get => _sheet;
             set
@@ -231,7 +266,7 @@ namespace UTCGoogleSheetsDataProvider
                 RaisePropertyChanged(nameof(SheetIndex));
             }
         }
-        private int _sheet = 0;
+        private string _sheet = "0";
 
         public bool IsTable
         {
@@ -292,6 +327,14 @@ namespace UTCGoogleSheetsDataProvider
                         if (_hasError)
                             error = "File not found or is not a valid excel file!";
                         break;
+                    case nameof(StartCol):
+                        if (!int.TryParse(StartCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(StartCol, "^[A-Z]+$"))
+                            error = "Start column is in wrong format!";
+                        break;
+                    case nameof(EndCol):
+                        if (!int.TryParse(EndCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(EndCol, "^[A-Z]+$"))
+                            error = "End column is in wrong format!";
+                        break;
                 }
                 return error;
             }
@@ -316,9 +359,22 @@ namespace UTCGoogleSheetsDataProvider
             FilePath = props.ElementAtOrDefault(0) as string ?? "";
             StartRow = (int?)props.ElementAtOrDefault(1) ?? 0;
             EndRow = (int?)props.ElementAtOrDefault(2) ?? -1;
-            StartCol = (int?)props.ElementAtOrDefault(3) ?? 0;
-            EndCol = (int?)props.ElementAtOrDefault(4) ?? -1;
-            SheetIndex = (int?)props.ElementAtOrDefault(5) ?? 0;
+
+
+            if (props.ElementAtOrDefault(3) is int)
+                StartCol = ((int?)props.ElementAtOrDefault(3) ?? 0).ToString();
+            else
+                StartCol = (string)props.ElementAtOrDefault(3) ?? "0";
+
+            if (props.ElementAtOrDefault(4) is int)
+                EndCol = ((int?)props.ElementAtOrDefault(4) ?? -1).ToString();
+            else
+                EndCol = (string)props.ElementAtOrDefault(4) ?? "-1";
+            if (props.ElementAtOrDefault(5) is int)
+                SheetIndex = ((int?)props.ElementAtOrDefault(5) ?? 0).ToString();
+            else
+                SheetIndex = (string)props.ElementAtOrDefault(5) ?? "0";
+
             IsTable = (bool?)props.ElementAtOrDefault(6) as bool? ?? true;
         }
 

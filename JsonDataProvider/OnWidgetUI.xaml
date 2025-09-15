@@ -20,7 +20,10 @@
     <StackPanel>
         <skin:PropertiesListView>
             <CompositeCollection>
-                <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Url}" Tag="URL">
+                <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Url}">
+                    <TextBox.Tag>
+                        <TextBlock Style="{StaticResource CaptionText}">URL</TextBlock>
+                    </TextBox.Tag>
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewKeyUp">
                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -79,7 +82,10 @@
                     </i:Interaction.Triggers>
                 </TextBox>
 
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Group By">
+                <TextBox Style="{StaticResource WidgetTextBox}">
+                    <TextBox.Tag>
+                        <TextBlock Style="{StaticResource CaptionText}">Group By</TextBlock>
+                    </TextBox.Tag>
                     <TextBox.Text>
                         <Binding Path="GroupBy">
                             <Binding.ValidationRules>

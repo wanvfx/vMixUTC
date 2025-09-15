@@ -20,7 +20,10 @@
         <Grid>
             <skin:PropertiesListView>
                 <CompositeCollection>
-                    <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Path}" Tag="Path">
+                    <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Path}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Path</TextBlock>
+                        </TextBox.Tag>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewKeyUp">
                                 <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -33,7 +36,10 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TextBox>
-                    <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Filter}" Tag="Filter">
+                    <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Filter}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Filter</TextBlock>
+                        </TextBox.Tag>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewKeyUp">
                                 <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
@@ -46,7 +52,11 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TextBox>
-                    <CheckBox IsChecked="{Binding IncludeSubDirectories}" Tag="Include SubDirectories"/>
+                    <CheckBox IsChecked="{Binding IncludeSubDirectories}">
+                        <CheckBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Include SubDirectories</TextBlock>
+                        </CheckBox.Tag>
+                    </CheckBox>
                 </CompositeCollection>
             </skin:PropertiesListView>
         </Grid>

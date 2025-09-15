@@ -221,6 +221,7 @@
     <ProjectReference Include="..\vMixControllerSkin\vMixControllerSkin.csproj">
       <Project>{90bfeee2-82e3-47d2-9b56-47ddb4c611f2}</Project>
       <Name>vMixControllerSkin</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

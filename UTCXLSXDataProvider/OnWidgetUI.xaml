@@ -17,127 +17,154 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
         <!--<TextBlock FontFamily="{StaticResource FontAwesome}" Margin="16" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="128" Foreground="Lime" Opacity="0.25" Text="&#xf1c3;"/>-->
-        <StackPanel>
-        <skin:PropertiesListView>
-            <CompositeCollection>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="File Path">
-                    <TextBox.Text>
-                        <Binding Path="FilePath" UpdateSourceTrigger="PropertyChanged">
+        <StackPanel Grid.ColumnSpan="2">
+            <skin:PropertiesListView>
+                <CompositeCollection>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">File Path</TextBlock>
+                        </TextBox.Tag>
+                        <TextBox.Text>
+                            <Binding Path="FilePath" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <ExceptionValidationRule/>
+                                    <DataErrorValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Start Row</TextBlock>
+                        </TextBox.Tag>
+                        <Binding Path="StartRow" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">End Row</TextBlock>
+                        </TextBox.Tag>
+                        <Binding Path="EndRow" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Start Col</TextBlock>
+                        </TextBox.Tag>
+                        <Binding Path="StartCol" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
                                 <ExceptionValidationRule/>
                                 <DataErrorValidationRule/>
                             </Binding.ValidationRules>
                         </Binding>
-                    </TextBox.Text>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Start Row">
-                    <Binding Path="StartRow" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="End Row">
-                    <Binding Path="EndRow" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Start Col">
-                    <Binding Path="StartCol" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="End Col">
-                    <Binding Path="EndCol" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                <TextBox Style="{StaticResource WidgetTextBox}" Tag="Sheet Number">
-                    <Binding Path="SheetIndex" UpdateSourceTrigger="PropertyChanged">
-                        <Binding.ValidationRules>
-                            <ExceptionValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewKeyUp">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="GotFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
-                        </i:EventTrigger>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-                    <StackPanel Tag="Row Is Table" Orientation="Horizontal">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">End Col</TextBlock>
+                        </TextBox.Tag>
+                        <Binding Path="EndCol" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                                <DataErrorValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <TextBox Style="{StaticResource WidgetTextBox}">
+                        <TextBox.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Sheet Number</TextBlock>
+                        </TextBox.Tag>
+                        <Binding Path="SheetIndex" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="PreviewKeyUp">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding PreviewKeyUp}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="GotFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding GotFocus}"/>
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="LostFocus">
+                                <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding LostFocus}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Tag>
+                            <TextBlock Style="{StaticResource CaptionText}">Multiple Columns By Row</TextBlock>
+                        </StackPanel.Tag>
                         <CheckBox IsChecked="{Binding IsTable}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                         <Control Style="{StaticResource HelpBorder}" ToolTip="If checked, data from row treat as UTC table: column1|column2|column3|etc..."/>
                     </StackPanel>
                 </CompositeCollection>
-        </skin:PropertiesListView>
+            </skin:PropertiesListView>
 
             <Grid>
                 <Grid.ColumnDefinitions>
