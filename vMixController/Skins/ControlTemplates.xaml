@@ -176,11 +176,14 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
-                            <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
-                            <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8">
-                            </Ellipse>
-                        </Border>
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
+                                <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
+                                <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8">
+                                </Ellipse>
+                            </Border>
+                            <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="Possible loop detected">&#xf071;</TextBlock>
+                        </StackPanel>
                         <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>
                         <Grid Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}}">
                             <ContentControl Content="{StaticResource IMG}"/>
@@ -321,13 +324,17 @@
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
                       Opacity="1"/>
-                        <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
-                            <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
-                            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
+                                <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
+
                                 <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8"></Ellipse>
-                                <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="Possible loop detected">&#xf071;</TextBlock>
-                            </StackPanel>
-                        </Border>
+
+
+                            </Border>
+                            <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="Possible loop detected">&#xf071;</TextBlock>
+
+                        </StackPanel>
                         <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>
                         <Grid Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}}">
                             <ContentControl Content="{StaticResource IMG}"/>

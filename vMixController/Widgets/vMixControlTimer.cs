@@ -12,62 +12,78 @@ using GalaSoft.MvvmLight.Messaging;
 using HighPrecisionTimer;
 using System.Windows;
 using System.Globalization;
+using System.Threading;
 
 namespace vMixController.Widgets
 {
+    public static class TimerTokens
+    {
+        public const string HighPrecision = nameof(HighPrecision);
+        public const string OneSecond = nameof(OneSecond);
+    }
+
     public static class GlobalTimer
     {
-        static long _workingTimers = 0;
-        static Stopwatch _stopwatch = new Stopwatch();
-        static TimeSpan _second = TimeSpan.FromSeconds(1 / 10f);
-        static double _tickSecond = 0;
+        private static long _refCount = 0;
+        private static readonly object _sync = new object();
 
-        public static long WorkingTimers
+        private static readonly MultimediaTimer _mtimer = new MultimediaTimer();
+        private static readonly Stopwatch _sw = new Stopwatch();
+        private static TimeSpan _accum; // для суммирования фактического elapsed
+        private static readonly TimeSpan Tick50ms = TimeSpan.FromMilliseconds(50);
+
+        static GlobalTimer()
         {
-            get { return _workingTimers; }
-            set
-            {
-                _workingTimers = value;
-                if (_workingTimers <= 0)
-                {
-                    if (_mtimer.IsRunning)
-                        _mtimer.Stop();
+            _mtimer.Interval = (int)Tick50ms.TotalMilliseconds; // 100
+            _mtimer.Resolution = 5;
+            _mtimer.Elapsed += OnElapsed;
+        }
 
-                    _stopwatch.Stop();
-                    _stopwatch.Reset();
-                    _workingTimers = 0;
-                }
-                else if (!_mtimer.IsRunning)
+        public static void Increment()
+        {
+            var val = Interlocked.Increment(ref _refCount);
+            if (val == 1)
+            {
+                lock (_sync)
                 {
-                    _stopwatch.Start();
+                    _accum = TimeSpan.Zero;
+                    _sw.Restart();
                     _mtimer.Start();
                 }
             }
         }
-        static MultimediaTimer _mtimer = new MultimediaTimer();
-        static GlobalTimer()
-        {
 
-            _mtimer.Interval = (int)_second.TotalMilliseconds;
-            _mtimer.Resolution = 10;
-            _mtimer.Elapsed += _mtimer_Elapsed;
+        public static void Decrement()
+        {
+            var val = Interlocked.Decrement(ref _refCount);
+            if (val <= 0)
+            {
+                lock (_sync)
+                {
+                    _mtimer.Stop();
+                    _sw.Reset();
+                    _refCount = 0;
+                    _accum = TimeSpan.Zero;
+                }
+            }
         }
 
-        private static void _mtimer_Elapsed(object sender, EventArgs e)
+        private static void OnElapsed(object sender, EventArgs e)
         {
-            _stopwatch.Stop();
-            Messenger.Default.Send(_second);
-            _tickSecond += _second.TotalMilliseconds;
-            if (_tickSecond > 950)
-            {
-                Messenger.Default.Send(TimeSpan.FromMilliseconds(_tickSecond));
-                _tickSecond = 0;
-            }
+            // Фактическая дельта с прошлой итерации
+            var elapsed = _sw.Elapsed;
+            _sw.Restart();
 
-            //Debug.WriteLine(_stopwatch.Elapsed);
-            _stopwatch.Restart();
+            Messenger.Default.Send(elapsed, TimerTokens.HighPrecision);
+            _accum += elapsed;
+            while (_accum >= TimeSpan.FromSeconds(1))
+            {
+                Messenger.Default.Send(TimeSpan.FromSeconds(1), TimerTokens.OneSecond);
+                _accum -= TimeSpan.FromSeconds(1);
+            }
         }
     }
+
     [Serializable]
     public class vMixControlTimer : vMixControlTextField
     {
@@ -81,20 +97,13 @@ namespace vMixController.Widgets
         }
         public vMixControlTimer()
         {
-            Messenger.Default.Register<TimeSpan>(this, (t) =>
+            Messenger.Default.Register<TimeSpan>(this, TimerTokens.HighPrecision, t =>
             {
-                Dispatcher.Invoke(() =>
-                {
-                    if (IsHighPrecision)
-                    {
-                        if (t.TotalMilliseconds < 900)
-                            Tick(t);
-                    }
-                    else if (t.TotalMilliseconds > 950)
-                        Tick(t);
-
-                });
-
+                if (IsHighPrecision) Dispatcher.BeginInvoke(new Action(() => Tick(t)));
+            });
+            Messenger.Default.Register<TimeSpan>(this, TimerTokens.OneSecond, t =>
+            {
+                if (!IsHighPrecision) Dispatcher.BeginInvoke(new Action(() => Tick(t)));
             });
 
             _width = 256;
@@ -118,58 +127,59 @@ namespace vMixController.Widgets
             base.BeforePropertiesChanged();
         }
 
-        private void Tick(TimeSpan e)
+        private void Tick(TimeSpan delta)
         {
             if (!Active) return;
 
             if (!Reverse)
             {
-                var t = Time.Add(e);
+                var t = Time + delta;
                 if (t < DefaultTime)
                     Time = t;
                 else
                 {
                     Time = DefaultTime;
-                    Paused = false;
-                    Active = false;
-                    GlobalTimer.WorkingTimers--;
-                    if (!string.IsNullOrWhiteSpace(Links[2]))
-                        Messenger.Default.Send(new Pair<string, object>(Links[2], null));
-                    if (!string.IsNullOrWhiteSpace(Links[3]))
-                        Messenger.Default.Send(new Pair<string, object>(Links[3], null));
+                    Finish();
                 }
             }
             else
             {
-                var t = Time.Subtract(e);
-                if (t > TimeSpan.FromSeconds(0))
+                var t = Time - delta;
+                if (t > TimeSpan.Zero)
                     Time = t;
                 else
                 {
                     Time = TimeSpan.Zero;
-                    Paused = false;
-                    Active = false;
-                    GlobalTimer.WorkingTimers--;
-                    if (!string.IsNullOrWhiteSpace(Links[2]))
-                        Messenger.Default.Send(new Pair<string, object>(Links[2], null));
-                    if (!string.IsNullOrWhiteSpace(Links[3]))
-                        Messenger.Default.Send(new Pair<string, object>(Links[3], null));
+                    Finish();
                 }
             }
+
             if (Links.Length > 4 && !string.IsNullOrWhiteSpace(Links[4]))
-                Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[4], null));
+                Messenger.Default.Send(new Pair<string, object>(Links[4], null));
         }
 
+        private void Finish()
+        {
+            Paused = false;
+            if (Active)
+            {
+                Active = false;
+                GlobalTimer.Decrement();
+            }
+            SendLink(2); // OnStop/OnComplete?
+            SendLink(3);
+        }
 
+        private void SendLink(int index)
+        {
+            if (!string.IsNullOrWhiteSpace(Links[index]))
+                Messenger.Default.Send(new Pair<string, object>(Links[index], null));
+        }
 
         private void UpdateTimer()
         {
             if (!Paused)
-            {
-                Time = TimeSpan.Zero;
-                if (Reverse)
-                    Time = DefaultTime.Add(Time);
-            }
+                Time = Reverse ? DefaultTime : TimeSpan.Zero;
         }
 
         private bool _splitText = false;
@@ -404,18 +414,15 @@ namespace vMixController.Widgets
 
                 try
                 {
-                    var _text = _time.ToString(Format);
-                    if (_time.Hours > 0 && Format.StartsWith("mm"))
-                    {
-                        var t = _text.Split(':');
-                        t[0] = string.Format("{0:00}", _time.Hours * 60 + _time.Minutes);
-                        _text = t.Aggregate((a, b) => a + ":" + b);
-                    }
                     _changingTime = true;
-                    if (SplitText)
-                        Text = _text.Select(x => x.ToString()).Aggregate((x, y) => x + "|" + y);
-                    else
-                        Text = _text;
+                    var txt = _time.ToString(Format);
+                    if (_time.TotalMinutes >= 1 && Format.StartsWith("mm"))
+                    {
+                        var parts = txt.Split(':');
+                        parts[0] = (_time.Hours * 60 + _time.Minutes).ToString("00");
+                        txt = string.Join(":", parts);
+                    }
+                    Text = SplitText ? string.Join("|", txt.ToCharArray()) : txt;
                     _changingTime = false;
                 }
                 catch (Exception)
@@ -552,49 +559,42 @@ namespace vMixController.Widgets
                         switch (p)
                         {
                             case "Start":
-                                if (!Paused)
-                                    UpdateTimer();
-
-                                Paused = false;
-                                Active = true;
-                                GlobalTimer.WorkingTimers++;
-                                if (!string.IsNullOrWhiteSpace(Links[0]))
-                                    Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[0], null));
-                                break;
-                            case "Pause":
-
-                                if (!Paused)
+                                if (!Active)
                                 {
-                                    if (Active)
-                                    {
-                                        Paused = true;
-                                        Active = false;
-                                        GlobalTimer.WorkingTimers--;
-                                        if (!string.IsNullOrWhiteSpace(Links[1]))
-                                            Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[1], null));
-                                    }
-
+                                    if (!Paused) UpdateTimer();
+                                    Paused = false;
+                                    Active = true;
+                                    GlobalTimer.Increment();
+                                    SendLink(0);
                                 }
-                                else
+                                break;
+
+                            case "Pause":
+                                if (Active && !Paused)
+                                {
+                                    Paused = true;
+                                    Active = false;
+                                    GlobalTimer.Decrement();
+                                    SendLink(1);
+                                }
+                                else if (!Active && Paused)
                                 {
                                     Paused = false;
                                     Active = true;
-                                    GlobalTimer.WorkingTimers++;
-                                    if (!string.IsNullOrWhiteSpace(Links[0]))
-                                        Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[0], null));
+                                    GlobalTimer.Increment();
+                                    SendLink(0);
                                 }
-
                                 break;
+
                             case "Stop":
                                 if (Active)
                                 {
-                                    GlobalTimer.WorkingTimers--;
+                                    GlobalTimer.Decrement();
                                     Active = false;
                                 }
                                 Paused = false;
                                 UpdateTimer();
-                                if (!string.IsNullOrWhiteSpace(Links[2]))
-                                    Messenger.Default.Send<Pair<string, object>>(new Pair<string, object>(Links[2], null));
+                                SendLink(2);
                                 break;
                             case "+1 Hour":
                                 Time = Time.Add(TimeSpan.FromHours(1));
@@ -628,11 +628,10 @@ namespace vMixController.Widgets
         protected override void Dispose(bool managed)
         {
             if (_disposed) return;
-
             if (managed)
             {
-                GlobalTimer.WorkingTimers--;
                 Messenger.Default.Unregister(this);
+                if (Active) GlobalTimer.Decrement(); // а не безусловный --
                 base.Dispose(managed);
                 GC.SuppressFinalize(this);
             }

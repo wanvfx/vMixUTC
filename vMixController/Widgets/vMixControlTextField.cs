@@ -17,14 +17,21 @@ namespace vMixController.Widgets
     [Serializable]
     public class vMixControlTextField : vMixControl
     {
-
         protected string _defaultValue = null;
-        protected static Queue<Triple<DependencyObject, DependencyProperty, DateTime>> DelayedUpdate = new Queue<Triple<DependencyObject, DependencyProperty, DateTime>>();
+
+        // Изменяем Queue на Dictionary для отслеживания последних обновлений
+        // Ключ: (DependencyObject, DependencyProperty), Значение: Время последнего обновления
+        protected static Dictionary<Tuple<DependencyObject, DependencyProperty>, DateTime> _pendingUpdates =
+            new Dictionary<Tuple<DependencyObject, DependencyProperty>, DateTime>();
+
+        // Очередь для фактической обработки, чтобы сохранить порядок, но она будет содержать только уникальные элементы
+        protected static Queue<Tuple<DependencyObject, DependencyProperty>> _updateQueue =
+            new Queue<Tuple<DependencyObject, DependencyProperty>>();
+
         private static DispatcherTimer DelayedUpdateTimer = new DispatcherTimer();
 
         static vMixControlTextField()
         {
-            //Delayed binding update
             DelayedUpdateTimer.Interval = TimeSpan.FromSeconds(0.1);
             DelayedUpdateTimer.Tick += DelayedUpdateTimer_Tick;
             DelayedUpdateTimer.Start();
@@ -49,16 +56,45 @@ namespace vMixController.Widgets
 
         private static void DelayedUpdateTimer_Tick(object sender, EventArgs e)
         {
-            while (DelayedUpdate.Count > 0 && DelayedUpdate.Peek().C.AddSeconds(0.1) < DateTime.Now)
+            // Создаем временный список для элементов, которые нужно обработать
+            var itemsToProcess = new List<Tuple<DependencyObject, DependencyProperty>>();
+
+            lock (_pendingUpdates) // Защита от одновременного доступа к словарю и очереди
             {
-                var t = DelayedUpdate.Dequeue();
+                // Проходим по элементам в очереди для обработки
+                while (_updateQueue.Count > 0)
+                {
+                    var key = _updateQueue.Peek(); // Смотрим на первый элемент, не удаляя его
+
+                    // Проверяем, прошло ли достаточно времени с момента последнего обновления
+                    if (_pendingUpdates.TryGetValue(key, out DateTime lastUpdateTime) && lastUpdateTime.AddSeconds(0.1) < DateTime.Now)
+                    {
+                        _updateQueue.Dequeue(); // Удаляем из очереди
+                        _pendingUpdates.Remove(key); // Удаляем из словаря
+                        itemsToProcess.Add(key); // Добавляем в список для обработки
+                    }
+                    else
+                    {
+                        // Если еще не пришло время для первого элемента, то и для последующих тоже
+                        break;
+                    }
+                }
+            }
+
+            // Обрабатываем элементы вне lock, чтобы не блокировать UI-поток надолго
+            foreach (var item in itemsToProcess)
+            {
                 try
                 {
-                    var exp = BindingOperations.GetMultiBindingExpression(t.A, t.B);
+                    var exp = BindingOperations.GetMultiBindingExpression(item.Item1, item.Item2);
                     if (exp != null && exp.Status == BindingStatus.Active && exp.BindingExpressions.Count > 0)
                         exp.UpdateSource();
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    // Логирование ошибки
+                    //Console.WriteLine($"Error updating source: {ex.Message}");
+                }
             }
         }
 
@@ -83,15 +119,7 @@ namespace vMixController.Widgets
             UpdateText(_paths);
         }
 
-        /*private void _paths_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems != null)
-                foreach (var item in e.NewItems)
-                    UpdateText((sender as IList).OfType<Pair<int, string>>().ToList());
-        }*/
-
         internal virtual string MappedTextProperty { get { return "Text"; } }
-
         internal virtual string MappedImageProperty { get { return "Image"; } }
 
         protected bool _isLive = true;
@@ -114,8 +142,14 @@ namespace vMixController.Widgets
                     return;
                 }
 
-                if (!value && DelayedUpdate.Count > 0)
-                    DelayedUpdate.Clear();
+                if (!value)
+                {
+                    lock (_pendingUpdates)
+                    {
+                        _pendingUpdates.Clear(); // Очищаем словарь
+                        _updateQueue.Clear(); // Очищаем очередь
+                    }
+                }
 
                 _isLive = value;
 
@@ -220,20 +254,24 @@ namespace vMixController.Widgets
         {
             if (!((vMixControlTextField)d).IsLive)
                 return;
+
             if (e.Property.Name == nameof(Text))
             {
-                try
+                // Используем Tuple как ключ для словаря
+                var key = Tuple.Create(d, e.Property);
+
+                lock (_pendingUpdates) // Защита от одновременного доступа к словарю и очереди
                 {
-                    var exp = BindingOperations.GetMultiBindingExpression(d, TextProperty);
-                    if (exp != null && exp.Status == BindingStatus.Active)
-                        DelayedUpdate.Enqueue(new Triple<DependencyObject, DependencyProperty, DateTime>() { A = d, B = e.Property, C = DateTime.Now });
+                    // Обновляем время последнего изменения для этой пары DO/DP
+                    _pendingUpdates[key] = DateTime.Now;
 
-                    //((vMixControlTextField)d).OnPropertyChanged(e);
+                    // Если этого элемента еще нет в очереди, добавляем его
+                    if (!_updateQueue.Contains(key)) // O(N) для Contains, можно оптимизировать, если нужно
+                    {
+                        _updateQueue.Enqueue(key);
+                    }
                 }
-                catch (Exception) { }
             }
-
-            
         }
 
         internal virtual IMultiValueConverter ConverterSelector()
@@ -268,8 +306,7 @@ namespace vMixController.Widgets
                     NotifyOnSourceUpdated = true,
                     NotifyOnTargetUpdated = true
                 };
-                //binding.Delay = 10;
-
+                //binding.Delay = 10; // Это свойство не существует в MultiBinding, только в Binding
 
                 InputBase text = null;
 

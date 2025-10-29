@@ -305,7 +305,23 @@ namespace vMixController.Widgets
                 return;
             if (e.Property.Name == nameof(Value) && !((vMixControlVolume)d)._disposing)
             {
-                try
+
+                ((vMixControlVolume)d).UpdateVolume();
+                // Используем Tuple как ключ для словаря
+                var key = Tuple.Create(d, e.Property);
+
+                lock (_pendingUpdates) // Защита от одновременного доступа к словарю и очереди
+                {
+                    // Обновляем время последнего изменения для этой пары DO/DP
+                    _pendingUpdates[key] = DateTime.Now;
+                    // Если этого элемента еще нет в очереди, добавляем его
+                    if (!_updateQueue.Contains(key)) // O(N) для Contains, можно оптимизировать, если нужно
+                    {
+                        _updateQueue.Enqueue(key);
+                    }
+                }
+
+                /*try
                 {
                     ((vMixControlVolume)d).UpdateVolume();
                     var exp = BindingOperations.GetMultiBindingExpression(d, ValueProperty);
@@ -314,7 +330,7 @@ namespace vMixController.Widgets
                         DelayedUpdate.Enqueue(new Triple<DependencyObject, DependencyProperty, DateTime>() { A = d, B = e.Property, C = DateTime.Now });
                     }
                 }
-                catch (Exception) { }
+                catch (Exception) { }*/
             }
         }
 

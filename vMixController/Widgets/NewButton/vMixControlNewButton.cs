@@ -1159,7 +1159,13 @@ namespace vMixController.Widgets
             base.AfterPropertiesChanged();
 
             BlinkBorderColor = BorderColor;
+            CheckScriptLoop();
 
+            _isPropertiesEditing = false;
+        }
+
+        private void CheckScriptLoop()
+        {
             bool hasGoToOrTimer = false;
             bool hasSelfExecLink = false;
             int p;
@@ -1184,9 +1190,7 @@ namespace vMixController.Widgets
                 d.ShowDialog();
             }*/
 
-            PotentialLoopWarning = hasGoToOrTimer | hasSelfExecLink;
-
-            _isPropertiesEditing = false;
+            PotentialLoopWarning = hasSelfExecLink;
         }
 
         public override void Update()
@@ -1194,6 +1198,7 @@ namespace vMixController.Widgets
             base.Update();
             if (AutoStart)
                 ExecuteScriptCommand.Execute(null);
+            CheckScriptLoop();
         }
 
         protected override void Dispose(bool managed)

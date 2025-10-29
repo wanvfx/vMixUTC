@@ -624,6 +624,32 @@ namespace vMixController.Widgets
 
         [NonSerialized]
         private RelayCommand _stopScriptCommand;
+
+        private bool _potentialLoopWarning = false;
+        /// <summary>
+        /// Sets and gets the HasScriptErrors property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        [XmlIgnore]
+        public bool PotentialLoopWarning
+        {
+            get
+            {
+                return _potentialLoopWarning;
+            }
+
+            set
+            {
+                if (_potentialLoopWarning == value)
+                {
+                    return;
+                }
+
+                _potentialLoopWarning = value;
+                RaisePropertyChanged(nameof(PotentialLoopWarning));
+            }
+        }
+
         private bool _isPropertiesEditing;
 
         /// <summary>
@@ -1121,6 +1147,35 @@ namespace vMixController.Widgets
             base.BeforePropertiesChanged();
         }
 
+        private void CheckScriptLoop()
+        {
+            bool hasGoToOrTimer = false;
+            bool hasSelfExecLink = false;
+            int p;
+            int i = 0;
+            foreach (var item in Commands)
+            {
+                if (item == null || item.Action == null) continue;
+
+                hasGoToOrTimer |= item.Action?.Function == NativeFunctions.TIMER;
+                hasGoToOrTimer |= item.Action?.Function == NativeFunctions.GOTO;
+                hasSelfExecLink |= item.Action?.Function == NativeFunctions.EXECLINK && Hotkey.Where(x => x.Active && x.Link == item.StringParameter).Any();
+                i++;
+            }
+
+            /*if (hasGoToOrTimer && Style != Constants.BUTTON_STYLE_MOMENTARY)
+            {
+                var d = new Ookii.Dialogs.Wpf.TaskDialog();
+                d.WindowTitle = "Possible Script Error";
+                d.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Warning;
+                d.Content = "Your script contains TIMER or possible LOOPS!\nUse Momentary buttons for this type of scripts.";
+                d.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
+                d.ShowDialog();
+            }*/
+
+            PotentialLoopWarning = hasSelfExecLink;
+        }
+
         public override void AfterPropertiesChanged()
         {
             base.AfterPropertiesChanged();
@@ -1149,6 +1204,8 @@ namespace vMixController.Widgets
                 d.ShowDialog();
             }
 
+            CheckScriptLoop();
+
             _isPropertiesEditing = false;
         }
 
@@ -1157,6 +1214,7 @@ namespace vMixController.Widgets
             base.Update();
             if (AutoStart)
                 ExecuteScriptCommand.Execute(null);
+            CheckScriptLoop();
         }
 
         protected override void Dispose(bool managed)
