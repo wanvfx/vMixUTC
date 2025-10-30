@@ -26,10 +26,15 @@ namespace vMixAPI
         VerticalSlideReverse = 46,
         BarnDoor,
         RollerDoor,
+        AlphaFade,
         Cut = 100,
         Stinger1,
         Stinger2,
         Stinger3,
-        Stinger4
+        Stinger4,
+        Stinger5,
+        Stinger6,
+        Stinger7,
+        Stinger8,
     }
 }

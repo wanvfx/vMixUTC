@@ -122,6 +122,11 @@ namespace vMixAPI
             bool useCache = string.IsNullOrEmpty(address.Query) || address.Query == "?";
             if (useCache)
             {
+                /*var fake = System.IO.File.ReadAllText(@"C:\Users\elgarf\Desktop\test.xml");
+                callback?.Invoke(fake, null);
+                OnDownloadCompleted?.Invoke(fake, null, address);
+                return Task.FromResult(fake);*/
+
                 string cacheKey = address.GetLeftPart(UriPartial.Path);
 
                 if (_cache.TryGetValue(cacheKey, out var cachedItem))
