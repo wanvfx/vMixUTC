@@ -1,19 +1,20 @@
-﻿using GalaSoft.MvvmLight;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
-using System.Linq;
-using System.Collections.ObjectModel;
-using System.Windows;
-using vMixController.Classes;
-using vMixController.Widgets;
-using System.IO;
-using vMixController;
-using System.Windows.Media;
+using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using vMixController.Extensions;
-using CommonServiceLocator;
-using System.Xml.Serialization;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using vMixController;
+using vMixController.Classes;
+using vMixController.Extensions;
+using vMixController.Widgets;
 
 namespace vMixController.ViewModel
 {
@@ -490,10 +491,10 @@ namespace vMixController.ViewModel
         {
             List<Triple<Color, Color, string>> list = null;
             XmlSerializer ser = new XmlSerializer(typeof(List<Triple<Color, Color, string>>));
-
-            if (File.Exists("Colours.xml"))
+            var coloursPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Colours.xml");
+            if (File.Exists(coloursPath))
             {
-                using (var fs = File.Open("Colours.xml", FileMode.Open))
+                using (var fs = File.Open(coloursPath, FileMode.Open))
                     list = (List<Triple<Color, Color, string>>)ser.Deserialize(fs);
             }
             else
@@ -504,7 +505,7 @@ namespace vMixController.ViewModel
                     new Triple<Color, Color, string>(Color.FromRgb(255, 255, 255), Color.FromRgb(255, 255, 255), "White")
                 };
 
-                using (var fs = File.Open("Colours.xml", FileMode.Create))
+                using (var fs = File.Open(coloursPath, FileMode.Create))
                     ser.Serialize(fs, list);
             }
 
