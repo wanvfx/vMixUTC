@@ -7,6 +7,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using vMixControllerSkin;
@@ -19,6 +22,8 @@ namespace UTCGoogleSheetsDataProvider
         private string[] _cached = Array.Empty<string>();
         private bool _hasError = false;
         private System.Windows.UIElement _customUI;
+        private CancellationTokenSource _updateCancellationTokenSource; // Для отмены предыдущих задач обновления
+        private Task _currentUpdateTask; // Для отслеживания текущей задачи обновления
 
         public object PreviewKeyUp { get; set; }
         public object GotFocus { get; set; }
@@ -36,8 +41,6 @@ namespace UTCGoogleSheetsDataProvider
             // Если входная строка состоит только из цифр - это номер столбца
             if (int.TryParse(input, out int number))
             {
-                /*if (number <= 0)
-                    throw new ArgumentException("Column number must be positive");*/
                 return number;
             }
 
@@ -45,7 +48,7 @@ namespace UTCGoogleSheetsDataProvider
             input = input.ToUpper();
 
             if (!System.Text.RegularExpressions.Regex.IsMatch(input, "^[A-Z]+$"))
-                return -1;//throw new ArgumentException("Input must contain only letters A-Z or only digits");
+                return -1;
 
             int result = 0;
 
@@ -61,18 +64,109 @@ namespace UTCGoogleSheetsDataProvider
         {
             get
             {
+                // При обращении к геттеру Values, запускаем обновление в фоне
+                // Если обновление уже запущено и не завершено, ничего не делаем.
+                // Если обновление завершено или не было запущено, запускаем новое.
+                if (_currentUpdateTask == null || _currentUpdateTask.IsCompleted || _currentUpdateTask.IsCanceled || _currentUpdateTask.IsFaulted)
+                {
+                    StartCacheUpdate();
+                }
+
+                // Всегда возвращаем кэшированные данные немедленно
+                return _cached;
+            }
+        }
+
+        public System.Windows.UIElement CustomUI => _customUI;
+
+        public ExcelDataProvider()
+        {
+            try
+            {
+                _customUI = new OnWidgetUI() { DataContext = this };
+                _updateCancellationTokenSource = new CancellationTokenSource();
+            }
+            catch (Exception e)
+            {
+                _customUI = new TextBox() { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+            }
+        }
+
+        // Метод для запуска обновления кэша в фоне
+        private void StartCacheUpdate()
+        {
+            // Отменяем предыдущую задачу обновления, если она еще выполняется
+            _updateCancellationTokenSource?.Cancel();
+            _updateCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = _updateCancellationTokenSource.Token;
+
+            _currentUpdateTask = Task.Run(async () =>
+            {
+                if (cancellationToken.IsCancellationRequested) return;
+
                 _hasError = false;
+                string actualFilePath = FilePath;
+                string currentTempFilePath = null; // Локальная переменная для временного файла в этой задаче
+
                 try
                 {
-
-                    if (File.Exists(FilePath))
+                    // 1. Проверка на URL и загрузка во временный файл
+                    if (Uri.TryCreate(FilePath, UriKind.Absolute, out Uri uriResult) &&
+                        (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
                     {
-                        var fileInfo = new FileInfo(FilePath);
-                        if (fileInfo.LastWriteTimeUtc > _lastModified)
+                        try
+                        {
+                            using (HttpClient client = new HttpClient())
+                            {
+                                Debug.Print($"Downloading file from URL: {FilePath}");
+                                HttpResponseMessage response = await client.GetAsync(FilePath, cancellationToken);
+                                response.EnsureSuccessStatusCode();
+
+                                // Создаем новый временный файл для каждой загрузки
+                                if (string.IsNullOrWhiteSpace(currentTempFilePath) || !File.Exists(currentTempFilePath))
+                                    currentTempFilePath = Path.GetTempFileName();
+                                using (var fileStream = new FileStream(currentTempFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                                {
+                                    await response.Content.CopyToAsync(fileStream);
+                                }
+                                Debug.Print($"File downloaded to temporary location: {currentTempFilePath}");
+                                actualFilePath = currentTempFilePath;
+                            }
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            Debug.Print("URL download was cancelled.");
+                            return; // Выходим, если операция отменена
+                        }
+                        catch (HttpRequestException ex)
+                        {
+                            _hasError = true;
+                            RowsCount = 0;
+                            Debug.Print($"Error downloading file from URL: {ex.Message}");
+                            UpdateCachedValues(Array.Empty<string>());
+                            return;
+                        }
+                        catch (Exception ex)
+                        {
+                            _hasError = true;
+                            RowsCount = 0;
+                            Debug.Print($"Unexpected error during URL download: {ex.Message}");
+                            UpdateCachedValues(Array.Empty<string>());
+                            return;
+                        }
+                    }
+
+                    if (cancellationToken.IsCancellationRequested) return;
+
+                    if (File.Exists(actualFilePath))
+                    {
+                        var fileInfo = new FileInfo(actualFilePath);
+                        // Проверяем, изменился ли файл или это первая загрузка
+                        if (fileInfo.LastWriteTimeUtc > _lastModified || _lastModified == DateTime.MinValue)
                         {
                             _lastModified = fileInfo.LastWriteTimeUtc;
 
-                            using (var xls = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var xls = new FileStream(actualFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             {
                                 try
                                 {
@@ -83,87 +177,132 @@ namespace UTCGoogleSheetsDataProvider
                                         int sheet = 0;
                                         int startColIndex = ParseExcelColumn(StartCol);
                                         int endColIndex = ParseExcelColumn(EndCol);
+
                                         do
                                         {
+                                            if (cancellationToken.IsCancellationRequested) return;
+
                                             int sheetIndex = 0;
-                                            if ((int.TryParse(SheetIndex, out sheetIndex) && sheet == sheetIndex) || reader.Name == SheetIndex)
+                                            bool sheetMatch = false;
+                                            if (int.TryParse(SheetIndex, out sheetIndex) && sheet == sheetIndex)
+                                            {
+                                                sheetMatch = true;
+                                            }
+                                            else if (reader.Name == SheetIndex)
+                                            {
+                                                sheetMatch = true;
+                                            }
+
+                                            if (sheetMatch)
+                                            {
                                                 while (reader.Read())
                                                 {
+                                                    if (cancellationToken.IsCancellationRequested) return;
+
                                                     if (row >= StartRow)
                                                     {
                                                         string line = "";
-                                                        for (int i = startColIndex; i < (endColIndex >= 0 ? Math.Min(reader.FieldCount, endColIndex) : reader.FieldCount); i++)
+                                                        // Обработка случая, когда EndCol не указан или некорректен
+                                                        int actualEndColIndex = endColIndex >= 0 ? Math.Min(reader.FieldCount, endColIndex + 1) : reader.FieldCount;
+
+                                                        for (int i = startColIndex; i < actualEndColIndex; i++)
+                                                        {
                                                             if (IsTable)
                                                                 line += "|" + (reader.GetValue(i)?.ToString() ?? "");
                                                             else
                                                                 results.Add((reader.GetValue(i)?.ToString() ?? ""));
-                                                        if (IsTable)
-                                                            results.Add(line.Substring(1));
+                                                        }
+                                                        if (IsTable && !string.IsNullOrEmpty(line))
+                                                            results.Add(line.Substring(1)); // Удаляем первый разделитель
                                                     }
                                                     row++;
                                                     if (EndRow >= 0 && row >= EndRow)
-                                                        break;
+                                                        break; // Достигнута конечная строка
                                                 }
+                                            }
                                             sheet++;
                                         }
                                         while (reader.NextResult());
 
-                                        Cached = results.ToArray();
-                                        RowsCount = Cached.Length;
-                                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilePath)));
-                                        return Cached;
+                                        UpdateCachedValues(results.ToArray());
                                     }
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    Debug.Print("Excel file reading was cancelled.");
+                                    return; // Выходим, если операция отменена
                                 }
                                 catch (ExcelReaderException ex)
                                 {
                                     _hasError = true;
                                     RowsCount = 0;
                                     Debug.Print($"Error reading Excel file: {ex.Message}");
-                                    return Array.Empty<string>();
+                                    UpdateCachedValues(Array.Empty<string>());
+                                    return;
                                 }
                                 catch (Exception ex)
                                 {
                                     _hasError = true;
                                     RowsCount = 0;
-                                    Debug.Print($"Unexpected error: {ex.Message}");
-                                    return Array.Empty<string>();
+                                    Debug.Print($"Unexpected error during Excel processing: {ex.Message}");
+                                    UpdateCachedValues(Array.Empty<string>());
+                                    return;
                                 }
                             }
                         }
-                        else
-                            return Cached;
+                        // Если файл не изменился, просто возвращаем текущий кэш
+                        // (но в данном случае мы уже в фоне, так что просто не обновляем кэш)
                     }
                     else
                     {
                         _hasError = true;
                         RowsCount = 0;
                         Debug.Print("File not found.");
-                        return Array.Empty<string>();
+                        UpdateCachedValues(Array.Empty<string>());
+                        return;
                     }
+                }
+                catch (OperationCanceledException)
+                {
+                    Debug.Print("Cache update operation was cancelled.");
+                    return; // Выходим, если операция отменена
                 }
                 catch (Exception ex)
                 {
                     _hasError = true;
                     RowsCount = 0;
-                    Debug.Print($"An error occurred: {ex.Message}");
-                    return Array.Empty<string>();
+                    Debug.Print($"An error occurred during cache update: {ex.Message}");
+                    UpdateCachedValues(Array.Empty<string>());
                 }
-            }
+                finally
+                {
+                    // Удаляем временный файл, если он был создан
+                    if (!string.IsNullOrWhiteSpace(currentTempFilePath) && File.Exists(currentTempFilePath))
+                    {
+                        try
+                        {
+                            File.Delete(currentTempFilePath);
+                            Debug.Print($"Temporary file deleted: {currentTempFilePath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Print($"Error deleting temporary file {currentTempFilePath}: {ex.Message}");
+                        }
+                    }
+                }
+            }, cancellationToken);
         }
 
-
-        public System.Windows.UIElement CustomUI => _customUI;
-
-        public ExcelDataProvider()
+        // Метод для безопасного обновления кэша и связанных свойств из фонового потока
+        private void UpdateCachedValues(string[] newValues)
         {
-            try
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                _customUI = new OnWidgetUI() { DataContext = this };
-            }
-            catch (Exception e)
-            {
-                _customUI = new TextBox() { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
-            }
+                Cached = newValues;
+                RowsCount = Cached.Length;
+                RaisePropertyChanged(nameof(FilePath)); // Чтобы обновить индикацию ошибки, если она была
+                RaisePropertyChanged(nameof(Values)); // Уведомляем об изменении Values
+            });
         }
 
         public string FilePath
@@ -177,8 +316,9 @@ namespace UTCGoogleSheetsDataProvider
                 }
 
                 _filePath = value;
-                _lastModified = DateTime.MinValue;
+                _lastModified = DateTime.MinValue; // Сбрасываем, чтобы принудительно обновить кэш
                 RaisePropertyChanged(nameof(FilePath));
+                // Обновление теперь инициируется геттером Values, поэтому здесь не нужно вызывать StartCacheUpdate()
             }
         }
         private string _filePath = "";
@@ -304,6 +444,7 @@ namespace UTCGoogleSheetsDataProvider
         public string Error => null; // Not implemented, no general error for the entire object
 
         private RelayCommand _showRowsCommand;
+
         public RelayCommand ShowRowsCommand => _showRowsCommand ?? (_showRowsCommand = new RelayCommand(() => new RowsViewer().Bind(this, nameof(Cached))));
 
         public string[] Cached
@@ -328,12 +469,14 @@ namespace UTCGoogleSheetsDataProvider
                             error = "File not found or is not a valid excel file!";
                         break;
                     case nameof(StartCol):
+                        // Проверяем, чтобы StartCol был либо числом, либо буквенным обозначением
                         if (!int.TryParse(StartCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(StartCol, "^[A-Z]+$"))
-                            error = "Start column is in wrong format!";
+                            error = "Start column must be a number or a letter (e.g., '0' or 'A').";
                         break;
                     case nameof(EndCol):
+                        // Проверяем, чтобы EndCol был либо числом, либо буквенным обозначением
                         if (!int.TryParse(EndCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(EndCol, "^[A-Z]+$"))
-                            error = "End column is in wrong format!";
+                            error = "End column must be a number or a letter (e.g., '-1' or 'B').";
                         break;
                 }
                 return error;
@@ -356,26 +499,38 @@ namespace UTCGoogleSheetsDataProvider
         {
             if (props == null) return;
 
-            FilePath = props.ElementAtOrDefault(0) as string ?? "";
-            StartRow = (int?)props.ElementAtOrDefault(1) ?? 0;
-            EndRow = (int?)props.ElementAtOrDefault(2) ?? -1;
-
+            // Используем временные переменные для предотвращения многократного вызова StartCacheUpdate
+            string newFilePath = props.ElementAtOrDefault(0) as string ?? "";
+            int newStartRow = (int?)props.ElementAtOrDefault(1) ?? 0;
+            int newEndRow = (int?)props.ElementAtOrDefault(2) ?? -1;
+            string newStartCol;
+            string newEndCol;
+            string newSheetIndex;
+            bool newIsTable = (bool?)props.ElementAtOrDefault(6) as bool? ?? true;
 
             if (props.ElementAtOrDefault(3) is int)
-                StartCol = ((int?)props.ElementAtOrDefault(3) ?? 0).ToString();
+                newStartCol = ((int?)props.ElementAtOrDefault(3) ?? 0).ToString();
             else
-                StartCol = (string)props.ElementAtOrDefault(3) ?? "0";
+                newStartCol = (string)props.ElementAtOrDefault(3) ?? "0";
 
             if (props.ElementAtOrDefault(4) is int)
-                EndCol = ((int?)props.ElementAtOrDefault(4) ?? -1).ToString();
+                newEndCol = ((int?)props.ElementAtOrDefault(4) ?? -1).ToString();
             else
-                EndCol = (string)props.ElementAtOrDefault(4) ?? "-1";
-            if (props.ElementAtOrDefault(5) is int)
-                SheetIndex = ((int?)props.ElementAtOrDefault(5) ?? 0).ToString();
-            else
-                SheetIndex = (string)props.ElementAtOrDefault(5) ?? "0";
+                newEndCol = (string)props.ElementAtOrDefault(4) ?? "-1";
 
-            IsTable = (bool?)props.ElementAtOrDefault(6) as bool? ?? true;
+            if (props.ElementAtOrDefault(5) is int)
+                newSheetIndex = ((int?)props.ElementAtOrDefault(5) ?? 0).ToString();
+            else
+                newSheetIndex = (string)props.ElementAtOrDefault(5) ?? "0";
+
+            // Применяем свойства только если они изменились
+            if (FilePath != newFilePath) FilePath = newFilePath;
+            if (StartRow != newStartRow) StartRow = newStartRow;
+            if (EndRow != newEndRow) EndRow = newEndRow;
+            if (StartCol != newStartCol) StartCol = newStartCol;
+            if (EndCol != newEndCol) EndCol = newEndCol;
+            if (SheetIndex != newSheetIndex) SheetIndex = newSheetIndex;
+            if (IsTable != newIsTable) IsTable = newIsTable;
         }
 
         public void ShowProperties(System.Windows.Window owner)

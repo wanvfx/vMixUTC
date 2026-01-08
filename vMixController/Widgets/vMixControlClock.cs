@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization; // Добавляем для OnDeserialized
 using System.Windows.Controls;
 using System.Windows.Threading;
 using vMixController.Classes;
@@ -80,6 +81,37 @@ namespace vMixController.Widgets
             Events.CollectionChanged += (s, e) => UpdateSortedEvents();
         }
 
+        // Метод, вызываемый после десериализации
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            // Пересоздаем таймер, так как он [NonSerialized]
+            _timer = new DispatcherTimer(DispatcherPriority.Render) { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Tick += Timer_Tick;
+
+            // Пересоздаем HashSet, так как он [NonSerialized]
+            _firedEventsToday = new HashSet<ScheduledEvent>();
+
+            // Инициализируем _lastTickDate текущей датой, чтобы при первом тике не было ложного срабатывания "нового дня"
+            // и чтобы события, уже прошедшие сегодня, не запускались
+            _lastTickDate = DateTime.Now.Date;
+
+            // Подписываемся на изменение коллекции (если она была десериализована)
+            if (Events != null)
+            {
+                Events.CollectionChanged += (s, e) => UpdateSortedEvents();
+            }
+            else
+            {
+                // Если Events == null после десериализации (что маловероятно, если есть конструктор),
+                // то инициализируем его
+                Events = new ObservableCollection<ScheduledEvent>();
+                Events.CollectionChanged += (s, e) => UpdateSortedEvents();
+            }
+            UpdateSortedEvents(); // Обновляем отсортированный список после десериализации
+        }
+
+
         private void UpdateSortedEvents()
         {
             _sortedEvents = Events.OrderBy(x => x.TimeOfDay).ToList();
@@ -92,12 +124,14 @@ namespace vMixController.Widgets
             var now = DateTime.Now;
 
             // 1. Проверяем, не наступил ли новый день
-            if (now.Date > _lastTickDate.Date)
+            // Если _lastTickDate.Date == DateTime.MinValue.Date, это означает первый тик после инициализации/десериализации.
+            // В этом случае мы не очищаем _firedEventsToday, а инициализируем его.
+            if (_lastTickDate.Date != now.Date)
             {
                 _firedEventsToday.Clear();
                 Debug.Print("New day detected. Fired events cleared.");
             }
-            _lastTickDate = now;
+            _lastTickDate = now; // Обновляем _lastTickDate на текущее время
 
             // 2. Определяем сегодняшний день недели
             var today = ToDaysOfWeek(now.DayOfWeek);
@@ -119,6 +153,10 @@ namespace vMixController.Widgets
                     UpdateNextEventDisplay();
                 }
             }
+
+            // Обновляем отображение следующего события при каждом тике,
+            // чтобы оно всегда было актуальным (например, если текущее "следующее" событие прошло)
+            UpdateNextEventDisplay();
         }
 
         /// <summary>
@@ -129,7 +167,8 @@ namespace vMixController.Widgets
             var next = FindNextScheduledEvent();
             if (next?.Event != null)
             {
-                string dayString = next?.Date.Date == DateTime.Today ? "Today" : next?.Date.ToString("dddd", CultureInfo.InvariantCulture);
+                // Используем now.Date для сравнения, чтобы корректно определить "Сегодня"
+                string dayString = next?.Date.Date == DateTime.Now.Date ? "Today" : next?.Date.ToString("dddd", CultureInfo.InvariantCulture);
                 NextEventAt = $"Next Event: <{next?.Event.Command}> at {next?.Event.TimeOfDay:HH\\:mm\\:ss} on {dayString}";
                 // Локализация может быть добавлена здесь
                 // NextEventAt = string.Format("{0}: <{1}> {2} {3:hh\\:mm\\:ss} {4} {5}", 
@@ -152,14 +191,14 @@ namespace vMixController.Widgets
 
             var now = DateTime.Now;
 
-            // Ищем событие сегодня, но позже текущего времени
+            // 1. Ищем событие сегодня, но позже текущего времени
             foreach (var ev in _sortedEvents)
             {
                 if (ev.Days.HasFlag(ToDaysOfWeek(now.DayOfWeek)) && ev.TimeOfDay > now)
                     return (ev, now);
             }
 
-            // Если сегодня больше ничего нет, ищем в последующие 7 дней
+            // 2. Если сегодня больше ничего нет, ищем в последующие 7 дней
             for (int i = 1; i <= 7; i++)
             {
                 var nextDay = now.AddDays(i);
@@ -167,7 +206,8 @@ namespace vMixController.Widgets
                 foreach (var ev in _sortedEvents)
                 {
                     if (ev.Days.HasFlag(dayOfWeek))
-                        return (ev, nextDay); // Нашли первое событие на этот день
+                        // Возвращаем событие и дату, на которую оно приходится
+                        return (ev, nextDay);
                 }
             }
 
@@ -177,7 +217,21 @@ namespace vMixController.Widgets
         // Вспомогательный метод для конвертации DayOfWeek в наш enum
         private static DaysOfWeek ToDaysOfWeek(DayOfWeek day)
         {
-            return (DaysOfWeek)(1 << (((int)day + 6) % 7));
+            // Здесь предполагается, что DaysOfWeek имеет битовые флаги,
+            // где Monday = 1, Tuesday = 2, ..., Sunday = 64 (или 1 << 0, 1 << 1, ..., 1 << 6)
+            // и DayOfWeek.Monday = 1, DayOfWeek.Tuesday = 2, ..., DayOfWeek.Sunday = 0
+            // Поэтому нужно преобразование.
+            // Пример: DayOfWeek.Sunday (0) -> DaysOfWeek.Sunday (1 << 6)
+            //         DayOfWeek.Monday (1) -> DaysOfWeek.Monday (1 << 0)
+            //         ...
+            //         DayOfWeek.Saturday (6) -> DaysOfWeek.Saturday (1 << 5)
+
+            // Более универсальный способ, если DaysOfWeek соответствует DayOfWeek напрямую:
+            // return (DaysOfWeek)(1 << (int)day);
+            // Но если DaysOfWeek начинается с Monday = 1, а DayOfWeek.Monday = 1, то:
+            // return (DaysOfWeek)(1 << ((int)day == 0 ? 6 : (int)day - 1)); // Если DayOfWeek.Sunday = 0
+            // Или, как у вас:
+            return (DaysOfWeek)(1 << (((int)day + 6) % 7)); // Предполагает, что DayOfWeek.Monday = 1, а DaysOfWeek.Monday = 1 << 0
         }
 
 
@@ -187,11 +241,41 @@ namespace vMixController.Widgets
         {
             if (!_timer.IsEnabled)
             {
-                UpdateSortedEvents(); // Первоначальная сортировка
+                // При первом запуске или после десериализации, инициализируем состояние
+                // _firedEventsToday и _lastTickDate, чтобы избежать запуска уже прошедших событий.
+                // Это должно быть сделано перед UpdateSortedEvents, если UpdateSortedEvents вызывает UpdateNextEventDisplay,
+                // который может зависеть от корректного состояния.
+                InitializeClockState();
+                UpdateSortedEvents(); // Первоначальная сортировка и обновление NextEventAt
                 _timer.Start();
             }
             base.Update();
         }
+
+        /// <summary>
+        /// Инициализирует внутреннее состояние часов, чтобы предотвратить запуск событий,
+        /// которые уже прошли в текущем дне при загрузке.
+        /// </summary>
+        private void InitializeClockState()
+        {
+            _firedEventsToday.Clear(); // Очищаем на всякий случай
+            _lastTickDate = DateTime.Now.Date; // Устанавливаем дату последнего тика на текущую дату
+
+            var now = DateTime.Now;
+            var today = ToDaysOfWeek(now.DayOfWeek);
+
+            // Проходим по всем событиям и добавляем в _firedEventsToday те,
+            // которые должны были сработать до текущего момента сегодня.
+            foreach (var ev in _sortedEvents)
+            {
+                if (ev.Days.HasFlag(today) && ev.TimeOfDay <= now)
+                {
+                    _firedEventsToday.Add(ev);
+                    Debug.Print($"Event '{ev.Command}' at {ev.TimeOfDay} marked as already fired for today.");
+                }
+            }
+        }
+
 
         // Методы GetPropertiesControls и SetProperties потребуют адаптации под новую структуру ScheduledEvent.
         // Это зависит от реализации PropertiesControls.SchedulerControl.
@@ -206,6 +290,9 @@ namespace vMixController.Widgets
         {
             base.AfterPropertiesChanged();
             UpdateSortedEvents(); // Обновляем отсортированный список
+            // После изменения свойств, возможно, нужно переинициализировать состояние,
+            // если пользователь изменил расписание.
+            InitializeClockState();
             _timer.Start();
         }
 
