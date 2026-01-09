@@ -29,6 +29,7 @@ namespace UTCNDIMonitorDataProvider
         private OnWidgetUI _ui;
         private static Random _random = new Random();
         private static Finder _finder;
+        private static OMT.Finder _finderOMT;
         private static int _instances;
         private static bool _initialized = false;
 
@@ -390,12 +391,17 @@ namespace UTCNDIMonitorDataProvider
             //_ui.InitializeComponent();
 
             if (_finder == null)
+            {
                 _finder = new Finder(true);
+                _finderOMT = new OMT.Finder();
+            }
             else
             {
-                Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).ToArray());
+                Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
             }
             _finder.Sources.CollectionChanged += Sources_CollectionChanged;
+            _finderOMT.Sources.CollectionChanged += Sources_CollectionChanged;
+
 
             // Not required, but "correct". (see the SDK documentation)
             if (!_initialized)
@@ -433,7 +439,7 @@ namespace UTCNDIMonitorDataProvider
 
         private void Sources_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).ToArray());
+            Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
             //foreach (var item in _finder.Sources)
             //    Sources.Add(item.Name);
         }
@@ -493,8 +499,11 @@ namespace UTCNDIMonitorDataProvider
                         {
                             _finder.Dispose();
                             _finder = null;
+                            _finderOMT.Dispose();
+                            _finderOMT = null;
 
                             _finder = new Finder(true);
+                            _finderOMT = new OMT.Finder();
                             OnReset?.Invoke(this, new EventArgs());
                         }
                     }));

@@ -749,6 +749,9 @@
     </None>
     <EmbeddedResource Include="costura-win-x86\Melanchall_DryWetMidi_Native32.dll" />
     <EmbeddedResource Include="costura-win-x64\Melanchall_DryWetMidi_Native64.dll" />
+    <EmbeddedResource Include="costura-win-x64\libomt.dll" />
+    <EmbeddedResource Include="costura-win-x64\libomtnet.dll" />
+    <EmbeddedResource Include="costura-win-x64\libvmx.dll" />
     <Content Include="NewFunctions.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

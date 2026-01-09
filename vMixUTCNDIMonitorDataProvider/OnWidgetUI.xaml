@@ -7,6 +7,7 @@
              xmlns:e="clr-namespace:UTCNDIMonitorDataProvider.Extensions"
              xmlns:ndi="clr-namespace:NewTek.NDI.WPF;assembly=NDILibDotNet2"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:omt="clr-namespace:UTCNDIMonitorDataProvider.OMT"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -15,6 +16,10 @@
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <local:StringToNDISourceConverter x:Key="StringToSource"/>
+            <local:StringToOMTSourceConverter x:Key="StringToOMTSource"/>
+
+            <local:SourceToNDIVisibilityConverter x:Key="StringToNDIVisibility"/>
+            <local:SourceToOMTVisibilityConverter x:Key="StringToOMTVisibility"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="{StaticResource StdMargin}">
@@ -53,7 +58,8 @@
         <!--<Image e:SizeObserver.Observe="True" Grid.ColumnSpan="2" x:Name="Preview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="DownOnly"/>-->
         <!--<ndi:ReceiveView ConnectedSource="{Binding Source}" e:SizeObserver.Observe="True" x:Name="Preview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="DownOnly"/>-->
         <!--<MediaElement IsHitTestVisible="False" Source="{Binding Source.Uri}" e:SizeObserver.Observe="True" x:Name="Preview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="DownOnly"/>-->
-        <ndi:ReceiveView IsAudioEnabled="{Binding IsAudioEnabled}" IsLowBandwidth="{Binding IsLowBandwidth}" ReceiverName="UTC NDI MONITOR" ConnectedSource="{Binding Source, Converter={StaticResource StringToSource}}" e:SizeObserver.Observe="True" x:Name="Preview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="Both" IsVideoEnabled="True"/>
+        <ndi:ReceiveView IsAudioEnabled="{Binding IsAudioEnabled}" IsLowBandwidth="{Binding IsLowBandwidth}" ReceiverName="UTC NDI MONITOR" Visibility="{Binding Source, Converter={StaticResource StringToNDIVisibility}}" ConnectedSource="{Binding Source, Converter={StaticResource StringToSource}}" e:SizeObserver.Observe="True" x:Name="Preview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="Both" IsVideoEnabled="True"/>
+        <omt:ReceiveView IsLowBandwidth="{Binding IsLowBandwidth}" ConnectedSource="{Binding Source, Converter={StaticResource StringToOMTSource}}" Visibility="{Binding Source, Converter={StaticResource StringToOMTVisibility}}" e:SizeObserver.Observe="True" x:Name="OMTPreview" Grid.Row="2" HorizontalAlignment="Stretch" SizeChanged="Preview_SizeChanged" StretchDirection="Both" IsVideoEnabled="True"/>
         <!--<CheckBox Grid.Row="2" IsChecked="{Binding AudioEnabled, Mode=TwoWay}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8" Foreground="White">Audio</CheckBox>-->
         <ContentControl Grid.Row="2">
             <ContentControl.Template>
