@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:vMixController"
         xmlns:conv="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
         xmlns:self="clr-namespace:vMixController"
+        xmlns:loc="clr-namespace:vMixController.Localization"
         mc:Ignorable="d"
         x:Name="Me"
-        Title="Input Request" Height="450" Width="450" SizeToContent="Height" Background="#1e2328" WindowStartupLocation="CenterScreen" Activated="Me_Activated" WindowStyle="None" ResizeMode="NoResize"
+        Title="{loc:Loc Key=TextInputWindow.Title}" Height="450" Width="450" SizeToContent="Height" Background="#1e2328" WindowStartupLocation="CenterScreen" Activated="Me_Activated" WindowStyle="None" ResizeMode="NoResize"
         DataContext="{Binding ElementName=Me}" Tag="{Binding Mode, ElementName=Me}">
     <Window.Resources>
         <ResourceDictionary>
@@ -56,9 +57,9 @@
                     </Border>
                     <TextBlock Style="{StaticResource CaptionText}" Text="{Binding InputTitle}"></TextBlock>
                     <TextBox Margin="{StaticResource StdMargin}" x:Name="tb" Style="{StaticResource WidgetTextBox}" Text="{Binding Text}"/>
-                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwname">Password</TextBlock>
+                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwname" Text="{loc:Loc Key=TextInputWindow.Label.Password}"/>
                     <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pw" Text="{Binding Password}"/>
-                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwnameconfirm" >Confirm Password</TextBlock>
+                    <TextBlock Style="{StaticResource CaptionText}" x:Name="pwnameconfirm" Text="{loc:Loc Key=TextInputWindow.Label.ConfirmPassword}"/>
                     <TextBox Style="{StaticResource PasswordBox}" Margin="{StaticResource StdMargin}" x:Name="pwconfirm" Text="{Binding PasswordConfirmation}"/>
                     <Grid Margin="{StaticResource StdMargin}">
                         <Grid.ColumnDefinitions>
@@ -66,8 +67,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Button Height="Auto" Padding="4" IsCancel="True" Grid.Column="1" Margin="{StaticResource LeftRightStdMargin}">_Cancel</Button>
-                        <Button Height="Auto" Padding="4" IsDefault="True" Grid.Column="2" Click="Button_Click">_OK</Button>
+                        <Button Height="Auto" Padding="4" IsCancel="True" Grid.Column="1" Margin="{StaticResource LeftRightStdMargin}" Content="{loc:Loc Key=TextInputWindow.Button.Cancel}"/>
+                        <Button Height="Auto" Padding="4" IsDefault="True" Grid.Column="2" Click="Button_Click" Content="{loc:Loc Key=TextInputWindow.Button.Ok}"/>
                     </Grid>
                 </StackPanel>
             </Border>

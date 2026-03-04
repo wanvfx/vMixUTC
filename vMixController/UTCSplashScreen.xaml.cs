@@ -372,7 +372,10 @@ namespace vMixController
                 chimage = RenderCharacterToBitmap(ch);
             }*/
 
-            Build.Text = string.Format(CultureInfo.CreateSpecificCulture("en-US").DateTimeFormat, "Carelessly builded @{0:d} by elgarf, use at your own risk\n{1}", MainViewModel.GetBuildDateTime(Assembly.GetExecutingAssembly()), "HTTPClient version");
+            Build.Text = string.Format(CultureInfo.CurrentCulture,
+                Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.Template"],
+                MainViewModel.GetBuildDateTime(Assembly.GetExecutingAssembly()),
+                Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.HttpClientVersion"]);
             
             //Icon.Text = new string(ch, 1);
             //this.RenderSize = new System.Windows.Size(400, 225);

@@ -94,6 +94,18 @@ namespace vMixController.Properties {
                 this["NDIFiltersRegistered"] = value;
             }
         }
+
+		[global::System.Configuration.UserScopedSettingAttribute()]
+		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+		[global::System.Configuration.DefaultSettingValueAttribute("")]
+		public string UiCulture {
+			get {
+				return ((string)(this["UiCulture"]));
+			}
+			set {
+				this["UiCulture"] = value;
+			}
+		}
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

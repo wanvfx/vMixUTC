@@ -9,6 +9,7 @@
              xmlns:sanford="clr-namespace:Sanford.Multimedia.Midi;assembly=Sanford.Multimedia.Midi"
              xmlns:midi="clr-namespace:Melanchall.DryWetMidi.Core;assembly=Melanchall.DryWetMidi"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="496"
              x:Name="Me">
@@ -33,8 +34,8 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center">
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf001;</Run>
-                    <Run Text="Midi Mapping"/></TextBlock>
-                <Button ToolTip="Add midi mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Run Text="{loc:Loc Key=MidiMapping.Title}"/></TextBlock>
+                <Button ToolTip="{loc:Loc Key=MidiMapping.ToolTip.Add}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Midi_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Midis, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -55,28 +56,28 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="Channel" Width="50">
+                            <GridViewColumn Header="{loc:Loc Key=MidiMapping.Column.Channel}" Width="50">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding A}" Margin="-3,0,-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Control/Note" Width="100">
+                            <GridViewColumn Header="{loc:Loc Key=MidiMapping.Column.ControlNote}" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding B}" Margin="-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Execution Link" Width="150">
+                            <GridViewColumn Header="{loc:Loc Key=MidiMapping.Column.ExecutionLink}" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding C}" Margin="-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="MIDI Event Type">
+                            <GridViewColumn Header="{loc:Loc Key=MidiMapping.Column.EventType}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox SelectedValue="{Binding D, Mode=TwoWay}" ItemsSource="{Binding Source={StaticResource MidiValues}}" Margin="-5,0"/>
@@ -86,7 +87,7 @@
                             <GridViewColumn Header="">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Command="{Binding LearnMidiKey, ElementName=Me}" CommandParameter="{Binding}" Margin="-5,0,-6,0">Learn</Button>
+                                        <Button Command="{Binding LearnMidiKey, ElementName=Me}" CommandParameter="{Binding}" Margin="-5,0,-6,0" Content="{loc:Loc Key=MidiMapping.Button.Learn}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -101,7 +102,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Add MIDI Mapping"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="{loc:Loc Key=MidiMapping.Button.AddMapping}"/>
         </StackPanel>
     </Border>
 </UserControl>

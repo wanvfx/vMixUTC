@@ -1,4 +1,4 @@
-﻿using CommonServiceLocator;
+using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
@@ -24,6 +24,7 @@ using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
 using vMixController.Extensions;
+using vMixController.Localization;
 using vMixController.Messages;
 using vMixController.Widgets;
 using vMixControllerSkin;
@@ -1289,6 +1290,9 @@ namespace vMixController.ViewModel
                     ?? (_mouseButtonUp = new RelayCommand<MouseButtonEventArgs>(
                     p =>
                     {
+						var mw = App.Current?.MainWindow as vMixController.MainWindow;
+						if (mw?.LayoutGrid?.IsMouseCaptured == true)
+							mw.LayoutGrid.ReleaseMouseCapture();
 
                         if (SelectorWidth != 0 && SelectorHeight != 0)
                         {
@@ -1321,12 +1325,14 @@ namespace vMixController.ViewModel
                         if (_createWidget != null)
                         {
                             EditorCursor = "Arrow";
-                            var pos = p.MouseDevice.GetPosition((IInputElement)p.Source);
+                            var pos = mw?.LayoutGrid != null
+							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+							: p.MouseDevice.GetPosition((IInputElement)p.Source);
                             _createWidget(new Point(pos.X / WindowSettings.UIScale, pos.Y / WindowSettings.UIScale));
                             _createWidget = null;
                         }
 
-                        if ((p.OriginalSource is ListView))
+                        if (p.OriginalSource is ListView || p.OriginalSource is Grid)
                             IsHotkeysEnabled = true;
 
                     }));
@@ -1349,7 +1355,14 @@ namespace vMixController.ViewModel
                         if (WindowSettings.Locked)
                             return;
 
-                        var pos = Mouse.GetPosition((IInputElement)p.Source);
+						var mw = App.Current?.MainWindow as vMixController.MainWindow;
+						var pos = mw?.LayoutGrid != null
+							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+							: Mouse.GetPosition((IInputElement)p.Source);
+						if (mw?.LayoutGrid != null && !mw.LayoutGrid.IsMouseCaptured)
+							mw.LayoutGrid.CaptureMouse();
+
+						_clickPoint = pos;
                         _relativeClickPoint = pos;
                         SelectorEnabled = true;
                         _rawSelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
@@ -1380,8 +1393,10 @@ namespace vMixController.ViewModel
                     {
                         //MouseEventArgs
                         //_moveSource = p.Source;
-                        var ps = p.GetPosition(App.Current.MainWindow);
-                        var ipos = new Point(ps.X, ps.Y);
+						var mw = App.Current?.MainWindow as vMixController.MainWindow;
+						var ipos = mw?.LayoutGrid != null
+							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+							: new Point(p.GetPosition(App.Current.MainWindow).X, p.GetPosition(App.Current.MainWindow).Y);
                         if (!SelectorEnabled)
                         {
 
@@ -1417,7 +1432,17 @@ namespace vMixController.ViewModel
                     p =>
                     {
                         _fromContextMenu = true;
-                        _contextMenuPosition = Mouse.GetPosition((IInputElement)p.Source);
+
+                        var mw = App.Current?.MainWindow as MainWindow;
+                        if (mw?.LayoutGrid != null)
+                        {
+                            var pos = Mouse.GetPosition(mw.LayoutGrid);
+                            _contextMenuPosition = mw.ToCanvasContentPoint(pos);
+                        }
+                        else
+                        {
+                            _contextMenuPosition = Mouse.GetPosition((IInputElement)p.Source);
+                        }
                     }));
             }
         }
@@ -1566,7 +1591,7 @@ namespace vMixController.ViewModel
                     {
                         Ookii.Dialogs.Wpf.VistaOpenFileDialog opendlg = new Ookii.Dialogs.Wpf.VistaOpenFileDialog
                         {
-                            Filter = "vMix Controller|*.vmc"
+                            Filter = LocalizationManager.Instance["Dialog.FileFilter.VmixController"]
                         };
                         var result = opendlg.ShowDialog(App.Current.MainWindow);
                         if (result.HasValue && result.Value)
@@ -1797,8 +1822,8 @@ namespace vMixController.ViewModel
                                 TextInputWindow twi = new TextInputWindow()
                                 {
                                     Mode = InputTextWindowMode.NewPassword,
-                                    Title = "Enter password to lock controller",
-                                    InputTitle = "User Name",
+                                    Title = LocalizationManager.Instance["Dialog.PasswordLock.Title"],
+                                    InputTitle = LocalizationManager.Instance["Dialog.PasswordLock.InputTitle"],
                                 };
 
                                 /*Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
@@ -1820,7 +1845,7 @@ namespace vMixController.ViewModel
                                         Ookii.Dialogs.Wpf.TaskDialog td = new Ookii.Dialogs.Wpf.TaskDialog();
                                         td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
                                         td.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Error;
-                                        td.MainInstruction = "Passwords doesn't match!\nLocket without password.";
+                                        td.MainInstruction = LocalizationManager.Instance["Dialog.Error.PasswordMismatch"];
                                         td.ShowDialog();
                                     }
                                 }
@@ -1834,8 +1859,8 @@ namespace vMixController.ViewModel
                             TextInputWindow twi = new TextInputWindow()
                             {
                                 Mode = InputTextWindowMode.Password,
-                                Title = "Enter password to unlock controller",
-                                InputTitle = "User Name"
+                                Title = LocalizationManager.Instance["Dialog.PasswordUnlock.Title"],
+                                InputTitle = LocalizationManager.Instance["Dialog.PasswordUnlock.InputTitle"]
                             };
                             /*Ookii.Dialogs.Wpf.CredentialDialog cred = new Ookii.Dialogs.Wpf.CredentialDialog
                             {
@@ -1858,7 +1883,7 @@ namespace vMixController.ViewModel
                                     Ookii.Dialogs.Wpf.TaskDialog td = new Ookii.Dialogs.Wpf.TaskDialog();
                                     td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
                                     td.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Error;
-                                    td.MainInstruction = "Incorrect password!";
+                                    td.MainInstruction = LocalizationManager.Instance["Dialog.Error.IncorrectPassword"];
                                     td.ShowDialog();
                                     return;
                                 }
@@ -1953,7 +1978,7 @@ namespace vMixController.ViewModel
             var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
 
             if (state == null || state.Inputs.Where(x => x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
-            var input = new vMixAPI.Input() { Number = -99, Title = "[Global Variables]", Key = "vmix-utc-internal-gv" };
+			var input = new vMixAPI.Input() { Number = -99, Title = LocalizationManager.Instance["MainViewModel.GlobalVariables.InputTitle"], Key = "vmix-utc-internal-gv" };
             int index = 0;
             foreach (var v in globalSettings.Variables)
             {
@@ -1969,12 +1994,26 @@ namespace vMixController.ViewModel
             state.Inputs.Insert(0, input);
         }
 
+		private void LocalizeVirtualInputs(vMixAPI.State state)
+		{
+			if (state?.Inputs == null) return;
+
+			var active = state.Inputs.FirstOrDefault(x => x.Key == "-1");
+			if (active != null)
+				active.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Active"];
+
+			var preview = state.Inputs.FirstOrDefault(x => x.Key == "0");
+			if (preview != null)
+				preview.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Preview"];
+		}
+
         private void State_OnStateCreated(object sender, EventArgs e)
         {
             if (Model != null)
                 Model.OnStateSynced -= Model_OnStateUpdated;
             Model = (vMixAPI.State)sender;
             LinkGlobalVariables(Model);
+			LocalizeVirtualInputs(Model);
             foreach (var item in _widgets)
                 item.State = Model;
             if (Model != null)
@@ -1996,6 +2035,7 @@ namespace vMixController.ViewModel
                 var instate = (vMixAPI.State)sender;
 
                 LinkGlobalVariables(instate);
+				LocalizeVirtualInputs(instate);
 
                 foreach (var item in _widgets)
                     item.State = (vMixAPI.State)sender;
@@ -2215,6 +2255,7 @@ namespace vMixController.ViewModel
         public MainViewModel()
         {
             vMixAPI.APIRequestManager.OnStatusChange += APIRequestManager_OnStatusChange;
+			LocalizationManager.Instance.CultureChanged += (_, __) => LocalizeVirtualInputs(Model);
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
             ThreadPool.GetAvailableThreads(out int t1, out int t2);
@@ -2355,7 +2396,7 @@ namespace vMixController.ViewModel
             /*try
             {
                 _logger.Info("Loading variables.");
-                s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
+                s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>);
                 if (File.Exists(Path.Combine(_documentsPath, "Variables.xml")))
                     using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Open))
                     {
@@ -2848,25 +2889,25 @@ namespace vMixController.ViewModel
                     {
                         Ookii.Dialogs.Wpf.TaskDialog td = new Ookii.Dialogs.Wpf.TaskDialog
                         {
-                            WindowTitle = "About",
+                            WindowTitle = LocalizationManager.Instance["Dialog.About.Title"],
 
-                            MainInstruction = "One controller to rule them all.\nDonate if you like it 😉",
+                            MainInstruction = LocalizationManager.Instance["Dialog.About.MainInstruction"],
                             MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Information,
-                            ExpandedInformation = @"This software using Antlr3 (c) 2010 Terence Parr; Avalonedit (c) AvalonEdit Contributors; Common.Logging by Aleksandar Seovic, Mark Pollack, Erich Eichinger, Stephen Bohlen; Extended.Wpf.Toolkit (c) Xceed Software, Inc. -2019; Fody, Costura.Fody (c) 2012 Simon Cropp and contributors; HtmlAgilityPack (c) ZZZ Projects, Simon Mourrier, Jeff Klawiter, Stephan Grell; MouseKeyHook (c) 2004-2015, George Mamaladze; MvvmLightLibs (c) 2009-2018 Laurent Bugnion; NAudio by Mark Heath & Contributors; NLog (c) 2004-2020 Jaroslaw Kowalski, Kim Christensen, Julian Verdurmen; Ookii.Dialogs by Sven Groot; Sanford.Multimedia.Midi by Leslie Sanford, Tebjan Halm, Andreas Grimme, Andres Fernandez de Prado; WpfScreenHelper (c) 2014 Michael Denny; WriteableBitmapEx (c) Schulte Software Development; NDI SDK (c) NewTek Inc.",
+                            ExpandedInformation = LocalizationManager.Instance["Dialog.About.ExpandedInformation"],
                             ExpandFooterArea = true,
                             Footer = Title,
                             ButtonStyle = Ookii.Dialogs.Wpf.TaskDialogButtonStyle.CommandLinks
                         };
 
-                        var forumbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "vMix Forum" };
-                        var githubbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "GitHub" };
-                        var redditbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "Reddit" };
-                        var donatebtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = "Donate" };
+                        var forumbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = LocalizationManager.Instance["Dialog.About.Button.Forum"] };
+                        var githubbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = LocalizationManager.Instance["Dialog.About.Button.GitHub"] };
+                        var redditbtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = LocalizationManager.Instance["Dialog.About.Button.Reddit"] };
+                        var donatebtn = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Custom) { Text = LocalizationManager.Instance["Dialog.About.Button.Donate"] };
                         td.Buttons.Add(forumbtn);
                         td.Buttons.Add(githubbtn);
                         td.Buttons.Add(redditbtn);
                         td.Buttons.Add(donatebtn);
-                        td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Close) { Default = true, Text = "Close" });
+                        td.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Close) { Default = true, Text = LocalizationManager.Instance["Dialog.About.Button.Close"] });
 
                         var btn = td.ShowDialog();
                         if (btn == forumbtn)
@@ -2916,7 +2957,7 @@ namespace vMixController.ViewModel
                     p =>
                     {
                         //WindowSettings.Pages[p] = "PAGE 2";
-                        TextInputWindow ti = new TextInputWindow() { Title = "Input Request", InputTitle = "Page Name", Text = WindowSettings.Pages[p], Mode = InputTextWindowMode.Default };
+                        TextInputWindow ti = new TextInputWindow() { Title = LocalizationManager.Instance["Dialog.PageName.Title"], InputTitle = LocalizationManager.Instance["Dialog.PageName.InputTitle"], Text = WindowSettings.Pages[p], Mode = InputTextWindowMode.Default };
                         IsHotkeysEnabled = false;
                         if (ti.ShowDialog() ?? false)
                         {
