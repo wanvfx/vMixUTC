@@ -1096,7 +1096,7 @@ namespace vMixController.Widgets
                             int flag = 0;
                             while (GetValueByPath(state, path) != value)
                             {
-                                Thread.Sleep(50);
+                                await Task.Delay(50, cancellationToken);
                                 if (++flag > 10)
                                     break;
                             }

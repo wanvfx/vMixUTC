@@ -251,17 +251,9 @@ namespace UTCNDIMonitorDataProvider.OMT
         {
             // Here we keep track of the receiver Id used for this thread.
             int currReceiverId = (int)param;
-
+            libomtnet.OMTMediaFrame videoFrame = new libomtnet.OMTMediaFrame();
             while (!_exitThread && _receiver != null)
             {
-                // The descriptors
-                libomtnet.OMTMediaFrame videoFrame = new libomtnet.OMTMediaFrame();
-
-                /*if (IsLowBandwidth)
-                    _receiver.SetFlags(libomtnet.OMTReceiveFlags.Preview);
-                else
-                    _receiver.SetFlags(libomtnet.OMTReceiveFlags.None);*/
-
                 if (_receiver.Receive(libomtnet.OMTFrameType.Video, 1000, ref videoFrame))
                 {
 

@@ -50,7 +50,7 @@ namespace UTCNDIMonitorDataProvider
             if (value != null)
                 return ((string)value).StartsWith("OMT: ") ? Visibility.Hidden : Visibility.Visible;
             else
-                return null;
+                return Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -66,7 +66,7 @@ namespace UTCNDIMonitorDataProvider
             if (value != null)
                 return ((string)value).StartsWith("OMT: ") ? Visibility.Visible : Visibility.Hidden;
             else
-                return null;
+                return Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
