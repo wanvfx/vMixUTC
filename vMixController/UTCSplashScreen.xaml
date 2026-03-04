@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:vMixController"
+			 xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              Width="400" Height="400"
              d:DesignHeight="400" d:DesignWidth="400">
@@ -22,12 +23,11 @@
             <Grid Margin="8">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center">vMix</TextBlock>
-                    <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center">Universal Title Controller</TextBlock>
+					<TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center" Text="{loc:Loc Key=SplashScreen.Subtitle}"/>
                     <!--<TextBlock FontSize="30" Foreground="White" FontWeight="Regular" HorizontalAlignment="Center">Today icon <TextBlock x:Name="Icon" FontFamily="{StaticResource FontAwesome}">&#xf6be;</TextBlock></TextBlock>-->
                 </StackPanel>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                    <TextBlock TextAlignment="Right" Foreground="White" x:Name="Build">line 1<LineBreak/>
-                    line 2</TextBlock>
+					<TextBlock TextAlignment="Right" Foreground="White" x:Name="Build"/>
                 </StackPanel>
             </Grid>
         </Grid>

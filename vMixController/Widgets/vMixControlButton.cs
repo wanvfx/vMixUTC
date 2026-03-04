@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using System.Text.RegularExpressions;
 using System.Xml;
+using vMixController.Localization;
 using vMixController.Messages;
 using vMixController.Widgets.Button;
 using System.Collections.Concurrent;
@@ -532,7 +533,7 @@ namespace vMixController.Widgets
             try
             {
                 BlinkBorderColor = Colors.Lime;
-                await ExecutionThread((object)state, cancellationToken).ConfigureAwait(false);
+                await ExecutionThread((object)state, cancellationToken);
             }
             catch (OperationCanceledException)
             {
@@ -803,10 +804,10 @@ namespace vMixController.Widgets
 
                 if ((DateTime.Now - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
                 {
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    Dispatcher.Invoke(() =>
                     {
                         _internalState?.UpdateAsync();
-                    }));
+                    });
                     _previousInternalStateUpdating = DateTime.Now;
                 }
 
@@ -941,12 +942,12 @@ namespace vMixController.Widgets
                             case NativeFunctions.UPDATESTATE:
                             case NativeFunctions.SYNC:
                                 AddLog("{0}) STATE UPDATING", _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true })));
+                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true })));
                                 break;
                             case NativeFunctions.UPDATEINTERNALBUTTONSTATE:
                             case NativeFunctions.SYNCINTERNALBUTTONSTATE:
                                 AddLog("{0}) INTERNAL BUTTON STATE UPDATING", _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => _internalState?.UpdateAsync()));
+                                Dispatcher.Invoke(new Action(() => _internalState?.UpdateAsync()));
                                 break;
                             case NativeFunctions.GOTO:
                                 if (_jumpCount >= 5)
@@ -962,19 +963,19 @@ namespace vMixController.Widgets
                             case NativeFunctions.EXECLINK:
                                 strparameter = Dispatcher.Invoke(() => CalculateObjectParameter(cmd)).ToString();
                                 AddLog("{2}) EXECLINK {0} [{1}]", cmd.StringParameter, strparameter, _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new Pair<string, object>(strparameter, null))));
+                                Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new Pair<string, object>(strparameter, null))));
                                 break;
                             case NativeFunctions.LIVETOGGLE:
                                 AddLog("{0}) LIVETOGGLE", _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 2 })));
+                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 2 })));
                                 break;
                             case NativeFunctions.LIVEOFF:
                                 AddLog("{0}) LIVEOFF", _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 0 })));
+                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 0 })));
                                 break;
                             case NativeFunctions.LIVEON:
                                 AddLog("{0}) LIVEON", _pointer + 1);
-                                await Dispatcher.BeginInvoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 1 })));
+                                Dispatcher.Invoke(new Action(() => Messenger.Default.Send(new LIVEToggleMessage() { State = 1 })));
                                 break;
                             case NativeFunctions.CONDITION:
                                 conditionResult = cond.HasValue && cond.Value ? new bool?(TestCondition(cmd)) : null;
@@ -1088,7 +1089,7 @@ namespace vMixController.Widgets
                             int flag = 0;
                             while (GetValueByPath(state, path) != value)
                             {
-                                await Task.Delay(50);
+                                Thread.Sleep(50);
                                 if (++flag > 10)
                                     break;
                             }
@@ -1197,9 +1198,9 @@ namespace vMixController.Widgets
             if (hasGoToOrTimer && Style != Constants.BUTTON_STYLE_MOMENTARY)
             {
                 var d = new Ookii.Dialogs.Wpf.TaskDialog();
-                d.WindowTitle = "Possible Script Error";
+                d.WindowTitle = LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Title"];
                 d.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Warning;
-                d.Content = "Your script contains TIMER or possible LOOPS!\nUse Momentary buttons for this type of scripts.";
+                d.Content = LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Content"];
                 d.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
                 d.ShowDialog();
             }

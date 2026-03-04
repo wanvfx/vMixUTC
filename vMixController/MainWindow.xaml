@@ -9,6 +9,7 @@
         xmlns:ctrls="clr-namespace:vMixController.Controls"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:props="clr-namespace:vMixController.Properties"
+        xmlns:loc="clr-namespace:vMixController.Localization"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         xmlns:e="clr-namespace:vMixController.Extensions"
@@ -36,6 +37,7 @@
             </ResourceDictionary.MergedDictionaries>
             <!--<this:Help x:Key="Help"/>-->
             <Rect x:Key="IconViewbox">0.18,0.18,0.64,0.64</Rect>
+			<c:Int32ToVisibilityConverter x:Key="Int32ToVisibilityConverter"/>
             <Storyboard x:Key="StoryboardFadeIn">
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
                     <DiscreteObjectKeyFrame KeyTime="0">
@@ -59,32 +61,27 @@
             </Storyboard>
 
             <CompositeCollection x:Key="SubMenu" x:Shared="False">
-                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="Add Widget" Command="{Binding Main.CreateWidgetFromTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="{loc:Loc Key=MainWindow.SubMenu.AddWidget}" Command="{Binding Main.CreateWidgetFromTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
                 <Separator/>
-                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="Edit Template" Command="{Binding Main.EditWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
-                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="Remove Template" Command="{Binding Main.RemoveWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="{loc:Loc Key=MainWindow.SubMenu.EditTemplate}" Command="{Binding Main.EditWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
+                <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="{loc:Loc Key=MainWindow.SubMenu.RemoveTemplate}" Command="{Binding Main.RemoveWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
             </CompositeCollection>
-            <Rectangle x:Key="DynamicIcon" x:Shared="False"  Width="16" Height="16" StrokeThickness="1">
-                <Rectangle.Fill>
-                    <SolidColorBrush Color="{Binding B.Color, FallbackValue=Black}"/>
-                </Rectangle.Fill>
-                <Rectangle.Stroke>
-                    <SolidColorBrush Color="{Binding B.BorderColor, FallbackValue=Black}"/>
-                </Rectangle.Stroke>
-            </Rectangle>
+			<Rectangle x:Key="DynamicIcon" x:Shared="False" Width="16" Height="16" StrokeThickness="1"
+					   Fill="{Binding B.Color, FallbackValue=Black, Converter={c:ColorToSolidBrushConverter}}"
+					   Stroke="{Binding B.BorderColor, FallbackValue=Black, Converter={c:ColorToSolidBrushConverter}}"/>
             <Style TargetType="Border" x:Key="IconBorder">
                 <Setter Property="BorderBrush" Value="Black"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
             <CompositeCollection x:Key="CreateItems" x:Shared="False">
-                <MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="Button">
+                <MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="{loc:Loc Key=MainWindow.CreateItems.Button}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF205;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="NewButton" Command="{Binding CreateWidgetCommand}" CommandParameter="NewButton" Header="Button+">
+                <MenuItem x:Name="NewButton" Command="{Binding CreateWidgetCommand}" CommandParameter="NewButton" Header="{loc:Loc Key=MainWindow.CreateItems.NewButton}">
                     <MenuItem.Icon>
                         <Border Style="{StaticResource IconBorder}">
                             <Grid Width="16" Height="16">
@@ -99,21 +96,21 @@
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Label" Command="{Binding CreateWidgetCommand}" CommandParameter="Label" Header="Label">
+                <MenuItem x:Name="Label" Command="{Binding CreateWidgetCommand}" CommandParameter="Label" Header="{loc:Loc Key=MainWindow.CreateItems.Label}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="Variable Viewer">
+                <MenuItem x:Name="VariableViewer" Command="{Binding CreateWidgetCommand}" CommandParameter="VariableViewer" Header="{loc:Loc Key=MainWindow.CreateItems.VariableViewer}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF02B;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Region" Command="{Binding CreateWidgetCommand}" CommandParameter="Region" Header="Region">
+                <MenuItem x:Name="Region" Command="{Binding CreateWidgetCommand}" CommandParameter="Region" Header="{loc:Loc Key=MainWindow.CreateItems.Region}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF2D0;</TextBlock>
@@ -121,56 +118,56 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <!--<MenuItem Command="{Binding CreateWidgetCommand}" CommandParameter="Image" Header="Image"/>-->
-                <MenuItem x:Name="List" Command="{Binding CreateWidgetCommand}" CommandParameter="List" Header="List">
+                <MenuItem x:Name="List" Command="{Binding CreateWidgetCommand}" CommandParameter="List" Header="{loc:Loc Key=MainWindow.CreateItems.List}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF03A;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Score" Command="{Binding CreateWidgetCommand}" CommandParameter="Score" Header="Score">
+                <MenuItem x:Name="Score" Command="{Binding CreateWidgetCommand}" CommandParameter="Score" Header="{loc:Loc Key=MainWindow.CreateItems.Score}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF005;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="TextField" Command="{Binding CreateWidgetCommand}" CommandParameter="TextField" Header="Text Field">
+                <MenuItem x:Name="TextField" Command="{Binding CreateWidgetCommand}" CommandParameter="TextField" Header="{loc:Loc Key=MainWindow.CreateItems.TextField}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF031;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Timer" Command="{Binding CreateWidgetCommand}" CommandParameter="Timer" Header="Timer">
+                <MenuItem x:Name="Timer" Command="{Binding CreateWidgetCommand}" CommandParameter="Timer" Header="{loc:Loc Key=MainWindow.CreateItems.Timer}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xE06F;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Clock" Command="{Binding CreateWidgetCommand}" CommandParameter="Clock" Header="Clock">
+                <MenuItem x:Name="Clock" Command="{Binding CreateWidgetCommand}" CommandParameter="Clock" Header="{loc:Loc Key=MainWindow.CreateItems.Clock}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF34E;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Volume" Command="{Binding CreateWidgetCommand}" CommandParameter="Volume" Header="Volume">
+                <MenuItem x:Name="Volume" Command="{Binding CreateWidgetCommand}" CommandParameter="Volume" Header="{loc:Loc Key=MainWindow.CreateItems.Volume}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1DE;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="TBar" Command="{Binding CreateWidgetCommand}" CommandParameter="TBar" Header="T-Bar">
+                <MenuItem x:Name="TBar" Command="{Binding CreateWidgetCommand}" CommandParameter="TBar" Header="{loc:Loc Key=MainWindow.CreateItems.TBar}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">T</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="Playlist" Command="{Binding CreateWidgetCommand}" CommandParameter="Playlist" Header="Playlist">
+                <MenuItem x:Name="Playlist" Command="{Binding CreateWidgetCommand}" CommandParameter="Playlist" Header="{loc:Loc Key=MainWindow.CreateItems.Playlist}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xf00b;</TextBlock>
@@ -178,14 +175,14 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem x:Name="Container" Command="{Binding CreateWidgetCommand}" CommandParameter="Container" Header="Container">
+                <MenuItem x:Name="Container" Command="{Binding CreateWidgetCommand}" CommandParameter="Container" Header="{loc:Loc Key=MainWindow.CreateItems.Container}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1B2;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="ExternalData" Command="{Binding CreateWidgetCommand}" ItemsSource="{Binding ExternalDataProviders}" CommandParameter="ExternalData" Header="External Data">
+                <MenuItem x:Name="ExternalData" Command="{Binding CreateWidgetCommand}" ItemsSource="{Binding ExternalDataProviders}" CommandParameter="ExternalData" Header="{loc:Loc Key=MainWindow.CreateItems.ExternalData}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF1C0;</TextBlock>
@@ -206,21 +203,21 @@
                         </Style>
                     </MenuItem.Resources>
                 </MenuItem>
-                <MenuItem x:Name="MidiInterface" Command="{Binding CreateWidgetCommand}" CommandParameter="MidiInterface" Header="MIDI Device">
+                <MenuItem x:Name="MidiInterface" Command="{Binding CreateWidgetCommand}" CommandParameter="MidiInterface" Header="{loc:Loc Key=MainWindow.CreateItems.MidiDevice}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0E7;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="StreamDeck" Command="{Binding CreateWidgetCommand}" CommandParameter="StreamDeck" Header="StreamDeck Device">
+                <MenuItem x:Name="StreamDeck" Command="{Binding CreateWidgetCommand}" CommandParameter="StreamDeck" Header="{loc:Loc Key=MainWindow.CreateItems.StreamDeckDevice}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF11C;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem x:Name="MultiState" Command="{Binding CreateWidgetCommand}" CommandParameter="MultiState" Header="Multi State">
+                <MenuItem x:Name="MultiState" Command="{Binding CreateWidgetCommand}" CommandParameter="MultiState" Header="{loc:Loc Key=MainWindow.CreateItems.MultiState}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF233;</TextBlock>
@@ -228,7 +225,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem x:Name="Templates" Header="Templates" ItemsSource="{Binding WidgetTemplates}" IsEnabled="{Binding Items.Count, Converter={wpfc:ObjectToStringEqualsParameterToInverseBoolConverter}, ConverterParameter=0, Mode=OneWay, RelativeSource={RelativeSource Self}}">
+                <MenuItem x:Name="Templates" Header="{loc:Loc Key=MainWindow.CreateItems.Templates}" ItemsSource="{Binding WidgetTemplates}" IsEnabled="{Binding Items.Count, Converter={wpfc:ObjectToStringEqualsParameterToInverseBoolConverter}, ConverterParameter=0, Mode=OneWay, RelativeSource={RelativeSource Self}}">
 
                     <MenuItem.ItemTemplate>
                         <DataTemplate>
@@ -281,9 +278,9 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Menu KeyboardNavigation.TabNavigation="None" IsTabStop="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
-            <MenuItem Header="File">
-                <MenuItem Command="{Binding NewControllerCommand}" Header="New">
+		<Menu KeyboardNavigation.TabNavigation="None" IsTabStop="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+			<MenuItem Header="{loc:Loc Key=MainWindow.Menu.File}">
+				<MenuItem Command="{Binding NewControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.New}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF016;</TextBlock>
@@ -291,7 +288,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <MenuItem Command="{Binding LoadControllerCommand}" Header="Open">
+				<MenuItem Command="{Binding LoadControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Open}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF07C;</TextBlock>
@@ -299,7 +296,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <MenuItem Header="Recent Files" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
+				<MenuItem Header="{loc:Loc Key=MainWindow.Menu.File.RecentFiles}" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
                     <MenuItem.Resources>
                         <ResourceDictionary>
                             <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
@@ -322,7 +319,7 @@
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
 
-                <MenuItem Command="{Binding AppendControllerCommand}" Header="Append">
+				<MenuItem Command="{Binding AppendControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Append}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <Grid>
@@ -334,7 +331,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <MenuItem Command="{Binding SaveControllerCommand}"  Header="Save">
+				<MenuItem Command="{Binding SaveControllerCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Save}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0C7;</TextBlock>
@@ -351,7 +348,7 @@
                 </MenuItem>-->
                 <MenuItem Command="{Binding DownloadUpdateCommand}">
                     <MenuItem.Header>
-                        <TextBlock FontWeight="Bold">Download [<Run Text="{Binding AvailableVersion, StringFormat=MM/dd/yyy}"/>] Update</TextBlock>
+						<TextBlock FontWeight="Bold"><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Prefix}" /><Run Text=" [" /><Run Text="{Binding AvailableVersion, StringFormat=MM/dd/yyy}" /><Run Text="] " /><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Suffix}" /></TextBlock>
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
@@ -387,7 +384,7 @@
                         </Style>
                     </MenuItem.Style>
                 </MenuItem>-->
-                <MenuItem Command="{Binding AboutCommand}" Header="About">
+				<MenuItem Command="{Binding AboutCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.About}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF05A;</TextBlock>
@@ -395,7 +392,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Command="{Binding ExitCommand}"  Header="Exit">
+				<MenuItem Command="{Binding ExitCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Exit}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF08B;</TextBlock>
@@ -403,11 +400,15 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="Edit">
+			<MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}">
+				<MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
+				<MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language.Chinese}" Tag="zh-CN" Click="LanguageMenuItem_Click" />
+			</MenuItem>
+			<MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Edit}">
                 <MenuItem IsEnabled="{Binding UndoState, Converter={wpfc:ValueNullToInverseBoolConverter}}" Command="{Binding UndoCommand}">
                     <MenuItem.Header>
                         <StackPanel>
-                            <TextBlock Text="Undo"/>
+							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.Undo}"/>
                             <TextBlock Foreground="Gray" FontSize="10" Text="{Binding UndoReason}" Visibility="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </StackPanel>
                     </MenuItem.Header>
@@ -418,9 +419,9 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-                <MenuItem Command="{Binding DuplicateSelectedCommand}">
+				<MenuItem Command="{Binding DuplicateSelectedCommand}">
                     <MenuItem.Header>
-                        <TextBlock Text="Duplicate Selected"/>
+						<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.DuplicateSelected}"/>
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
@@ -429,7 +430,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="Widget" ItemsSource="{DynamicResource CreateItems}">
+			<MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Widget}" ItemsSource="{DynamicResource CreateItems}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
                         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -438,12 +439,12 @@
                 </MenuItem.ItemContainerStyle>
 
             </MenuItem>
-            <MenuItem ToolTip="Click \= Lock widgets\, Shift+Click \= Lock with password" Header="{Binding WindowSettings.Locked}" Command="{Binding ToggleLockCommand}">
+			<MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Lock.ToolTip}" Header="{Binding WindowSettings.Locked}" Command="{Binding ToggleLockCommand}">
                 <MenuItem.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="16px" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}" x:Name="LockedIcon"></TextBlock>
-                            <TextBlock Text="Lock"/>
+							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Lock}"/>
                         </StackPanel>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding}" Value="True">
@@ -456,16 +457,16 @@
                     </DataTemplate>
                 </MenuItem.HeaderTemplate>
             </MenuItem>
-            <MenuItem ToolTip="Sync UTC to vMix state" Header="{Binding Status}" Command="{Binding SyncStateCommand}">
+			<MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Sync.ToolTip}" Header="{Binding Status}" Command="{Binding SyncStateCommand}">
                 <MenuItem.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" Margin="0,0,8,0" Stroke="Black">
                                 <Ellipse.Fill>
-                                    <SolidColorBrush Color="{Binding Converter={c:StatusToColorConverter}}"/>
+								<SolidColorBrush Color="{Binding Path=., Converter={c:StatusToColorConverter}}"/>
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <TextBlock Text="Sync"></TextBlock>
+							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Sync}"></TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </MenuItem.HeaderTemplate>
@@ -480,16 +481,26 @@
                 </MenuItem.Style>
             </MenuItem>
         </Menu>
-        <ScrollViewer Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Background="Black">
-            <TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
-                <TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="Settings" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+		<Grid Grid.Row="1">
+			<ScrollViewer x:Name="MainScrollViewer" Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Background="Black">
+				<ScrollViewer.Template>
+					<ControlTemplate TargetType="{x:Type ScrollViewer}">
+						<Grid Background="{TemplateBinding Background}">
+							<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
+							<ScrollBar x:Name="PART_VerticalScrollBar" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+							<ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+						</Grid>
+					</ControlTemplate>
+				</ScrollViewer.Template>
+				<TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
+				<TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="{loc:Loc Key=MainWindow.Tab.Settings}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                     <StackPanel Margin="{StaticResource StdMargin}">
                         <Grid Margin="{StaticResource TopBottomStdMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="14"><Run Text="Window Properties"/></TextBlock>
+							<TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="14"><Run Text="{loc:Loc Key=MainWindow.Settings.WindowProperties}"/></TextBlock>
                             <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
 
@@ -524,8 +535,8 @@
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>-->
-                            <CompositeCollection>
-                                <TextBox TabIndex="1" Style="{StaticResource WidgetTextBox}" Tag="IP" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
+							<CompositeCollection>
+								<TextBox TabIndex="1" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.IP}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -538,34 +549,7 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </TextBox>
-                                <TextBox TabIndex="2" Style="{StaticResource WidgetTextBox}" Tag="Port" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-
-                                <TextBox TabIndex="3" Style="{StaticResource WidgetTextBox}" Tag="API Login" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-                                <TextBox TabIndex="4" Style="{StaticResource WidgetTextBox}" Tag="API Password" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+								<TextBox TabIndex="2" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.Port}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -579,8 +563,20 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-
-                                <TextBox TabIndex="5" Style="{StaticResource WidgetTextBox}" Tag="Poll Time, msec" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+								<TextBox TabIndex="3" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiLogin}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+								<TextBox TabIndex="4" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiPassword}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -594,7 +590,22 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-                                <Grid KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" Tag="Scaling">
+
+								<TextBox TabIndex="5" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.PollTime}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+
+								<Grid KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" Tag="{loc:Loc Key=MainWindow.Settings.Field.Scaling}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="Auto" MinWidth="64"/>
@@ -602,19 +613,19 @@
                                     </Grid.ColumnDefinitions>
                                     <Slider TabIndex="6" Value="{Binding WindowSettings.UIScale, Mode=TwoWay}" Minimum="0.5" Maximum="5"/>
                                     <TextBlock Grid.Column="1" Style="{StaticResource PropertyName}" Margin="{StaticResource LeftStdMargin}" Text="{Binding WindowSettings.UIScale, StringFormat=0.00}"/>
-                                    <Button TabIndex="7" Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}">Reset</Button>
+									<Button TabIndex="7" Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}" Content="{loc:Loc Key=MainWindow.Settings.Button.Reset}" />
                                 </Grid>
-                                <CheckBox TabIndex="8" Tag="Open Last At Start" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
-                                <CheckBox TabIndex="9" Tag="Is Topmost" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
-                                <Border Tag="Enable Log">
+								<CheckBox TabIndex="8" Tag="{loc:Loc Key=MainWindow.Settings.Field.OpenLastAtStart}" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
+								<CheckBox TabIndex="9" Tag="{loc:Loc Key=MainWindow.Settings.Field.IsTopmost}" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
+								<Border Tag="{loc:Loc Key=MainWindow.Settings.Field.EnableLog}">
                                     <StackPanel Orientation="Horizontal">
                                         <CheckBox TabIndex="10" IsChecked="{Binding WindowSettings.EnableLog, Mode=TwoWay}"/>
-                                        <Button TabIndex="11" Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}">Open Log Folder</Button>
+										<Button TabIndex="11" Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}" Content="{loc:Loc Key=MainWindow.Settings.Button.OpenLogFolder}" />
                                     </StackPanel>
                                 </Border>
 
-                                <CheckBox TabIndex="12" Tag="Show Widget Lock" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
-                                <CheckBox TabIndex="13" Tag="Blink Lights (need restart)" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
+								<CheckBox TabIndex="12" Tag="{loc:Loc Key=MainWindow.Settings.Field.ShowWidgetLock}" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
+								<CheckBox TabIndex="13" Tag="{loc:Loc Key=MainWindow.Settings.Field.BlinkLightsNeedRestart}" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
                             </CompositeCollection>
                         </skin:PropertiesListView>
                         <Grid Background="Transparent" DataContext="{Binding GlobalSettings, Source={StaticResource Locator}}">
@@ -651,9 +662,9 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-                                        <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="Global Variables" FontSize="14"/>
+											<TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Title}" FontSize="14"/>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-                                            <Button ToolTip="Add Variable" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
+												<Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Add}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
                                             <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{x:Static this:Help.StaticVariables_Default}"/>
                                         </StackPanel>
                                         <Border VerticalAlignment="Center" Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
@@ -663,9 +674,9 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock HorizontalAlignment="Center">Index</TextBlock>
-                                            <TextBlock HorizontalAlignment="Center" Grid.Column="1">Name</TextBlock>
-                                            <TextBlock HorizontalAlignment="Center" Grid.Column="2">Value</TextBlock>
+												<TextBlock HorizontalAlignment="Center" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Index}" />
+												<TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Name}" />
+												<TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Value}" />
                                         </Grid>
                                     </Grid>
                                     <ListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
@@ -717,7 +728,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </TextBox>
-                                                    <Button ToolTip="Remove Variable" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF2ED;" Grid.Column="3"/>
+																<Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Remove}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF2ED;" Grid.Column="3"/>
                                                 </Grid>
 
                                             </DataTemplate>
@@ -747,7 +758,7 @@
                                                                 <Setter.Value>
                                                                     <ControlTemplate TargetType="ListView">
                                                                         <Border Margin="0,2">
-                                                                            <TextBlock TextAlignment="Center" Style="{StaticResource CaptionText}">CLICK "Append Variable" TO ADD NEW VARIABLE</TextBlock>
+																		<TextBlock TextAlignment="Center" Style="{StaticResource CaptionText}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Empty}" />
                                                                         </Border>
                                                                     </ControlTemplate>
                                                                 </Setter.Value>
@@ -758,7 +769,7 @@
                                             </Style>
                                         </ListView.Style>
                                     </ListView>
-                                    <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="Append Variable"/>
+											<Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Button.Append}"/>
                                 </StackPanel>
                             </ScrollViewer>
                         </Grid>
@@ -767,7 +778,7 @@
                 <TabItem IsTabStop="False" IsSelected="True" Style="{StaticResource GrayItemStyle}" Foreground="White">
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock VerticalAlignment="Center">Layout</TextBlock>
+                            <TextBlock VerticalAlignment="Center" Text="{loc:Loc Key=MainWindow.Tab.Layout}"/>
                             <ComboBox x:Name="Page" SelectedIndex="{Binding PageIndex, Mode=TwoWay}" IsEditable="False" MinWidth="128" Margin="8,0,0,0" ItemsSource="{StaticResource Pages}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
@@ -801,31 +812,98 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <Button ToolTip="Rename Page" Style="{StaticResource TitleButton}" Command="{Binding EditPageNameCommand}" CommandParameter="{Binding PageIndex}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                            <Button ToolTip="{loc:Loc Key=MainWindow.Layout.Button.RenamePage.ToolTip}" Style="{StaticResource TitleButton}" Command="{Binding EditPageNameCommand}" CommandParameter="{Binding PageIndex}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                                 <TextBlock FontFamily="{StaticResource FontAwesome}" Text="&#xf044;"/>
                             </Button>
                         </StackPanel>
                     </TabItem.Header>
-                    <Grid Name="LayoutGrid" Tag="{Binding WindowSettings.Locked, Mode=TwoWay}">
-                        <TextBlock Margin="-10,-30" FontFamily="Segoe UI" Opacity="0.25" FontSize="120" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                            <TextBlock.Text>
-                                <MultiBinding Converter="{c:StringListToStringConverter}">
-                                    <Binding Source="{StaticResource Locator}" Path="Main.WindowSettings.Pages"/>
-                                    <Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                            <TextBlock.Foreground>
-                                <SolidColorBrush>
-                                    <SolidColorBrush.Color>
-                                        <MultiBinding  Converter="{c:ColorsListToColorConverter}">
-                                            <Binding Source="{x:Static vm:vMixWidgetSettingsViewModel.Colors}"/>
-                                            <Binding Path="PageIndex"/>
-                                        </MultiBinding>
-                                    </SolidColorBrush.Color>
-                                </SolidColorBrush>
-                            </TextBlock.Foreground>
-                        </TextBlock>
-                        <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening">
+                    <Grid Name="LayoutGrid" Tag="{Binding WindowSettings.Locked, Mode=TwoWay}" ClipToBounds="True" PreviewMouseDown="LayoutGrid_PreviewMouseDown" PreviewMouseMove="LayoutGrid_PreviewMouseMove" PreviewMouseUp="LayoutGrid_PreviewMouseUp" PreviewMouseWheel="LayoutGrid_PreviewMouseWheel">
+                        <Grid.Background>
+                            <ImageBrush x:Name="CanvasGridBrush" ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
+                        </Grid.Background>
+                        <Grid.Style>
+                            <Style TargetType="{x:Type Grid}">
+                                <Style.Triggers>
+                                    <Trigger Property="Tag" Value="True">
+                                        <Setter Property="Background" Value="#FF1E2328"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+					<Grid.ContextMenu>
+						<ContextMenu x:Name="LayoutGridContextMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
+							<ContextMenu.Resources>
+								<cls:BindingProxy x:Key="proxy" Data="{Binding}" />
+							</ContextMenu.Resources>
+							<ContextMenu.ItemContainerStyleSelector>
+								<cls:MenuStyleSelector>
+									<cls:MenuStyleSelector.MenuItem>
+										<Style TargetType="MenuItem">
+											<Setter Property="HorizontalContentAlignment" Value="Left"/>
+											<Setter Property="VerticalContentAlignment" Value="Center"/>
+											<Setter Property="IsEnabled" Value="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+										</Style>
+									</cls:MenuStyleSelector.MenuItem>
+								</cls:MenuStyleSelector>
+							</ContextMenu.ItemContainerStyleSelector>
+						</ContextMenu>
+					</Grid.ContextMenu>
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="MouseLeftButtonDown">
+							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonDown}"/>
+						</i:EventTrigger>
+						<i:EventTrigger EventName="MouseMove">
+							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseMove}"/>
+						</i:EventTrigger>
+						<i:EventTrigger EventName="MouseLeftButtonUp">
+							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonUp}"/>
+						</i:EventTrigger>
+						<i:EventTrigger EventName="ContextMenuOpening">
+							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuOpening}"/>
+						</i:EventTrigger>
+						<i:EventTrigger EventName="ContextMenuClosing">
+							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuClosing}"/>
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+
+					<Canvas IsHitTestVisible="False">
+						<Grid Width="{Binding ElementName=MainScrollViewer, Path=ViewportWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ViewportHeight}"
+							  Canvas.Left="{Binding ElementName=MainScrollViewer, Path=HorizontalOffset}" Canvas.Top="{Binding ElementName=MainScrollViewer, Path=VerticalOffset}">
+							<TextBlock Margin="0,0,16,2" FontFamily="Segoe UI" FontWeight="Bold" Opacity="0.25" FontSize="120" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsHitTestVisible="False">
+								<TextBlock.Text>
+									<MultiBinding Converter="{c:StringListToStringConverter}">
+										<Binding Source="{StaticResource Locator}" Path="Main.WindowSettings.Pages"/>
+										<Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
+									</MultiBinding>
+								</TextBlock.Text>
+								<TextBlock.Foreground>
+									<SolidColorBrush>
+										<SolidColorBrush.Color>
+											<MultiBinding Converter="{c:ColorsListToColorConverter}">
+												<Binding Source="{x:Static vm:vMixWidgetSettingsViewModel.Colors}"/>
+															<Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
+											</MultiBinding>
+										</SolidColorBrush.Color>
+									</SolidColorBrush>
+								</TextBlock.Foreground>
+							</TextBlock>
+						</Grid>
+					</Canvas>
+
+                        <Grid x:Name="CanvasRoot" Background="Transparent">
+                            <Grid x:Name="CanvasContent">
+                                <Grid.RenderTransform>
+                                    <MatrixTransform x:Name="CanvasTransform"/>
+                                </Grid.RenderTransform>
+
+                            <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening" ClipToBounds="False">
+                                <ListView.Template>
+                                    <ControlTemplate TargetType="ListView">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                            <ItemsPresenter/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </ListView.Template>
                             <ListView.ContextMenu>
                                 <ContextMenu x:Name="CreateContextMenu" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
                                     <ContextMenu.Resources>
@@ -876,23 +954,7 @@
                             <ListView.Cursor>
                                 <Binding Converter="{c:StringToCursorConverter}" Mode="OneWay" Path="EditorCursor"/>
                             </ListView.Cursor>
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="MouseLeftButtonUp">
-                                    <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonUp}"/>
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="ContextMenuOpening">
-                                    <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuOpening}"/>
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="ContextMenuClosing">
-                                    <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuClosing}"/>
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="MouseLeftButtonDown">
-                                    <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonDown}"/>
-                                </i:EventTrigger>
-                                <i:EventTrigger EventName="MouseMove">
-                                    <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseMove}"/>
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
+                            
                             <i:Interaction.Behaviors>
                                 <e:IgnoreMouseWheelBehavior IgnoreBehavior="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                             </i:Interaction.Behaviors>
@@ -930,9 +992,7 @@
                             </ListView.ItemContainerStyle>
                         </ListView>
                         <Border BorderBrush="White" BorderThickness="2" Opacity="0" Background="DarkSlateGray" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2" Margin="2" IsHitTestVisible="False">
-                            <TextBlock FontSize="18" TextAlignment="Center">Click on the layout to add widget(s).
-                                <LineBreak/>
-                            Or press ESC to cancel.</TextBlock>
+                            <TextBlock FontSize="18" TextAlignment="Center" Text="{loc:Loc Key=MainWindow.Layout.Hint}" />
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Style.Triggers>
@@ -958,27 +1018,15 @@
                         </Border>
 
                         <Grid Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding SelectorPosition}" Width="{Binding SelectorWidth}" Height="{Binding SelectorHeight}" Visibility="{Binding SelectorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False" Background="#7F00FFFF"/>
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <ImageBrush ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <Trigger Property="Tag">
-                                        <Trigger.Value>
-                                            <sys:Boolean>True</sys:Boolean>
-                                        </Trigger.Value>
-                                        <Setter Property="Background" Value="#FF1E2328"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
+                            </Grid>
+                        </Grid>
+
+
                     </Grid>
                 </TabItem>
-            </TabControl>
-        </ScrollViewer>
+				</TabControl>
+			</ScrollViewer>
+		</Grid>
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
@@ -1000,10 +1048,7 @@
             </StatusBarItem>
             <Separator/>
             <StatusBarItem  HorizontalAlignment="Right" HorizontalContentAlignment="Right">
-                <CheckBox IsChecked="{Binding LIVE, Mode=TwoWay}" FontWeight="Bold" Width="64" HorizontalContentAlignment="Center">
-                    <CheckBox.Content>
-                        <TextBlock HorizontalAlignment="Center">LIVE</TextBlock>
-                    </CheckBox.Content>
+                <CheckBox IsChecked="{Binding LIVE, Mode=TwoWay}" FontWeight="Bold" Width="64" HorizontalContentAlignment="Center" Content="{loc:Loc Key=MainWindow.StatusBar.Live}">
                     <CheckBox.Style>
                         <Style TargetType="CheckBox">
                             <Style.Setters>
@@ -1038,7 +1083,7 @@
             </StatusBarItem>-->
             <StatusBarItem HorizontalAlignment="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding IsGhosted, Mode=TwoWay}" ToolTip="Make top layer transparent" IsEnabled="{Binding WindowSettings.Locked, Mode=OneWay, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <CheckBox Margin="0,0,8,0" IsChecked="{Binding IsGhosted, Mode=TwoWay}" ToolTip="{loc:Loc Key=MainWindow.StatusBar.Ghosted.ToolTip}" IsEnabled="{Binding WindowSettings.Locked, Mode=OneWay, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox">
                                 <Style.Setters>
@@ -1057,11 +1102,11 @@
                                                     </Trigger>
                                                     <Trigger Property="IsChecked" Value="True">
                                                         <Setter Property="Text" Value="&#xf06e;" TargetName="Icon"/>
-                                                        <Setter Property="Content" Value="Ghosted"/>
+                                                        <Setter Property="Content" Value="{loc:Loc Key=MainWindow.StatusBar.Ghosted}" />
                                                     </Trigger>
                                                     <Trigger Property="IsChecked" Value="False">
                                                         <Setter Property="Text" Value="&#xf070;" TargetName="Icon"/>
-                                                        <Setter Property="Content" Value="Visible"/>
+                                                        <Setter Property="Content" Value="{loc:Loc Key=MainWindow.StatusBar.Visible}" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -1073,7 +1118,7 @@
                     </CheckBox>
                     <!--<Button Margin="0,0,8,0" Command="{Binding RegisterNDIFilters}">Register Filters</Button>-->
                     <TextBlock>
-                    <Hyperlink ToolTip="Support vMix Universal Title Controller!" NavigateUri="https://coindrop.to/elgarf" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Hyperlink ToolTip="{loc:Loc Key=MainWindow.StatusBar.Donate.ToolTip}" NavigateUri="https://coindrop.to/elgarf" RequestNavigate="Hyperlink_RequestNavigate">
                         <Image Height="18px" Source="/vMixControllerSkin;component\btn_donate_SM.png" Stretch="Uniform" Cursor="Hand"/>
                     </Hyperlink>
                     <Hyperlink>
@@ -1108,9 +1153,9 @@
                     </DrawingBrush.Drawing>
                 </DrawingBrush>
             </Border.Background>
-            <Border Width="256" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource Main.Background}" BorderBrush="{StaticResource Main.Foreground}" BorderThickness="4" Padding="{StaticResource StdMargin}">
-                <StackPanel>
-                    <TextBlock HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Segoe UI Mono" Foreground="White" FontSize="48">loading</TextBlock>
+			<Border Width="256" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource Main.Background}" BorderBrush="{StaticResource Main.Foreground}" BorderThickness="4" Padding="{StaticResource StdMargin}">
+				<StackPanel>
+					<TextBlock HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Segoe UI Mono" Foreground="White" FontSize="48" Text="{loc:Loc Key=MainWindow.Loading}"/>
                     <ProgressBar BorderThickness="0" Background="Transparent" Foreground="White" IsIndeterminate="True" Height="16"/>
                 </StackPanel>
             </Border>

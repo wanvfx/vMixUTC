@@ -11,18 +11,13 @@ namespace vMixController
         public static void AlignByGrid(this vMixController.Widgets.vMixControl item)
         {
             var pleft = item.Left;
-            item.Left = ((int)item.Left / 8) * 8;
+            // Use floor-based snapping so negative coordinates are supported (infinite canvas).
+            item.Left = Math.Floor(item.Left / 8.0) * 8.0;
             if (pleft > 0)
                 item.Width += pleft - item.Left;
             item.Width = ((int)item.Width / 8) * 8;
             item.Height = ((int)item.Height / 8) * 8;
-            item.Top = ((int)item.Top / 8) * 8;
-
-            //Avoid widget to be unreachable
-            if (item.Top < 0)
-                item.Top = 0;
-            if (item.Left < 0)
-                item.Left = 0;
+            item.Top = Math.Floor(item.Top / 8.0) * 8.0;
             if (item.Height < 8)
                 item.Height = 8;
 

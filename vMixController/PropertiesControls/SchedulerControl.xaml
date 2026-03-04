@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:c="clr-namespace:vMixController.Converters"
              xmlns:this="clr-namespace:vMixController"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="Me">
@@ -25,8 +26,8 @@
     <Border BorderBrush="#0087FF" Background="#18CAFF" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
         <StackPanel Margin="{StaticResource StdMargin}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Foreground="Black" Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf017;</Run><Run Text=" "></Run><Run Text="Scheduler"/></TextBlock>
-                <Button ToolTip="Add clock time" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                <TextBlock Foreground="Black" Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf017;</Run><Run Text=" "></Run><Run Text="{loc:Loc Key=Scheduler.Title}"/></TextBlock>
+                <Button ToolTip="{loc:Loc Key=Scheduler.ToolTip.AddClockTime}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Scheduler_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Events, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -46,7 +47,7 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="Time" Width="100">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.Column.Time}" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <!--<xceed:TimePicker Style="{StaticResource TimePickerStyle}" Value="{Binding A}" Kind="Local" ClipValueToMinMax="True" AllowTextInput="True" Format="LongTime" EndTime="23:59:59" ShowDropDownButton="False" ShowButtonSpinner="False"/>-->
@@ -67,14 +68,14 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Exec Link" Width="150">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.Column.ExecLink}" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Command}" HorizontalAlignment="Stretch" Margin="-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="M">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Mon}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -84,7 +85,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="T">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Tue}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -94,7 +95,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="W">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Wed}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -104,7 +105,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="TH">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Thu}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -114,7 +115,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="F">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Fri}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -124,7 +125,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="S">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sat}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -134,7 +135,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="SU">
+							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sun}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -155,7 +156,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Append Event"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="{loc:Loc Key=Scheduler.Button.AppendEvent}"/>
         </StackPanel>
     </Border>
 </UserControl>

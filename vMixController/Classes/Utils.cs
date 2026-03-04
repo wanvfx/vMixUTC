@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -354,6 +355,29 @@ namespace vMixController.Classes
             if (varName != null)
                 return (d ?? Dispatcher.CurrentDispatcher).Invoke(() =>
                 {
+                    // Virtual inputs (legacy): "-1" => [Active], "0" => [Preview]
+                    // Resolve them to the currently active/preview input key.
+                    var locator = ((ViewModelLocator)App.Current.FindResource("Locator"));
+                    var model = locator?.WidgetSettings?.Model;
+                    if (model != null)
+                    {
+                        if (varName == "-1")
+                        {
+                            var activeInput = model.Inputs.FirstOrDefault(x => x.Number == model.Active);
+                            if (activeInput != null)
+                                return activeInput.Key;
+                            return model.Active.ToString(CultureInfo.InvariantCulture);
+                        }
+
+                        if (varName == "0")
+                        {
+                            var previewInput = model.Inputs.FirstOrDefault(x => x.Number == model.Preview);
+                            if (previewInput != null)
+                                return previewInput.Key;
+                            return model.Preview.ToString(CultureInfo.InvariantCulture);
+                        }
+                    }
+
                     var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
                     var variable = globalSettings.Variables.Where(x => x.A == varName).FirstOrDefault();
                     var inputKey = varName;

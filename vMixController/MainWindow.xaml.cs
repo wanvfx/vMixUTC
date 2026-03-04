@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using vMixController.Controls;
 using vMixController.Extensions;
+using vMixController.Localization;
 using vMixController.Messages;
 using vMixController.ViewModel;
 
@@ -21,6 +22,12 @@ namespace vMixController
     public partial class MainWindow : Window
     {
         bool _loading = false;
+
+		private bool _isCanvasPanning;
+		private Point _canvasPanStart;
+		private Matrix _canvasPanStartMatrix;
+		private const double CanvasZoomMin = 0.1;
+		private const double CanvasZoomMax = 10.0;
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -32,9 +39,9 @@ namespace vMixController
                 Ookii.Dialogs.Wpf.TaskDialog dialog = new Ookii.Dialogs.Wpf.TaskDialog();
                 dialog.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Yes));
                 dialog.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.No));
-                dialog.WindowTitle = "Exit confirmation";
+                dialog.WindowTitle = LocalizationManager.Instance["Dialog.ExitConfirmation.Title"];
                 dialog.MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Warning;
-                dialog.MainInstruction = "Do you really want to quit?";
+                dialog.MainInstruction = LocalizationManager.Instance["Dialog.ExitConfirmation.MainInstruction"];
                 if (dialog.ShowDialog(this).ButtonType == Ookii.Dialogs.Wpf.ButtonType.No)
                 {
                     e.Cancel = true;
@@ -73,8 +80,82 @@ namespace vMixController
             e.Handled = true;
         }
 
+		private void LayoutGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Middle ||
+				(e.ChangedButton == MouseButton.Left && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
+			{
+				_isCanvasPanning = true;
+				_canvasPanStart = e.GetPosition(LayoutGrid);
+				_canvasPanStartMatrix = CanvasTransform?.Matrix ?? Matrix.Identity;
+				LayoutGrid.CaptureMouse();
+				Mouse.OverrideCursor = Cursors.Hand;
+				e.Handled = true;
+			}
+		}
+
+		private void LayoutGrid_PreviewMouseMove(object sender, MouseEventArgs e)
+		{
+			if (!_isCanvasPanning)
+				return;
+
+			var current = e.GetPosition(LayoutGrid);
+			var delta = current - _canvasPanStart;
+
+			var m = _canvasPanStartMatrix;
+			m.Translate(delta.X, delta.Y);
+			if (CanvasTransform != null)
+				CanvasTransform.Matrix = m;
+
+			e.Handled = true;
+		}
+
+		private void LayoutGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+		{
+			if (!_isCanvasPanning)
+				return;
+
+			if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
+			{
+				_isCanvasPanning = false;
+				if (LayoutGrid.IsMouseCaptured)
+					LayoutGrid.ReleaseMouseCapture();
+				Mouse.OverrideCursor = null;
+				e.Handled = true;
+			}
+		}
+
+		private void LayoutGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+		{
+			// Keep Shift+Wheel behavior (horizontal scrolling) handled by the outer ScrollViewer.
+			if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+				return;
+
+			if (CanvasTransform == null)
+				return;
+
+			var m = CanvasTransform.Matrix;
+			var scale = m.M11;
+			var zoomFactor = e.Delta > 0 ? 1.1 : (1.0 / 1.1);
+			var newScale = scale * zoomFactor;
+
+			if (newScale < CanvasZoomMin)
+				zoomFactor = CanvasZoomMin / scale;
+			else if (newScale > CanvasZoomMax)
+				zoomFactor = CanvasZoomMax / scale;
+
+			var p = e.GetPosition(LayoutGrid);
+			m.ScaleAt(zoomFactor, zoomFactor, p.X, p.Y);
+			CanvasTransform.Matrix = m;
+
+			e.Handled = true;
+		}
+
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
+			// Let the Layout canvas handle wheel zoom/pan; don't hijack the wheel for horizontal scrolling here.
+			if (LayoutGrid != null && LayoutGrid.IsMouseOver && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+				return;
 
             var wheel = ((DependencyObject)sender).FindChild<WheelControlledScrollViewer>().Where(x => x.IsMouseOver);
             foreach (var wheelControl in wheel)
@@ -108,6 +189,26 @@ namespace vMixController
             e.Handled = true;
         }
 
+		private void ApplyCanvasMatrix(Matrix m)
+		{
+			if (CanvasTransform != null)
+				CanvasTransform.Matrix = m;
+
+			if (CanvasGridBrush != null)
+				CanvasGridBrush.Transform = new MatrixTransform(m);
+		}
+
+		public Point ToCanvasContentPoint(Point layoutGridPoint)
+		{
+			var m = CanvasTransform?.Matrix ?? Matrix.Identity;
+			if (m.HasInverse)
+			{
+				m.Invert();
+				return m.Transform(layoutGridPoint);
+			}
+			return layoutGridPoint;
+		}
+
         private void Layout_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             /*if (SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.Locked)
@@ -121,5 +222,11 @@ namespace vMixController
         {
             Keyboard.Focus(Layout);
         }
+
+		private void LanguageMenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (sender is MenuItem menuItem && menuItem.Tag is string cultureName)
+				LocalizationManager.Instance.SetCulture(cultureName);
+		}
     }
 }

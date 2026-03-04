@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using System.Globalization;
-using System.Xml.Serialization;
 
 namespace vMixController.Widgets
 {
@@ -445,6 +444,8 @@ namespace vMixController.Widgets
         // Using a DependencyProperty as the backing store for IsMuted.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsMutedProperty =
             DependencyProperty.Register(nameof(IsMuted), typeof(bool), typeof(vMixControlVolume), new PropertyMetadata(false));
+
+        public List<Input> Inputs { get => State?.Inputs; }
 
 
         public override Hotkey[] GetHotkeys()

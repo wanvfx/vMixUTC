@@ -15,6 +15,7 @@
              xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:w="clr-namespace:vMixController.Widgets"
              xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters" xmlns:sys="http://schemas.microsoft.com/netfx/2009/xaml/presentation" xmlns:vmixapi="clr-namespace:vMixAPI;assembly=vMixAPI"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="Me">
@@ -37,17 +38,17 @@
         <Border BorderBrush="#D01818" Background="#8B0000" BorderThickness="1" Margin="{StaticResource TopBottomStdMargin}">
             <StackPanel Margin="{StaticResource StdMargin}">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="Script"/></TextBlock>
-                    <Button ToolTip="Add Script Command" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#x2b;"/>
-                    <Button ToolTip="Clear Script" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF51A;"/>
+                    <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf233;</Run><Run Text=" "/><Run Text="{loc:Loc Key=ScriptEditor.Title}"/></TextBlock>
+                    <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.AddCommand}" Style="{StaticResource TitleButton}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ClearScript}" Style="{StaticResource TitleButton}" Command="{Binding ClearScriptCommand, ElementName=Me}" Content="&#xF51A;"/>
                     <Border BorderThickness="1,0,0,0" Margin="1" BorderBrush="White"/>
-                    <Button ToolTip="Export Script" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
-                    <Button ToolTip="Import Script" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
+                    <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ExportScript}" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
+                    <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ImportScript}" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
                     <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Script_Default, Source={StaticResource Help}}"/>
                 </StackPanel>
 
                 <TabControl SelectionChanged="TabControl_SelectionChanged" BorderBrush="#D01818" Background="#8B0000">
-                    <TabItem Style="{StaticResource TabItemStyle}" Header="Constructor">
+                    <TabItem Style="{StaticResource TabItemStyle}" Header="{loc:Loc Key=ScriptEditor.Tab.Constructor}">
                         <StackPanel>
                             <ListView VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsVirtualizing="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="Transparent" BorderThickness="0" x:Name="script" AlternationCount="{Binding Commands.Count, ElementName=Me}" ItemsSource="{Binding Commands, ElementName=Me}" SelectedIndex="0" HorizontalContentAlignment="Stretch">
                                 <ListView.ItemTemplate>
@@ -70,7 +71,7 @@
                                                                 <ColumnDefinition/>
                                                                 <ColumnDefinition Width="2*"/>
                                                             </Grid.ColumnDefinitions>
-                                                            <Label Content="Command"/>
+                                                            <Label Content="{loc:Loc Key=ScriptEditor.Field.Command}"/>
                                                             <ComboBox x:Name="Func" Grid.Row="1" IsEditable="True" SelectedItem="{Binding Action, Mode=TwoWay}" DisplayMemberPath="Function" ItemsSource="{Binding Main.Functions, Source={StaticResource Locator}}" PreviewKeyDown="Func_PreviewKeyDown">
                                                                 <ComboBox.ItemsPanel>
                                                                     <ItemsPanelTemplate>
@@ -116,7 +117,7 @@
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
                                                                 <TextBox Height="Auto" Margin="0,3,0,2" TextWrapping="Wrap" Style="{StaticResource WidgetTextBox}" Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" Text="{Binding Parameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                                                <Button Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Grid.Column="1" Height="Auto" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=In}" FontFamily="{StaticResource SegoeUI}" Content="T" Click="Button_Click" ToolTip="Fill Title Index" ContextMenuOpening="Button_ContextMenuOpening">
+                                                                <Button Visibility="{Binding SelectedValue.IntValues, ElementName=Func, Converter={wpfc:ValueNullToVisibilityConverter}}" IsEnabled="{Binding SelectedValue.HasInputProperty, ElementName=Func, FallbackValue=False}" Grid.Column="1" Height="Auto" Tag="{Binding DataContext, ElementName=Element}" Style="{StaticResource TitleButton}" DataContext="{Binding SelectedItem, ElementName=In}" FontFamily="{StaticResource SegoeUI}" Content="T" Click="Button_Click" ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.FillTitleIndex}" ContextMenuOpening="Button_ContextMenuOpening">
                                                                     <Button.ContextMenu>
                                                                         <ContextMenu ItemsSource="{Binding Elements}">
                                                                             <ContextMenu.ItemTemplate>
@@ -165,7 +166,7 @@
                                                                     </CompositeCollection>
                                                                 </ComboBox.ItemsSource>
                                                             </ComboBox>
-                                                            <Label Visibility="Collapsed" x:Name="CondLabel" Content="Condition"/>
+                                                            <Label Visibility="Collapsed" x:Name="CondLabel" Content="{loc:Loc Key=ScriptEditor.Field.Condition}"/>
                                                             <Grid Visibility="Collapsed" x:Name="Cond">
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition/>
@@ -296,9 +297,9 @@
 
                                                     </Grid>
                                                     <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="2,0,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                                                        <TextBlock Margin="{StaticResource StdMargin}" ToolTip="No Input Assigned To This Function!" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="NoInputAssigned" Foreground="Yellow" Visibility="{Binding Tag, ElementName=Content}" FontFamily="{StaticResource FontAwesome}">&#xF071;</TextBlock>
+                                                        <TextBlock Margin="{StaticResource StdMargin}" ToolTip="{loc:Loc Key=ScriptEditor.Warning.NoInputAssigned}" VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="NoInputAssigned" Foreground="Yellow" Visibility="{Binding Tag, ElementName=Content}" FontFamily="{StaticResource FontAwesome}">&#xF071;</TextBlock>
 
-                                                        <CheckBox IsChecked="{Binding IsExecutable}" ToolTip="Execute This Function" Margin="{StaticResource StdMargin}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <CheckBox IsChecked="{Binding IsExecutable}" ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ExecuteThisFunction}" Margin="{StaticResource StdMargin}" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                             <CheckBox.Style>
                                                                 <Style TargetType="CheckBox">
                                                                     <Setter Property="FontSize" Value="14"/>
@@ -321,7 +322,7 @@
                                                             </CheckBox.Style>
                                                         </CheckBox>
 
-                                                        <CheckBox IsChecked="{Binding UseInActiveState}" ToolTip="Use In State Dependency" Margin="{StaticResource StdMargin}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <CheckBox IsChecked="{Binding UseInActiveState}" ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.UseInStateDependency}" Margin="{StaticResource StdMargin}" VerticalAlignment="Center" HorizontalAlignment="Center">
                                                             <CheckBox.Style>
                                                                 <Style TargetType="CheckBox">
                                                                     <Setter Property="FontSize" Value="14"/>
@@ -367,7 +368,7 @@
                                                             </Button.Style>
                                                             <Button.ContextMenu>
                                                                 <ContextMenu DataContext="{Binding Source={StaticResource Proxy}}">
-                                                                    <MenuItem Command="{Binding Data.MoveCommandUpCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="Move Up">
+                                                                    <MenuItem Command="{Binding Data.MoveCommandUpCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="{loc:Loc Key=ScriptEditor.Menu.MoveUp}">
                                                                         <MenuItem.Icon>
                                                                             <Viewbox Width="16" Height="16">
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF30C;</TextBlock>
@@ -375,7 +376,7 @@
                                                                         </MenuItem.Icon>
                                                                     </MenuItem>
                                                                     <!--Header="&#xF30C;"-->
-                                                                    <MenuItem Command="{Binding Data.MoveCommandDownCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="Move Down">
+                                                                    <MenuItem Command="{Binding Data.MoveCommandDownCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="{loc:Loc Key=ScriptEditor.Menu.MoveDown}">
                                                                         <MenuItem.Icon>
                                                                             <Viewbox Width="16" Height="16">
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF309;</TextBlock>
@@ -383,7 +384,7 @@
                                                                         </MenuItem.Icon>
                                                                     </MenuItem>
                                                                     <!--Header="&#xF309;"-->
-                                                                    <MenuItem Command="{Binding Data.DuplicateCommandCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="Duplicate">
+                                                                    <MenuItem Command="{Binding Data.DuplicateCommandCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="{loc:Loc Key=ScriptEditor.Menu.Duplicate}">
                                                                         <MenuItem.Icon>
                                                                             <Viewbox Width="16" Height="16">
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF24D;</TextBlock>
@@ -391,7 +392,7 @@
                                                                         </MenuItem.Icon>
                                                                     </MenuItem>
                                                                     <!--Header="&#xF24D;"-->
-                                                                    <MenuItem Command="{Binding Data.RemoveCommandCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="Remove">
+                                                                    <MenuItem Command="{Binding Data.RemoveCommandCommand}" CommandParameter="{Binding Data, Source={StaticResource CommandProxy}}" Header="{loc:Loc Key=ScriptEditor.Menu.Remove}">
                                                                         <MenuItem.Icon>
                                                                             <Viewbox Width="16" Height="16">
                                                                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF2ED;</TextBlock>
@@ -438,39 +439,39 @@
                                     </ItemsPanelTemplate>
                                 </ListView.ItemsPanel>
                             </ListView>
-                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="Append Command"/>
+                            <Button x:Name="appendButton" Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddCommandCommand, ElementName=Me}" Content="{loc:Loc Key=ScriptEditor.Button.AppendCommand}"/>
                         </StackPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemStyle}" Header="Code">
+                    <TabItem Style="{StaticResource TabItemStyle}" Header="{loc:Loc Key=ScriptEditor.Tab.Code}">
                         <!--Text="{Binding TextCode, ElementName=Me, UpdateSourceTrigger=PropertyChanged}"-->
                         <StackPanel VerticalAlignment="Stretch">
                             <StackPanel Margin="4">
-                                <TextBlock><Run FontWeight="Bold">Ctrl+Space</Run> -- completion window</TextBlock>
-                                <TextBlock><Run FontWeight="Bold">Tab</Run> -- loop through # parameters</TextBlock>
+                                <TextBlock Text="{loc:Loc Key=ScriptEditor.Hint.CtrlSpace}"/>
+                                <TextBlock Text="{loc:Loc Key=ScriptEditor.Hint.Tab}"/>
                             </StackPanel>
                             <cls:BindableAvalonEditor MinHeight="200px" x:Name="Code" Background="{StaticResource Button.Static.Background}" Foreground="White" ShowLineNumbers="True" LostFocus="BindableAvalonEditor_LostFocus" GotFocus="BindableAvalonEditor_GotFocus">
 
                             </cls:BindableAvalonEditor>
                         </StackPanel>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemStyle}" Header="Log">
-                        <TextBox Text="{Binding Log, ElementName=Me, FallbackValue=No Log Available}" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
+                    <TabItem Style="{StaticResource TabItemStyle}" Header="{loc:Loc Key=ScriptEditor.Tab.Log}">
+                        <TextBox Text="{Binding Log, ElementName=Me, FallbackValue={loc:Loc Key=ScriptEditor.Log.NoLogAvailable}}" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
                     </TabItem>
-                    <TabItem Style="{StaticResource TabItemStyle}" Header="Help">
+                    <TabItem Style="{StaticResource TabItemStyle}" Header="{loc:Loc Key=ScriptEditor.Tab.Help}">
                         <ScrollViewer MaxHeight="256">
                             <StackPanel>
-                                <TextBlock TextWrapping="Wrap">Scripting is very important part of automation. When you need to make two or more events at one time, use script.</TextBlock>
-                                <TextBlock TextWrapping="Wrap" FontWeight="Bold" Margin="0,8,0,0">Constructor</TextBlock>
+                                <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.Intro}"/>
+                                <TextBlock TextWrapping="Wrap" FontWeight="Bold" Margin="0,8,0,0" Text="{loc:Loc Key=ScriptEditor.Help.Section.Constructor}"/>
                                 <StackPanel Margin="8,0,0,0">
-                                    <TextBlock TextWrapping="Wrap">In visual script constructor you can make script from `blocks`. Every block represent one command.</TextBlock>
-                                    <TextBlock TextWrapping="Wrap">There are pure vMix commands from vMix User Guide, and internal UTC commands, like [Timer] or [Condition].</TextBlock>
-                                    <TextBlock TextWrapping="Wrap">While vMix commands does not affect UTC, with internal commands you can control script flow (conditions and loops available through [GoTo] and [Condition] commands), and update some UTC settings.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.Constructor.1}"/>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.Constructor.2}"/>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.Constructor.3}"/>
                                 </StackPanel>
-                                <TextBlock TextWrapping="Wrap" FontWeight="Bold" Margin="0,8,0,0">Code Editor</TextBlock>
+                                <TextBlock TextWrapping="Wrap" FontWeight="Bold" Margin="0,8,0,0" Text="{loc:Loc Key=ScriptEditor.Help.Section.CodeEditor}"/>
                                 <StackPanel Margin="8,0,0,0">
-                                    <TextBlock TextWrapping="Wrap">Code editor translate commands from constructor to text representation. You can edit parameters faster, than in visual style of constructor.</TextBlock>
-                                    <TextBlock TextWrapping="Wrap">The rule is: one command - one line.</TextBlock>
-                                    <TextBlock TextWrapping="Wrap">Start with visual constructor, then switch to code.</TextBlock>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.CodeEditor.1}"/>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.CodeEditor.2}"/>
+                                    <TextBlock TextWrapping="Wrap" Text="{loc:Loc Key=ScriptEditor.Help.CodeEditor.3}"/>
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>

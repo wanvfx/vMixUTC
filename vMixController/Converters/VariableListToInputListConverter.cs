@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using vMixAPI;
 using vMixController.Classes;
+using vMixController.Localization;
 using vMixController.ViewModel;
 
 namespace vMixController.Converters
@@ -43,7 +44,8 @@ namespace vMixController.Converters
                 var state = ServiceLocator.Current.GetInstance<MainViewModel>().Model;
                 if (state == null) break;
 
-                SampleInput input = new SampleInput() { Key = v.A, Title = "[VAR] " + v.A, Number = -2, Elements = new System.Collections.ObjectModel.ObservableCollection<InputBase>() };
+                var prefix = LocalizationManager.Instance["Converter.VariableListToInputList.VarPrefix"];
+                SampleInput input = new SampleInput() { Key = v.A, Title = $"{prefix} {v.A}", Number = -2, Elements = new System.Collections.ObjectModel.ObservableCollection<InputBase>() };
 
                 var baseInput = state.Inputs.Where(x =>
                 {
