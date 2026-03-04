@@ -445,6 +445,9 @@
     <Compile Include="Converters\BoolToOrientationConverter.cs" />
     <Compile Include="Converters\ByteToPairBoolStringConverter.cs" />
     <Compile Include="Converters\BoolToTextOrFileConverter.cs" />
+    <Compile Include="Converters\EnumLocalizationMultiConverter.cs" />
+    <Compile Include="Converters\LastOfMultiBindingConverter.cs" />
+    <Compile Include="Converters\FirstOfMultiBindingConverter.cs" />
     <Compile Include="Converters\IndexConverter.cs" />
     <Compile Include="Converters\IntegerToButtonImageTypeConverter.cs" />
     <Compile Include="Converters\ObservableCollectionCopyConverter.cs" />

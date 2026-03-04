@@ -245,6 +245,7 @@
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
+                <loc:Loc x:Name="LocManager"/>
             </CompositeCollection>
         </ResourceDictionary>
     </Window.Resources>
@@ -1043,7 +1044,17 @@
                             <SolidColorBrush Color="{Binding Status, Converter={c:StatusToColorConverter}}"/>
                         </Ellipse.Fill>
                     </Ellipse>
-                    <TextBlock Text="{Binding Status, Converter={c:EnumToStringConverter}}"/>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding ConverterParameter="Enum.Connection">
+                                <Binding Path="Status"/>
+                                <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture"/>
+                                <MultiBinding.Converter>
+                                    <c:EnumLocalizationMultiConverter/>
+                                </MultiBinding.Converter>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 </StackPanel>
             </StatusBarItem>
             <Separator/>
@@ -1102,11 +1113,31 @@
                                                     </Trigger>
                                                     <Trigger Property="IsChecked" Value="True">
                                                         <Setter Property="Text" Value="&#xf06e;" TargetName="Icon"/>
-                                                        <Setter Property="Content" Value="{loc:Loc Key=MainWindow.StatusBar.Ghosted}" />
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <MultiBinding>
+                                                                    <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture"/>
+                                                                    <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Item[MainWindow.StatusBar.Ghosted]"/>
+                                                                    <MultiBinding.Converter>
+                                                                        <c:LastOfMultiBindingConverter/>
+                                                                    </MultiBinding.Converter>
+                                                                </MultiBinding>
+                                                            </Setter.Value>
+                                                        </Setter>
                                                     </Trigger>
                                                     <Trigger Property="IsChecked" Value="False">
                                                         <Setter Property="Text" Value="&#xf070;" TargetName="Icon"/>
-                                                        <Setter Property="Content" Value="{loc:Loc Key=MainWindow.StatusBar.Visible}" />
+                                                        <Setter Property="Content">
+                                                            <Setter.Value>
+                                                                <MultiBinding>
+                                                                    <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture"/>
+                                                                    <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Item[MainWindow.StatusBar.Visible]"/>
+                                                                    <MultiBinding.Converter>
+                                                                        <c:LastOfMultiBindingConverter/>
+                                                                    </MultiBinding.Converter>
+                                                                </MultiBinding>
+                                                            </Setter.Value>
+                                                        </Setter>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>

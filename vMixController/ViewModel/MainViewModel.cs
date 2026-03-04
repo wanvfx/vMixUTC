@@ -1290,9 +1290,9 @@ namespace vMixController.ViewModel
                     ?? (_mouseButtonUp = new RelayCommand<MouseButtonEventArgs>(
                     p =>
                     {
-						var mw = App.Current?.MainWindow as vMixController.MainWindow;
-						if (mw?.LayoutGrid?.IsMouseCaptured == true)
-							mw.LayoutGrid.ReleaseMouseCapture();
+                        var mw = App.Current?.MainWindow as vMixController.MainWindow;
+                        if (mw?.LayoutGrid?.IsMouseCaptured == true)
+                            mw.LayoutGrid.ReleaseMouseCapture();
 
                         if (SelectorWidth != 0 && SelectorHeight != 0)
                         {
@@ -1326,8 +1326,8 @@ namespace vMixController.ViewModel
                         {
                             EditorCursor = "Arrow";
                             var pos = mw?.LayoutGrid != null
-							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
-							: p.MouseDevice.GetPosition((IInputElement)p.Source);
+                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            : p.MouseDevice.GetPosition((IInputElement)p.Source);
                             _createWidget(new Point(pos.X / WindowSettings.UIScale, pos.Y / WindowSettings.UIScale));
                             _createWidget = null;
                         }
@@ -1355,14 +1355,14 @@ namespace vMixController.ViewModel
                         if (WindowSettings.Locked)
                             return;
 
-						var mw = App.Current?.MainWindow as vMixController.MainWindow;
-						var pos = mw?.LayoutGrid != null
-							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
-							: Mouse.GetPosition((IInputElement)p.Source);
-						if (mw?.LayoutGrid != null && !mw.LayoutGrid.IsMouseCaptured)
-							mw.LayoutGrid.CaptureMouse();
+                        var mw = App.Current?.MainWindow as vMixController.MainWindow;
+                        var pos = mw?.LayoutGrid != null
+                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            : Mouse.GetPosition((IInputElement)p.Source);
+                        if (mw?.LayoutGrid != null && !mw.LayoutGrid.IsMouseCaptured)
+                            mw.LayoutGrid.CaptureMouse();
 
-						_clickPoint = pos;
+                        _clickPoint = pos;
                         _relativeClickPoint = pos;
                         SelectorEnabled = true;
                         _rawSelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
@@ -1393,10 +1393,10 @@ namespace vMixController.ViewModel
                     {
                         //MouseEventArgs
                         //_moveSource = p.Source;
-						var mw = App.Current?.MainWindow as vMixController.MainWindow;
-						var ipos = mw?.LayoutGrid != null
-							? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
-							: new Point(p.GetPosition(App.Current.MainWindow).X, p.GetPosition(App.Current.MainWindow).Y);
+                        var mw = App.Current?.MainWindow as vMixController.MainWindow;
+                        var ipos = mw?.LayoutGrid != null
+                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            : new Point(p.GetPosition(App.Current.MainWindow).X, p.GetPosition(App.Current.MainWindow).Y);
                         if (!SelectorEnabled)
                         {
 
@@ -1978,7 +1978,7 @@ namespace vMixController.ViewModel
             var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
 
             if (state == null || state.Inputs.Where(x => x.Key == "vmix-utc-internal-gv").FirstOrDefault() != null) return;
-			var input = new vMixAPI.Input() { Number = -99, Title = LocalizationManager.Instance["MainViewModel.GlobalVariables.InputTitle"], Key = "vmix-utc-internal-gv" };
+            var input = new vMixAPI.Input() { Number = -99, Title = LocalizationManager.Instance["MainViewModel.GlobalVariables.InputTitle"], Key = "vmix-utc-internal-gv" };
             int index = 0;
             foreach (var v in globalSettings.Variables)
             {
@@ -1994,18 +1994,18 @@ namespace vMixController.ViewModel
             state.Inputs.Insert(0, input);
         }
 
-		private void LocalizeVirtualInputs(vMixAPI.State state)
-		{
-			if (state?.Inputs == null) return;
+        private void LocalizeVirtualInputs(vMixAPI.State state)
+        {
+            if (state?.Inputs == null) return;
 
-			var active = state.Inputs.FirstOrDefault(x => x.Key == "-1");
-			if (active != null)
-				active.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Active"];
+            var active = state.Inputs.FirstOrDefault(x => x.Key == "-1");
+            if (active != null)
+                active.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Active"];
 
-			var preview = state.Inputs.FirstOrDefault(x => x.Key == "0");
-			if (preview != null)
-				preview.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Preview"];
-		}
+            var preview = state.Inputs.FirstOrDefault(x => x.Key == "0");
+            if (preview != null)
+                preview.Title = LocalizationManager.Instance["MainViewModel.VirtualInputs.Preview"];
+        }
 
         private void State_OnStateCreated(object sender, EventArgs e)
         {
@@ -2013,7 +2013,7 @@ namespace vMixController.ViewModel
                 Model.OnStateSynced -= Model_OnStateUpdated;
             Model = (vMixAPI.State)sender;
             LinkGlobalVariables(Model);
-			LocalizeVirtualInputs(Model);
+            LocalizeVirtualInputs(Model);
             foreach (var item in _widgets)
                 item.State = Model;
             if (Model != null)
@@ -2035,7 +2035,7 @@ namespace vMixController.ViewModel
                 var instate = (vMixAPI.State)sender;
 
                 LinkGlobalVariables(instate);
-				LocalizeVirtualInputs(instate);
+                LocalizeVirtualInputs(instate);
 
                 foreach (var item in _widgets)
                     item.State = (vMixAPI.State)sender;
@@ -2255,7 +2255,7 @@ namespace vMixController.ViewModel
         public MainViewModel()
         {
             vMixAPI.APIRequestManager.OnStatusChange += APIRequestManager_OnStatusChange;
-			LocalizationManager.Instance.CultureChanged += (_, __) => LocalizeVirtualInputs(Model);
+            LocalizationManager.Instance.CultureChanged += (_, __) => LocalizeVirtualInputs(Model);
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
             ThreadPool.GetAvailableThreads(out int t1, out int t2);
