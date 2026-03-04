@@ -13,7 +13,31 @@ namespace vMixController.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int)value == (int)parameter ? Visibility.Visible : Visibility.Collapsed;
+            if (value == null || parameter == null)
+                return Visibility.Collapsed;
+
+            int v;
+            int p;
+
+            try
+            {
+                v = System.Convert.ToInt32(value, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return Visibility.Collapsed;
+            }
+
+            if (parameter is int pi)
+            {
+                p = pi;
+            }
+            else if (!int.TryParse(parameter.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out p))
+            {
+                return Visibility.Collapsed;
+            }
+
+            return v == p ? Visibility.Visible : Visibility.Collapsed;
             //throw new NotImplementedException();
         }
 

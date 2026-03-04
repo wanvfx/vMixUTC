@@ -7,8 +7,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Resources;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -405,12 +407,12 @@ namespace UTCNDIMonitorDataProvider
                     // you can check this directly with a call to NDIlib.is_supported_CPU()
                     if (!NDIlib.is_supported_CPU())
                     {
-                        MessageBox.Show("CPU unsupported.");
+                        MessageBox.Show(Properties.Strings.CpuUnsupported);
                     }
                     else
                     {
                         // not sure why, but it's not going to run
-                        MessageBox.Show("Cannot run NDI.");
+                        MessageBox.Show(Properties.Strings.CannotRunNdi);
                     }
 
                     // we can't go on

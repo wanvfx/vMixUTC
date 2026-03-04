@@ -7,6 +7,7 @@
              xmlns:ctrl="clr-namespace:vMixController.Controls"
              xmlns:e="clr-namespace:vMixController.Extensions"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="Me">
@@ -24,14 +25,13 @@
     <Border BorderBrush="#1A3CB1" BorderThickness="1" Background="#18488C" Margin="{StaticResource TopBottomStdMargin}">
         <StackPanel Margin="{StaticResource StdMargin}">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf039;</Run><Run Text=" "/><Run Text="Title Mapping"/></TextBlock>
-                <Button ToolTip="Add title mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf039;</Run><Run Text=" "/><Run Text="{loc:Loc Key=TitleMapping.Title}"/></TextBlock>
+                <Button ToolTip="{loc:Loc Key=TitleMapping.ToolTip.Add}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}">
                     <Control.ToolTip>
                         <StackPanel>
-                            <TextBlock>Here you can assign XAML/GT title to widget text field.</TextBlock>
-                            <TextBlock>All mapped titles will get same text or image path and will
-                                update simultaneously.</TextBlock>
+                            <TextBlock Text="{loc:Loc Key=TitleMapping.Help.Line1}"/>
+                            <TextBlock Text="{loc:Loc Key=TitleMapping.Help.Line2}"/>
                         </StackPanel>
                     </Control.ToolTip>
                 </Control>
@@ -66,7 +66,7 @@
                     </Style>
                 </ListView.ItemContainerStyle>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Append Title Mapping"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="{loc:Loc Key=TitleMapping.Button.Append}"/>
         </StackPanel>
     </Border>
 </UserControl>

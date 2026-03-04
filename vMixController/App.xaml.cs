@@ -11,6 +11,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using vMixController.Localization;
 
 namespace vMixController
 {
@@ -91,6 +92,8 @@ namespace vMixController
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            LocalizationManager.Instance.InitializeFromSettings();
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;

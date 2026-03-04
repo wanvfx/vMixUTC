@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vMixController"
+        xmlns:loc="clr-namespace:vMixController.Localization"
         mc:Ignorable="d"
         ShowInTaskbar="False"
-        Title="MidiLearnWindow" Height="300" Width="300" WindowStyle="None" ResizeMode="NoResize" Topmost="True" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp" Closing="Window_Closing">
+        Title="{loc:Loc Key=MidiLearnWindow.Title}" Height="300" Width="300" WindowStyle="None" ResizeMode="NoResize" Topmost="True" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" KeyUp="Window_KeyUp" Closing="Window_Closing">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,8 +18,8 @@
     <Border BorderBrush="Red" BorderThickness="5">
         <Grid Background="Black">
             <StackPanel Margin="16" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Label FontSize="32" HorizontalAlignment="Center">Press MIDI Key</Label>
-                <Label FontSize="16" HorizontalAlignment="Center">or any key to close this window</Label>
+                <Label FontSize="32" HorizontalAlignment="Center" Content="{loc:Loc Key=MidiLearnWindow.Label.PressKey}"/>
+                <Label FontSize="16" HorizontalAlignment="Center" Content="{loc:Loc Key=LearnWindow.Label.CloseHint}"/>
             </StackPanel>
         </Grid>
     </Border>

@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vMixController"
+        xmlns:loc="clr-namespace:vMixController.Localization"
         ShowInTaskbar="False"
         mc:Ignorable="d"
-        Title="KeyLearnWindow" Height="300" Width="300" KeyUp="Window_KeyUp" WindowStyle="None" ResizeMode="NoResize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Topmost="True">
+        Title="{loc:Loc Key=KeyLearnWindow.Title}" Height="300" Width="300" KeyUp="Window_KeyUp" WindowStyle="None" ResizeMode="NoResize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Topmost="True">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,7 +17,7 @@
     </Window.Resources>
     <Border BorderBrush="Red" BorderThickness="5">
         <Grid Background="Black">
-            <Label FontSize="32" Padding="16" VerticalAlignment="Center" HorizontalAlignment="Center">Press Key</Label>
+            <Label FontSize="32" Padding="16" VerticalAlignment="Center" HorizontalAlignment="Center" Content="{loc:Loc Key=KeyLearnWindow.PressKey}"/>
         </Grid>
     </Border>
 </Window>

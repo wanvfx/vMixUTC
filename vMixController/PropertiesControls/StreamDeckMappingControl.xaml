@@ -7,6 +7,7 @@
              xmlns:e="clr-namespace:vMixController.Extensions"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="496"
              x:Name="Me">
@@ -26,8 +27,8 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center">
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf11c;</Run>
-                    <Run Text="Stream Deck Mapping"/></TextBlock>
-                <Button ToolTip="Add stream deck mapping" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
+                    <Run Text="{loc:Loc Key=StreamDeckMapping.Title}"/></TextBlock>
+                <Button ToolTip="{loc:Loc Key=StreamDeckMapping.ToolTip.Add}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding StreamDeck_Default, Source={StaticResource Help}}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Keys, ElementName=Me}" HorizontalContentAlignment="Stretch">
@@ -48,14 +49,14 @@
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="Context" Width="Auto">
+                            <GridViewColumn Header="{loc:Loc Key=StreamDeckMapping.Column.Context}" Width="Auto">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding A}" Margin="-3,0,-5,0"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Execution Link" Width="150">
+                            <GridViewColumn Header="{loc:Loc Key=StreamDeckMapping.Column.ExecutionLink}" Width="150">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding B}" Margin="-5,0"/>
@@ -65,7 +66,7 @@
                             <GridViewColumn Header="">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Command="{Binding LearnStreamDeckKey, ElementName=Me}" CommandParameter="{Binding}" Margin="-5,0,-6,0">Learn</Button>
+                                        <Button Command="{Binding LearnStreamDeckKey, ElementName=Me}" CommandParameter="{Binding}" Margin="-5,0,-6,0" Content="{loc:Loc Key=StreamDeckMapping.Button.Learn}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -80,7 +81,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="Add Stream Deck Mapping"/>
+            <Button Width="Auto" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddPathCommand, ElementName=Me}" Content="{loc:Loc Key=StreamDeckMapping.Button.AddMapping}"/>
         </StackPanel>
     </Border>
 </UserControl>

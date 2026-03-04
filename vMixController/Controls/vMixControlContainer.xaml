@@ -11,6 +11,7 @@
              xmlns:cls="clr-namespace:vMixController.Classes"
              xmlns:conv="clr-namespace:vMixController.Converters"
              xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
+             xmlns:loc="clr-namespace:vMixController.Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="CC" SizeChanged="CC_SizeChanged" PreviewMouseMove="CC_PreviewMouseMove">
@@ -113,12 +114,12 @@
         <Grid Tag="{Binding ParentContainer, ElementName=CC}">
             <Grid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                    <MenuItem Header="Toggle Caption" Command="{Binding ToggleCaptionCommand}" CommandParameter="{Binding Control}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.ToggleCaption}" Command="{Binding ToggleCaptionCommand}" CommandParameter="{Binding Control}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf150;</TextBlock>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Command="{Binding SwitchPasswordLockableCommand}" CommandParameter="{Binding Control}" Header="Password Lockable">
+                    <MenuItem Command="{Binding SwitchPasswordLockableCommand}" CommandParameter="{Binding Control}" Header="{loc:Loc Key=WidgetContainer.Menu.PasswordLockable}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem">
                                 <Style.Triggers>
@@ -144,22 +145,22 @@
                         </MenuItem.Style>
                     </MenuItem>
                     <Separator></Separator>
-                    <MenuItem Header="Scale Up" Command="{Binding ScaleUpCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.ScaleUp}" Command="{Binding ScaleUpCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf31e;</TextBlock>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Scale Down" Command="{Binding ScaleDownCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.ScaleDown}" Command="{Binding ScaleDownCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf78c;</TextBlock>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Duplicate" Command="{Binding CopyCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.Duplicate}" Command="{Binding CopyCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf24d;</TextBlock>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem x:Name="MoveToMenu" Tag="{Binding}" Header="Move To" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" ItemsSource="{StaticResource Pages}">
+                    <MenuItem x:Name="MoveToMenu" Tag="{Binding}" Header="{loc:Loc Key=WidgetContainer.Menu.MoveTo}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" ItemsSource="{StaticResource Pages}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf101;</TextBlock>
                         </MenuItem.Icon>
@@ -191,12 +192,12 @@
                         </MenuItem.ItemContainerStyle>
                         <!--Command="{Binding MoveCommand}" CommandParameter="{Binding Control}"-->
                     </MenuItem>
-                    <MenuItem Header="Properties" Command="{Binding SettingsCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.Properties}" Command="{Binding SettingsCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf013;</TextBlock>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Remove" Command="{Binding CloseCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+                    <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.Remove}" Command="{Binding CloseCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="{StaticResource FontAwesome}">&#xf00d;</TextBlock>
                         </MenuItem.Icon>
@@ -215,7 +216,7 @@
                             <Binding Path="Main.WindowSettings.ShowIndividualLock" Source="{StaticResource Locator}" Converter="{wpfc:BoolToVisibilityConverter}"/>
                         </Grid.Visibility>
 
-                        <Button Visibility="{Binding ParentContainer.Control.IsCaptionVisible, Converter={wpfc:BoolToVisibilityConverter}, ElementName=CC}" Style="{StaticResource TitleButton}" x:Name="LockButton" ToolTip="Lock widget" Command="{Binding Main.SwitchLockCommand, Source={StaticResource Locator}}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}" Content="{Binding ParentContainer.Control.Locked, Converter={StaticResource LockButtonConverter}, ElementName=CC}" IsEnabled="{Binding ParentContainer.Control.IsPasswordLocked, ElementName=CC, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                        <Button Visibility="{Binding ParentContainer.Control.IsCaptionVisible, Converter={wpfc:BoolToVisibilityConverter}, ElementName=CC}" Style="{StaticResource TitleButton}" x:Name="LockButton" ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.LockWidget}" Command="{Binding Main.SwitchLockCommand, Source={StaticResource Locator}}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}" Content="{Binding ParentContainer.Control.Locked, Converter={StaticResource LockButtonConverter}, ElementName=CC}" IsEnabled="{Binding ParentContainer.Control.IsPasswordLocked, ElementName=CC, Converter={wpfc:BoolToInverseBoolConverter}}"/>
                     </Grid>
 
                     <TextBlock VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Style="{StaticResource CaptionText}" Text="{Binding ParentContainer.Caption, ElementName=CC}" Foreground="{Binding ParentContainer.Control.Color, ElementName=CC, Converter={conv:ColorToBlackOrWhiteConverter}}"></TextBlock>
@@ -223,11 +224,11 @@
                         <local:vMixControlMoveThumb.ToolTip>
                             <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}">
                                 <StackPanel>
-                                    <TextBlock Text="Active Exec Links:" FontWeight="Bold"/>
+                                    <TextBlock Text="{loc:Loc Key=WidgetContainer.ToolTip.ActiveExecLinks}" FontWeight="Bold"/>
                                     <ItemsControl ItemsSource="{Binding Tag}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock><Run Text="{Binding A}" FontWeight="Bold"/>: <Run Text="{Binding B}"/>, <Run FontWeight="Bold" Text="Hotkey:"/> <Run Text="{Binding C}"/></TextBlock>
+                                                <TextBlock><Run Text="{Binding A}" FontWeight="Bold"/>: <Run Text="{Binding B}"/>, <Run FontWeight="Bold" Text="{loc:Loc Key=WidgetContainer.ToolTip.Hotkey}"/> <Run Text="{Binding C}"/></TextBlock>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -238,12 +239,12 @@
 
                     <StackPanel Opacity="0" x:Name="RightButtons" Margin="1" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding ParentContainer.Control.Locked, Converter={wpfc:BoolToInverseVisibilityConverter}, ConverterParameter=Hidden, ElementName=CC}">
                         <ContentControl Content="{Binding ParentContainer.CaptionContent, ElementName=CC}"/>
-                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="Scale up" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleUpCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf31e;</Button>
-                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="Scale down" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleDownCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf78c;</Button>
+                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.ScaleUp}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleUpCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf31e;</Button>
+                        <Button FontFamily="{StaticResource FontAwesome}" ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.ScaleDown}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.ScaleDownCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf78c;</Button>
 
-                        <Button ToolTip="Duplicate widget" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.CopyCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf24d;</Button>
-                        <Button ToolTip="Widget properties" Style="{StaticResource TitleButton}" Margin="0,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.SettingsCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf013;</Button>
-                        <Button ToolTip="Remove widget" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ParentContainer.CloseCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf00d;</Button>
+                        <Button ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.DuplicateWidget}" Style="{StaticResource TitleButton}" Margin="1,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.CopyCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf24d;</Button>
+                        <Button ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.WidgetProperties}" Style="{StaticResource TitleButton}" Margin="0,0,1,0" HorizontalAlignment="Left" Command="{Binding ParentContainer.SettingsCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf013;</Button>
+                        <Button ToolTip="{loc:Loc Key=WidgetContainer.ToolTip.RemoveWidget}" Style="{StaticResource TitleButton}" HorizontalAlignment="Left" Command="{Binding ParentContainer.CloseCommand, ElementName=CC}" CommandParameter="{Binding ParentContainer.Control, ElementName=CC}">&#xf00d;</Button>
                     </StackPanel>
                 </Grid>
                 <ContentControl x:Name="ContentControl" Content="{Binding ParentContainer.MainContent, ElementName=CC}">

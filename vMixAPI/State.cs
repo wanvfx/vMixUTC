@@ -166,8 +166,11 @@ namespace vMixAPI
                     foreach (var item in state.Inputs)
                         state._changedinputs.Add(item.Key);
 
-                    //state.Inputs.Insert(0, new Input() { Key = "0", Title = "[Preview]" });
-                    //state.Inputs.Insert(0, new Input() { Key = "-1", Title = "[Active]" });
+
+                    // Add virtual inputs for referencing current Active/Preview in scripts and UI.
+                    // These are resolved to real inputs by `Utils.FindInputKeyByVariable`.
+                    state.Inputs.Insert(0, new Input() { Number = 0, Key = "0", Title = "[Preview]" });
+                    state.Inputs.Insert(0, new Input() { Number = -1, Key = "-1", Title = "[Active]" });
 
 
 
