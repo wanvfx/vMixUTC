@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Resources;
@@ -50,6 +51,14 @@ namespace vMixController.Localization
 				var value = _resourceManager.GetString(key, Culture);
 				return value ?? $"!{key}!";
 			}
+		}
+
+		public string GetKey(string value, string keypart = "")
+		{
+			foreach (DictionaryEntry entry in _resourceManager.GetResourceSet(Culture, false, true))
+				if (entry.Value?.ToString() == value && entry.Key.ToString().StartsWith(keypart))
+					return value;
+			return null;
 		}
 
 		public void InitializeFromSettings()

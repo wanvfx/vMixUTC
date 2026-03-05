@@ -261,7 +261,7 @@
                                             <GridViewColumn Header="{loc:Loc Key=WidgetSettings.Hotkeys.Column.Name}">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <Label Content="{Binding Name}"/>
+                                                        <Label Content="{Binding Name, Converter={Converters:StringToLocalizedStringConverter}, ConverterParameter=WidgetSettings.Hotkeys.Hotkey}"/>
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>

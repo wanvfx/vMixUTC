@@ -22,7 +22,7 @@
         <Grid Background="{StaticResource Main.Gradient}">
             <TextBlock Padding="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run Text="{Binding Title, ElementName=Me}"/></TextBlock>
         </Grid>
-        <ComboBox Grid.Column="1" SelectedValue="{Binding Value, ElementName=Me}" ItemsSource="{Binding Items, ElementName=Me}">
+        <ComboBox Grid.Column="1" SelectedValue="{Binding Value, ElementName=Me}" DisplayMemberPath="{Binding DisplayMemberPath, ElementName=Me}" SelectedValuePath="{Binding SelectedValuePath, ElementName=Me}" ItemsSource="{Binding Items, ElementName=Me}">
 
         </ComboBox>
     </Grid>

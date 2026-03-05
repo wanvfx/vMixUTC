@@ -1029,4 +1029,121 @@
   <data name="Enum.Connection.Online" xml:space="preserve">
     <value>在线</value>
   </data>
+  <data name="PropertyEditor.Common.ImageType.Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="PropertyEditor.Common.ImageType.Default+Pressed" xml:space="preserve">
+    <value>默认+按下</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Momentary" xml:space="preserve">
+    <value>瞬时</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Toggle" xml:space="preserve">
+    <value>按下</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Press" xml:space="preserve">
+    <value>切换</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Volume.Vertical" xml:space="preserve">
+    <value>垂直</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Volume.Horizontal" xml:space="preserve">
+    <value>水平</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.TextField.Text" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.TextField.File" xml:space="preserve">
+    <value>文本</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Execute" xml:space="preserve">
+    <value>执行</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Reset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Press" xml:space="preserve">
+    <value>按下</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Release" xml:space="preserve">
+    <value>松开</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Clear Variables" xml:space="preserve">
+    <value>清除变量</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Focus" xml:space="preserve">
+    <value>聚焦</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+1" xml:space="preserve">
+    <value>+1</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.-1" xml:space="preserve">
+    <value>-1</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+2" xml:space="preserve">
+    <value>+2</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+3" xml:space="preserve">
+    <value>+3</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+5" xml:space="preserve">
+    <value>+5</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+6" xml:space="preserve">
+    <value>+6</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+10" xml:space="preserve">
+    <value>+10</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+4" xml:space="preserve">
+    <value>+4</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus A" xml:space="preserve">
+    <value>切换总线 A</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus B" xml:space="preserve">
+    <value>切换总线 B</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus C" xml:space="preserve">
+    <value>切换总线 C</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus D" xml:space="preserve">
+    <value>切换总线 D</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus E" xml:space="preserve">
+    <value>切换总线 E</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus F" xml:space="preserve">
+    <value>切换总线 F</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus G" xml:space="preserve">
+    <value>切换总线 G</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus M" xml:space="preserve">
+    <value>切换总线 M</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Muted" xml:space="preserve">
+    <value>切换静音</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Previous Item" xml:space="preserve">
+    <value>上一个项目</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Shuffle" xml:space="preserve">
+    <value>随机播放</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Next Item" xml:space="preserve">
+    <value>下一个项目</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.PlayOut" xml:space="preserve">
+    <value>播出</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Play/Pause" xml:space="preserve">
+    <value>播放/暂停</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Enabled" xml:space="preserve">
+    <value>切换启用</value>
+  </data>
+  <data name="PropertyEditor.FileDialog.Title" xml:space="preserve">
+    <value>文件路径</value>
+  </data>
 </root>

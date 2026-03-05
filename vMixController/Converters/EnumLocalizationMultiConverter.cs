@@ -28,6 +28,17 @@ namespace vMixController.Converters
             return string.Empty;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => null;
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            if (value is string val && parameter is string p)
+            {
+                var v = Localization.LocalizationManager.Instance.GetKey(val, p).Substring(p.Length + 1);
+                object[] result = new object[targetTypes.Length];
+                result[0] = Enum.Parse(targetTypes[0], v);
+                result[1] = null;
+                return result;
+            }
+            return null;
+        }
     }
 }

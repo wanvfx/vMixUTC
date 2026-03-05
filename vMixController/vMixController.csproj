@@ -451,6 +451,7 @@
     <Compile Include="Converters\IndexConverter.cs" />
     <Compile Include="Converters\IntegerToButtonImageTypeConverter.cs" />
     <Compile Include="Converters\ObservableCollectionCopyConverter.cs" />
+    <Compile Include="Converters\StringArrayToLocalizedArrayConverter.cs" />
     <Compile Include="Converters\StringCollectionToDummyStringPropertyCollectionConverter.cs" />
     <Compile Include="Converters\StringListToStringConverter.cs" />
     <Compile Include="Converters\ColorsListToColorConverter.cs" />
@@ -460,6 +461,7 @@
     <Compile Include="Converters\ControlIntToParameterConverter.cs" />
     <Compile Include="Converters\EnumToStringConverter.cs" />
     <Compile Include="Converters\ObjectToIndexConverter.cs" />
+    <Compile Include="Converters\StringToLocalizedStringConverter.cs" />
     <Compile Include="Converters\TextFieldAndIntToControlIntParameterConverter.cs" />
     <Compile Include="Converters\ImagePartConverter.cs" />
     <Compile Include="Converters\DateTimeKeepMillisecondsConverter.cs" />

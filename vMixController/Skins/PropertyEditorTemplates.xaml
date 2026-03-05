@@ -19,8 +19,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.ImageType}" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonImageType}"/>
-                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
+                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.ImageType}" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.ButtonImageType}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.ImageType}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
+                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.ButtonStyle}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.Style}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
 
             </Grid>
             <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
@@ -44,8 +44,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.ImageType}" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonImageType}"/>
-                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.ButtonStyle}"/>
+                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.ImageType}" Value="{Binding ImageType, UpdateSourceTrigger=Explicit, Converter={conv:IntegerToButtonImageTypeConverter}, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.ButtonImageType}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.ImageType}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
+                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.ButtonStyle}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.Style}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
 
             </Grid>
             <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
@@ -72,7 +72,7 @@
                 <prop:BoolControl Grouped="True" Value="{Binding IsTable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Common.Table}"/>
                 <prop:BoolControl Grouped="True" Grid.Column="1" Value="{Binding IsEditable, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Common.Editable}"/>
             </Grid>
-            <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Template, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={conv:BoolToTextOrFileConverter}}" Items="{x:Static cls:Constants.TextFieldStyle}"/>
+            <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Grid.Column="2" Value="{Binding Template, UpdateSourceTrigger=Explicit, Mode=TwoWay, Converter={conv:BoolToTextOrFileConverter}}" Items="{Binding Source={x:Static cls:Constants.TextFieldStyle}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.Style.TextField}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
         </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="vMixControlScorePropEditor" DataType="{x:Type widget:vMixControlScore}">
@@ -117,7 +117,7 @@
     <DataTemplate x:Key="vMixControlExternalDataPropEditor" DataType="{x:Type widget:vMixControlExternalData}">
         <StackPanel>
             <prop:IntControl Value="{Binding Period, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Title="{loc:Loc Key=PropertyEditor.ExternalData.UpdatePeriod}"/>
-            <prop:FilePathControl Filter="{loc:Loc Key=PropertyEditor.FileDialog.ExternalDataFilter}" Value="{Binding DataProviderPath, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+            <prop:FilePathControl Title="{loc:Loc Key=PropertyEditor.FileDialog.Title}" Filter="{loc:Loc Key=PropertyEditor.FileDialog.ExternalDataFilter}" Value="{Binding DataProviderPath, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
             <prop:BoolControl Value="{Binding RestartData, Mode=TwoWay, UpdateSourceTrigger=Explicit}" Title="{loc:Loc Key=PropertyEditor.ExternalData.LoopData}"/>
             <prop:TitleMappingControl Titles="{Binding Paths, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
         </StackPanel>
@@ -154,7 +154,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.HorizontalVertical}"/>
+                <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.HorizontalVertical}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.Style.Volume}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
                 <prop:BoolControl Grid.Column="1" Grouped="True" Value="{Binding ShowMeters, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Common.ShowMeters}"/>
                 <prop:BoolControl Grid.Column="2" Grouped="True" Value="{Binding ShowSlider, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Common.ShowSlider}"/>
             </Grid>
@@ -165,7 +165,7 @@
     <DataTemplate x:Key="vMixControlTBarPropEditor" DataType="{x:Type widget:vMixControlTBar}">
         <StackPanel>
             <!--<prop:StringControl Title="Info" Value="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=Explicit}" TextWrapping="Wrap" AcceptReturn="True"/>-->
-            <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.HorizontalVertical}"/>
+            <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Style}" Value="{Binding Style, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{Binding Source={x:Static cls:Constants.HorizontalVertical}, Converter={conv:StringArrayToLocalizedArrayConverter}, ConverterParameter=PropertyEditor.Common.Style.Volume}" DisplayMemberPath="Localized" SelectedValuePath="Original"/>
             <prop:ComboBoxControl Title="{loc:Loc Key=PropertyEditor.Common.Mode}" Value="{Binding Mode, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.TBarMode}"/>
         </StackPanel>
     </DataTemplate>

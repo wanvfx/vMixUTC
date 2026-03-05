@@ -200,7 +200,7 @@ namespace vMixAPI
 
         public State Create()
         {
-            return Create(SendFunction("", false));
+            return Create(SendFunction("", false, ignoreCache: true));
         }
 
         public void CreateAsync()
@@ -214,7 +214,7 @@ namespace vMixAPI
                     OnStateCreated?.Invoke(state, null);
 
                 return;
-            });
+            }, ignoreCache: true);
         }
 
         public event EventHandler OnStateCreated;
@@ -409,7 +409,7 @@ namespace vMixAPI
             });
         }
 
-        public string SendFunction(string textParameters, bool async = true, Action<string> handler = null, int timeout = 1000)
+        public string SendFunction(string textParameters, bool async = true, Action<string> handler = null, int timeout = 1000, bool ignoreCache = false)
         {
             _logger.Debug("Trying to send function <{0}> in {1} mode.", textParameters, async ? "async" : "sync");
 
@@ -448,7 +448,7 @@ namespace vMixAPI
 
                         handler?.Invoke(response);
                     });
-                }), GetCredentials());
+                }), GetCredentials(), false, ignoreCache);
             }
             else
             {

@@ -74,6 +74,7 @@ namespace vMixAPI
     /// </summary>
     public class vMixHttpBatcher : IDisposable
     {
+        NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         // --- Поля ---
         private readonly HttpClient _httpClient;
         private readonly bool _isClientOwned;
@@ -114,19 +115,14 @@ namespace vMixAPI
         /// Асинхронно запрашивает строковый ответ по указанному адресу.
         /// Использует адаптивный кэш для запросов без параметров.
         /// </summary>
-        public Task<string> GetStringAsync(Uri address, WeakAction callback = null, bool post = false)
+        public Task<string> GetStringAsync(Uri address, WeakAction callback = null, bool post = false, bool ignoreCache = false)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(vMixHttpBatcher));
 
             bool useCache = string.IsNullOrEmpty(address.Query) || address.Query == "?";
-            if (useCache)
+            if (useCache && !ignoreCache)
             {
-                /*var fake = System.IO.File.ReadAllText(@"C:\Users\elgarf\Desktop\test.xml");
-                callback?.Invoke(fake, null);
-                OnDownloadCompleted?.Invoke(fake, null, address);
-                return Task.FromResult(fake);*/
-
                 string cacheKey = address.GetLeftPart(UriPartial.Path);
 
                 if (_cache.TryGetValue(cacheKey, out var cachedItem))
@@ -134,6 +130,7 @@ namespace vMixAPI
                     // Используем _adaptiveCacheDurationMs для проверки свежести кэша
                     if ((Environment.TickCount - cachedItem.Timestamp) < _adaptiveCacheDurationMs)
                     {
+                        _logger.Debug($"Return cached response: from {cacheKey}");
                         callback?.Invoke(cachedItem.Response, null);
                         OnDownloadCompleted?.Invoke(cachedItem.Response, null, address);
                         return Task.FromResult(cachedItem.Response);
@@ -141,6 +138,7 @@ namespace vMixAPI
                 }
             }
 
+            _logger.Debug($"Executing request for {address}");
             return ExecuteAndCacheRequestAsync(address, callback, useCache, post);
         }
 
@@ -173,7 +171,6 @@ namespace vMixAPI
                     var newItem = (Response: response, Timestamp: Environment.TickCount);
                     _cache.AddOrUpdate(cacheKey, newItem, (key, oldItem) => newItem);
                 }
-
                 callback?.Invoke(response, null);
                 OnDownloadCompleted?.Invoke(response, null, address);
                 return response;
@@ -261,7 +258,7 @@ namespace vMixAPI
         /// <param name="apiUrl">Базовый URL API vMix (например, "http://127.0.0.1:8088/api")</param>
         /// <param name="callback">Необязательный callback для получения результата.</param>
         /// <returns>Задача, представляющая XML-ответ от vMix.</returns>
-        public static Task<string> GetApiResponseAsync(string apiUrl, WeakAction callback = null, string auth = null, bool post = false)
+        public static Task<string> GetApiResponseAsync(string apiUrl, WeakAction callback = null, string auth = null, bool post = false, bool ignoreCache = false)
         {
             if (auth != null)
             {
@@ -281,7 +278,7 @@ namespace vMixAPI
             _batchers[key] = batcherEntry;
 
             // Упрощено: напрямую вызываем GetStringAsync и возвращаем его Task
-            return batcherEntry.batcher.GetStringAsync(new Uri(apiUrl), callback, post);
+            return batcherEntry.batcher.GetStringAsync(new Uri(apiUrl), callback, post, ignoreCache);
         }
 
         // Методы для подписки/отписки на события конкретного батчера

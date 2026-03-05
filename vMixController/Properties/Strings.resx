@@ -1029,4 +1029,122 @@ Use Momentary buttons for this type of scripts.</value>
   <data name="Enum.Connection.Online" xml:space="preserve">
     <value>Online</value>
   </data>
+  <data name="PropertyEditor.Common.ImageType.Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="PropertyEditor.Common.ImageType.Default+Pressed" xml:space="preserve">
+    <value>Default+Pressed</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Momentary" xml:space="preserve">
+    <value>Momentary</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Toggle" xml:space="preserve">
+    <value>Press</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Press" xml:space="preserve">
+    <value>Toggle</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Volume.Vertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.Volume.Horizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.TextField.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="PropertyEditor.Common.Style.TextField.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Execute" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Press" xml:space="preserve">
+    <value>Press</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Release" xml:space="preserve">
+    <value>Release</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Clear Variables" xml:space="preserve">
+    <value>Clear Variables</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Focus" xml:space="preserve">
+    <value>Focus</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+1" xml:space="preserve">
+    <value>+1</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.-1" xml:space="preserve">
+    <value>-1</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+2" xml:space="preserve">
+    <value>+2</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+3" xml:space="preserve">
+    <value>+3</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+5" xml:space="preserve">
+    <value>+5</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+6" xml:space="preserve">
+    <value>+6</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+10" xml:space="preserve">
+    <value>+10</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+4" xml:space="preserve">
+    <value>+4</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus A" xml:space="preserve">
+    <value>Toggle Bus A</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus B" xml:space="preserve">
+    <value>Toggle Bus B</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus C" xml:space="preserve">
+    <value>Toggle Bus C</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus D" xml:space="preserve">
+    <value>Toggle Bus D</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus E" xml:space="preserve">
+    <value>Toggle Bus E</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus F" xml:space="preserve">
+    <value>Toggle Bus F</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus G" xml:space="preserve">
+    <value>Toggle Bus G</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus M" xml:space="preserve">
+    <value>Toggle Bus M</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Muted" xml:space="preserve">
+    <value>Toggle Muted</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Previous Item" xml:space="preserve">
+    <value>Previous Item</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Shuffle" xml:space="preserve">
+    <value>Shuffle</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Next Item" xml:space="preserve">
+    <value>Next Item</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.PlayOut" xml:space="preserve">
+    <value>Play Out</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Play/Pause" xml:space="preserve">
+    <value>Play/Pause</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Enabled" xml:space="preserve">
+    <value>Toggle
+Enabled</value>
+  </data>
+  <data name="PropertyEditor.FileDialog.Title" xml:space="preserve">
+    <value>File Path</value>
+  </data>
 </root>
