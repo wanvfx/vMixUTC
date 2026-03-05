@@ -1146,4 +1146,7 @@
   <data name="PropertyEditor.FileDialog.Title" xml:space="preserve">
     <value>文件路径</value>
   </data>
+  <data name="MainWindow.Settings.Field.UseInfiniteCanvas" xml:space="preserve">
+    <value>使用无限画布</value>
+  </data>
 </root>

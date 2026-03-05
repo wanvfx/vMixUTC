@@ -450,6 +450,7 @@
     <Compile Include="Converters\FirstOfMultiBindingConverter.cs" />
     <Compile Include="Converters\IndexConverter.cs" />
     <Compile Include="Converters\IntegerToButtonImageTypeConverter.cs" />
+    <Compile Include="Converters\MatrixInverterConverter.cs" />
     <Compile Include="Converters\ObservableCollectionCopyConverter.cs" />
     <Compile Include="Converters\StringArrayToLocalizedArrayConverter.cs" />
     <Compile Include="Converters\StringCollectionToDummyStringPropertyCollectionConverter.cs" />

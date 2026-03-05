@@ -6,8 +6,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using vMixController.Classes;
 using vMixController.Controls;
 using vMixController.Extensions;
 using vMixController.Localization;
@@ -28,6 +30,7 @@ namespace vMixController
 		private Matrix _canvasPanStartMatrix;
 		private const double CanvasZoomMin = 0.1;
 		private const double CanvasZoomMax = 10.0;
+        MatrixTransform _canvasTransform = new MatrixTransform();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
@@ -80,16 +83,31 @@ namespace vMixController
             e.Handled = true;
         }
 
+        private void UpdateMatrix()
+        {
+            if (CanvasContent.RenderTransform is MatrixTransform mtx)
+                _canvasTransform.Matrix = mtx.Matrix;
+        }
+
 		private void LayoutGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Middle ||
 				(e.ChangedButton == MouseButton.Left && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
 			{
-				_isCanvasPanning = true;
-				_canvasPanStart = e.GetPosition(LayoutGrid);
-				_canvasPanStartMatrix = CanvasTransform?.Matrix ?? Matrix.Identity;
+                if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas) return;
+                UpdateMatrix();
+                
+
+                _isCanvasPanning = true;
+
+                var fadein = (Storyboard)FindResource("StoryboardFadeIn");
+                fadein.Begin(MiniMapBorder);
+
+                _canvasPanStart = e.GetPosition(LayoutGrid);
+				_canvasPanStartMatrix = _canvasTransform?.Matrix ?? Matrix.Identity;
 				LayoutGrid.CaptureMouse();
 				Mouse.OverrideCursor = Cursors.Hand;
+                CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
 				e.Handled = true;
 			}
 		}
@@ -104,10 +122,10 @@ namespace vMixController
 
 			var m = _canvasPanStartMatrix;
 			m.Translate(delta.X, delta.Y);
-			if (CanvasTransform != null)
-				CanvasTransform.Matrix = m;
-
-			e.Handled = true;
+			if (_canvasTransform != null)
+				_canvasTransform.Matrix = m;
+            CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
+            e.Handled = true;
 		}
 
 		private void LayoutGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -115,7 +133,10 @@ namespace vMixController
 			if (!_isCanvasPanning)
 				return;
 
-			if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
+            var fadeout = (Storyboard)FindResource("StoryboardFadeOut");
+            fadeout.Begin(MiniMapBorder);
+
+            if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
 			{
 				_isCanvasPanning = false;
 				if (LayoutGrid.IsMouseCaptured)
@@ -131,10 +152,14 @@ namespace vMixController
 			if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
 				return;
 
-			if (CanvasTransform == null)
+			if (_canvasTransform == null)
 				return;
 
-			var m = CanvasTransform.Matrix;
+            if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas) return;
+
+            UpdateMatrix();
+
+            var m = _canvasTransform.Matrix;
 			var scale = m.M11;
 			var zoomFactor = e.Delta > 0 ? 1.1 : (1.0 / 1.1);
 			var newScale = scale * zoomFactor;
@@ -146,9 +171,11 @@ namespace vMixController
 
 			var p = e.GetPosition(LayoutGrid);
 			m.ScaleAt(zoomFactor, zoomFactor, p.X, p.Y);
-			CanvasTransform.Matrix = m;
+			_canvasTransform.Matrix = m;
 
-			e.Handled = true;
+            CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
+
+            e.Handled = true;
 		}
 
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -191,16 +218,20 @@ namespace vMixController
 
 		private void ApplyCanvasMatrix(Matrix m)
 		{
-			if (CanvasTransform != null)
-				CanvasTransform.Matrix = m;
+			if (_canvasTransform != null)
+				_canvasTransform.Matrix = m;
 
 			if (CanvasGridBrush != null)
 				CanvasGridBrush.Transform = new MatrixTransform(m);
-		}
 
-		public Point ToCanvasContentPoint(Point layoutGridPoint)
+            CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
+        }
+
+		public Point ToCanvasContentPoint(Point layoutGridPoint, bool infiniteCanvas = true)
 		{
-			var m = CanvasTransform?.Matrix ?? Matrix.Identity;
+            if (!infiniteCanvas) return layoutGridPoint;
+
+            var m = _canvasTransform?.Matrix ?? Matrix.Identity;
 			if (m.HasInverse)
 			{
 				m.Invert();

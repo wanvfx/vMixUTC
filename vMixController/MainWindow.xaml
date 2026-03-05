@@ -37,7 +37,7 @@
             </ResourceDictionary.MergedDictionaries>
             <!--<this:Help x:Key="Help"/>-->
             <Rect x:Key="IconViewbox">0.18,0.18,0.64,0.64</Rect>
-			<c:Int32ToVisibilityConverter x:Key="Int32ToVisibilityConverter"/>
+            <c:Int32ToVisibilityConverter x:Key="Int32ToVisibilityConverter"/>
             <Storyboard x:Key="StoryboardFadeIn">
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
                     <DiscreteObjectKeyFrame KeyTime="0">
@@ -66,7 +66,7 @@
                 <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="{loc:Loc Key=MainWindow.SubMenu.EditTemplate}" Command="{Binding Main.EditWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
                 <MenuItem Icon="{x:Null}" ItemsSource="{x:Null}" Header="{loc:Loc Key=MainWindow.SubMenu.RemoveTemplate}" Command="{Binding Main.RemoveWidgetTemplateCommand, Source={StaticResource Locator}}" CommandParameter="{Binding}"/>
             </CompositeCollection>
-			<Rectangle x:Key="DynamicIcon" x:Shared="False" Width="16" Height="16" StrokeThickness="1"
+            <Rectangle x:Key="DynamicIcon" x:Shared="False" Width="16" Height="16" StrokeThickness="1"
 					   Fill="{Binding B.Color, FallbackValue=Black, Converter={c:ColorToSolidBrushConverter}}"
 					   Stroke="{Binding B.BorderColor, FallbackValue=Black, Converter={c:ColorToSolidBrushConverter}}"/>
             <Style TargetType="Border" x:Key="IconBorder">
@@ -279,9 +279,9 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-		<Menu KeyboardNavigation.TabNavigation="None" IsTabStop="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
-			<MenuItem Header="{loc:Loc Key=MainWindow.Menu.File}">
-				<MenuItem Command="{Binding NewControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.New}">
+        <Menu KeyboardNavigation.TabNavigation="None" IsTabStop="False" VerticalContentAlignment="Center" HorizontalContentAlignment="Left">
+            <MenuItem Header="{loc:Loc Key=MainWindow.Menu.File}">
+                <MenuItem Command="{Binding NewControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.New}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF016;</TextBlock>
@@ -289,7 +289,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-				<MenuItem Command="{Binding LoadControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Open}">
+                <MenuItem Command="{Binding LoadControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Open}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF07C;</TextBlock>
@@ -297,7 +297,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-				<MenuItem Header="{loc:Loc Key=MainWindow.Menu.File.RecentFiles}" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
+                <MenuItem Header="{loc:Loc Key=MainWindow.Menu.File.RecentFiles}" ItemsSource="{Binding WindowSettings.RecentFiles}" Visibility="{Binding WindowSettings.RecentFiles, Converter={wpfc:ICollectionNullOrEmptyToInverseVisibilityConverter}}">
                     <MenuItem.Resources>
                         <ResourceDictionary>
                             <Border x:Key="Icon" x:Shared="false"  Width="16" Height="16">
@@ -320,7 +320,7 @@
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
 
-				<MenuItem Command="{Binding AppendControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Append}">
+                <MenuItem Command="{Binding AppendControllerCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.Append}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <Grid>
@@ -332,7 +332,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-				<MenuItem Command="{Binding SaveControllerCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Save}">
+                <MenuItem Command="{Binding SaveControllerCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Save}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF0C7;</TextBlock>
@@ -349,7 +349,7 @@
                 </MenuItem>-->
                 <MenuItem Command="{Binding DownloadUpdateCommand}">
                     <MenuItem.Header>
-						<TextBlock FontWeight="Bold"><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Prefix}" /><Run Text=" [" /><Run Text="{Binding AvailableVersion, StringFormat=MM/dd/yyy}" /><Run Text="] " /><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Suffix}" /></TextBlock>
+                        <TextBlock FontWeight="Bold"><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Prefix}" /><Run Text=" [" /><Run Text="{Binding AvailableVersion, StringFormat=MM/dd/yyy}" /><Run Text="] " /><Run Text="{loc:Loc Key=MainWindow.Menu.File.DownloadUpdate.Suffix}" /></TextBlock>
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
@@ -385,7 +385,7 @@
                         </Style>
                     </MenuItem.Style>
                 </MenuItem>-->
-				<MenuItem Command="{Binding AboutCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.About}">
+                <MenuItem Command="{Binding AboutCommand}" Header="{loc:Loc Key=MainWindow.Menu.File.About}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF05A;</TextBlock>
@@ -393,7 +393,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-				<MenuItem Command="{Binding ExitCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Exit}">
+                <MenuItem Command="{Binding ExitCommand}"  Header="{loc:Loc Key=MainWindow.Menu.File.Exit}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF08B;</TextBlock>
@@ -401,15 +401,15 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-			<MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}">
-				<MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=en-US}" Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
+            <MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}">
+                <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=en-US}" Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
                 <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=zh-CN}" Header="{loc:Loc Key=MainWindow.Menu.Language.Chinese}" Tag="zh-CN" Click="LanguageMenuItem_Click" />
-			</MenuItem>
-			<MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Edit}">
+            </MenuItem>
+            <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Edit}">
                 <MenuItem IsEnabled="{Binding UndoState, Converter={wpfc:ValueNullToInverseBoolConverter}}" Command="{Binding UndoCommand}">
                     <MenuItem.Header>
                         <StackPanel>
-							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.Undo}"/>
+                            <TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.Undo}"/>
                             <TextBlock Foreground="Gray" FontSize="10" Text="{Binding UndoReason}" Visibility="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </StackPanel>
                     </MenuItem.Header>
@@ -420,9 +420,9 @@
                     </MenuItem.Icon>
                 </MenuItem>
 
-				<MenuItem Command="{Binding DuplicateSelectedCommand}">
+                <MenuItem Command="{Binding DuplicateSelectedCommand}">
                     <MenuItem.Header>
-						<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.DuplicateSelected}"/>
+                        <TextBlock Text="{loc:Loc Key=MainWindow.Menu.Edit.DuplicateSelected}"/>
                     </MenuItem.Header>
                     <MenuItem.Icon>
                         <Border Width="16" Height="16">
@@ -431,7 +431,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-			<MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Widget}" ItemsSource="{DynamicResource CreateItems}">
+            <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Widget}" ItemsSource="{DynamicResource CreateItems}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
                         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -440,12 +440,12 @@
                 </MenuItem.ItemContainerStyle>
 
             </MenuItem>
-			<MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Lock.ToolTip}" Header="{Binding WindowSettings.Locked}" Command="{Binding ToggleLockCommand}">
+            <MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Lock.ToolTip}" Header="{Binding WindowSettings.Locked}" Command="{Binding ToggleLockCommand}">
                 <MenuItem.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="16px" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}" x:Name="LockedIcon"></TextBlock>
-							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Lock}"/>
+                            <TextBlock Text="{loc:Loc Key=MainWindow.Menu.Lock}"/>
                         </StackPanel>
                         <DataTemplate.Triggers>
                             <DataTrigger Binding="{Binding}" Value="True">
@@ -458,16 +458,16 @@
                     </DataTemplate>
                 </MenuItem.HeaderTemplate>
             </MenuItem>
-			<MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Sync.ToolTip}" Header="{Binding Status}" Command="{Binding SyncStateCommand}">
+            <MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Sync.ToolTip}" Header="{Binding Status}" Command="{Binding SyncStateCommand}">
                 <MenuItem.HeaderTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" Margin="0,0,8,0" Stroke="Black">
                                 <Ellipse.Fill>
-								<SolidColorBrush Color="{Binding Path=., Converter={c:StatusToColorConverter}}"/>
+                                    <SolidColorBrush Color="{Binding Path=., Converter={c:StatusToColorConverter}}"/>
                                 </Ellipse.Fill>
                             </Ellipse>
-							<TextBlock Text="{loc:Loc Key=MainWindow.Menu.Sync}"></TextBlock>
+                            <TextBlock Text="{loc:Loc Key=MainWindow.Menu.Sync}"></TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </MenuItem.HeaderTemplate>
@@ -482,26 +482,17 @@
                 </MenuItem.Style>
             </MenuItem>
         </Menu>
-		<Grid Grid.Row="1">
-			<ScrollViewer x:Name="MainScrollViewer" Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Background="Black">
-				<ScrollViewer.Template>
-					<ControlTemplate TargetType="{x:Type ScrollViewer}">
-						<Grid Background="{TemplateBinding Background}">
-							<ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
-							<ScrollBar x:Name="PART_VerticalScrollBar" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-							<ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"/>
-						</Grid>
-					</ControlTemplate>
-				</ScrollViewer.Template>
-				<TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
-				<TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="{loc:Loc Key=MainWindow.Tab.Settings}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
+        <Grid Grid.Row="1" Background="Black">
+
+            <TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
+                <TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="{loc:Loc Key=MainWindow.Tab.Settings}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                     <StackPanel Margin="{StaticResource StdMargin}">
                         <Grid Margin="{StaticResource TopBottomStdMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-							<TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="14"><Run Text="{loc:Loc Key=MainWindow.Settings.WindowProperties}"/></TextBlock>
+                            <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" FontSize="14"><Run Text="{loc:Loc Key=MainWindow.Settings.WindowProperties}"/></TextBlock>
                             <Border VerticalAlignment="Center" Grid.Column="1" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
 
@@ -536,8 +527,8 @@
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>-->
-							<CompositeCollection>
-								<TextBox TabIndex="1" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.IP}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
+                            <CompositeCollection>
+                                <TextBox TabIndex="1" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.IP}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.IP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -550,34 +541,7 @@
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                 </TextBox>
-								<TextBox TabIndex="2" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.Port}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-
-								<TextBox TabIndex="3" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiLogin}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewKeyUp">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="GotFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                        <i:EventTrigger EventName="LostFocus">
-                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-								<TextBox TabIndex="4" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiPassword}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox TabIndex="2" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.Port}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{Binding IsUrlValid, Converter={c:BoolToSolidColorBrushConverter}, ConverterParameter=1}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -591,8 +555,20 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-
-								<TextBox TabIndex="5" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.PollTime}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+                                <TextBox TabIndex="3" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiLogin}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpLogin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+                                <TextBox TabIndex="4" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.ApiPassword}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.HttpPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <i:Interaction.Triggers>
                                         <i:EventTrigger EventName="PreviewKeyUp">
                                             <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
@@ -606,7 +582,22 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-								<Grid KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" Tag="{loc:Loc Key=MainWindow.Settings.Field.Scaling}">
+
+                                <TextBox TabIndex="5" Style="{StaticResource WidgetTextBox}" Tag="{loc:Loc Key=MainWindow.Settings.Field.PollTime}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Text="{Binding WindowSettings.PollTime, Mode=TwoWay}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewKeyUp">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxPreviewKeyUp, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="GotFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxGotFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                        <i:EventTrigger EventName="LostFocus">
+                                            <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding Main.TextBoxLostFocus, Source={StaticResource Locator}}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+
+                                <Grid KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" Tag="{loc:Loc Key=MainWindow.Settings.Field.Scaling}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="Auto" MinWidth="64"/>
@@ -614,19 +605,20 @@
                                     </Grid.ColumnDefinitions>
                                     <Slider TabIndex="6" Value="{Binding WindowSettings.UIScale, Mode=TwoWay}" Minimum="0.5" Maximum="5"/>
                                     <TextBlock Grid.Column="1" Style="{StaticResource PropertyName}" Margin="{StaticResource LeftStdMargin}" Text="{Binding WindowSettings.UIScale, StringFormat=0.00}"/>
-									<Button TabIndex="7" Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}" Content="{loc:Loc Key=MainWindow.Settings.Button.Reset}" />
+                                    <Button TabIndex="7" Grid.Column="2" Padding="8,0" Command="{Binding ResetScalingCommand}" Content="{loc:Loc Key=MainWindow.Settings.Button.Reset}" />
                                 </Grid>
-								<CheckBox TabIndex="8" Tag="{loc:Loc Key=MainWindow.Settings.Field.OpenLastAtStart}" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
-								<CheckBox TabIndex="9" Tag="{loc:Loc Key=MainWindow.Settings.Field.IsTopmost}" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
-								<Border Tag="{loc:Loc Key=MainWindow.Settings.Field.EnableLog}">
+                                <CheckBox TabIndex="8" Tag="{loc:Loc Key=MainWindow.Settings.Field.OpenLastAtStart}" IsChecked="{Binding WindowSettings.OpenLastAtStart, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="9" Tag="{loc:Loc Key=MainWindow.Settings.Field.IsTopmost}" IsChecked="{Binding WindowSettings.IsTopmost, Mode=TwoWay}"/>
+                                <Border Tag="{loc:Loc Key=MainWindow.Settings.Field.EnableLog}">
                                     <StackPanel Orientation="Horizontal">
                                         <CheckBox TabIndex="10" IsChecked="{Binding WindowSettings.EnableLog, Mode=TwoWay}"/>
-										<Button TabIndex="11" Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}" Content="{loc:Loc Key=MainWindow.Settings.Button.OpenLogFolder}" />
+                                        <Button TabIndex="11" Margin="4,0,0,0" VerticalAlignment="Center" FontSize="10" Height="16" Command="{Binding OpenLogFolder}" Content="{loc:Loc Key=MainWindow.Settings.Button.OpenLogFolder}" />
                                     </StackPanel>
                                 </Border>
 
-								<CheckBox TabIndex="12" Tag="{loc:Loc Key=MainWindow.Settings.Field.ShowWidgetLock}" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
-								<CheckBox TabIndex="13" Tag="{loc:Loc Key=MainWindow.Settings.Field.BlinkLightsNeedRestart}" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
+                                <CheckBox TabIndex="12" Tag="{loc:Loc Key=MainWindow.Settings.Field.ShowWidgetLock}" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
+                                <CheckBox TabIndex="13" Tag="{loc:Loc Key=MainWindow.Settings.Field.BlinkLightsNeedRestart}" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
+                                <CheckBox TabIndex="14" Tag="{loc:Loc Key=MainWindow.Settings.Field.UseInfiniteCanvas}" IsChecked="{Binding WindowSettings.UseInfiniteCanvas, Mode=TwoWay}" Cursor=""/>
                             </CompositeCollection>
                         </skin:PropertiesListView>
                         <Grid Background="Transparent" DataContext="{Binding GlobalSettings, Source={StaticResource Locator}}">
@@ -663,9 +655,9 @@
                                             <RowDefinition/>
                                             <RowDefinition/>
                                         </Grid.RowDefinitions>
-											<TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Title}" FontSize="14"/>
+                                        <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Title}" FontSize="14"/>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
-												<Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Add}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
+                                            <Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Add}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
                                             <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{x:Static this:Help.StaticVariables_Default}"/>
                                         </StackPanel>
                                         <Border VerticalAlignment="Center" Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
@@ -675,9 +667,9 @@
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-												<TextBlock HorizontalAlignment="Center" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Index}" />
-												<TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Name}" />
-												<TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Value}" />
+                                            <TextBlock HorizontalAlignment="Center" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Index}" />
+                                            <TextBlock HorizontalAlignment="Center" Grid.Column="1" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Name}" />
+                                            <TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Value}" />
                                         </Grid>
                                     </Grid>
                                     <ListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
@@ -729,7 +721,7 @@
                                                             </i:EventTrigger>
                                                         </i:Interaction.Triggers>
                                                     </TextBox>
-																<Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Remove}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF2ED;" Grid.Column="3"/>
+                                                    <Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Remove}" CommandParameter="{Binding}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding GlobalSettings.RemoveItemCommand, Source={StaticResource Locator}}" Content="&#xF2ED;" Grid.Column="3"/>
                                                 </Grid>
 
                                             </DataTemplate>
@@ -759,7 +751,7 @@
                                                                 <Setter.Value>
                                                                     <ControlTemplate TargetType="ListView">
                                                                         <Border Margin="0,2">
-																		<TextBlock TextAlignment="Center" Style="{StaticResource CaptionText}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Empty}" />
+                                                                            <TextBlock TextAlignment="Center" Style="{StaticResource CaptionText}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Empty}" />
                                                                         </Border>
                                                                     </ControlTemplate>
                                                                 </Setter.Value>
@@ -770,7 +762,7 @@
                                             </Style>
                                         </ListView.Style>
                                     </ListView>
-											<Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Button.Append}"/>
+                                    <Button Width="Auto" Margin="2,0" Style="{StaticResource TitleButton}" FontFamily="{StaticResource SegoeUI}" Command="{Binding AddItemCommand}" Content="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Button.Append}"/>
                                 </StackPanel>
                             </ScrollViewer>
                         </Grid>
@@ -818,126 +810,197 @@
                             </Button>
                         </StackPanel>
                     </TabItem.Header>
-                    <Grid Name="LayoutGrid" Tag="{Binding WindowSettings.Locked, Mode=TwoWay}" ClipToBounds="True" PreviewMouseDown="LayoutGrid_PreviewMouseDown" PreviewMouseMove="LayoutGrid_PreviewMouseMove" PreviewMouseUp="LayoutGrid_PreviewMouseUp" PreviewMouseWheel="LayoutGrid_PreviewMouseWheel">
-                        <Grid.Background>
-                            <ImageBrush x:Name="CanvasGridBrush" ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
-                        </Grid.Background>
-                        <Grid.Style>
-                            <Style TargetType="{x:Type Grid}">
-                                <Style.Triggers>
-                                    <Trigger Property="Tag" Value="True">
-                                        <Setter Property="Background" Value="#FF1E2328"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Grid.Style>
-					<Grid.ContextMenu>
-						<ContextMenu x:Name="LayoutGridContextMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
-							<ContextMenu.Resources>
-								<cls:BindingProxy x:Key="proxy" Data="{Binding}" />
-							</ContextMenu.Resources>
-							<ContextMenu.ItemContainerStyleSelector>
-								<cls:MenuStyleSelector>
-									<cls:MenuStyleSelector.MenuItem>
-										<Style TargetType="MenuItem">
-											<Setter Property="HorizontalContentAlignment" Value="Left"/>
-											<Setter Property="VerticalContentAlignment" Value="Center"/>
-											<Setter Property="IsEnabled" Value="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
-										</Style>
-									</cls:MenuStyleSelector.MenuItem>
-								</cls:MenuStyleSelector>
-							</ContextMenu.ItemContainerStyleSelector>
-						</ContextMenu>
-					</Grid.ContextMenu>
-					<i:Interaction.Triggers>
-						<i:EventTrigger EventName="MouseLeftButtonDown">
-							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonDown}"/>
-						</i:EventTrigger>
-						<i:EventTrigger EventName="MouseMove">
-							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseMove}"/>
-						</i:EventTrigger>
-						<i:EventTrigger EventName="MouseLeftButtonUp">
-							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonUp}"/>
-						</i:EventTrigger>
-						<i:EventTrigger EventName="ContextMenuOpening">
-							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuOpening}"/>
-						</i:EventTrigger>
-						<i:EventTrigger EventName="ContextMenuClosing">
-							<cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuClosing}"/>
-						</i:EventTrigger>
-					</i:Interaction.Triggers>
+                    <Grid>
+                        <ScrollViewer x:Name="MainScrollViewer" Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                            <ScrollViewer.Style>
+                                <Style TargetType="ScrollViewer">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding WindowSettings.UseInfiniteCanvas}" Value="True">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                                        <Grid Background="{TemplateBinding Background}">
+                                                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
+                                                            <ScrollBar x:Name="PART_VerticalScrollBar" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                                                            <ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"/>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ScrollViewer.Style>
+                            <Grid Name="LayoutGrid" Tag="{Binding WindowSettings.Locked, Mode=TwoWay}" ClipToBounds="True" PreviewMouseDown="LayoutGrid_PreviewMouseDown" PreviewMouseMove="LayoutGrid_PreviewMouseMove" PreviewMouseUp="LayoutGrid_PreviewMouseUp" PreviewMouseWheel="LayoutGrid_PreviewMouseWheel">
+                                <Grid.Background>
+                                    <ImageBrush x:Name="CanvasGridBrush" ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
+                                </Grid.Background>
+                                <Grid.Style>
+                                    <Style TargetType="{x:Type Grid}">
+                                        <Style.Triggers>
+                                            <Trigger Property="Tag" Value="True">
+                                                <Setter Property="Background" Value="#FF1E2328"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ContextMenu>
+                                    <ContextMenu x:Name="LayoutGridContextMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
+                                        <ContextMenu.Resources>
+                                            <cls:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                        </ContextMenu.Resources>
+                                        <ContextMenu.ItemContainerStyleSelector>
+                                            <cls:MenuStyleSelector>
+                                                <cls:MenuStyleSelector.MenuItem>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                        <Setter Property="IsEnabled" Value="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                                                    </Style>
+                                                </cls:MenuStyleSelector.MenuItem>
+                                            </cls:MenuStyleSelector>
+                                        </ContextMenu.ItemContainerStyleSelector>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonDown}"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="MouseMove">
+                                        <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseMove}"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="MouseLeftButtonUp">
+                                        <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding MouseButtonUp}"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="ContextMenuOpening">
+                                        <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuOpening}"/>
+                                    </i:EventTrigger>
+                                    <i:EventTrigger EventName="ContextMenuClosing">
+                                        <cmd:EventToCommand PassEventArgsToCommand="True" Command="{Binding ContextMenuClosing}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
 
-					<Canvas IsHitTestVisible="False">
-						<Grid Width="{Binding ElementName=MainScrollViewer, Path=ViewportWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ViewportHeight}"
+                                <Canvas IsHitTestVisible="False">
+                                    <Grid Width="{Binding ElementName=MainScrollViewer, Path=ViewportWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ViewportHeight}"
 							  Canvas.Left="{Binding ElementName=MainScrollViewer, Path=HorizontalOffset}" Canvas.Top="{Binding ElementName=MainScrollViewer, Path=VerticalOffset}">
-							<TextBlock Margin="0,0,16,2" FontFamily="Segoe UI" FontWeight="Bold" Opacity="0.25" FontSize="120" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsHitTestVisible="False">
-								<TextBlock.Text>
-									<MultiBinding Converter="{c:StringListToStringConverter}">
-										<Binding Source="{StaticResource Locator}" Path="Main.WindowSettings.Pages"/>
-										<Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
-									</MultiBinding>
-								</TextBlock.Text>
-								<TextBlock.Foreground>
-									<SolidColorBrush>
-										<SolidColorBrush.Color>
-											<MultiBinding Converter="{c:ColorsListToColorConverter}">
-												<Binding Source="{x:Static vm:vMixWidgetSettingsViewModel.Colors}"/>
-															<Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
-											</MultiBinding>
-										</SolidColorBrush.Color>
-									</SolidColorBrush>
-								</TextBlock.Foreground>
-							</TextBlock>
-						</Grid>
-					</Canvas>
+                                        <TextBlock Margin="0,0,16,2" FontFamily="Segoe UI" FontWeight="Bold" Opacity="0.25" FontSize="120" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsHitTestVisible="False">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{c:StringListToStringConverter}">
+                                                    <Binding Source="{StaticResource Locator}" Path="Main.WindowSettings.Pages"/>
+                                                    <Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                            <TextBlock.Foreground>
+                                                <SolidColorBrush>
+                                                    <SolidColorBrush.Color>
+                                                        <MultiBinding Converter="{c:ColorsListToColorConverter}">
+                                                            <Binding Source="{x:Static vm:vMixWidgetSettingsViewModel.Colors}"/>
+                                                            <Binding Source="{StaticResource Locator}" Path="Main.PageIndex"/>
+                                                        </MultiBinding>
+                                                    </SolidColorBrush.Color>
+                                                </SolidColorBrush>
+                                            </TextBlock.Foreground>
+                                        </TextBlock>
+                                    </Grid>
+                                </Canvas>
 
-                        <Grid x:Name="CanvasRoot" Background="Transparent">
-                            <Grid x:Name="CanvasContent">
-                                <Grid.RenderTransform>
-                                    <MatrixTransform x:Name="CanvasTransform"/>
-                                </Grid.RenderTransform>
-
-                            <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening" ClipToBounds="False">
-                                <ListView.Template>
-                                    <ControlTemplate TargetType="ListView">
-                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                                            <ItemsPresenter/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </ListView.Template>
-                            <ListView.ContextMenu>
-                                <ContextMenu x:Name="CreateContextMenu" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
-                                    <ContextMenu.Resources>
-                                        <cls:BindingProxy x:Key="proxy" Data="{Binding}" />
-                                    </ContextMenu.Resources>
-                                    <ContextMenu.ItemContainerStyleSelector>
-                                        <cls:MenuStyleSelector>
-                                            <cls:MenuStyleSelector.MenuItem>
-                                                <Style TargetType="MenuItem">
-                                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                                    <Setter Property="IsEnabled" Value="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
-                                                </Style>
-                                            </cls:MenuStyleSelector.MenuItem>
-                                        </cls:MenuStyleSelector>
-                                    </ContextMenu.ItemContainerStyleSelector>
-                                </ContextMenu>
-                            </ListView.ContextMenu>
-                            <ListView.Resources>
-                                <ResourceDictionary>
-                                    <ResourceDictionary.MergedDictionaries>
-                                        <ResourceDictionary Source="Skins/ControlTemplates.xaml"/>
-                                    </ResourceDictionary.MergedDictionaries>
-                                </ResourceDictionary>
-                            </ListView.Resources>
-                            <ListView.Style>
-                                <Style TargetType="ListView">
-                                    <Setter Property="ItemTemplateSelector">
-                                        <Setter.Value>
-                                            <ctrls:TypeTemplateSelector Page="0"/>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <!--<Style.Triggers>
+                                <Grid x:Name="CanvasRoot" Background="Transparent">
+                                    <Grid x:Name="CanvasContent">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <MatrixTransform/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding WindowSettings.UseInfiniteCanvas}" Value="False">
+                                                        <Setter Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <MatrixTransform Matrix="Identity"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Path Visibility="{Binding WindowSettings.UseInfiniteCanvas, Converter={wpfc:BoolToVisibilityConverter}}" Stroke="White" 
+                                          StrokeThickness="2" 
+                                          StrokeStartLineCap="Round" 
+                                          StrokeEndLineCap="Round"
+                                          Data="M 0,0 L 4,0 M 0,0 L 0,4" 
+                                          Stretch="Uniform" 
+                                          Width="8" Height="8" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Top" Opacity="0.5"/>
+                                        <Path Visibility="{Binding WindowSettings.UseInfiniteCanvas, Converter={wpfc:BoolToVisibilityConverter}}" Stroke="White" 
+                                          StrokeThickness="2" 
+                                          StrokeStartLineCap="Round" 
+                                          StrokeEndLineCap="Round"
+                                          Data="M 4,4 L 4,0 M 4,4 L 0,4" 
+                                          Stretch="Uniform" 
+                                          Width="8" Height="8" 
+                                          HorizontalAlignment="Right" 
+                                          VerticalAlignment="Bottom" Opacity="0.5"/>
+                                        <Path Visibility="{Binding WindowSettings.UseInfiniteCanvas, Converter={wpfc:BoolToVisibilityConverter}}" Stroke="White" 
+                                          StrokeThickness="2" 
+                                          StrokeStartLineCap="Round" 
+                                          StrokeEndLineCap="Round"
+                                          Data="M 4,0 L 0,0 M 4,0 L 4,4" 
+                                          Stretch="Uniform" 
+                                          Width="8" Height="8" 
+                                          HorizontalAlignment="Right" 
+                                          VerticalAlignment="Top" Opacity="0.5"/>
+                                        <Path Visibility="{Binding WindowSettings.UseInfiniteCanvas, Converter={wpfc:BoolToVisibilityConverter}}" Stroke="White" 
+                                          StrokeThickness="2" 
+                                          StrokeStartLineCap="Round" 
+                                          StrokeEndLineCap="Round"
+                                          Data="M 0,4 L 0,0 M 0,4 L 4,4" 
+                                          Stretch="Uniform" 
+                                          Width="8" Height="8" 
+                                          HorizontalAlignment="Left" 
+                                          VerticalAlignment="Bottom" Opacity="0.5"/>
+                                        <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening" ClipToBounds="False">
+                                            <ListView.Template>
+                                                <ControlTemplate TargetType="ListView">
+                                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <ItemsPresenter/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </ListView.Template>
+                                            <ListView.ContextMenu>
+                                                <ContextMenu x:Name="CreateContextMenu" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" ItemsSource="{DynamicResource CreateItems}">
+                                                    <ContextMenu.Resources>
+                                                        <cls:BindingProxy x:Key="proxy" Data="{Binding}" />
+                                                    </ContextMenu.Resources>
+                                                    <ContextMenu.ItemContainerStyleSelector>
+                                                        <cls:MenuStyleSelector>
+                                                            <cls:MenuStyleSelector.MenuItem>
+                                                                <Style TargetType="MenuItem">
+                                                                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                                    <Setter Property="IsEnabled" Value="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                                                                </Style>
+                                                            </cls:MenuStyleSelector.MenuItem>
+                                                        </cls:MenuStyleSelector>
+                                                    </ContextMenu.ItemContainerStyleSelector>
+                                                </ContextMenu>
+                                            </ListView.ContextMenu>
+                                            <ListView.Resources>
+                                                <ResourceDictionary>
+                                                    <ResourceDictionary.MergedDictionaries>
+                                                        <ResourceDictionary Source="Skins/ControlTemplates.xaml"/>
+                                                    </ResourceDictionary.MergedDictionaries>
+                                                </ResourceDictionary>
+                                            </ListView.Resources>
+                                            <ListView.Style>
+                                                <Style TargetType="ListView">
+                                                    <Setter Property="ItemTemplateSelector">
+                                                        <Setter.Value>
+                                                            <ctrls:TypeTemplateSelector Page="0"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding PageIndex}">
                                             <DataTrigger.Value>
                                                 <sys:Int32>1</sys:Int32>
@@ -949,85 +1012,105 @@
                                             </Setter>
                                         </DataTrigger>
                                     </Style.Triggers>-->
-                                </Style>
-                            </ListView.Style>
+                                                </Style>
+                                            </ListView.Style>
 
-                            <ListView.Cursor>
-                                <Binding Converter="{c:StringToCursorConverter}" Mode="OneWay" Path="EditorCursor"/>
-                            </ListView.Cursor>
-                            
-                            <i:Interaction.Behaviors>
-                                <e:IgnoreMouseWheelBehavior IgnoreBehavior="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}"/>
-                            </i:Interaction.Behaviors>
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <Grid VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" IsItemsHost="True" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                        <Grid.LayoutTransform>
-                                            <ScaleTransform ScaleX="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}" ScaleY="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}"/>
-                                        </Grid.LayoutTransform>
-                                    </Grid>
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListViewItem}">
-                                    <Setter Property="Margin">
-                                        <Setter.Value>
-                                            <MultiBinding Converter="{c:DoubleToThicknessConverter}">
-                                                <Binding Path="Left"/>
-                                                <Binding Path="Top"/>
-                                            </MultiBinding>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                                    <Setter Property="VerticalAlignment" Value="Top"/>
-                                    <!--</Setter> Value="{Binding Left}"/>
+                                            <ListView.Cursor>
+                                                <Binding Converter="{c:StringToCursorConverter}" Mode="OneWay" Path="EditorCursor"/>
+                                            </ListView.Cursor>
+
+                                            <i:Interaction.Behaviors>
+                                                <e:IgnoreMouseWheelBehavior IgnoreBehavior="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}"/>
+                                            </i:Interaction.Behaviors>
+                                            <ListView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Grid VirtualizingPanel.IsVirtualizing="True" ScrollViewer.CanContentScroll="True" IsItemsHost="True" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                        <Grid.LayoutTransform>
+                                                            <ScaleTransform ScaleX="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}" ScaleY="{Binding Main.WindowSettings.UIScale, Source={StaticResource Locator}}"/>
+                                                        </Grid.LayoutTransform>
+                                                    </Grid>
+                                                </ItemsPanelTemplate>
+                                            </ListView.ItemsPanel>
+                                            <ListView.ItemContainerStyle>
+                                                <Style TargetType="{x:Type ListViewItem}">
+                                                    <Setter Property="Margin">
+                                                        <Setter.Value>
+                                                            <MultiBinding Converter="{c:DoubleToThicknessConverter}">
+                                                                <Binding Path="Left"/>
+                                                                <Binding Path="Top"/>
+                                                            </MultiBinding>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                    <Setter Property="VerticalAlignment" Value="Top"/>
+                                                    <!--</Setter> Value="{Binding Left}"/>
                     <Setter Property="Canvas.Top" Value="{Binding Top}"/>-->
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ListViewItem}">
-                                                <ContentPresenter />
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                        </ListView>
-                        <Border BorderBrush="White" BorderThickness="2" Opacity="0" Background="DarkSlateGray" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2" Margin="2" IsHitTestVisible="False">
-                            <TextBlock FontSize="18" TextAlignment="Center" Text="{loc:Loc Key=MainWindow.Layout.Hint}" />
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding EditorCursor}" Value="Arrow">
-                                            <DataTrigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard Storyboard.TargetProperty="Opacity">
-                                                        <DoubleAnimation To="0" Duration="0:0:0.5"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </DataTrigger.EnterActions>
-                                            <DataTrigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard Storyboard.TargetProperty="Opacity">
-                                                        <DoubleAnimation To="1" Duration="0:0:0.5"/>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </DataTrigger.ExitActions>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                                <ContentPresenter />
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </ListView.ItemContainerStyle>
+                                        </ListView>
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding SelectorPosition}" Width="{Binding SelectorWidth}" Height="{Binding SelectorHeight}" Visibility="{Binding SelectorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False" Background="#7F00FFFF"/>
 
-                        <Grid Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding SelectorPosition}" Width="{Binding SelectorWidth}" Height="{Binding SelectorHeight}" Visibility="{Binding SelectorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False" Background="#7F00FFFF"/>
+                                <Border BorderBrush="White" BorderThickness="2" Opacity="0" Background="DarkSlateGray" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2" Margin="2" IsHitTestVisible="False">
+                                    <TextBlock FontSize="18" TextAlignment="Center" Text="{loc:Loc Key=MainWindow.Layout.Hint}" />
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding EditorCursor}" Value="Arrow">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard Storyboard.TargetProperty="Opacity">
+                                                                <DoubleAnimation To="0" Duration="0:0:0.5"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard Storyboard.TargetProperty="Opacity">
+                                                                <DoubleAnimation To="1" Duration="0:0:0.5"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
                             </Grid>
-                        </Grid>
+                        </ScrollViewer>
+                        <Border Visibility="Hidden" Opacity="0" ClipToBounds="True" x:Name="MiniMapBorder" Width="200" Height="150" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" BorderBrush="White" BorderThickness="1" Background="#80000000" CornerRadius="3" IsHitTestVisible="False">
+                            <Grid Margin="2">
+                                <!-- 1. Отображение контента (как и было) -->
+                                <Rectangle>
+                                    <Rectangle.Fill>
+                                        <VisualBrush Visual="{Binding ElementName=CanvasContent}" Stretch="Uniform"/>
+                                    </Rectangle.Fill>
+                                </Rectangle>
 
-
+                                <!-- 2. Рамка видимой области -->
+                                <Viewbox Stretch="Uniform">
+                                    <Canvas Width="{Binding ElementName=CanvasContent, Path=ActualWidth}" Height="{Binding ElementName=CanvasContent, Path=ActualHeight}">
+                                        <Border BorderBrush="Red" BorderThickness="15" Width="{Binding ElementName=MainScrollViewer, Path=ActualWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ActualHeight}">
+                                            <Border.RenderTransform>
+                                                <Binding ElementName="CanvasContent" Converter="{c:MatrixInverterConverter}" Path="RenderTransform.Matrix"/>
+                                            </Border.RenderTransform>
+                                        </Border>
+                                    </Canvas>
+                                </Viewbox>
+                            </Grid>
+                        </Border>
                     </Grid>
                 </TabItem>
-				</TabControl>
-			</ScrollViewer>
-		</Grid>
+            </TabControl>
+        </Grid>
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
@@ -1184,9 +1267,9 @@
                     </DrawingBrush.Drawing>
                 </DrawingBrush>
             </Border.Background>
-			<Border Width="256" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource Main.Background}" BorderBrush="{StaticResource Main.Foreground}" BorderThickness="4" Padding="{StaticResource StdMargin}">
-				<StackPanel>
-					<TextBlock HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Segoe UI Mono" Foreground="White" FontSize="48" Text="{loc:Loc Key=MainWindow.Loading}"/>
+            <Border Width="256" VerticalAlignment="Center" HorizontalAlignment="Center" Background="{StaticResource Main.Background}" BorderBrush="{StaticResource Main.Foreground}" BorderThickness="4" Padding="{StaticResource StdMargin}">
+                <StackPanel>
+                    <TextBlock HorizontalAlignment="Center" FontFamily="/vMixControllerSkin;Component/#Segoe UI Mono" Foreground="White" FontSize="48" Text="{loc:Loc Key=MainWindow.Loading}"/>
                     <ProgressBar BorderThickness="0" Background="Transparent" Foreground="White" IsIndeterminate="True" Height="16"/>
                 </StackPanel>
             </Border>

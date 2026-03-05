@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
@@ -1297,7 +1298,14 @@ namespace vMixController.ViewModel
                         if (SelectorWidth != 0 && SelectorHeight != 0)
                         {
 
-                            var sr = new Rect(SelectorPosition.Left, SelectorPosition.Top, SelectorWidth, SelectorHeight);
+                            
+                            var m = ((MatrixTransform)mw.CanvasContent.RenderTransform).Matrix;
+                            m.Invert();
+
+                            var tl = m.Transform(new Point(SelectorPosition.Left, SelectorPosition.Top));
+                            var br = m.Transform(new Point(SelectorPosition.Left + SelectorWidth, SelectorPosition.Top + SelectorHeight));
+                            var sr = new Rect(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y);
+
                             foreach (var item in _widgets)
                             {
                                 var ir = new Rect(item.Left, item.Top, item.Width, double.IsNaN(item.Height) || double.IsInfinity(item.Height) ? 0 : item.Height + item.CaptionHeight);
@@ -1326,7 +1334,7 @@ namespace vMixController.ViewModel
                         {
                             EditorCursor = "Arrow";
                             var pos = mw?.LayoutGrid != null
-                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid), WindowSettings.UseInfiniteCanvas)
                             : p.MouseDevice.GetPosition((IInputElement)p.Source);
                             _createWidget(new Point(pos.X / WindowSettings.UIScale, pos.Y / WindowSettings.UIScale));
                             _createWidget = null;
@@ -1357,14 +1365,19 @@ namespace vMixController.ViewModel
 
                         var mw = App.Current?.MainWindow as vMixController.MainWindow;
                         var pos = mw?.LayoutGrid != null
-                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            ? (mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid), WindowSettings.UseInfiniteCanvas))
                             : Mouse.GetPosition((IInputElement)p.Source);
                         if (mw?.LayoutGrid != null && !mw.LayoutGrid.IsMouseCaptured)
                             mw.LayoutGrid.CaptureMouse();
+                        
+                        if (WindowSettings.UseInfiniteCanvas)
+                            pos = ((MatrixTransform)mw.CanvasContent.RenderTransform).Matrix.Transform(pos);
 
                         _clickPoint = pos;
                         _relativeClickPoint = pos;
                         SelectorEnabled = true;
+
+                        
                         _rawSelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
                         SelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
                         SelectorWidth = 0;
@@ -1395,8 +1408,12 @@ namespace vMixController.ViewModel
                         //_moveSource = p.Source;
                         var mw = App.Current?.MainWindow as vMixController.MainWindow;
                         var ipos = mw?.LayoutGrid != null
-                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid))
+                            ? mw.ToCanvasContentPoint(Mouse.GetPosition(mw.LayoutGrid), WindowSettings.UseInfiniteCanvas)
                             : new Point(p.GetPosition(App.Current.MainWindow).X, p.GetPosition(App.Current.MainWindow).Y);
+
+                        if (WindowSettings.UseInfiniteCanvas)
+                            ipos = ((MatrixTransform)mw.CanvasContent.RenderTransform).Matrix.Transform(ipos);
+
                         if (!SelectorEnabled)
                         {
 
@@ -1437,7 +1454,7 @@ namespace vMixController.ViewModel
                         if (mw?.LayoutGrid != null)
                         {
                             var pos = Mouse.GetPosition(mw.LayoutGrid);
-                            _contextMenuPosition = mw.ToCanvasContentPoint(pos);
+                            _contextMenuPosition = mw.ToCanvasContentPoint(pos, WindowSettings.UseInfiniteCanvas);
                         }
                         else
                         {

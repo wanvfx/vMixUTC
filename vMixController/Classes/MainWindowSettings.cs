@@ -48,6 +48,34 @@ namespace vMixController.Classes
             }
         }
 
+
+
+        private bool _useInfiniteCanvas = true;
+
+        /// <summary>
+        /// Sets and gets the Left property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool UseInfiniteCanvas
+        {
+            get
+            {
+                return _useInfiniteCanvas;
+            }
+
+            set
+            {
+                if (_useInfiniteCanvas == value)
+                {
+                    return;
+                }
+
+                _useInfiniteCanvas = value;
+                RaisePropertyChanged(nameof(UseInfiniteCanvas));
+            }
+        }
+
+
         /// <summary>
         /// The <see cref="Left" /> property's name.
         /// </summary>
