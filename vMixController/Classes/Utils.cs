@@ -73,7 +73,8 @@ namespace vMixController.Classes
     {
         Offline,
         Sync,
-        Online
+        Online,
+        InputsChanged
     }
     public enum MessageType
     {

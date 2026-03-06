@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -99,8 +100,6 @@ namespace vMixAPI
     public class State : DependencyObject, INotifyPropertyChanged
     {
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        Regex _regex;
 
         //private static bool _configured = false;
         private string _ip = "127.0.0.1";
@@ -205,7 +204,7 @@ namespace vMixAPI
 
         public void CreateAsync()
         {
-            SendFunction("", true, e =>
+            SendFunction("", true, (e)=>
             {
                 if (string.IsNullOrEmpty(e)) return;
 
@@ -409,6 +408,82 @@ namespace vMixAPI
             });
         }
 
+        //Fix for "Yellow Sync" status issue - Send Function method was executed too fast, and Weak Action Reference was deleted before APIRequestManager can call it
+        private class SendFunctionAPIResponseHandler : IDisposable
+        {
+            public Action<string> Handler { get; set; }
+            public System.Windows.Threading.Dispatcher Dispatcher { get; set; }
+            private bool _isDisposed = false;
+            public Action<Guid> OnDisposed { get; set; }
+
+            public Guid GUID = Guid.NewGuid();
+
+            public void SendFunctionAPIResponseAction(string response, Exception error)
+            {
+                try
+                {
+                    if (_isDisposed) return;
+
+                    if (Dispatcher == null) return;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        try
+                        {
+                            if (_isDisposed) return;
+
+                            if (error != null)
+                            {
+                                string result = "";
+                                if (error is WebException webEx && webEx.Response != null)
+                                {
+                                    try
+                                    {
+                                        using (var stream = webEx.Response.GetResponseStream())
+                                            if (stream != null)
+                                            {
+                                                using (var sr = new StreamReader(stream))
+                                                    result = sr.ReadToEnd();
+                                            }
+                                    }
+                                    catch { }
+                                }
+                                _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
+                            }
+                            else
+                            {
+                                _logger.Debug("Async function sended, result is \"{0}\".", response);
+                            }
+
+                            Handler?.Invoke(response);
+                        }
+                        finally
+                        {
+
+                        }
+                    });
+                }
+                finally
+                {
+                    Dispose();
+                }
+            }
+
+            public void Dispose()
+            {
+                if (_isDisposed) return;
+
+                _isDisposed = true;
+
+                OnDisposed?.Invoke(GUID);
+
+                Handler = null;
+                Dispatcher = null;
+            }
+        }
+
+        ConcurrentDictionary<Guid, SendFunctionAPIResponseHandler> handlers = new ConcurrentDictionary<Guid, SendFunctionAPIResponseHandler>();
+
         public string SendFunction(string textParameters, bool async = true, Action<string> handler = null, int timeout = 1000, bool ignoreCache = false)
         {
             _logger.Debug("Trying to send function <{0}> in {1} mode.", textParameters, async ? "async" : "sync");
@@ -429,26 +504,11 @@ namespace vMixAPI
 
             if (async)
             {
-                APIRequestManagerV2.GetApiResponseAsync(url, new WeakAction((response, error) =>
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (error != null)
-                        {
-                            string result = "";
-                            if (error is WebException && (error as WebException).Response != null)
-                            {
-                                using (StreamReader sr = new StreamReader((error as WebException).Response.GetResponseStream()))
-                                    result = sr.ReadToEnd();
-                            }
-                            _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
-                        }
-                        else
-                            _logger.Debug("Async function sended, result is \"{0}\".", response);
-
-                        handler?.Invoke(response);
-                    });
-                }), GetCredentials(), false, ignoreCache);
+                SendFunctionAPIResponseHandler h = new SendFunctionAPIResponseHandler() { Handler = handler, Dispatcher = Dispatcher, OnDisposed = (guid)=>
+                    handlers.TryRemove(guid, out _)
+                };
+                handlers.TryAdd(h.GUID, h);
+                APIRequestManagerV2.GetApiResponseAsync(url, new WeakAction(h.SendFunctionAPIResponseAction), GetCredentials(), false, ignoreCache);
             }
             else
             {
@@ -541,7 +601,7 @@ namespace vMixAPI
 
         public State()
         {
-            _regex = new Regex(@"^(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$");
+        
         }
 
         [XmlElement(ElementName = "version")]
@@ -590,19 +650,6 @@ namespace vMixAPI
         private static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (State.IsInitializing) return;
-            /*switch (e.Property.Name)
-            {
-                case "Preview":
-                    (d as State).PreviewInput((int)e.NewValue);
-                    break;
-                case "Active":
-                    (d as State).ActiveInput((int)e.NewValue);
-                    break;
-                case "FadeToBlack":
-                    if (e.NewValue != e.OldValue)
-                        (d as State).FadeToBlack();
-                    break;
-            }*/
         }
 
 

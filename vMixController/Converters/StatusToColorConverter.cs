@@ -32,6 +32,8 @@ namespace vMixController.Converters
                     return Colors.Lime;
                 case Status.Sync:
                     return Colors.Yellow;
+                case Status.InputsChanged:
+                    return Colors.Cyan;
                 default:
                     return Colors.Yellow;
             }

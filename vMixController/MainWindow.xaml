@@ -247,7 +247,6 @@
                         </Style>
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
-                <loc:Loc x:Name="LocManager"/>
             </CompositeCollection>
         </ResourceDictionary>
     </Window.Resources>
@@ -440,7 +439,6 @@
                         <Setter Property="HorizontalContentAlignment" Value="Left"/>
                     </Style>
                 </MenuItem.ItemContainerStyle>
-
             </MenuItem>
             <MenuItem ToolTip="{loc:Loc Key=MainWindow.Menu.Lock.ToolTip}" Header="{Binding WindowSettings.Locked}" Command="{Binding ToggleLockCommand}">
                 <MenuItem.HeaderTemplate>
@@ -484,7 +482,7 @@
                 </MenuItem.Style>
             </MenuItem>
         </Menu>
-        <Grid Grid.Row="1" Background="Black">
+        <Grid Grid.Row="1" Background="{StaticResource ListBoxBackgroundBrush}">
 
             <TabControl SelectedIndex="{Binding SelectedTab, Mode=TwoWay}" BorderThickness="0" Background="#1e2328">
                 <TabItem IsTabStop="False" Style="{StaticResource GrayItemStyle}" Header="{loc:Loc Key=MainWindow.Tab.Settings}" IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
@@ -1164,7 +1162,7 @@
                         <TextBlock.Text>
                             <MultiBinding ConverterParameter="Enum.Connection">
                                 <Binding Path="Status"/>
-                                <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture" Mode="OneTime"/>
+                                <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture"/>
                                 <MultiBinding.Converter>
                                     <c:EnumLocalizationMultiConverter/>
                                 </MultiBinding.Converter>

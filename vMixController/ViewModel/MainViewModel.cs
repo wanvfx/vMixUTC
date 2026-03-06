@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -2057,6 +2058,7 @@ namespace vMixController.ViewModel
                 foreach (var item in _widgets)
                     item.State = (vMixAPI.State)sender;
             }
+            CheckvMixConnection(null, new EventArgs());
         }
 
 
@@ -2695,7 +2697,14 @@ namespace vMixController.ViewModel
                         return;
                     }
                     if (Model != null && (Model.Ip == WindowSettings.IP && Model.Port == WindowSettings.Port))
-                        Status = Status.Online;
+                    {
+                        var oldInputs = Model.Inputs.Select(x=>x.Key).Skip(3);
+                        var newInputs = Regex.Matches(response, @"<input[^>]*key=""([^""]+)""").OfType<Match>().Select(x=>x.Groups[1].Value);
+                        if (oldInputs.Count() != newInputs.Count() || oldInputs.Intersect(newInputs).Count() != oldInputs.Count())
+                            Status = Status.InputsChanged;
+                        else
+                            Status = Status.Online;
+                    }
                     else
                         Status = Status.Sync;
 

@@ -1149,4 +1149,7 @@
   <data name="MainWindow.Settings.Field.UseInfiniteCanvas" xml:space="preserve">
     <value>使用无限画布</value>
   </data>
+  <data name="Enum.Connection.InputsChanged" xml:space="preserve">
+    <value>输入已更改</value>
+  </data>
 </root>
