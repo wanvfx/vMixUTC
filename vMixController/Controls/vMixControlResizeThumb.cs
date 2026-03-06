@@ -22,6 +22,8 @@ namespace vMixController.Controls
             {
                 double deltaHorizontal = 0;
                 double deltaVertical = 0;
+                var prevLeft = item.Left;
+                var prevTop = item.Top;
 
                 switch (HorizontalAlignment)
                 {
@@ -29,13 +31,14 @@ namespace vMixController.Controls
 
                         deltaHorizontal = Math.Min(-e.HorizontalChange, item.Width - 64);
                         item.Width -= deltaHorizontal;
-                        item.AlignByGrid();
                         break;
                     case System.Windows.HorizontalAlignment.Left:
                         deltaHorizontal = Math.Min(e.HorizontalChange, item.Width - 64);
-                        item.Width -= deltaHorizontal;
+                        // Запоминаем Left до выравнивания
+                        prevLeft = item.Left;
                         item.Left += deltaHorizontal;
-                        item.AlignByGrid();
+                        item.Left = Math.Floor(item.Left / 8.0) * 8.0;
+                        
                         break;
                     default:
                         break;
@@ -50,15 +53,31 @@ namespace vMixController.Controls
                         break;
                     case System.Windows.VerticalAlignment.Top:
                         deltaVertical = Math.Min(e.VerticalChange, item.Height - 8);
-                        item.Height -= deltaVertical;
+                        prevTop = item.Top;
                         item.Top += deltaVertical;
-                        item.AlignByGrid();
+                        item.Top = Math.Floor(item.Top / 8.0) * 8.0;
                         break;
                     default:
                         break;
                 }
 
+                item.Width -= item.Left - prevLeft;
+                item.Width = Math.Floor(item.Width / 8.0) * 8.0;
+                if (item.Width < 64)
+                {
+                    item.Width = 64;
+                    item.Left = prevLeft;
+                }
 
+                item.Height -= item.Top - prevTop;
+                item.Height = Math.Floor(item.Height / 8.0) * 8.0;
+                if (item.Height < 8)
+                {
+                    item.Height = 8;
+                    item.Top = prevTop;
+                }
+
+                item.AlignByGrid();
 
             }
 

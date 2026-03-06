@@ -1152,7 +1152,6 @@ namespace vMixController.Widgets
         {
             bool hasGoToOrTimer = false;
             bool hasSelfExecLink = false;
-            int p;
             int i = 0;
             foreach (var item in Commands)
             {

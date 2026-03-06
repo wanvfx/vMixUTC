@@ -27,8 +27,10 @@
         Width="{Binding WindowSettings.Width, Mode=TwoWay}"
         Height="{Binding WindowSettings.Height, Mode=TwoWay}"
         WindowState="{Binding WindowSettings.State, Mode=TwoWay}"
+        MinWidth="400"
+        MinHeight="400"
         Title="{Binding Title}"
-        ResizeMode="CanResizeWithGrip" d:DesignWidth="1016.552" Loaded="Window_Loaded"
+        ResizeMode="CanResizeWithGrip" d:DesignWidth="1016.552" d:DesignHeight="500"  Loaded="Window_Loaded"
         >
     <Window.Resources>
         <ResourceDictionary>
@@ -768,7 +770,7 @@
                         </Grid>
                     </StackPanel>
                 </TabItem>
-                <TabItem IsTabStop="False" IsSelected="True" Style="{StaticResource GrayItemStyle}" Foreground="White">
+                <TabItem IsTabStop="False" IsSelected="True" Style="{StaticResource GrayItemStyle}" Foreground="White" >
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock VerticalAlignment="Center" Text="{loc:Loc Key=MainWindow.Tab.Layout}"/>
@@ -810,23 +812,36 @@
                             </Button>
                         </StackPanel>
                     </TabItem.Header>
-                    <Grid>
-                        <ScrollViewer x:Name="MainScrollViewer" Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                    <Grid x:Name="Viewfinder" ClipToBounds="False">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <ScrollViewer Grid.RowSpan="2" Grid.ColumnSpan="2" x:Name="MainScrollViewer" Tag="{Binding IsHotkeysEnabled, Converter={wpfc:BoolToInverseBoolConverter}}"  IsManipulationEnabled="True" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
                             <ScrollViewer.Style>
                                 <Style TargetType="ScrollViewer">
+                                    <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+                                    <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding WindowSettings.UseInfiniteCanvas}" Value="True">
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                                                        <Grid Background="{TemplateBinding Background}">
-                                                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Padding}"/>
+                                                        <Grid ClipToBounds="False" Background="{TemplateBinding Background}">
+                                                            <ScrollContentPresenter ClipToBounds="False" x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Margin="{TemplateBinding Margin}"/>
                                                             <ScrollBar x:Name="PART_VerticalScrollBar" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding VerticalOffset}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"/>
                                                             <ScrollBar x:Name="PART_HorizontalScrollBar" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="0" IsHitTestVisible="False" Visibility="Collapsed" Value="{TemplateBinding HorizontalOffset}" Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"/>
                                                         </Grid>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>
+                                            <Setter Property="HorizontalScrollBarVisibility" Value="Hidden"/>
+                                            <Setter Property="VerticalScrollBarVisibility" Value="Hidden"/>
+                                            <Setter Property="ClipToBounds" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -1057,6 +1072,7 @@
                                         </ListView>
                                     </Grid>
                                 </Grid>
+
                                 <Grid Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="{Binding SelectorPosition}" Width="{Binding SelectorWidth}" Height="{Binding SelectorHeight}" Visibility="{Binding SelectorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" IsHitTestVisible="False" Background="#7F00FFFF"/>
 
                                 <Border BorderBrush="White" BorderThickness="2" Opacity="0" Background="DarkSlateGray" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="2" Margin="2" IsHitTestVisible="False">
@@ -1086,25 +1102,42 @@
                                 </Border>
                             </Grid>
                         </ScrollViewer>
-                        <Border Visibility="Hidden" Opacity="0" ClipToBounds="True" x:Name="MiniMapBorder" Width="200" Height="150" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" BorderBrush="White" BorderThickness="1" Background="#80000000" CornerRadius="3" IsHitTestVisible="False">
+                        <Border Visibility="Hidden" Opacity="0" ClipToBounds="True" x:Name="MiniMapBorder" Grid.Row="2" Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20" BorderBrush="White" BorderThickness="1" Background="#80000000" CornerRadius="3" IsHitTestVisible="False">
                             <Grid Margin="2">
-                                <!-- 1. Отображение контента (как и было) -->
-                                <Rectangle>
-                                    <Rectangle.Fill>
+                                <Grid>
+                                    <Grid.Background>
                                         <VisualBrush Visual="{Binding ElementName=CanvasContent}" Stretch="Uniform"/>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-
-                                <!-- 2. Рамка видимой области -->
+                                    </Grid.Background>
+                                </Grid>
                                 <Viewbox Stretch="Uniform">
-                                    <Canvas Width="{Binding ElementName=CanvasContent, Path=ActualWidth}" Height="{Binding ElementName=CanvasContent, Path=ActualHeight}">
-                                        <Border BorderBrush="Red" BorderThickness="15" Width="{Binding ElementName=MainScrollViewer, Path=ActualWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ActualHeight}">
+                                    <Canvas Width="{Binding ElementName=CanvasRoot, Path=ActualWidth}" Height="{Binding ElementName=CanvasRoot, Path=ActualHeight}">
+                                        <Border BorderBrush="Red" BorderThickness="{Binding ElementName=CanvasContent, Path=RenderTransform.Matrix, Converter={c:MatrixToThicknessConverter}}" Width="{Binding ElementName=Viewfinder, Path=ActualWidth}" Height="{Binding ElementName=Viewfinder, Path=ActualHeight}">
                                             <Border.RenderTransform>
-                                                <Binding ElementName="CanvasContent" Converter="{c:MatrixInverterConverter}" Path="RenderTransform.Matrix"/>
+                                                <MatrixTransform>
+                                                    <MatrixTransform.Matrix>
+                                                        <MultiBinding Converter="{c:MatrixInverterWidgetsConverter}">
+                                                            <Binding ElementName="CanvasContent" Path="RenderTransform.Matrix"/>
+                                                            <Binding Path="Widgets"/>
+                                                            <Binding ElementName="CanvasRoot" Path="ActualWidth"/>
+                                                            <Binding ElementName="CanvasRoot" Path="ActualHeight"/>
+                                                        </MultiBinding>
+                                                    </MatrixTransform.Matrix>
+                                                </MatrixTransform>
                                             </Border.RenderTransform>
                                         </Border>
                                     </Canvas>
                                 </Viewbox>
+                                <TextBlock Text="{Binding ElementName=CanvasContent, Path=RenderTransform.Matrix.M11, StringFormat={}{0:P0}}" 
+                   Foreground="White" 
+                   FontSize="10" 
+                   HorizontalAlignment="Right" 
+                   VerticalAlignment="Bottom" 
+                   Margin="5"
+                   FontWeight="Bold">
+                                    <TextBlock.Effect>
+                                        <DropShadowEffect BlurRadius="2" ShadowDepth="1"/>
+                                    </TextBlock.Effect>
+                                </TextBlock>
                             </Grid>
                         </Border>
                     </Grid>
@@ -1150,7 +1183,7 @@
                                     <Setter.Value>
                                         <ControlTemplate TargetType="CheckBox">
                                             <Grid x:Name="back" Background="Red">
-                                                <ContentPresenter Margin="2"/>
+                                                <ContentPresenter HorizontalAlignment="Center" Margin="2"/>
                                             </Grid>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsChecked" Value="True">

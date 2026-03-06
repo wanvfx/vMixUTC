@@ -10,22 +10,23 @@ using System.Windows.Media;
 
 namespace vMixController.Converters
 {
-    public class MatrixInverterConverter : MarkupExtension, IValueConverter
+    public class MatrixToThicknessConverter : MarkupExtension, IValueConverter
     {
         private static IValueConverter _instance;
 
         /// <summary>
         /// Static instance of this converter.
         /// </summary>
-        public static IValueConverter Instance => _instance ?? (_instance = new MatrixInverterConverter());
+        public static IValueConverter Instance => _instance ?? (_instance = new MatrixToThicknessConverter());
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is Matrix m)
             {
-                m.Invert(); // Инвертируем матрицу: теперь она переводит из экранных координат в координаты контента
-                return m;
+                var zero = m.Transform(new System.Windows.Point(0, 0));
+                var point = m.Transform(new System.Windows.Point(5, 5));
+                return new System.Windows.Thickness(Math.Abs(zero.X - point.X));
             }
-            return Transform.Identity;
+            return new System.Windows.Thickness(2);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
