@@ -23,11 +23,15 @@
             <Grid Margin="8">
                 <StackPanel VerticalAlignment="Center">
                     <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center">vMix</TextBlock>
-					<TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center" Text="{loc:Loc Key=SplashScreen.Subtitle}"/>
+                    <TextBlock FontSize="30" Foreground="White" FontWeight="Black" HorizontalAlignment="Center" Text="{loc:Loc Key=SplashScreen.Subtitle}"/>
                     <!--<TextBlock FontSize="30" Foreground="White" FontWeight="Regular" HorizontalAlignment="Center">Today icon <TextBlock x:Name="Icon" FontFamily="{StaticResource FontAwesome}">&#xf6be;</TextBlock></TextBlock>-->
                 </StackPanel>
+
+
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right">
-					<TextBlock TextAlignment="Right" Foreground="White" x:Name="Build"/>
+                    <Viewbox>
+                        <TextBlock TextAlignment="Right" Foreground="White" x:Name="Build"/>
+                    </Viewbox>
                 </StackPanel>
             </Grid>
         </Grid>

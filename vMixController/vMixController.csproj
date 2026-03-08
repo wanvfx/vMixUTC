@@ -730,12 +730,14 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="costura-mac-x64\Melanchall_DryWetMidi_Native64.dylib" />
+    <EmbeddedResource Include="Help.ru-RU.resx" />
     <EmbeddedResource Include="Help.zh-CN.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Strings.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Strings.ru-RU.resx" />
     <EmbeddedResource Include="Properties\Strings.zh-CN.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>

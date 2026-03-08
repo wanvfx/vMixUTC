@@ -405,6 +405,7 @@
             <MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}">
                 <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=en-US}" Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
                 <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=zh-CN}" Header="{loc:Loc Key=MainWindow.Menu.Language.Chinese}" Tag="zh-CN" Click="LanguageMenuItem_Click" />
+                <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=ru-RU}" Header="{loc:Loc Key=MainWindow.Menu.Language.Russian}" Tag="ru-RU" Click="LanguageMenuItem_Click" />
             </MenuItem>
             <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Edit}">
                 <MenuItem IsEnabled="{Binding UndoState, Converter={wpfc:ValueNullToInverseBoolConverter}}" Command="{Binding UndoCommand}">

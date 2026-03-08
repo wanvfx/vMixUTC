@@ -441,7 +441,8 @@ namespace UTCNDIMonitorDataProvider
 
         private void Sources_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
+            if (_finder != null && _finderOMT != null)
+                Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
             //foreach (var item in _finder.Sources)
             //    Sources.Add(item.Name);
         }

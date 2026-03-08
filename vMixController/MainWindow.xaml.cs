@@ -155,7 +155,9 @@ namespace vMixController
 			if (_canvasTransform == null)
 				return;
 
-            if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas) return;
+            if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas ||
+                !SimpleIoc.Default.GetInstance<MainViewModel>().IsHotkeysEnabled ||
+                ((DependencyObject)sender).FindChild<WheelControlledScrollViewer>().Where(x => x.IsMouseOver).Count() > 0) return;
 
             UpdateMatrix();
 
@@ -180,11 +182,14 @@ namespace vMixController
 
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-			// Let the Layout canvas handle wheel zoom/pan; don't hijack the wheel for horizontal scrolling here.
-			if (LayoutGrid != null && LayoutGrid.IsMouseOver && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
-				return;
-
             var wheel = ((DependencyObject)sender).FindChild<WheelControlledScrollViewer>().Where(x => x.IsMouseOver);
+
+            // Let the Layout canvas handle wheel zoom/pan; don't hijack the wheel for horizontal scrolling here.
+            if (LayoutGrid != null && LayoutGrid.IsMouseOver && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift &&
+                (SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas && wheel.Count() == 0))
+				    return;
+
+            
             foreach (var wheelControl in wheel)
             {
                 var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)

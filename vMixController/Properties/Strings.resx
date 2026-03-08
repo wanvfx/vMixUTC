@@ -166,7 +166,8 @@
     <value>Universal Title Controller</value>
   </data>
   <data name="SplashScreen.BuildInfo.Template" xml:space="preserve">
-    <value>Carelessly builded @{0:d} by elgarf, use at your own risk\n{1}</value>
+    <value>Carelessly builded @{0:d} by elgarf, use at your own risk
+{1}</value>
   </data>
   <data name="SplashScreen.BuildInfo.HttpClientVersion" xml:space="preserve">
     <value>HTTPClient version</value>
@@ -319,7 +320,8 @@
     <value>About</value>
   </data>
   <data name="Dialog.About.MainInstruction" xml:space="preserve">
-    <value>One controller to rule them all.\nDonate if you like it 😉</value>
+    <value>One controller to rule them all.
+Donate if you like it 😉</value>
   </data>
   <data name="Dialog.About.Button.Forum" xml:space="preserve">
     <value>vMix Forum</value>
@@ -691,10 +693,10 @@ Use Momentary buttons for this type of scripts.</value>
     <value>Fill Title Index</value>
   </data>
   <data name="ScriptEditor.Warning.NoInputAssigned" xml:space="preserve">
-    <value>No Input Assigned To This Function!</value>
+    <value>No Input Assigned To This Command!</value>
   </data>
   <data name="ScriptEditor.ToolTip.ExecuteThisFunction" xml:space="preserve">
-    <value>Execute This Function</value>
+    <value>Execute This Command</value>
   </data>
   <data name="ScriptEditor.ToolTip.UseInStateDependency" xml:space="preserve">
     <value>Use In State Dependency</value>
@@ -1152,5 +1154,8 @@ Enabled</value>
   </data>
   <data name="Enum.Connection.InputsChanged" xml:space="preserve">
     <value>Inputs Were Changed</value>
+  </data>
+  <data name="MainWindow.Menu.Language.Russian" xml:space="preserve">
+    <value>Русский</value>
   </data>
 </root>
