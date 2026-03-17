@@ -776,7 +776,8 @@ namespace vMixController.Widgets
         {
             if (!_isPropertiesEditing && IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
-                _ = Task.Run(() =>
+                var schedulerKey = string.Format("new-button-state:{0}", WidgetId);
+                UpdateScheduler.ScheduleLatest(schedulerKey, () =>
                 {
 
                     try
@@ -794,8 +795,11 @@ namespace vMixController.Widgets
                                 return inputKey;
                             });
                         }, PopulateVariables, ExpressionEvaluateFunction);
-                        Active = result.IsStateDependent;
-                        HasScriptErrors = result.HasErrors;
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            Active = result.IsStateDependent;
+                            HasScriptErrors = result.HasErrors;
+                        }));
 
                     }
                     catch (Exception e)

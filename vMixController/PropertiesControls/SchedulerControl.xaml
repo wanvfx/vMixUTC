@@ -30,7 +30,7 @@
                 <Button ToolTip="{loc:Loc Key=Scheduler.ToolTip.AddClockTime}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
                 <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Scheduler_Default, Source={StaticResource Help}}"/>
             </StackPanel>
-            <ListView BorderThickness="0" ItemsSource="{Binding Events, ElementName=Me}" HorizontalContentAlignment="Stretch">
+            <ListView BorderThickness="0" ItemsSource="{Binding Events, ElementName=Me}" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -75,7 +75,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Mon}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Mon}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -85,7 +85,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Tue}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Tue}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -95,7 +95,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Wed}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Wed}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -105,7 +105,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Thu}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Thu}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -115,7 +115,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Fri}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Fri}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -125,7 +125,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sat}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sat}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">
@@ -135,7 +135,7 @@
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-							<GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sun}">
+                            <GridViewColumn Header="{loc:Loc Key=Scheduler.DayHeader.Sun}">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid Margin="-5,0">

@@ -774,7 +774,8 @@ namespace vMixController.Widgets
         {
             if (!_isPropertiesEditing && IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
-                _ = Task.Run(() =>
+                var schedulerKey = string.Format("button-state:{0}", WidgetId);
+                UpdateScheduler.ScheduleLatest(schedulerKey, () =>
                 {
 
                     try
@@ -792,8 +793,11 @@ namespace vMixController.Widgets
                                 return inputKey;
                             });
                         }, PopulateVariables, ExpressionEvaluateFunction);
-                        Active = result.IsStateDependent;
-                        HasScriptErrors = result.HasErrors;
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            Active = result.IsStateDependent;
+                            HasScriptErrors = result.HasErrors;
+                        }));
 
                     }
                     catch (Exception e)
@@ -1043,7 +1047,7 @@ namespace vMixController.Widgets
                         float p1f = 0.0f;
 
                         var input = state.Inputs.Where(x => x.Key == key).FirstOrDefault()?.Number;
-                        
+
                         vMixControlButtonHelper.CalculateExpression(cmd.Parameter, PopulateVariables, ExpressionEvaluateFunction, out p1);
                         vMixControlButtonHelper.CalculateExpression(cmd.FloatParameter, PopulateVariables, ExpressionEvaluateFunction, out p1f);
                         string p1fs = p1f.ToString(CultureInfo.InvariantCulture);
@@ -1089,7 +1093,7 @@ namespace vMixController.Widgets
                             int flag = 0;
                             while (GetValueByPath(state, path) != value)
                             {
-                                Thread.Sleep(50);
+                                await Task.Delay(50, cancellationToken);
                                 if (++flag > 10)
                                     break;
                             }

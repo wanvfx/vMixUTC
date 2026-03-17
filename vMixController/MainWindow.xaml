@@ -673,7 +673,7 @@
                                             <TextBlock HorizontalAlignment="Center" Grid.Column="2" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Header.Value}" />
                                         </Grid>
                                     </Grid>
-                                    <ListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent">
+                                    <ListView KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" BorderBrush="Transparent" ItemsSource="{Binding Variables}" Background="Transparent" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <DataTemplate.Resources>

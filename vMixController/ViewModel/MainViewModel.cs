@@ -25,6 +25,7 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
+using vMixController.Classes.vMixController.Classes;
 using vMixController.Extensions;
 using vMixController.Localization;
 using vMixController.Messages;
@@ -386,6 +387,11 @@ namespace vMixController.ViewModel
                     CheckvMixConnection(null, new EventArgs());
             });
 
+        }
+
+        private void LocalizationManager_CultureChanged(object sender, EventArgs e)
+        {
+            LocalizeVirtualInputs(Model);
         }
 
         private Status _status = Classes.Status.Offline;
@@ -1136,40 +1142,44 @@ namespace vMixController.ViewModel
 
         private void LoadUndo()
         {
-            try
+            using (PerfMetrics.Measure("undo.load"))
             {
-                if (_undoStack.Count > 0)
+                try
                 {
-                    var state = ResolveUndoState(_undoStack.Count - 1);
+                    if (_undoStack.Count > 0)
+                    {
+                        var state = ResolveUndoState(_undoStack.Count - 1);
 
-                    var live = LIVE;
+                        var live = LIVE;
 
-                    LIVE = true;
+                        LIVE = true;
 
-                    ApplyUndoWidgets(state.WidgetsData);
+                        ApplyUndoWidgets(state.WidgetsData);
 
-                    var restoredWindowSettings = DeserializeFromBytes<MainWindowSettings>(state.WindowSettingsData);
-                    if (restoredWindowSettings != null)
-                        WindowSettings = restoredWindowSettings;
+                        var restoredWindowSettings = DeserializeFromBytes<MainWindowSettings>(state.WindowSettingsData);
+                        if (restoredWindowSettings != null)
+                            WindowSettings = restoredWindowSettings;
 
-                    CheckvMixConnection(null, new EventArgs());
+                        CheckvMixConnection(null, new EventArgs());
 
-                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
+                        vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
 
-                    IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
+                        IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
-                    SyncTovMixState();
-                    UpdateExecLinks();
+                        SyncTovMixState();
+                        UpdateExecLinks();
 
-                    LIVE = live;
+                        LIVE = live;
 
-                    _undoStack.RemoveAt(_undoStack.Count - 1);
-                    UpdateUndoPreview();
+                        _undoStack.RemoveAt(_undoStack.Count - 1);
+                        UpdateUndoPreview();
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e, "Error when applying undo");
+                catch (Exception e)
+                {
+                    PerfMetrics.Error("undo.load");
+                    _logger.Error(e, "Error when applying undo");
+                }
             }
         }
 
@@ -2044,40 +2054,43 @@ namespace vMixController.ViewModel
 
         private void UpdateExecLinks()
         {
-            ExecLinks.Clear();
-            foreach (var item in _widgets)
+            using (PerfMetrics.Measure("exec-links.rebuild"))
             {
-                var active = item.Hotkey.Where(x => !string.IsNullOrWhiteSpace(x.Link) && x.Active).Select(x => x.Link).ToArray();
-                foreach (var item1 in _widgets)
+                ExecLinks.Clear();
+                foreach (var item in _widgets)
                 {
-                    switch (item1)
+                    var active = item.Hotkey.Where(x => !string.IsNullOrWhiteSpace(x.Link) && x.Active).Select(x => x.Link).ToArray();
+                    foreach (var item1 in _widgets)
                     {
-                        case vMixControlButton b:
-                            foreach (var cmd in b.Commands)
-                            {
-                                if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.StringParameter))
-                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.StringParameter });
-                            }
-                            break;
-                        case vMixControlNewButton nb:
-                            foreach (var cmd in nb.Commands)
-                            {
-                                if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.Value))
-                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.Value });
-                            }
-                            break;
-                        case vMixControlTimer t:
-                            foreach (var l in t.Links.Where(x => active.Contains(x)))
-                                ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l });
-                            break;
-                        case vMixControlMidiInterface m:
-                            foreach (var l in m.Midis.Where(x => active.Contains(x.C)))
-                                ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.C });
-                            break;
-                        case vMixControlClock c:
-                            foreach (var l in c.Events.Where(x => active.Contains(x.Command)))
-                                ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.Command });
-                            break;
+                        switch (item1)
+                        {
+                            case vMixControlButton b:
+                                foreach (var cmd in b.Commands)
+                                {
+                                    if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.StringParameter))
+                                        ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.StringParameter });
+                                }
+                                break;
+                            case vMixControlNewButton nb:
+                                foreach (var cmd in nb.Commands)
+                                {
+                                    if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.Value))
+                                        ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.Value });
+                                }
+                                break;
+                            case vMixControlTimer t:
+                                foreach (var l in t.Links.Where(x => active.Contains(x)))
+                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l });
+                                break;
+                            case vMixControlMidiInterface m:
+                                foreach (var l in m.Midis.Where(x => active.Contains(x.C)))
+                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.C });
+                                break;
+                            case vMixControlClock c:
+                                foreach (var l in c.Events.Where(x => active.Contains(x.Command)))
+                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.Command });
+                                break;
+                        }
                     }
                 }
             }
@@ -2279,18 +2292,21 @@ namespace vMixController.ViewModel
 
         private void SyncTovMixState()
         {
-            _logger.Debug("Syncing to vMix state.");
+            using (PerfMetrics.Measure("sync.to-vmix-state"))
             {
-                if (Model == null || (Model.Ip != WindowSettings.IP || Model.Port != WindowSettings.Port))
+                _logger.Debug("Syncing to vMix state.");
                 {
-                    Model = null;
-                    vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
-                    vMixAPI.StateFabrique.CreateAsync();
-                }
-                else
-                {
-                    Model.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
-                    Model.UpdateAsync();
+                    if (Model == null || (Model.Ip != WindowSettings.IP || Model.Port != WindowSettings.Port))
+                    {
+                        Model = null;
+                        vMixAPI.StateFabrique.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
+                        vMixAPI.StateFabrique.CreateAsync();
+                    }
+                    else
+                    {
+                        Model.Configure(WindowSettings.IP, WindowSettings.Port, WindowSettings.HttpLogin, WindowSettings.HttpPassword);
+                        Model.UpdateAsync();
+                    }
                 }
             }
         }
@@ -2567,10 +2583,13 @@ namespace vMixController.ViewModel
         }
 
         DispatcherTimer _connectTimer = new DispatcherTimer();
+        DispatcherTimer _metricsTimer = new DispatcherTimer();
 
         string _documentsPath;
 
         List<vMixControl> _intersections = new List<vMixControl>();
+        private readonly HashSet<vMixControl> _movedWidgetsBuffer = new HashSet<vMixControl>();
+        private readonly List<vMixControlRegion> _selectedStickyRegionsBuffer = new List<vMixControlRegion>();
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -2578,7 +2597,7 @@ namespace vMixController.ViewModel
         public MainViewModel()
         {
             vMixAPI.APIRequestManager.OnStatusChange += APIRequestManager_OnStatusChange;
-            LocalizationManager.Instance.CultureChanged += (_, __) => LocalizeVirtualInputs(Model);
+            LocalizationManager.Instance.CultureChanged += LocalizationManager_CultureChanged;
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
             ThreadPool.GetAvailableThreads(out int t1, out int t2);
@@ -2593,6 +2612,15 @@ namespace vMixController.ViewModel
             _connectTimer.Interval = TimeSpan.FromSeconds(20);
             _connectTimer.Tick += CheckvMixConnection;
             _connectTimer.Start();
+
+            _metricsTimer.Interval = TimeSpan.FromSeconds(30);
+            _metricsTimer.Tick += (sender, args) =>
+            {
+                var snapshot = PerfMetrics.SnapshotAndReset();
+                if (!string.IsNullOrWhiteSpace(snapshot))
+                    _logger.Info(snapshot);
+            };
+            _metricsTimer.Start();
 
             _logger.Info("Loading mapped functions.");
             XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixFunctionReference>));
@@ -2802,11 +2830,17 @@ namespace vMixController.ViewModel
 
             Messenger.Default.Register<Triple<vMixControl, double, double>>(this, (t) =>
             {
-                var movedWidgets = _widgets.Where(x => x.Selected && x != t.A).Union(_intersections).ToArray();
-                if (movedWidgets.Length == 0)
+                _movedWidgetsBuffer.Clear();
+                foreach (var widget in _widgets)
+                    if (widget.Selected && widget != t.A)
+                        _movedWidgetsBuffer.Add(widget);
+                foreach (var widget in _intersections)
+                    _movedWidgetsBuffer.Add(widget);
+
+                if (_movedWidgetsBuffer.Count == 0)
                     return;
 
-                foreach (var item in movedWidgets)
+                foreach (var item in _movedWidgetsBuffer)
                 {
                     item.Left = Math.Round(item.Left + t.B);
                     item.Top = Math.Round(item.Top + t.C);
@@ -2815,9 +2849,14 @@ namespace vMixController.ViewModel
 
             Messenger.Default.Register<Pair<vMixControl, bool>>(this, (t) =>
             {
-                var selectedRegions = _widgets.Where(x => x.Selected && x is vMixControlRegion rgn && rgn.Sticky).ToList();
-                if (!(t.A is vMixControlRegion reg) || (selectedRegions.Count == 0 && (!reg?.Sticky ?? false))) return;
-                selectedRegions.Add(t.A);
+                _selectedStickyRegionsBuffer.Clear();
+                foreach (var widget in _widgets)
+                    if (widget.Selected && widget is vMixControlRegion selectedRegion && selectedRegion.Sticky)
+                        _selectedStickyRegionsBuffer.Add(selectedRegion);
+
+                if (!(t.A is vMixControlRegion reg) || (_selectedStickyRegionsBuffer.Count == 0 && !reg.Sticky))
+                    return;
+                _selectedStickyRegionsBuffer.Add(reg);
 
 
                 if (!t.B)
@@ -2825,11 +2864,17 @@ namespace vMixController.ViewModel
                     _intersections.Clear();
                 }
                 else
-                    foreach (var rgn in selectedRegions)
+                {
+                    _intersections.Clear();
+                    var selectedSet = new HashSet<vMixControl>(_selectedStickyRegionsBuffer.Cast<vMixControl>());
+                    var intersectionsSet = new HashSet<vMixControl>();
+                    foreach (var rgn in _selectedStickyRegionsBuffer)
                     {
-                        foreach (var item in _widgets.Where(x => rgn.Intersect(x) && x.Page == rgn.Page && !selectedRegions.Contains(x)))
-                            _intersections.Add(item);
+                        foreach (var item in _widgets)
+                            if (rgn.Intersect(item) && item.Page == rgn.Page && !selectedSet.Contains(item) && intersectionsSet.Add(item))
+                                _intersections.Add(item);
                     }
+                }
 
             });
 
@@ -3064,13 +3109,20 @@ namespace vMixController.ViewModel
 
         protected virtual void Dispose(bool managed)
         {
-            /*if (_client != null)
-                _client.Dispose();*/
+            if (!managed)
+                return;
+
+            _connectTimer.Stop();
+            _connectTimer.Tick -= CheckvMixConnection;
+            _metricsTimer.Stop();
+            LocalizationManager.Instance.CultureChanged -= LocalizationManager_CultureChanged;
+            vMixAPI.APIRequestManager.OnStatusChange -= APIRequestManager_OnStatusChange;
+            vMixAPI.StateFabrique.OnStateCreated -= State_OnStateCreated;
         }
 
         public void Dispose()
         {
-            XmlDocumentMessenger.StopAsync();
+            XmlDocumentMessenger.StopAsync().GetAwaiter().GetResult();
             Dispose(true);
             //throw new NotImplementedException();
         }

@@ -27,6 +27,8 @@ namespace vMixController.Widgets
         // Очередь для фактической обработки, чтобы сохранить порядок, но она будет содержать только уникальные элементы
         protected static Queue<Tuple<DependencyObject, DependencyProperty>> _updateQueue =
             new Queue<Tuple<DependencyObject, DependencyProperty>>();
+        protected static HashSet<Tuple<DependencyObject, DependencyProperty>> _queuedKeys =
+            new HashSet<Tuple<DependencyObject, DependencyProperty>>();
 
         private static DispatcherTimer DelayedUpdateTimer = new DispatcherTimer();
 
@@ -70,6 +72,7 @@ namespace vMixController.Widgets
                     if (_pendingUpdates.TryGetValue(key, out DateTime lastUpdateTime) && lastUpdateTime.AddSeconds(0.1) < DateTime.Now)
                     {
                         _updateQueue.Dequeue(); // Удаляем из очереди
+                        _queuedKeys.Remove(key);
                         _pendingUpdates.Remove(key); // Удаляем из словаря
                         itemsToProcess.Add(key); // Добавляем в список для обработки
                     }
@@ -148,6 +151,7 @@ namespace vMixController.Widgets
                     {
                         _pendingUpdates.Clear(); // Очищаем словарь
                         _updateQueue.Clear(); // Очищаем очередь
+                        _queuedKeys.Clear();
                     }
                 }
 
@@ -266,7 +270,7 @@ namespace vMixController.Widgets
                     _pendingUpdates[key] = DateTime.Now;
 
                     // Если этого элемента еще нет в очереди, добавляем его
-                    if (!_updateQueue.Contains(key)) // O(N) для Contains, можно оптимизировать, если нужно
+                    if (_queuedKeys.Add(key))
                     {
                         _updateQueue.Enqueue(key);
                     }

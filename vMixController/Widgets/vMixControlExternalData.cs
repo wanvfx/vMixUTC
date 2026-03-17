@@ -5,8 +5,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -121,7 +119,7 @@ namespace vMixController.Widgets
                 }
 
                 _period = value >= 100 ? value : 100;
-                _timer.Interval = TimeSpan.FromMilliseconds(value);
+                _timer.Interval = TimeSpan.FromMilliseconds(_period);
                 if (_dataProvider != null)
                     _dataProvider.Period = _period;
                 RaisePropertyChanged(nameof(Period));
@@ -222,7 +220,7 @@ namespace vMixController.Widgets
                 {
 
                 }
-                _dataProviderContent = String.Intern(value);
+                _dataProviderContent = value;
                 RaisePropertyChanged(nameof(DataProviderContent));
             }
         }
@@ -322,50 +320,55 @@ namespace vMixController.Widgets
 
         internal override void UpdateText(IList<Pair<string, string>> paths)
         {
-
-
-            _ = Task.Run(() =>
+            var pathsSnapshot = paths?.ToArray() ?? Array.Empty<Pair<string, string>>();
+            var schedulerKey = string.Format("external-data:{0}", WidgetId);
+            UpdateScheduler.ScheduleLatest(schedulerKey, () =>
             {
-                if (DataProvider == null) return;
-                var values = DataProvider.Values;
-                if (values == null || values.Length < 1)
-                    return;
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    Data = new ObservableCollection<string>(values);
-                });
+                    if (DataProvider == null || State == null)
+                        return;
 
+                    var values = DataProvider.Values;
+                    if (values == null || values.Length < 1)
+                        return;
 
-                Dispatcher.Invoke(() =>
-                {
-                    for (int i = 0; i < paths.Count; i++)
+                    Dispatcher.Invoke(() =>
                     {
-                        var item = paths[i];
-                        var value = values[i % values.Length];
-                        if (!_restartData && i >= values.Length)
-                            value = "";
+                        Data = new ObservableCollection<string>(values);
 
-                        if (value.StartsWith("@[cmd]"))
+                        for (int i = 0; i < pathsSnapshot.Length; i++)
                         {
-                            var command = value.Substring(6);
-                            if (!string.IsNullOrWhiteSpace(command))
-                                State.SendFunction(string.Format(command, item.A, item.B));
-                            continue;
-                        }
+                            var item = pathsSnapshot[i];
+                            var value = values[i % values.Length];
+                            if (!_restartData && i >= values.Length)
+                                value = "";
 
-                        var input = (Input)GetValueByPath(State, string.Format("Inputs[{0}]", item.A));
-                        if (input != null)
-                        {
-                            var obj = input.Elements.Where(y => (y is InputText || y is InputImage) && (y as InputBase).Name == item.B).FirstOrDefault();
-                            if (obj != null)
-                                if (obj is vMixAPI.InputText)
-                                    (obj as vMixAPI.InputText).Text = value;
-                                else if (obj is vMixAPI.InputImage)
-                                    (obj as vMixAPI.InputImage).Image = value;
+                            if (value.StartsWith("@[cmd]"))
+                            {
+                                var command = value.Substring(6);
+                                if (!string.IsNullOrWhiteSpace(command))
+                                    State.SendFunction(string.Format(command, item.A, item.B));
+                                continue;
+                            }
+
+                            var input = (Input)GetValueByPath(State, string.Format("Inputs[{0}]", item.A));
+                            if (input != null)
+                            {
+                                var obj = input.Elements.Where(y => (y is InputText || y is InputImage) && (y as InputBase).Name == item.B).FirstOrDefault();
+                                if (obj != null)
+                                    if (obj is vMixAPI.InputText)
+                                        (obj as vMixAPI.InputText).Text = value;
+                                    else if (obj is vMixAPI.InputImage)
+                                        (obj as vMixAPI.InputImage).Image = value;
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e, "Error while updating external data.");
+                }
             });
         }
 

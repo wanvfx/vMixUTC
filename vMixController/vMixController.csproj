@@ -407,11 +407,13 @@
     <Compile Include="Classes\NativeFunctions.cs" />
     <Compile Include="Classes\One.cs" />
     <Compile Include="Classes\Pair.cs" />
+    <Compile Include="Classes\PerfMetrics.cs" />
     <Compile Include="Classes\Quadriple.cs" />
     <Compile Include="Classes\SharedData.cs" />
     <Compile Include="Classes\Singleton.cs" />
     <Compile Include="Classes\StreamDeckConnector.cs" />
     <Compile Include="Classes\Triple.cs" />
+    <Compile Include="Classes\UpdateScheduler.cs" />
     <Compile Include="Classes\Utils.cs" />
     <Compile Include="Classes\vMixNewFunctionReference.cs" />
     <Compile Include="Classes\vMixFunctionReference.cs" />

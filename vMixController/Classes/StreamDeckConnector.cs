@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace vMixController.Classes
@@ -17,16 +18,18 @@ namespace vMixController.Classes
     {
         public event EventHandler<StreamDeckEvent> OnStreamDeckEvent;
         private bool _disposed = false;
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly Task _listenerTask;
+
         public StreamDeckConnector()
         {
-            Task.Run(() =>
+            _listenerTask = Task.Run(async () =>
             {
-                while (!_disposed)
+                while (!_disposed && !_cts.IsCancellationRequested)
                 {
-                    using (var r = new MemoryMessagePipe.MemoryMappedFileMessageReceiver("vMixUTCMMF"))
+                    try
                     {
-
-                        Dispatcher.CurrentDispatcher.Invoke(() =>
+                        using (var r = new MemoryMessagePipe.MemoryMappedFileMessageReceiver("vMixUTCMMF"))
                         {
                             var msg = r.ReceiveMessage<StreamDeckEvent>(stream =>
                             {
@@ -37,23 +40,49 @@ namespace vMixController.Classes
                                 result.Context = Encoding.UTF8.GetString(buffer, 0, len);
                                 return result;
                             });
-                            if (msg.Context != null && msg.Type != vMixStreamDeckLibrary.StreamDeckEvent.None) 
-                                OnStreamDeckEvent?.Invoke(this, msg);
-                        });
 
-
+                            if (msg.Context != null && msg.Type != vMixStreamDeckLibrary.StreamDeckEvent.None)
+                            {
+                                var dispatcher = Application.Current?.Dispatcher;
+                                if (dispatcher != null && !dispatcher.CheckAccess())
+                                    dispatcher.BeginInvoke(new Action(() => OnStreamDeckEvent?.Invoke(this, msg)));
+                                else
+                                    OnStreamDeckEvent?.Invoke(this, msg);
+                            }
+                        }
                     }
-                    Thread.Sleep(100);
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        if (_cts.IsCancellationRequested || _disposed)
+                            break;
+                    }
+
+                    await Task.Delay(100, _cts.Token).ConfigureAwait(false);
                 }
-
-
-
             });
 
         }
         public void Dispose()
         {
+            if (_disposed)
+                return;
             _disposed = true;
+            _cts.Cancel();
+            try
+            {
+                _listenerTask?.Wait(500);
+            }
+            catch (AggregateException)
+            {
+            }
+            finally
+            {
+                _cts.Dispose();
+            }
         }
     }
 }

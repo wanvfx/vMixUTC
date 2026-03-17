@@ -37,7 +37,7 @@
                 </Control>
                 <!--<CheckBox Visibility="Hidden" Style="{StaticResource CheckBox}" IsChecked="{Binding IsGUIDTargeted, ElementName=Me}" VerticalAlignment="Center">Map To GUID</CheckBox>-->
             </StackPanel>
-            <ListView Background="Transparent" BorderThickness="0" ItemsSource="{Binding Titles, ElementName=Me}" HorizontalContentAlignment="Stretch">
+            <ListView Background="Transparent" BorderThickness="0" ItemsSource="{Binding Titles, ElementName=Me}" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

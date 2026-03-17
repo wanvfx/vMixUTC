@@ -15,6 +15,7 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
 using System.Xml;
 using vMixAPI;
+using vMixController.Classes.vMixController.Classes;
 using vMixController.Widgets;
 
 namespace vMixController.Classes
@@ -37,6 +38,7 @@ namespace vMixController.Classes
         private static string _credentials;
 
         private static int _activeRequests;
+        private static int _pollFailures;
 
         public static bool Sync { get; set; } = true;
 
@@ -140,6 +142,12 @@ namespace vMixController.Classes
                     }
 
                     TimeSpan pollInterval = GetPollInterval();
+                    var failures = Volatile.Read(ref _pollFailures);
+                    if (failures > 0)
+                    {
+                        var multiplier = Math.Min(8, 1 << Math.Min(3, failures));
+                        pollInterval = TimeSpan.FromMilliseconds(Math.Min(10000, pollInterval.TotalMilliseconds * multiplier));
+                    }
 
                     if (stopwatch.Elapsed >= nextPollAt)
                     {
@@ -169,57 +177,67 @@ namespace vMixController.Classes
 
         private static async Task PollOnceAsync(CancellationToken token)
         {
-            if (Interlocked.Increment(ref _activeRequests) > MaxConcurrentRequests)
+            using (PerfMetrics.Measure("poll.once"))
             {
-                Interlocked.Decrement(ref _activeRequests);
-                return;
-            }
-
-            try
-            {
-                Uri uri;
-                if (!Uri.TryCreate(Url, UriKind.Absolute, out uri))
-                    return;
-
-                using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
+                if (Interlocked.Increment(ref _activeRequests) > MaxConcurrentRequests)
                 {
-                    if (!string.IsNullOrWhiteSpace(Credentials))
+                    Interlocked.Decrement(ref _activeRequests);
+                    return;
+                }
+
+                try
+                {
+                    Uri uri;
+                    if (!Uri.TryCreate(Url, UriKind.Absolute, out uri))
+                        return;
+
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
                     {
-                        var raw = Encoding.UTF8.GetBytes(Credentials);
-                        var base64 = Convert.ToBase64String(raw);
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64);
-                    }
+                        if (!string.IsNullOrWhiteSpace(Credentials))
+                        {
+                            var raw = Encoding.UTF8.GetBytes(Credentials);
+                            var base64 = Convert.ToBase64String(raw);
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64);
+                        }
 
-                    using (var response = await _httpClient.SendAsync(request, token).ConfigureAwait(false))
-                    {
-                        response.EnsureSuccessStatusCode();
+                        using (var response = await _httpClient.SendAsync(request, token).ConfigureAwait(false))
+                        {
+                            response.EnsureSuccessStatusCode();
 
-                        var xmlText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                        if (string.IsNullOrWhiteSpace(xmlText))
-                            return;
+                            var xmlText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            if (string.IsNullOrWhiteSpace(xmlText))
+                                return;
 
-                        var doc = new XmlDocument();
-                        doc.LoadXml(xmlText);
+                            var doc = new XmlDocument();
+                            doc.LoadXml(xmlText);
 
-                        if (!string.Equals(doc.DocumentElement != null ? doc.DocumentElement.Name : null, "vmix", StringComparison.OrdinalIgnoreCase))
-                            return;
+                            if (!string.Equals(doc.DocumentElement != null ? doc.DocumentElement.Name : null, "vmix", StringComparison.OrdinalIgnoreCase))
+                            {
+                                Interlocked.Increment(ref _pollFailures);
+                                PerfMetrics.Error("poll.invalid-xml");
+                                return;
+                            }
 
-                        RaiseDocumentDownloaded(doc, DateTime.Now);
+                            Interlocked.Exchange(ref _pollFailures, 0);
+                            RaiseDocumentDownloaded(doc, DateTime.Now);
+                        }
                     }
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                if (!token.IsCancellationRequested)
-                    RaiseError(new TimeoutException("Request canceled unexpectedly."));
-            }
-            catch (Exception ex)
-            {
-                RaiseError(ex);
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _activeRequests);
+                catch (OperationCanceledException)
+                {
+                    if (!token.IsCancellationRequested)
+                        RaiseError(new TimeoutException("Request canceled unexpectedly."));
+                }
+                catch (Exception ex)
+                {
+                    Interlocked.Increment(ref _pollFailures);
+                    PerfMetrics.Error("poll.error");
+                    RaiseError(ex);
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _activeRequests);
+                }
             }
         }
 

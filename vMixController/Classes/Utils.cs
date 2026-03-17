@@ -11,6 +11,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Security.Policy;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -423,6 +424,30 @@ namespace vMixController.Classes
             if (ctrl != null && ctrl is T)
                 return (T)ctrl;
             return null;
+        }
+
+        public static string GetNextCopyName(string originalName)
+        {
+            if (string.IsNullOrWhiteSpace(originalName))
+                return "copy";
+
+            // 1. Если в конце число → увеличиваем его
+            var numberMatch = Regex.Match(originalName, @"^(.*?)(\d+)$");
+            if (numberMatch.Success)
+            {
+                string prefix = numberMatch.Groups[1].Value;
+                int number = int.Parse(numberMatch.Groups[2].Value);
+                return $"{prefix}{number + 1}";
+            }
+
+            // 2. Если заканчивается на "copy" → добавляем "2"
+            if (originalName.EndsWith("copy", StringComparison.OrdinalIgnoreCase))
+            {
+                return originalName + " 2";
+            }
+
+            // 3. Во всех остальных случаях → добавляем "copy"
+            return originalName + " copy";
         }
     }
 

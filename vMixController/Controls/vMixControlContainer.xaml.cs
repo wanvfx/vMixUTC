@@ -34,26 +34,32 @@ namespace vMixController.Controls
 
         static int _prevCount = 0;
         static Queue<vMixControlContainer> _initList = new Queue<vMixControlContainer>();
+        static bool? _lastLoadingState = null;
 
         static DispatcherTimer _timer = new DispatcherTimer() { };
 
         static vMixControlContainer()
         {
-            _timer.Interval = TimeSpan.FromMilliseconds(1);
+            _timer.Interval = TimeSpan.FromMilliseconds(16);
             _timer.Tick += _timer_Tick;
             _timer.Start();
         }
 
         private static void _timer_Tick(object sender, EventArgs e)
         {
-            
+
             if (_initList.Count > 0)
                 _initList.Dequeue().LoadViewFromUri("vMixController;component/Controls/vMixControlContainer.xaml");
             _prevCount = _initList.Count;
             if (_initList.Count == 0)
                 _timer.Stop();
 
-            Messenger.Default.Send(new LoadingMessage() { Loading = _initList.Count > 0 });
+            var isLoading = _initList.Count > 0;
+            if (_lastLoadingState != isLoading)
+            {
+                _lastLoadingState = isLoading;
+                Messenger.Default.Send(new LoadingMessage() { Loading = isLoading });
+            }
         }
 
         public Action<object, SizeChangedEventArgs> OnSizeChanged { get; set; }
@@ -105,7 +111,7 @@ namespace vMixController.Controls
 
         private void VMixControlContainer_Loaded(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
