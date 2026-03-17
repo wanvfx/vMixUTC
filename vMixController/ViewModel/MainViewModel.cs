@@ -416,7 +416,7 @@ namespace vMixController.ViewModel
 
                 _status = value;
 
-                XmlDocumentMessenger.Sync = Status == Classes.Status.Online;
+                XmlDocumentMessenger.Sync = Status == Status.Online || Status == Status.InputsChanged;
 
                 _logger.Debug("Status changed to {0}.", value);
 

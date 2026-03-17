@@ -21,13 +21,17 @@ namespace vMixController.Widgets
         private bool _disposing = false;
         //private bool _updating = false;
         private bool _dragging = false;
+        [NonSerialized]
+        private string _cachedXPathKey;
+        [NonSerialized]
+        private string _cachedXPath;
 
 
         public vMixControlVolume() : base()
         {
-           
+
             Height = 64;
-            
+
             XmlDocumentMessenger.OnDocumentDownloaded += XmlDocumentMessenger_OnDocumentDownloaded;
             XmlDocumentMessenger.Rate++;
         }
@@ -41,46 +45,91 @@ namespace vMixController.Widgets
         {
             if (document == null || _updating) return;
             _updating = true;
-            _previousQuery = DateTime.Now;
-            XmlNode input = null;
-            switch (Target)
+            try
             {
-                case "Input": input = document.SelectSingleNode(string.Format("//inputs/input[@key='{0}']", InputKey)); break;
-                case "Master": input = document.SelectSingleNode("//audio/master"); break;
-                case "Bus A": input = document.SelectSingleNode("//audio/busA"); break;
-                case "Bus B": input = document.SelectSingleNode("//audio/busB"); break;
-                case "Bus C": input = document.SelectSingleNode("//audio/busC"); break;
-                case "Bus D": input = document.SelectSingleNode("//audio/busD"); break;
-                case "Bus E": input = document.SelectSingleNode("//audio/busE"); break;
-                case "Bus F": input = document.SelectSingleNode("//audio/busF"); break;
-                case "Bus G": input = document.SelectSingleNode("//audio/busG"); break;
+                _previousQuery = DateTime.Now;
+                var xpath = GetTargetXPath();
+                if (string.IsNullOrEmpty(xpath))
+                    return;
+
+                var input = document.SelectSingleNode(xpath);
+                if (input == null)
+                    return;
+
+                var f1 = ParseDouble(input.Attributes["meterF1"]?.Value, 0d);
+                var f2 = ParseDouble(input.Attributes["meterF2"]?.Value, 0d);
+                var muted = ParseBool(input.Attributes["muted"]?.Value, true);
+                var volume = ParseDouble(input.Attributes["volume"]?.Value, 0d);
+                var audiobusses = input.Attributes["audiobusses"]?.Value ?? "M";
+
+                Action apply = () =>
+                {
+                    F1 = Math.Sqrt(Math.Sqrt(f1));
+                    F2 = Math.Sqrt(Math.Sqrt(f2));
+                    if (!_dragging)
+                    {
+                        IsMuted = muted;
+                        Value = volume;
+                        AudioBusses = audiobusses;
+                    }
+                };
+
+                if (Dispatcher == null || Dispatcher.CheckAccess())
+                    apply();
+                else
+                    Dispatcher.BeginInvoke(apply);
             }
-            if (input == null)
+            finally
             {
                 _updating = false;
-                return;
+            }
+        }
+
+        private string GetTargetXPath()
+        {
+            var key = string.Concat(Target, "|", InputKey);
+            if (string.Equals(_cachedXPathKey, key, StringComparison.Ordinal))
+                return _cachedXPath;
+
+            string xpath;
+            switch (Target)
+            {
+                case "Input":
+                    if (string.IsNullOrEmpty(InputKey))
+                        xpath = null;
+                    else
+                        xpath = string.Concat("//inputs/input[@key='", InputKey, "']");
+                    break;
+                case "Master": xpath = "//audio/master"; break;
+                case "Bus A": xpath = "//audio/busA"; break;
+                case "Bus B": xpath = "//audio/busB"; break;
+                case "Bus C": xpath = "//audio/busC"; break;
+                case "Bus D": xpath = "//audio/busD"; break;
+                case "Bus E": xpath = "//audio/busE"; break;
+                case "Bus F": xpath = "//audio/busF"; break;
+                case "Bus G": xpath = "//audio/busG"; break;
+                default: xpath = null; break;
             }
 
-            //Update all properties
+            _cachedXPathKey = key;
+            _cachedXPath = xpath;
+            return xpath;
+        }
 
-            var f1 = Convert.ToDouble(input.Attributes["meterF1"]?.Value ?? "0", CultureInfo.InvariantCulture);
-            var f2 = Convert.ToDouble(input.Attributes["meterF2"]?.Value ?? "0", CultureInfo.InvariantCulture);
-            var muted = Convert.ToBoolean(input.Attributes["muted"]?.Value ?? "True", CultureInfo.InvariantCulture);
-            var volume = Convert.ToDouble(input.Attributes["volume"]?.Value ?? "0", CultureInfo.InvariantCulture);
-            var audiobusses = input.Attributes["audiobusses"]?.Value ?? "M";
-            //Debug.WriteLine("{0}/{1}:{2}", DateTime.Now, f1, f2);
-            Dispatcher.Invoke(() =>
-            {
-                F1 = Math.Pow(f1, 1 / 4d);
-                F2 = Math.Pow(f2, 1 / 4d);
-                if (!_dragging)
-                {
-                    IsMuted = muted;
-                    Value = volume;
-                    AudioBusses = audiobusses;
-                }
-            });
-            _updating = false;
+        private static double ParseDouble(string value, double fallback)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return fallback;
+            return double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : fallback;
+        }
+
+        private static bool ParseBool(string value, bool fallback)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return fallback;
+            return bool.TryParse(value, out var parsed) ? parsed : fallback;
         }
 
         [NonSerialized]
@@ -153,7 +202,7 @@ namespace vMixController.Widgets
 
         public override void Dispose()
         {
-            
+
             _disposing = true;
             base.Dispose();
         }
@@ -300,7 +349,7 @@ namespace vMixController.Widgets
 
         protected static void InternalSliderPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            
+
             if (!((vMixControlTextField)d).IsLive || ((vMixControlVolume)d)._updating)
                 return;
             if (e.Property.Name == nameof(Value) && !((vMixControlVolume)d)._disposing)

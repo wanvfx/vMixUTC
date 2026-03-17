@@ -97,9 +97,9 @@ namespace vMixController.Widgets.Button
                 result = default(T);
                 return false;
             }
-            
+
             var expression = new Expression(expressionString);
-            
+
             // Подписываемся на события. Отписка будет в блоке finally, что гарантирует ее выполнение.
             if (evaluateFunctionHandler != null)
             {
@@ -125,7 +125,7 @@ namespace vMixController.Widgets.Button
                 // Если результат уже нужного типа, возвращаем его напрямую.
                 if (rawResult is T)
                 {
-                    result = (T) rawResult;
+                    result = (T)rawResult;
                     return false;
                 }
 
@@ -288,6 +288,7 @@ namespace vMixController.Widgets.Button
 
             bool isStateDependent = false;
             bool hasErrors = false;
+            BuildInputMaps(doc, out var inputNumberByKey, out var inputKeyByNumber);
 
             foreach (var command in _commands)
             {
@@ -297,7 +298,7 @@ namespace vMixController.Widgets.Button
                 }
 
                 // 1. Подготовка всех необходимых аргументов
-                PrepareArgsResult preparationResult = PrepareFormattingArgs(doc, command, variableExpander, PopulateVariables, Exp_EvaluateFunction);
+                PrepareArgsResult preparationResult = PrepareFormattingArgs(doc, command, variableExpander, PopulateVariables, Exp_EvaluateFunction, inputNumberByKey, inputKeyByNumber);
                 if (preparationResult.HasError)
                 {
                     hasErrors = true;
@@ -336,14 +337,15 @@ namespace vMixController.Widgets.Button
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
+        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, PopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
         {
             try
             {
                 string expandedInputKey = variableExpander(item.InputKey);
 
-                string inputNumberStr = GetNodeValue(doc, string.Format(@"//inputs/input[@key='{0}']/@number", expandedInputKey)) ?? "-1";
-                int inputNumber = Convert.ToInt32(inputNumberStr);
+                int inputNumber = inputNumberByKey.TryGetValue(expandedInputKey, out var numberByKey)
+                    ? numberByKey
+                    : -1;
 
                 CalculateExpression<int>(item.Parameter, PopulateVariables, Exp_EvaluateFunction, out int intParam);
                 CalculateExpression<object>(item.StringParameter, PopulateVariables, Exp_EvaluateFunction, out object strParam);
@@ -356,8 +358,8 @@ namespace vMixController.Widgets.Button
                     strParamAsInt = int.MinValue;
                 }
 
-                string keyByInt = GetNodeValue(doc, string.Format(@"//inputs/input[@number='{0}']/@key", intParam));
-                string keyByString = GetNodeValue(doc, string.Format(@"//inputs/input[@number='{0}']/@key", strParamAsInt));
+                inputKeyByNumber.TryGetValue(intParam, out string keyByInt);
+                inputKeyByNumber.TryGetValue(strParamAsInt, out string keyByString);
 
                 var fps = floatParam.ToString(CultureInfo.InvariantCulture);
 
@@ -367,6 +369,33 @@ namespace vMixController.Widgets.Button
             catch (Exception) // Ловим ошибки парсинга или вычислений
             {
                 return new PrepareArgsResult(null, true);
+            }
+        }
+
+        private static void BuildInputMaps(XmlDocument doc, out Dictionary<string, int> inputNumberByKey, out Dictionary<int, string> inputKeyByNumber)
+        {
+            inputNumberByKey = new Dictionary<string, int>(StringComparer.Ordinal);
+            inputKeyByNumber = new Dictionary<int, string>();
+
+            if (doc == null)
+                return;
+
+            var nodes = doc.SelectNodes("//inputs/input");
+            if (nodes == null)
+                return;
+
+            foreach (XmlNode node in nodes)
+            {
+                var key = node.Attributes?["key"]?.Value;
+                var numberStr = node.Attributes?["number"]?.Value;
+                if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(numberStr))
+                    continue;
+
+                if (!int.TryParse(numberStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
+                    continue;
+
+                inputNumberByKey[key] = number;
+                inputKeyByNumber[number] = key;
             }
         }
 

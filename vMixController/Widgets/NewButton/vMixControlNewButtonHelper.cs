@@ -82,6 +82,11 @@ namespace vMixController.Widgets.Button
     #endregion
     public static class vMixControlNewButtonHelper
     {
+        private static readonly Regex ConditionalBlockRegex = new Regex(@"\$\{\s*if\s+([^{}]+?)\s*\}(.*?)(?:\$\{\s*else\s+if\s+([^{}]+?)\s*\}(.*?))?(?:\$\{\s*else\s*\}(.*?))?\$\{\s*endif\s*\}", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static readonly Regex PlaceholderRegex = new Regex(@"\$([\w_]+)(:\S+:\d+)?", RegexOptions.Compiled);
+        private static readonly Regex FunctionRegex = new Regex(@"\$([\w_]+)\((?<param>[^)]*)\)", RegexOptions.Compiled);
+        private static readonly Regex ConditionRegex = new Regex(@"^([\w_]+)\s*(==|!=|<|>|<=|>=)\s*(.+)$", RegexOptions.Compiled);
+
         public static string ReplacePlaceholdersFromObject(this string template, XPathNewFormattingArgs dataObject)
         {
             if (string.IsNullOrEmpty(template) || dataObject == null)
@@ -89,21 +94,22 @@ namespace vMixController.Widgets.Button
                 return template;
             }
 
-            var replacementDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            Type objectType = dataObject.GetType();
-
-            foreach (PropertyInfo prop in objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            var replacementDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                replacementDictionary[prop.Name] = prop.GetValue(dataObject, null)?.ToString() ?? string.Empty;
-            }
+                [nameof(XPathNewFormattingArgs.InputKey)] = dataObject.InputKey ?? string.Empty,
+                [nameof(XPathNewFormattingArgs.InputNumber)] = dataObject.InputNumber.ToString(CultureInfo.InvariantCulture),
+                [nameof(XPathNewFormattingArgs.Value)] = dataObject.Value ?? string.Empty,
+                [nameof(XPathNewFormattingArgs.Mix)] = dataObject.Mix ?? string.Empty,
+                [nameof(XPathNewFormattingArgs.Channel)] = dataObject.Channel ?? string.Empty,
+                [nameof(XPathNewFormattingArgs.Duration)] = dataObject.Duration ?? string.Empty,
+                [nameof(XPathNewFormattingArgs.SelectedIndex)] = dataObject.SelectedIndex ?? string.Empty
+            };
 
             // 1. Обработка условий (if/else if/else)
             // Этот паттерн будет искать самый внешний блок if/endif и работать с его содержимым.
             // Для вложенных условий потребуется рекурсивный подход или более сложный парсер.
-            string conditionalBlockPattern = @"\$\{\s*if\s+([^{}]+?)\s*\}(.*?)(?:\$\{\s*else\s+if\s+([^{}]+?)\s*\}(.*?))?(?:\$\{\s*else\s*\}(.*?))?\$\{\s*endif\s*\}";
-
             string result = template;
-            MatchCollection matches = Regex.Matches(result, conditionalBlockPattern, RegexOptions.Singleline);
+            MatchCollection matches = ConditionalBlockRegex.Matches(result);
 
             // Обрабатываем условия от самого внутреннего к самому внешнему, чтобы избежать проблем с вложенностью.
             // Однако текущий Regex не поддерживает вложенность из-за .*?
@@ -141,9 +147,7 @@ namespace vMixController.Widgets.Button
                 result = result.Remove(match.Index, match.Length).Insert(match.Index, evaluatedContent);
             }
 
-            string pattern = @"\$([\w_]+)(:\S+:\d+)?";
-
-            result = Regex.Replace(result, pattern, match =>
+            result = PlaceholderRegex.Replace(result, match =>
             {
                 string fullPlaceholder = match.Value;
                 string variableName = match.Groups[1].Value;
@@ -178,9 +182,7 @@ namespace vMixController.Widgets.Button
 
             // 2. Обработка функций $Function($Parameter)
             // Этот паттерн ищет вызовы функций, включая возможные вложенные скобки для параметров
-            string functionPattern = @"\$([\w_]+)\((?<param>[^)]*)\)";
-
-            result = Regex.Replace(result, functionPattern, match =>
+            result = FunctionRegex.Replace(result, match =>
             {
                 string fullFunctionCall = match.Value;
                 string functionName = match.Groups[1].Value;
@@ -202,8 +204,7 @@ namespace vMixController.Widgets.Button
         private static bool EvaluateCondition(string conditionExpression, Dictionary<string, string> data)
         {
             // Паттерн для условий: PropertyName Operator "Value" или PropertyName Operator Number
-            string pattern = @"^([\w_]+)\s*(==|!=|<|>|<=|>=)\s*(.+)$";
-            Match match = Regex.Match(conditionExpression, pattern);
+            Match match = ConditionRegex.Match(conditionExpression);
 
             if (!match.Success)
             {
@@ -365,6 +366,7 @@ namespace vMixController.Widgets.Button
 
             bool isStateDependent = false;
             bool hasErrors = false;
+            BuildInputMaps(doc, out var inputNumberByKey, out var inputKeyByNumber);
 
             foreach (var command in _commands)
             {
@@ -374,7 +376,7 @@ namespace vMixController.Widgets.Button
                 }
 
                 // 1. Подготовка всех необходимых аргументов
-                NewPrepareArgsResult preparationResult = PrepareFormattingArgs(doc, command, variableExpander, PopulateVariables, Exp_EvaluateFunction);
+                NewPrepareArgsResult preparationResult = PrepareFormattingArgs(doc, command, variableExpander, PopulateVariables, Exp_EvaluateFunction, inputNumberByKey, inputKeyByNumber);
                 if (preparationResult.HasError)
                 {
                     hasErrors = true;
@@ -411,14 +413,15 @@ namespace vMixController.Widgets.Button
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
+        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
         {
             try
             {
                 string expandedInputKey = variableExpander(item.InputKey);
 
-                string inputNumberStr = GetNodeValue(doc, string.Format(@"//inputs/input[@key='{0}']/@number", expandedInputKey)) ?? "-1";
-                int inputNumber = Convert.ToInt32(inputNumberStr);
+                int inputNumber = inputNumberByKey.TryGetValue(expandedInputKey, out var numberByKey)
+                    ? numberByKey
+                    : -1;
 
                 int intParam = int.MinValue;
                 float floatParam = float.MinValue;
@@ -441,12 +444,15 @@ namespace vMixController.Widgets.Button
                         break;
                 }
                 CalculateExpression<string>(item.SelectedIndex, PopulateVariables, Exp_EvaluateFunction, out string index);
-                var args = new XPathNewFormattingArgs(expandedInputKey, inputNumber, value, index, item.Mix, item.Channel, item.Duration, (function, parameter)=>
+                var args = new XPathNewFormattingArgs(expandedInputKey, inputNumber, value, index, item.Mix, item.Channel, item.Duration, (function, parameter) =>
                 {
                     switch (function)
                     {
                         case "GetInputKey":
-                        return GetNodeValue(doc, string.Format(@"//inputs/input[@number='{0}']/@key", parameter)) ?? "-1";
+                            if (int.TryParse(parameter, NumberStyles.Integer, CultureInfo.InvariantCulture, out int inputNumberFromParameter)
+                                && inputKeyByNumber.TryGetValue(inputNumberFromParameter, out var keyByNumber))
+                                return keyByNumber;
+                            return "-1";
                         case "IntMinus":
                             int val = -1;
                             if (int.TryParse(parameter, out val))
@@ -461,6 +467,33 @@ namespace vMixController.Widgets.Button
             catch (Exception) // Ловим ошибки парсинга или вычислений
             {
                 return new NewPrepareArgsResult(null, true);
+            }
+        }
+
+        private static void BuildInputMaps(XmlDocument doc, out Dictionary<string, int> inputNumberByKey, out Dictionary<int, string> inputKeyByNumber)
+        {
+            inputNumberByKey = new Dictionary<string, int>(StringComparer.Ordinal);
+            inputKeyByNumber = new Dictionary<int, string>();
+
+            if (doc == null)
+                return;
+
+            var nodes = doc.SelectNodes("//inputs/input");
+            if (nodes == null)
+                return;
+
+            foreach (XmlNode node in nodes)
+            {
+                var key = node.Attributes?["key"]?.Value;
+                var numberStr = node.Attributes?["number"]?.Value;
+                if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(numberStr))
+                    continue;
+
+                if (!int.TryParse(numberStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
+                    continue;
+
+                inputNumberByKey[key] = number;
+                inputKeyByNumber[number] = key;
             }
         }
 

@@ -405,6 +405,8 @@ namespace vMixController.Widgets
 
         [NonSerialized]
         private ConcurrentDictionary<int, object> _variables = new ConcurrentDictionary<int, object>();
+        [NonSerialized]
+        private Dictionary<string, object> _globalVariablesSnapshot = new Dictionary<string, object>(StringComparer.Ordinal);
 
         /// <summary>
         /// Sets and gets the Variables property.
@@ -691,18 +693,30 @@ namespace vMixController.Widgets
             foreach (var item in _variables)
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
 
-            Dispatcher.Invoke(() =>
+            var globals = _globalVariablesSnapshot;
+            if (globals != null)
             {
-                var _cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
-                if (_cachedVariables != null)
-                    foreach (var item in _cachedVariables)
-                    {
-                        if (!exp.Parameters.ContainsKey(item.A))
-                            exp.Parameters.Add(item.A, item.B);
-                    }
-            });
+                foreach (var item in globals)
+                {
+                    if (!exp.Parameters.ContainsKey(item.Key))
+                        exp.Parameters.Add(item.Key, item.Value);
+                }
+            }
             exp.Parameters.Add(parameterName, parameterValue);
-            exp.EvaluateFunction += ExpressionEvaluateFunction;
+        }
+
+        private Dictionary<string, object> CaptureGlobalVariablesSnapshot()
+        {
+            var snapshot = new Dictionary<string, object>(StringComparer.Ordinal);
+
+            var cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
+            if (cachedVariables == null)
+                return snapshot;
+
+            foreach (var item in cachedVariables)
+                snapshot[item.A] = item.B;
+
+            return snapshot;
         }
 
         private void ExpressionEvaluateFunction(string name, FunctionArgs args)
@@ -772,8 +786,9 @@ namespace vMixController.Widgets
 
         private void OnXmlDocumentDownloaded(XmlDocument doc, DateTime timestamp)
         {
-            if (!_isPropertiesEditing && IsStateDependent && (DateTime.Now - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
+            if (!_isPropertiesEditing && IsStateDependent && (timestamp - _previousQuery).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
             {
+                _globalVariablesSnapshot = CaptureGlobalVariablesSnapshot();
                 var schedulerKey = string.Format("button-state:{0}", WidgetId);
                 UpdateScheduler.ScheduleLatest(schedulerKey, () =>
                 {
@@ -781,17 +796,12 @@ namespace vMixController.Widgets
                     try
                     {
                         _latestDocument = doc;
+                        var globals = _globalVariablesSnapshot;
                         var result = _commands.CalculateStateDependency(doc, (inputKey) =>
                         {
-                            return Dispatcher.Invoke<string>(() =>
-                            {
-                                var _cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
-                                if (_cachedVariables != null)
-                                    foreach (var item in _cachedVariables)
-                                        if (item.A == inputKey)
-                                            return item.B;
-                                return inputKey;
-                            });
+                            if (globals != null && globals.TryGetValue(inputKey, out var value) && value != null)
+                                return value.ToString();
+                            return inputKey;
                         }, PopulateVariables, ExpressionEvaluateFunction);
                         Dispatcher.BeginInvoke(new Action(() =>
                         {
@@ -806,16 +816,13 @@ namespace vMixController.Widgets
                     }
                 });
 
-                if ((DateTime.Now - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
+                if ((timestamp - _previousInternalStateUpdating).TotalMilliseconds >= ShadowUpdatePollTime.TotalMilliseconds)
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        _internalState?.UpdateAsync();
-                    });
-                    _previousInternalStateUpdating = DateTime.Now;
+                    _internalState?.UpdateAsync();
+                    _previousInternalStateUpdating = timestamp;
                 }
 
-                _previousQuery = DateTime.Now;
+                _previousQuery = timestamp;
             }
         }
 

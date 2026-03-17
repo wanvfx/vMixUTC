@@ -11,8 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.TextFormatting;
-using System.Windows.Threading;
 using System.Xml;
 using vMixAPI;
 using vMixController.Classes.vMixController.Classes;
@@ -35,7 +33,9 @@ namespace vMixController.Classes
         private static Task _pollLoopTask;
 
         private static string _url = "http://127.0.0.1:8088/api";
+        private static Uri _urlUri = new Uri("http://127.0.0.1:8088/api");
         private static string _credentials;
+        private static AuthenticationHeaderValue _authorizationHeader;
 
         private static int _activeRequests;
         private static int _pollFailures;
@@ -45,7 +45,13 @@ namespace vMixController.Classes
         public static string Url
         {
             get { return _url; }
-            set { _url = (value ?? "http://127.0.0.1:8088/api").TrimEnd('?'); }
+            set
+            {
+                var normalized = (value ?? "http://127.0.0.1:8088/api").TrimEnd('?');
+                _url = normalized;
+                if (Uri.TryCreate(normalized, UriKind.Absolute, out var parsed))
+                    _urlUri = parsed;
+            }
         }
 
         /// <summary>
@@ -54,7 +60,18 @@ namespace vMixController.Classes
         public static string Credentials
         {
             get { return _credentials; }
-            set { _credentials = value; }
+            set
+            {
+                _credentials = value;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _authorizationHeader = null;
+                    return;
+                }
+
+                var raw = Encoding.UTF8.GetBytes(value);
+                _authorizationHeader = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(raw));
+            }
         }
 
         public static int Rate { get; set; }
@@ -152,7 +169,7 @@ namespace vMixController.Classes
                     if (stopwatch.Elapsed >= nextPollAt)
                     {
                         // fire-and-forget, ограничено MaxConcurrentRequests
-                        PollOnceAsync(token).ConfigureAwait(false);
+                        _ = PollOnceAsync(token);
                         nextPollAt = stopwatch.Elapsed + pollInterval;
                     }
 
@@ -187,29 +204,24 @@ namespace vMixController.Classes
 
                 try
                 {
-                    Uri uri;
-                    if (!Uri.TryCreate(Url, UriKind.Absolute, out uri))
+                    var uri = _urlUri;
+                    if (uri == null)
                         return;
 
                     using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
                     {
-                        if (!string.IsNullOrWhiteSpace(Credentials))
-                        {
-                            var raw = Encoding.UTF8.GetBytes(Credentials);
-                            var base64 = Convert.ToBase64String(raw);
-                            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64);
-                        }
+                        if (_authorizationHeader != null)
+                            request.Headers.Authorization = _authorizationHeader;
 
                         using (var response = await _httpClient.SendAsync(request, token).ConfigureAwait(false))
                         {
                             response.EnsureSuccessStatusCode();
 
-                            var xmlText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            if (string.IsNullOrWhiteSpace(xmlText))
-                                return;
-
                             var doc = new XmlDocument();
-                            doc.LoadXml(xmlText);
+                            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                            {
+                                doc.Load(stream);
+                            }
 
                             if (!string.Equals(doc.DocumentElement != null ? doc.DocumentElement.Name : null, "vmix", StringComparison.OrdinalIgnoreCase))
                             {
