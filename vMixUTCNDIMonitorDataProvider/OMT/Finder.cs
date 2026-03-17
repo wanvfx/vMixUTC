@@ -76,6 +76,7 @@ namespace UTCNDIMonitorDataProvider.OMT
                     {
                         _sourceList.Add(name);
                     }
+                Thread.Sleep(1000);
             }
 
         }

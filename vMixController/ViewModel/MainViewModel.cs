@@ -2282,6 +2282,8 @@ namespace vMixController.ViewModel
             //Fix changing current directory on opening .vmc from external folder
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
+            XmlDocumentMessenger.Start();
+
             vMixAPI.StateFabrique.OnStateCreated += State_OnStateCreated;
 
             _connectTimer.Interval = TimeSpan.FromSeconds(20);
@@ -2742,6 +2744,7 @@ namespace vMixController.ViewModel
 
         public void Dispose()
         {
+            XmlDocumentMessenger.StopAsync();
             Dispose(true);
             //throw new NotImplementedException();
         }

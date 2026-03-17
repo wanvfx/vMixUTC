@@ -906,10 +906,10 @@ Use Momentary buttons for this type of scripts.</value>
     <value>Password Lockable</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleUp" xml:space="preserve">
-    <value>Scale Up</value>
+    <value>Scale Up (Ctrl + Wheel)</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleDown" xml:space="preserve">
-    <value>Scale Down</value>
+    <value>Scale Down (Ctrl + Wheel)</value>
   </data>
   <data name="WidgetContainer.Menu.Duplicate" xml:space="preserve">
     <value>Duplicate</value>

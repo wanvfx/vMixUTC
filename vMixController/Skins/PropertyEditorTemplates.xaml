@@ -146,8 +146,8 @@
 
     <DataTemplate x:Key="vMixControlVolumePropEditor" DataType="{x:Type widget:vMixControlVolume}">
         <StackPanel>
-            <prop:InputSelectorControl IsEnabled="{Binding Value, ElementName=TCB, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Input}" Title="{loc:Loc Key=PropertyEditor.Common.Input}" Items="{Binding Inputs}" Value="{Binding InputKey, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
             <prop:ComboBoxControl x:Name="TCB" Title="{loc:Loc Key=PropertyEditor.Common.Target}" Value="{Binding Target, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Items="{x:Static cls:Constants.AudioBusses}"></prop:ComboBoxControl>
+            <prop:InputSelectorControl IsEnabled="{Binding Value, ElementName=TCB, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=Input}" Title="{loc:Loc Key=PropertyEditor.Common.Input}" Items="{Binding Inputs}" Value="{Binding InputKey, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
             <Grid ext:GridColumnMargin.ColumnMargin="2,0,2,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>

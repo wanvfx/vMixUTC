@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,98 +21,240 @@ namespace vMixController.Classes
 {
     public static class XmlDocumentMessenger
     {
-        public static bool Sync { get; set; }
+        public delegate void DocumentDownloaded(XmlDocument doc, DateTime timestamp);
+
+        private static readonly HttpClient _httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(5)
+        };
+
+        private static readonly object _stateLock = new object();
+
+        private static CancellationTokenSource _cts;
+        private static Task _pollLoopTask;
+
+        private static string _url = "http://127.0.0.1:8088/api";
+        private static string _credentials;
+
+        private static int _activeRequests;
+
+        public static bool Sync { get; set; } = true;
+
         public static string Url
         {
-            get => url; set
-            {
-                _queries = 0;
-                url = value;
-            }
+            get { return _url; }
+            set { _url = (value ?? "http://127.0.0.1:8088/api").TrimEnd('?'); }
         }
 
-        public static string Credentials { get => credentials; set { credentials = value; } }
-
-        public delegate void DocumentDownloaded(XmlDocument doc, DateTime timestamp);
-        static int _subscribers = 0;
+        /// <summary>
+        /// Формат: "user:password"
+        /// </summary>
+        public static string Credentials
+        {
+            get { return _credentials; }
+            set { _credentials = value; }
+        }
 
         public static int Rate { get; set; }
 
-        static event DocumentDownloaded _onDocumentDownloaded;
+        public static int MaxConcurrentRequests { get; set; } = 1;
+
+        private static event DocumentDownloaded _onDocumentDownloaded;
         public static event DocumentDownloaded OnDocumentDownloaded
         {
             add
             {
                 _onDocumentDownloaded += value;
-                _subscribers = _onDocumentDownloaded?.GetInvocationList().Length ?? 0;
-                Debug.Print("{0} subscribers", _subscribers);
+                Debug.WriteLine("XmlDocumentMessenger subscribers: " + (_onDocumentDownloaded == null ? 0 : _onDocumentDownloaded.GetInvocationList().Length));
             }
             remove
             {
                 _onDocumentDownloaded -= value;
-                _subscribers = _onDocumentDownloaded?.GetInvocationList().Length ?? 0;
-                Debug.Print("{0} subscribers", _subscribers);
+                Debug.WriteLine("XmlDocumentMessenger subscribers: " + (_onDocumentDownloaded == null ? 0 : _onDocumentDownloaded.GetInvocationList().Length));
             }
         }
 
-        static int _queries = 0;
-        static DateTime _previousQuery = DateTime.Now;
-        static System.Threading.Timer _stateDependentTimer;
-        private static string url;
-        private static string credentials;
+        public static event Action<Exception> OnError;
 
-        static XmlDocumentMessenger()
+        public static void Start()
         {
-            _stateDependentTimer = new System.Threading.Timer((obj) =>
+            lock (_stateLock)
             {
-                Dispatcher.CurrentDispatcher.Invoke(() =>
-                {
-                    if (!Sync) return;
+                if (_pollLoopTask != null && !_pollLoopTask.IsCompleted)
+                    return;
 
-                    var t = DateTime.Now - _previousQuery;
-                    var pollInterval = (Rate != 0 ? Properties.Settings.Default.AudioMeterPollTime * 1000 : vMixControl.ShadowUpdatePollTime.TotalMilliseconds);
-                    if (t.TotalMilliseconds >= pollInterval && _queries < 5 && _subscribers > 0)
-                    {
-                        _previousQuery = DateTime.Now;
-                        _queries++;
-
-                        Uri uri = null;
-                        if (Uri.TryCreate((Url ?? "http://127.0.0.1:8088/api").TrimEnd('?'), UriKind.Absolute, out uri))
-                        {
-                            APIRequestManagerV2.GetApiResponseAsync(uri.ToString(), new WeakAction((response, ex) =>
-                            {
-                                Interlocked.Decrement(ref _queries);
-
-                                Dispatcher.CurrentDispatcher.Invoke(() =>
-                                {
-                                    if (ex != null)
-                                        return;
-
-                                    try
-                                    {
-                                        if (!string.IsNullOrWhiteSpace(response) && response.StartsWith("<vmix>"))
-                                        {
-                                            XmlDocument doc = new XmlDocument();
-                                            doc.LoadXml(response);
-                                            _onDocumentDownloaded?.Invoke(doc, DateTime.Now);
-                                        }
-                                    }
-                                    catch (Exception)
-                                    {
-
-                                    }
-                                });
-                            }), credentials);
-                        }
-                        else
-                        {
-                            _queries--;
-                        }
-                    }
-                });
-            }, null, 0, 10);
+                _cts = new CancellationTokenSource();
+                _pollLoopTask = Task.Run(() => PollLoopAsync(_cts.Token));
+            }
         }
 
+        public static async Task StopAsync()
+        {
+            Task taskToWait = null;
 
+            lock (_stateLock)
+            {
+                if (_cts == null)
+                    return;
+
+                _cts.Cancel();
+                taskToWait = _pollLoopTask;
+            }
+
+            try
+            {
+                if (taskToWait != null)
+                    await taskToWait.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // expected
+            }
+            finally
+            {
+                lock (_stateLock)
+                {
+                    if (_cts != null)
+                    {
+                        _cts.Dispose();
+                        _cts = null;
+                    }
+                    _pollLoopTask = null;
+                }
+            }
+        }
+
+        private static async Task PollLoopAsync(CancellationToken token)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            TimeSpan nextPollAt = TimeSpan.Zero;
+
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    if (!Sync || _onDocumentDownloaded == null)
+                    {
+                        await Task.Delay(200, token).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    TimeSpan pollInterval = GetPollInterval();
+
+                    if (stopwatch.Elapsed >= nextPollAt)
+                    {
+                        // fire-and-forget, ограничено MaxConcurrentRequests
+                        PollOnceAsync(token).ConfigureAwait(false);
+                        nextPollAt = stopwatch.Elapsed + pollInterval;
+                    }
+
+                    TimeSpan delay = nextPollAt - stopwatch.Elapsed;
+                    if (delay < TimeSpan.FromMilliseconds(50))
+                        delay = TimeSpan.FromMilliseconds(50);
+
+                    await Task.Delay(delay, token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    if (token.IsCancellationRequested)
+                        break;
+                }
+                catch (Exception ex)
+                {
+                    RaiseError(ex);
+                    await Task.Delay(300, token).ConfigureAwait(false);
+                }
+            }
+        }
+
+        private static async Task PollOnceAsync(CancellationToken token)
+        {
+            if (Interlocked.Increment(ref _activeRequests) > MaxConcurrentRequests)
+            {
+                Interlocked.Decrement(ref _activeRequests);
+                return;
+            }
+
+            try
+            {
+                Uri uri;
+                if (!Uri.TryCreate(Url, UriKind.Absolute, out uri))
+                    return;
+
+                using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
+                {
+                    if (!string.IsNullOrWhiteSpace(Credentials))
+                    {
+                        var raw = Encoding.UTF8.GetBytes(Credentials);
+                        var base64 = Convert.ToBase64String(raw);
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64);
+                    }
+
+                    using (var response = await _httpClient.SendAsync(request, token).ConfigureAwait(false))
+                    {
+                        response.EnsureSuccessStatusCode();
+
+                        var xmlText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        if (string.IsNullOrWhiteSpace(xmlText))
+                            return;
+
+                        var doc = new XmlDocument();
+                        doc.LoadXml(xmlText);
+
+                        if (!string.Equals(doc.DocumentElement != null ? doc.DocumentElement.Name : null, "vmix", StringComparison.OrdinalIgnoreCase))
+                            return;
+
+                        RaiseDocumentDownloaded(doc, DateTime.Now);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                if (!token.IsCancellationRequested)
+                    RaiseError(new TimeoutException("Request canceled unexpectedly."));
+            }
+            catch (Exception ex)
+            {
+                RaiseError(ex);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _activeRequests);
+            }
+        }
+
+        private static TimeSpan GetPollInterval()
+        {
+            double ms = (Rate != 0)
+                ? Properties.Settings.Default.AudioMeterPollTime * 1000.0
+                : vMixControl.ShadowUpdatePollTime.TotalMilliseconds;
+
+            if (ms < 50) ms = 50;
+            return TimeSpan.FromMilliseconds(ms);
+        }
+
+        private static void RaiseDocumentDownloaded(XmlDocument doc, DateTime timestamp)
+        {
+            var handler = _onDocumentDownloaded;
+            if (handler == null) return;
+
+            var dispatcher = Application.Current != null ? Application.Current.Dispatcher : null;
+            if (dispatcher != null && !dispatcher.CheckAccess())
+            {
+                dispatcher.BeginInvoke(new Action(() => handler(doc, timestamp)));
+            }
+            else
+            {
+                handler(doc, timestamp);
+            }
+        }
+
+        private static void RaiseError(Exception ex)
+        {
+            Debug.WriteLine("XmlDocumentMessenger error: " + ex);
+            var errorHandler = OnError;
+            if (errorHandler != null)
+                errorHandler(ex);
+        }
     }
 }

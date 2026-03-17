@@ -166,7 +166,7 @@ namespace vMixController.Widgets
             }
         }
 
-        private string _mix = "";
+        private string _mix = "0";
 
         /// <summary>
         /// Sets and gets the StringParameter property.

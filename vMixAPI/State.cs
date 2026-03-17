@@ -512,12 +512,11 @@ namespace vMixAPI
             }
             else
             {
-
                 try
                 {
                     // 1. Вызываем тот же менеджер, что и для асинхронных запросов.
                     //    Колбэк здесь не нужен, так как мы обрабатываем результат прямо на месте.
-                    var task = APIRequestManagerV2.GetApiResponseAsync(url);
+                    var task = APIRequestManagerV2.GetApiResponseAsync(url, auth: GetCredentials());
 
                     // 2. Блокируем выполнение и ждем результат.
                     //    GetAwaiter().GetResult() предпочтительнее, чем .Result.

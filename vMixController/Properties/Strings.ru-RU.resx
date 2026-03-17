@@ -906,10 +906,10 @@
     <value>Блокируемый паролем</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleUp" xml:space="preserve">
-    <value>Увеличить</value>
+    <value>Увеличить (Ctrl + Колесо мыши)</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleDown" xml:space="preserve">
-    <value>Уменьшить</value>
+    <value>Уменьшить (Ctrl + Колесо мыши)</value>
   </data>
   <data name="WidgetContainer.Menu.Duplicate" xml:space="preserve">
     <value>Дублировать</value>

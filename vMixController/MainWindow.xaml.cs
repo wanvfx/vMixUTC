@@ -25,11 +25,11 @@ namespace vMixController
     {
         bool _loading = false;
 
-		private bool _isCanvasPanning;
-		private Point _canvasPanStart;
-		private Matrix _canvasPanStartMatrix;
-		private const double CanvasZoomMin = 0.1;
-		private const double CanvasZoomMax = 10.0;
+        private bool _isCanvasPanning;
+        private Point _canvasPanStart;
+        private Matrix _canvasPanStartMatrix;
+        private const double CanvasZoomMin = 0.1;
+        private const double CanvasZoomMax = 10.0;
         MatrixTransform _canvasTransform = new MatrixTransform();
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -89,14 +89,14 @@ namespace vMixController
                 _canvasTransform.Matrix = mtx.Matrix;
         }
 
-		private void LayoutGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-		{
-			if (e.ChangedButton == MouseButton.Middle ||
-				(e.ChangedButton == MouseButton.Left && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
-			{
+        private void LayoutGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle ||
+                (e.ChangedButton == MouseButton.Left && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control))
+            {
                 if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas) return;
                 UpdateMatrix();
-                
+
 
                 _isCanvasPanning = true;
 
@@ -104,81 +104,93 @@ namespace vMixController
                 fadein.Begin(MiniMapBorder);
 
                 _canvasPanStart = e.GetPosition(LayoutGrid);
-				_canvasPanStartMatrix = _canvasTransform?.Matrix ?? Matrix.Identity;
-				LayoutGrid.CaptureMouse();
-				Mouse.OverrideCursor = Cursors.Hand;
+                _canvasPanStartMatrix = _canvasTransform?.Matrix ?? Matrix.Identity;
+                LayoutGrid.CaptureMouse();
+                Mouse.OverrideCursor = Cursors.Hand;
                 CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
-				e.Handled = true;
-			}
-		}
+                e.Handled = true;
+            }
+        }
 
-		private void LayoutGrid_PreviewMouseMove(object sender, MouseEventArgs e)
-		{
-			if (!_isCanvasPanning)
-				return;
+        private void LayoutGrid_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isCanvasPanning)
+                return;
 
-			var current = e.GetPosition(LayoutGrid);
-			var delta = current - _canvasPanStart;
+            var current = e.GetPosition(LayoutGrid);
+            var delta = current - _canvasPanStart;
 
-			var m = _canvasPanStartMatrix;
-			m.Translate(delta.X, delta.Y);
-			if (_canvasTransform != null)
-				_canvasTransform.Matrix = m;
+            var m = _canvasPanStartMatrix;
+            m.Translate(delta.X, delta.Y);
+            if (_canvasTransform != null)
+                _canvasTransform.Matrix = m;
             CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
             e.Handled = true;
-		}
+        }
 
-		private void LayoutGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-		{
-			if (!_isCanvasPanning)
-				return;
+        private void LayoutGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isCanvasPanning)
+                return;
 
             var fadeout = (Storyboard)FindResource("StoryboardFadeOut");
             fadeout.Begin(MiniMapBorder);
 
             if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
-			{
-				_isCanvasPanning = false;
-				if (LayoutGrid.IsMouseCaptured)
-					LayoutGrid.ReleaseMouseCapture();
-				Mouse.OverrideCursor = null;
-				e.Handled = true;
-			}
-		}
+            {
+                _isCanvasPanning = false;
+                if (LayoutGrid.IsMouseCaptured)
+                    LayoutGrid.ReleaseMouseCapture();
+                Mouse.OverrideCursor = null;
+                e.Handled = true;
+            }
+        }
 
-		private void LayoutGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-		{
-			// Keep Shift+Wheel behavior (horizontal scrolling) handled by the outer ScrollViewer.
-			if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-				return;
+        private void LayoutGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            // Keep Shift+Wheel behavior (horizontal scrolling) handled by the outer ScrollViewer.
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                return;
 
-			if (_canvasTransform == null)
-				return;
+            if (_canvasTransform == null)
+                return;
 
             if (!SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas ||
                 !SimpleIoc.Default.GetInstance<MainViewModel>().IsHotkeysEnabled ||
                 ((DependencyObject)sender).FindChild<WheelControlledScrollViewer>().Where(x => x.IsMouseOver).Count() > 0) return;
 
+            var container = ((DependencyObject)sender).FindChild<vMixControlContainerDummy>().Where(x => x.IsMouseOver).FirstOrDefault();
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control &&
+                 container != null)
+            {
+                if (e.Delta > 0)
+                    container.ScaleUpCommand.Execute(container.Control);
+                else
+                    container.ScaleDownCommand.Execute(container.Control);
+                e.Handled = true;
+                return;
+            }
+
             UpdateMatrix();
 
             var m = _canvasTransform.Matrix;
-			var scale = m.M11;
-			var zoomFactor = e.Delta > 0 ? 1.1 : (1.0 / 1.1);
-			var newScale = scale * zoomFactor;
+            var scale = m.M11;
+            var zoomFactor = e.Delta > 0 ? 1.1 : (1.0 / 1.1);
+            var newScale = scale * zoomFactor;
 
-			if (newScale < CanvasZoomMin)
-				zoomFactor = CanvasZoomMin / scale;
-			else if (newScale > CanvasZoomMax)
-				zoomFactor = CanvasZoomMax / scale;
+            if (newScale < CanvasZoomMin)
+                zoomFactor = CanvasZoomMin / scale;
+            else if (newScale > CanvasZoomMax)
+                zoomFactor = CanvasZoomMax / scale;
 
-			var p = e.GetPosition(LayoutGrid);
-			m.ScaleAt(zoomFactor, zoomFactor, p.X, p.Y);
-			_canvasTransform.Matrix = m;
+            var p = e.GetPosition(LayoutGrid);
+            m.ScaleAt(zoomFactor, zoomFactor, p.X, p.Y);
+            _canvasTransform.Matrix = m;
 
             CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
 
             e.Handled = true;
-		}
+        }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
@@ -187,9 +199,8 @@ namespace vMixController
             // Let the Layout canvas handle wheel zoom/pan; don't hijack the wheel for horizontal scrolling here.
             if (LayoutGrid != null && LayoutGrid.IsMouseOver && (Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift &&
                 (SimpleIoc.Default.GetInstance<MainViewModel>().WindowSettings.UseInfiniteCanvas && wheel.Count() == 0))
-				    return;
+                return;
 
-            
             foreach (var wheelControl in wheel)
             {
                 var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
@@ -221,29 +232,18 @@ namespace vMixController
             e.Handled = true;
         }
 
-		private void ApplyCanvasMatrix(Matrix m)
-		{
-			if (_canvasTransform != null)
-				_canvasTransform.Matrix = m;
-
-			if (CanvasGridBrush != null)
-				CanvasGridBrush.Transform = new MatrixTransform(m);
-
-            CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
-        }
-
-		public Point ToCanvasContentPoint(Point layoutGridPoint, bool infiniteCanvas = true)
-		{
+        public Point ToCanvasContentPoint(Point layoutGridPoint, bool infiniteCanvas = true)
+        {
             if (!infiniteCanvas) return layoutGridPoint;
 
             var m = _canvasTransform?.Matrix ?? Matrix.Identity;
-			if (m.HasInverse)
-			{
-				m.Invert();
-				return m.Transform(layoutGridPoint);
-			}
-			return layoutGridPoint;
-		}
+            if (m.HasInverse)
+            {
+                m.Invert();
+                return m.Transform(layoutGridPoint);
+            }
+            return layoutGridPoint;
+        }
 
         private void Layout_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
@@ -259,10 +259,10 @@ namespace vMixController
             Keyboard.Focus(Layout);
         }
 
-		private void LanguageMenuItem_Click(object sender, RoutedEventArgs e)
-		{
-			if (sender is MenuItem menuItem && menuItem.Tag is string cultureName)
-				LocalizationManager.Instance.SetCulture(cultureName);
-		}
+        private void LanguageMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && menuItem.Tag is string cultureName)
+                LocalizationManager.Instance.SetCulture(cultureName);
+        }
     }
 }

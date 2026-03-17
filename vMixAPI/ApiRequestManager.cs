@@ -25,44 +25,85 @@ namespace vMixAPI
     /// </summary>
     public class WeakAction
     {
-        private readonly WeakReference _targetRef;
+        private readonly WeakReference<object> _targetRef;
         private readonly MethodInfo _method;
-        private readonly bool _isStatic;
+        // Открытый делегат — только для обычных методов экземпляра с точной сигнатурой
+        private readonly Action<object, string, Exception> _openDelegate;
+        // Статический делегат — для статических методов
+        private readonly Action<string, Exception> _staticDelegate;
+        // Флаг: использовать MethodInfo.Invoke вместо открытого делегата
+        private readonly bool _useReflection;
 
         public WeakAction(Action<string, Exception> action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
 
-            if (action.Target != null)
+            if (action.Target == null)
             {
-                _targetRef = new WeakReference(action.Target);
+                _staticDelegate = action;
+                return;
             }
+
+            _targetRef = new WeakReference<object>(action.Target);
             _method = action.Method;
-            _isStatic = action.Target == null;
+
+            if (TryCreateOpenDelegate(_method, out var openDelegate))
+            {
+                _openDelegate = openDelegate;
+                _useReflection = false;
+            }
+            else
+                _useReflection = true;
         }
 
-        /// <summary>
-        /// Проверяет, жив ли целевой объект делегата.
-        /// </summary>
-        public bool IsAlive => _isStatic || (_targetRef?.IsAlive == true);
+        public bool IsAlive =>
+            _staticDelegate != null ||
+            _targetRef?.TryGetTarget(out _) == true;
 
-        /// <summary>
-        /// Вызывает действие, если целевой объект все еще доступен.
-        /// </summary>
         public void Invoke(string response, Exception error)
         {
-            object target = null;
-            if (!_isStatic)
+            if (_staticDelegate != null)
             {
-                if (_targetRef?.IsAlive != true) return;
-                target = _targetRef.Target;
+                _staticDelegate(response, error);
+                return;
             }
 
-            // Проверка target != null для нестатических методов важна на случай,
-            // если объект был уничтожен между проверкой IsAlive и вызовом.
-            if (_isStatic || target != null)
+            if (_targetRef != null && _targetRef.TryGetTarget(out var target))
             {
-                _method.Invoke(target, new object[] { response, error });
+                if (_useReflection)
+                    _method.Invoke(target, new object[] { response, error });
+                else
+                    _openDelegate(target, response, error);
+            }
+        }
+
+        private static bool TryCreateOpenDelegate(
+            MethodInfo method,
+            out Action<object, string, Exception> result)
+        {
+            result = null;
+            // Анонимные методы/лямбды имеют CompilerGeneratedAttribute
+            if (method.IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false))
+                return false;
+
+            try
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length == 2
+                    && parameters[0].ParameterType == typeof(string)
+                    && parameters[1].ParameterType == typeof(Exception))
+                {
+                    result = (Action<object, string, Exception>)Delegate.CreateDelegate(
+                        typeof(Action<object, string, Exception>),
+                        null,
+                        method,
+                        throwOnBindFailure: false);
+                }
+                return result != null;
+            }
+            catch
+            {
+                return false;
             }
         }
     }
@@ -74,6 +115,65 @@ namespace vMixAPI
     /// </summary>
     public class vMixHttpBatcher : IDisposable
     {
+        private sealed class PendingRequest
+        {
+            NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+            private readonly TaskCompletionSource<string> _tcs
+                = new TaskCompletionSource<string>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+
+            // Потокобезопасный список callback-ов всех ожидающих
+            private volatile WeakAction[] _callbacks = Array.Empty<WeakAction>();
+            private readonly object _callbackLock = new object();
+
+            public Task<string> Task => _tcs.Task;
+
+            public void AddCallback(WeakAction callback)
+            {
+                if (callback == null) return;
+                lock (_callbackLock)
+                {
+                    var current = _callbacks;
+                    var next = new WeakAction[current.Length + 1];
+                    current.CopyTo(next, 0);
+                    next[current.Length] = callback;
+                    _callbacks = next; // атомарная замена ссылки
+                }
+            }
+
+            public void Complete(string result, Uri address,
+                Action<string, Exception, Uri> onCompleted)
+            {
+                foreach (var cb in _callbacks)
+                {
+                    try { cb.Invoke(result, null); }
+                    catch (Exception e) { _logger.Warn(e, "Callback failed"); }
+                }
+                try { onCompleted?.Invoke(result, null, address); }
+                catch (Exception e) { _logger.Warn(e, "OnDownloadCompleted failed"); }
+                _tcs.TrySetResult(result);
+            }
+
+            public void Fail(Exception ex, Uri address,
+                Action<string, Exception, Uri> onCompleted)
+            {
+                foreach (var cb in _callbacks)
+                {
+                    try { cb.Invoke(null, ex); }
+                    catch (Exception e) { _logger.Warn(e, "Callback failed"); }
+                }
+                try { onCompleted?.Invoke(null, ex, address); }
+                catch (Exception e) { _logger.Warn(e, "OnDownloadCompleted failed"); }
+                _tcs.TrySetException(ex);
+            }
+
+            public void Cancel()
+            {
+                _tcs.TrySetCanceled();
+            }
+        }
+
         NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         // --- Поля ---
         private readonly HttpClient _httpClient;
@@ -83,6 +183,10 @@ namespace vMixAPI
         private const int MinCacheDurationMs = 50;
         private const int DefaultCacheDurationMs = 100;
         private const int MaxCacheDurationMs = 1000;
+        private int _cacheHitCount = 0;
+        private const int PurgeEveryNHits = 100;
+        private int _activeRequestCount = 0;
+        private readonly CancellationTokenSource _disposeCts = new CancellationTokenSource();
 
         /// <summary>
         /// Текущее адаптивное время жизни кэша. volatile для безопасного чтения из разных потоков.
@@ -90,11 +194,6 @@ namespace vMixAPI
         private volatile int _adaptiveCacheDurationMs;
 
         private readonly ConcurrentDictionary<string, (string Response, long Timestamp)> _cache = new ConcurrentDictionary<string, (string, long)>();
-
-        // --- Поля для батчинга (в текущей реализации не используются, но сохранены) ---
-        private readonly ConcurrentQueue<(Uri uri, TaskCompletionSource<string> tcs, WeakAction callback, CancellationTokenSource token)> _requestQueue = new ConcurrentQueue<(Uri, TaskCompletionSource<string>, WeakAction, CancellationTokenSource)>();
-        private static readonly ConcurrentDictionary<vMixHttpBatcher, byte> _activeInstances = new ConcurrentDictionary<vMixHttpBatcher, byte>();
-        private readonly SemaphoreSlim _processingSemaphore = new SemaphoreSlim(1, 1);
 
         private volatile bool _disposed;
 
@@ -105,17 +204,121 @@ namespace vMixAPI
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _isClientOwned = false;
-            _adaptiveCacheDurationMs = DefaultCacheDurationMs; // Устанавливаем начальное значение
-            _activeInstances.TryAdd(this, 0);
+            _adaptiveCacheDurationMs = DefaultCacheDurationMs;
         }
 
-        // --- Публичные методы ---
+        private void PurgeExpiredCacheEntries()
+        {
+            long now = GetTimestampMs();
+            long maxAge = MaxCacheDurationMs * 10L;
 
+            foreach (var key in _cache.Keys.ToList())
+            {
+                if (_cache.TryGetValue(key, out var item) && (now - item.Timestamp) > maxAge)
+                    _cache.TryRemove(key, out _);
+            }
+        }
+        private async Task<string> SendWithAuthAsync(Uri uri, string auth, bool post, CancellationToken ct = default)
+        {
+            using
+                (var request = new HttpRequestMessage(
+                post ? HttpMethod.Post : HttpMethod.Get, uri))
+            {
+
+                if (auth != null)
+                {
+                    var encoded = Convert.ToBase64String(Encoding.ASCII.GetBytes(auth));
+                    request.Headers.Authorization =
+                        new AuthenticationHeaderValue("Basic", encoded);
+                }
+
+                using (var response = await _httpClient
+                    .SendAsync(request, ct)
+                    .ConfigureAwait(false))
+                {
+
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        private long GetTimestampMs()
+        {
+            long timestamp = Stopwatch.GetTimestamp();
+            long seconds = timestamp / Stopwatch.Frequency;
+            long remainder = timestamp % Stopwatch.Frequency;
+            return seconds * 1000L + (remainder * 1000L) / Stopwatch.Frequency;
+        }
+
+        private async Task RunPendingRequestAsync(Uri address, string cacheKey, PendingRequest pending, bool shouldCache, bool post, string auth, CancellationToken ct)
+        {
+            using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                ct, _disposeCts.Token))
+            {
+                var stopwatch = Stopwatch.StartNew();
+                Interlocked.Increment(ref _activeRequestCount);
+                try
+                {
+                    var response = await SendWithAuthAsync(
+                        address, auth, post, linkedCts.Token).ConfigureAwait(false);
+
+                    stopwatch.Stop();
+                    UpdateAdaptiveCacheDuration(stopwatch.ElapsedMilliseconds);
+
+                    if (shouldCache)
+                    {
+                        var newItem = (Response: response, Timestamp: GetTimestampMs());
+                        _cache.AddOrUpdate(cacheKey, newItem, (_, __) => newItem);
+                    }
+
+                    _pendingRequests.TryRemove(cacheKey, out _);
+                    pending.Complete(response, address, OnDownloadCompleted);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    _pendingRequests.TryRemove(cacheKey, out _);
+                    pending.Cancel();
+                }
+                catch (Exception ex)
+                {
+                    stopwatch.Stop();
+                    _pendingRequests.TryRemove(cacheKey, out _);
+                    pending.Fail(ex, address, OnDownloadCompleted);
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _activeRequestCount);
+                }
+            }
+        }
+
+        private static async Task<T> WaitWithCallerCancellation<T>(Task<T> task, CancellationToken ct)
+        {
+            if (!ct.CanBeCanceled || task.IsCompleted)
+                return await task.ConfigureAwait(false);
+
+            var cancelTcs = new TaskCompletionSource<bool>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+
+            using (ct.Register(() => cancelTcs.TrySetResult(true)))
+            {
+                var completed = await Task.WhenAny(task, cancelTcs.Task).ConfigureAwait(false);
+                if (!ReferenceEquals(completed, task))
+                    throw new OperationCanceledException(ct);
+            }
+
+            return await task.ConfigureAwait(false);
+        }
+
+        // Хранит "в-процессе" задачи, чтобы не дублировать запросы
+        private readonly ConcurrentDictionary<string, PendingRequest> _pendingRequests
+            = new ConcurrentDictionary<string, PendingRequest>();
         /// <summary>
         /// Асинхронно запрашивает строковый ответ по указанному адресу.
         /// Использует адаптивный кэш для запросов без параметров.
         /// </summary>
-        public Task<string> GetStringAsync(Uri address, WeakAction callback = null, bool post = false, bool ignoreCache = false)
+        public Task<string> GetStringAsync(Uri address, WeakAction callback = null, bool post = false, bool ignoreCache = false, string auth = null, CancellationToken ct = default)
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(vMixHttpBatcher));
@@ -125,65 +328,78 @@ namespace vMixAPI
             {
                 string cacheKey = address.GetLeftPart(UriPartial.Path);
 
-                if (_cache.TryGetValue(cacheKey, out var cachedItem))
+                if (_cache.TryGetValue(cacheKey, out var cachedItem)
+                    && (GetTimestampMs() - cachedItem.Timestamp) < _adaptiveCacheDurationMs)
                 {
-                    // Используем _adaptiveCacheDurationMs для проверки свежести кэша
-                    if ((Environment.TickCount - cachedItem.Timestamp) < _adaptiveCacheDurationMs)
-                    {
-                        _logger.Debug($"Return cached response: from {cacheKey}");
-                        callback?.Invoke(cachedItem.Response, null);
-                        OnDownloadCompleted?.Invoke(cachedItem.Response, null, address);
-                        return Task.FromResult(cachedItem.Response);
-                    }
+                    _logger.Debug($"Return cached response from: {cacheKey}");
+                    callback?.Invoke(cachedItem.Response, null);
+                    OnDownloadCompleted?.Invoke(cachedItem.Response, null, address);
+
+                    if (Interlocked.Increment(ref _cacheHitCount) % PurgeEveryNHits == 0)
+                        Task.Run(() => PurgeExpiredCacheEntries());
+
+                    return Task.FromResult(cachedItem.Response);
                 }
+
+                var pending = new PendingRequest();
+                var actual = _pendingRequests.GetOrAdd(cacheKey, pending);
+
+                // Регистрируем callback независимо от того, новый это запрос или нет
+                actual.AddCallback(callback);
+
+                if (ReferenceEquals(actual, pending))
+                {
+                    // Мы создали новый запрос — запускаем его
+                    _ = RunPendingRequestAsync(address, cacheKey, actual, useCache, post, auth, ct);
+                }
+
+                return WaitWithCallerCancellation(actual.Task, ct);
             }
 
-            _logger.Debug($"Executing request for {address}");
-            return ExecuteAndCacheRequestAsync(address, callback, useCache, post);
+            return ExecuteAndCacheRequestAsync(address, callback, useCache, post, auth, ct);
         }
 
         // --- Приватные методы ---
-
         /// <summary>
         /// Выполняет HTTP-запрос, измеряет время ответа, обновляет адаптивный кэш и возвращает результат.
         /// </summary>
-        private async Task<string> ExecuteAndCacheRequestAsync(Uri address, WeakAction callback, bool shouldCache, bool post = false)
+        private async Task<string> ExecuteAndCacheRequestAsync(Uri address, WeakAction callback, bool shouldCache, bool post = false, string auth = null, CancellationToken ct = default)
         {
             var stopwatch = Stopwatch.StartNew();
-            try
-            {
-                string response = null;
-                if (!post)
-                    response = await _httpClient.GetStringAsync(address).ConfigureAwait(false);
-                else
+            using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, _disposeCts.Token))
+                try
                 {
-                    var hresponse = await _httpClient.PostAsync(address, null).ConfigureAwait(false);
-                    response = await hresponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
+                    Interlocked.Increment(ref _activeRequestCount);
+                    string response = null;
+                    response = await SendWithAuthAsync(address, auth, post, linkedCts.Token).ConfigureAwait(false);
 
                     // Запрос успешен, останавливаем таймер и обновляем адаптивное время
                     stopwatch.Stop();
-                UpdateAdaptiveCacheDuration(stopwatch.ElapsedMilliseconds);
+                    UpdateAdaptiveCacheDuration(stopwatch.ElapsedMilliseconds);
 
-                if (shouldCache)
-                {
-                    string cacheKey = address.GetLeftPart(UriPartial.Path);
-                    var newItem = (Response: response, Timestamp: Environment.TickCount);
-                    _cache.AddOrUpdate(cacheKey, newItem, (key, oldItem) => newItem);
+                    if (shouldCache)
+                    {
+                        string cacheKey = address.GetLeftPart(UriPartial.Path);
+                        var newItem = (Response: response, Timestamp: GetTimestampMs());
+                        _cache.AddOrUpdate(cacheKey, newItem, (key, oldItem) => newItem);
+                    }
+                    callback?.Invoke(response, null);
+                    OnDownloadCompleted?.Invoke(response, null, address);
+                    return response;
                 }
-                callback?.Invoke(response, null);
-                OnDownloadCompleted?.Invoke(response, null, address);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                // Не обновляем время кэша при ошибке, чтобы временные сбои сети
-                // не приводили к неоправданно долгому кэшированию в будущем.
-                stopwatch.Stop();
-                callback?.Invoke(null, ex);
-                OnDownloadCompleted?.Invoke(null, ex, address);
-                throw;
-            }
+                catch (Exception ex)
+                {
+                    // Не обновляем время кэша при ошибке, чтобы временные сбои сети
+                    // не приводили к неоправданно долгому кэшированию в будущем.
+                    stopwatch.Stop();
+                    callback?.Invoke(null, ex);
+                    OnDownloadCompleted?.Invoke(null, ex, address);
+                    throw;
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _activeRequestCount);
+                }
         }
 
         /// <summary>
@@ -192,39 +408,39 @@ namespace vMixAPI
         /// <param name="measuredLatency">Время ответа сервера в миллисекундах.</param>
         private void UpdateAdaptiveCacheDuration(long measuredLatency)
         {
-            // Устанавливаем новое время кэша равным времени ответа,
-            // но ограничиваем его в пределах Min и Max.
-            int newDuration = (int)Math.Max(MinCacheDurationMs, Math.Min(MaxCacheDurationMs, measuredLatency));
-
-            // Атомарно обновляем значение, чтобы избежать гонки потоков.
-            Interlocked.Exchange(ref _adaptiveCacheDurationMs, newDuration);
+            const double alpha = 0.2;
+            int current, newValue;
+            do
+            {
+                current = Volatile.Read(ref _adaptiveCacheDurationMs);
+                int smoothed = (int)(alpha * measuredLatency + (1.0 - alpha) * current);
+                newValue = Math.Max(MinCacheDurationMs, Math.Min(MaxCacheDurationMs, smoothed));
+            }
+            while (Interlocked.CompareExchange(
+                ref _adaptiveCacheDurationMs, newValue, current) != current);
         }
 
-        public bool IsProcessing() => _processingSemaphore.CurrentCount == 0 || !_requestQueue.IsEmpty;
+        public bool IsProcessing() => Volatile.Read(ref _activeRequestCount) > 0;
 
         public void Dispose()
         {
             if (_disposed) return;
             _disposed = true;
+            _disposeCts.Cancel();
 
-            GC.SuppressFinalize(this);
+            // Отменяем все pending-запросы немедленно
+            foreach (var kvp in _pendingRequests)
+                kvp.Value.Cancel();
+            _pendingRequests.Clear();
 
-            _activeInstances.TryRemove(this, out _);
+            _disposeCts.Dispose();
             _cache.Clear();
 
-            while (_requestQueue.TryDequeue(out var item))
-            {
-                item.tcs.TrySetCanceled();
-                item.token?.Dispose();
-            }
-
             if (_isClientOwned)
-            {
                 _httpClient?.Dispose();
-            }
 
-            _processingSemaphore?.Dispose();
             OnDownloadCompleted = null;
+            GC.SuppressFinalize(this);
         }
     }
 
@@ -235,23 +451,52 @@ namespace vMixAPI
     /// </summary>
     public static class APIRequestManagerV2
     {
-        // Используем один статический HttpClient для всего приложения. Это лучшая практика.
+        private sealed class BatcherEntry
+        {
+            private long _lastAccessTicks;
+            public readonly vMixHttpBatcher Batcher;
+
+            public BatcherEntry(vMixHttpBatcher batcher)
+            {
+                Batcher = batcher ?? throw new ArgumentNullException(nameof(batcher));
+                _lastAccessTicks = DateTime.UtcNow.Ticks;
+            }
+
+            public DateTime LastAccess
+            {
+                get => new DateTime(Interlocked.Read(ref _lastAccessTicks), DateTimeKind.Utc);
+                set => Interlocked.Exchange(ref _lastAccessTicks, value.Ticks);
+            }
+        }
+
         private static readonly HttpClient _sharedClient = new HttpClient
         {
-            // Таймаут должен быть достаточно большим для обработки "зависших" запросов
             Timeout = TimeSpan.FromSeconds(20)
         };
 
-        private static readonly ConcurrentDictionary<string, (DateTime lastAccess, vMixHttpBatcher batcher)> _batchers = new ConcurrentDictionary<string, (DateTime lastAccess, vMixHttpBatcher batcher)>();
+        private static readonly object _batchersGate = new object();
+        private static readonly ConcurrentDictionary<string, Lazy<BatcherEntry>> _batchers = new ConcurrentDictionary<string, Lazy<BatcherEntry>>();
         private static readonly TimeSpan _inactiveTimeout = TimeSpan.FromMinutes(1);
         private static Timer _cleanupTimer;
 
         static APIRequestManagerV2()
         {
-            // Запускаем таймер для периодической очистки неактивных батчеров
             _cleanupTimer = new Timer(_ => CleanupInactiveBatchers(), null, _inactiveTimeout, _inactiveTimeout);
         }
 
+        private static string ResolveBatcherKey(string apiUrl, bool post = false)
+        {
+            if (!Uri.TryCreate(apiUrl, UriKind.Absolute, out var uri))
+                throw new ArgumentException($"Invalid URL: {apiUrl}", nameof(apiUrl));
+
+            string category = uri.AbsolutePath.TrimEnd('/').EndsWith("/api")
+                ? "state"
+                : "function";
+
+            string method = post ? "post" : "get";
+
+            return $"{uri.Scheme}://{uri.Authority}/{category},{method}";
+        }
         /// <summary>
         /// Получает ответ от vMix API. Управляет созданием и переиспользованием обработчиков запросов.
         /// </summary>
@@ -260,63 +505,57 @@ namespace vMixAPI
         /// <returns>Задача, представляющая XML-ответ от vMix.</returns>
         public static Task<string> GetApiResponseAsync(string apiUrl, WeakAction callback = null, string auth = null, bool post = false, bool ignoreCache = false)
         {
-            if (auth != null)
+            string key = ResolveBatcherKey(apiUrl, post);
+
+            lock (_batchersGate)
             {
+                var lazy = _batchers.GetOrAdd(key, _ => new Lazy<BatcherEntry>(
+                    () => new BatcherEntry(new vMixHttpBatcher(_sharedClient)),
+                    LazyThreadSafetyMode.ExecutionAndPublication));
 
-                _sharedClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(auth)));
-            }
+                var entry = lazy.Value;
+                entry.LastAccess = DateTime.UtcNow;
 
-            string key = apiUrl.EndsWith("/api") || apiUrl.EndsWith("/api?") ? "state" : "function";
-
-            // Используем GetOrAdd для атомарного создания или получения батчера
-            var batcherEntry = _batchers.GetOrAdd(key, url =>
-                (DateTime.UtcNow, new vMixHttpBatcher(_sharedClient))
-            );
-
-            // Обновляем время последнего доступа
-            batcherEntry.lastAccess = DateTime.UtcNow;
-            _batchers[key] = batcherEntry;
-
-            // Упрощено: напрямую вызываем GetStringAsync и возвращаем его Task
-            return batcherEntry.batcher.GetStringAsync(new Uri(apiUrl), callback, post, ignoreCache);
-        }
-
-        // Методы для подписки/отписки на события конкретного батчера
-        public static void RegisterCompletionHandler(string apiUrl, Action<string, Exception, Uri> handler)
-        {
-            if (_batchers.TryGetValue(apiUrl, out var batcherEntry))
-            {
-                batcherEntry.batcher.OnDownloadCompleted += handler;
-            }
-        }
-
-        public static void UnregisterCompletionHandler(string apiUrl, Action<string, Exception, Uri> handler)
-        {
-            if (_batchers.TryGetValue(apiUrl, out var batcherEntry))
-            {
-                batcherEntry.batcher.OnDownloadCompleted -= handler;
+                return entry.Batcher.GetStringAsync(new Uri(apiUrl), callback, post, ignoreCache, auth);
             }
         }
 
         private static void CleanupInactiveBatchers()
         {
             var now = DateTime.UtcNow;
-            var inactiveKeys = _batchers
-                .Where(kvp => (now - kvp.Value.lastAccess > _inactiveTimeout) && !kvp.Value.batcher.IsProcessing())
-                .Select(kvp => kvp.Key)
-                .ToList();
+            var toDispose = new List<Lazy<BatcherEntry>>();
 
-            foreach (var key in inactiveKeys)
+            lock (_batchersGate)
             {
-                // Дополнительная проверка на случай, если батчер снова стал активным
-                if (_batchers.TryGetValue(key, out var entry) && (now - entry.lastAccess > _inactiveTimeout))
-                {
-                    if (_batchers.TryRemove(key, out var removedEntry))
+                var inactiveKeys = _batchers
+                    .Where(kvp =>
                     {
-                        removedEntry.batcher.Dispose();
+                        if (!kvp.Value.IsValueCreated) return false;
+                        var entry = kvp.Value.Value;
+                        return (now - entry.LastAccess) > _inactiveTimeout
+                               && !entry.Batcher.IsProcessing();
+                    })
+                    .Select(kvp => kvp.Key)
+                    .ToList();
+
+                foreach (var key in inactiveKeys)
+                {
+                    if (!_batchers.TryGetValue(key, out var lazy) || !lazy.IsValueCreated)
+                        continue;
+
+                    var entry = lazy.Value;
+                    if ((now - entry.LastAccess) > _inactiveTimeout
+                        && !entry.Batcher.IsProcessing())
+                    {
+                        if (_batchers.TryRemove(key, out var removed) && removed.IsValueCreated)
+                            toDispose.Add(removed);
                     }
                 }
             }
+
+            // Dispose вне lock
+            foreach (var removed in toDispose)
+                removed.Value.Batcher.Dispose();
         }
 
         /// <summary>
@@ -325,16 +564,22 @@ namespace vMixAPI
         /// </summary>
         public static void Cleanup()
         {
-            _cleanupTimer?.Dispose();
-            _cleanupTimer = null;
+            List<Lazy<BatcherEntry>> toDispose;
 
-            foreach (var batcherEntry in _batchers.Values)
+            lock (_batchersGate)
             {
-                batcherEntry.batcher.Dispose();
-            }
-            _batchers.Clear();
+                _cleanupTimer?.Dispose();
+                _cleanupTimer = null;
 
-            _sharedClient?.Dispose();
+                toDispose = _batchers.Values.ToList();
+                _batchers.Clear();
+            }
+
+            foreach (var lazy in toDispose)
+            {
+                if (lazy.IsValueCreated)
+                    lazy.Value.Batcher.Dispose();
+            }
         }
     }
 
