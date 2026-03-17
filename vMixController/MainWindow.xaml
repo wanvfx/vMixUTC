@@ -76,13 +76,14 @@
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
             <CompositeCollection x:Key="CreateItems" x:Shared="False">
-                <MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="{loc:Loc Key=MainWindow.CreateItems.Button}">
+                <!--DEPRECATED-->
+                <!--<MenuItem x:Name="Button" Command="{Binding CreateWidgetCommand}" CommandParameter="Button" Header="{loc:Loc Key=MainWindow.CreateItems.Button}">
                     <MenuItem.Icon>
                         <Border Width="16" Height="16" Style="{StaticResource IconBorder}">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="{StaticResource FontAwesome}">&#xF205;</TextBlock>
                         </Border>
                     </MenuItem.Icon>
-                </MenuItem>
+                </MenuItem>-->
                 <MenuItem x:Name="NewButton" Command="{Binding CreateWidgetCommand}" CommandParameter="NewButton" Header="{loc:Loc Key=MainWindow.CreateItems.NewButton}">
                     <MenuItem.Icon>
                         <Border Style="{StaticResource IconBorder}">

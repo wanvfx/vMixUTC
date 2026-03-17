@@ -320,8 +320,8 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Path Grid.Column="1" x:Name="triangle" 
-                      Data="M8,0 L8,8 L0,8 Z" 
-                      Fill="#d77d31" 
+                      Data="M4,0 L4,4 L0,4 Z" 
+                      Fill="#ffff00" 
                       HorizontalAlignment="Right"
                       VerticalAlignment="Bottom"
                       Opacity="1"/>
