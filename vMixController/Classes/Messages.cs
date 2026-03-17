@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using vMixController.Widgets;
 
 namespace vMixController.Messages
 {
@@ -22,25 +23,17 @@ namespace vMixController.Messages
         public string Value { get; set; }
     }
 
-    /*public enum VariableState
+    public enum WidgetEditAction
     {
-        None,
-        Delete,
-        Add,
-        Update,
-        Clear
+        Move,
+        Resize
     }
 
-    public class UpdateGlobalVariable
+    public class WidgetEditMessage
     {
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public VariableState State { get; set; }
+        public vMixControl Widget { get; set; }
+        public WidgetEditAction Action { get; set; }
+        public bool IsStarted { get; set; }
     }
-
-    public class FillGlobalVariables
-    {
-        public object Caller { get; set; }
-    }*/
 
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using vMixController.Classes;
+using vMixController.Messages;
 using vMixController.Widgets;
 using vMixControllerSkin;
 
@@ -14,8 +15,6 @@ namespace vMixController.Controls
 {
     public class vMixControlMoveThumb : DraggableThumb, INotifyPropertyChanged
     {
-
-
         public bool Locked
         {
             get;
@@ -35,7 +34,10 @@ namespace vMixController.Controls
         private void VMixControlMoveThumb_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             if (this.DataContext is vMixControl item && !item.Locked)
+            {
                 GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Pair<vMixControl, bool>(item, false));
+                GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new WidgetEditMessage { Widget = item, Action = WidgetEditAction.Move, IsStarted = false });
+            }
         }
 
         private void VMixControlMoveThumb_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
@@ -61,6 +63,7 @@ namespace vMixController.Controls
         {
             vMixController.Widgets.vMixControl item = this.DataContext as vMixController.Widgets.vMixControl;
             GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Pair<vMixControl, bool>(item, true));
+            GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new WidgetEditMessage { Widget = item, Action = WidgetEditAction.Move, IsStarted = true });
             //item.IsSelected = true;
         }
 

@@ -41,6 +41,30 @@ namespace vMixController.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase, IDisposable
     {
+        private const int MaxUndoSteps = 10;
+
+        public class ByteArrayDelta
+        {
+            public int PrefixLength { get; set; }
+            public int RemovedLength { get; set; }
+            public byte[] InsertedData { get; set; }
+        }
+
+        public class UndoSnapshot
+        {
+            public bool IsFullSnapshot { get; set; }
+            public byte[] WidgetsData { get; set; }
+            public byte[] WindowSettingsData { get; set; }
+            public ByteArrayDelta WidgetsDelta { get; set; }
+            public ByteArrayDelta WindowSettingsDelta { get; set; }
+        }
+
+        public class UndoEntry
+        {
+            public UndoSnapshot Snapshot { get; set; }
+            public string Reason { get; set; }
+        }
+
         bool _isPressed = false;
         //LowLevelInput.Hooks.LowLevelMouseHook mouseHook = new LowLevelInput.Hooks.LowLevelMouseHook(true);
         vMixWidgetSettingsView _settings = new vMixWidgetSettingsView();
@@ -567,13 +591,14 @@ namespace vMixController.ViewModel
             }
         }
 
-        private MemoryStream _undoState = null;
+        private readonly List<UndoEntry> _undoStack = new List<UndoEntry>();
+        private UndoSnapshot _undoState = null;
 
         /// <summary>
         /// Sets and gets the UndoState property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public MemoryStream UndoState
+        public UndoSnapshot UndoState
         {
             get
             {
@@ -894,16 +919,51 @@ namespace vMixController.ViewModel
             RaisePropertyChanged(nameof(Widgets));
         }
 
+        private static void EnsureWidgetIdentity(IEnumerable<vMixControl> widgets)
+        {
+            if (widgets == null)
+                return;
+
+            var used = new HashSet<Guid>();
+            foreach (var widget in widgets)
+            {
+                if (widget == null)
+                    continue;
+
+                if (widget.WidgetId == Guid.Empty || !used.Add(widget.WidgetId))
+                {
+                    Guid next;
+                    do
+                    {
+                        next = Guid.NewGuid();
+                    }
+                    while (!used.Add(next));
+
+                    widget.WidgetId = next;
+                }
+            }
+        }
+
 
         private void SaveUndo(string reason = "")
         {
             try
             {
-                if (UndoState != null)
-                    UndoState.Close();
-                UndoReason = reason;
-                UndoState = new MemoryStream();
-                Utils.SaveController(UndoState, Widgets, WindowSettings);
+                EnsureWidgetIdentity(Widgets);
+                var currentWidgetsData = SerializeToBytes(Widgets);
+                var currentWindowSettingsData = SerializeToBytes(WindowSettings);
+                var snapshot = BuildUndoSnapshot(currentWidgetsData, currentWindowSettingsData);
+
+                _undoStack.Add(new UndoEntry
+                {
+                    Reason = reason,
+                    Snapshot = snapshot
+                });
+
+                if (_undoStack.Count > MaxUndoSteps)
+                    _undoStack.RemoveAt(0);
+
+                UpdateUndoPreview();
             }
             catch (Exception e)
             {
@@ -911,28 +971,186 @@ namespace vMixController.ViewModel
             }
         }
 
+        private UndoSnapshot BuildUndoSnapshot(byte[] currentWidgetsData, byte[] currentWindowSettingsData)
+        {
+            if (_undoStack.Count == 0)
+            {
+                return new UndoSnapshot
+                {
+                    IsFullSnapshot = true,
+                    WidgetsData = currentWidgetsData,
+                    WindowSettingsData = currentWindowSettingsData
+                };
+            }
+
+            var previousState = ResolveUndoState(_undoStack.Count - 1);
+            var widgetsDelta = CreateDelta(previousState.WidgetsData, currentWidgetsData);
+            var settingsDelta = CreateDelta(previousState.WindowSettingsData, currentWindowSettingsData);
+
+            var widgetsDeltaSize = EstimateDeltaSize(widgetsDelta);
+            var settingsDeltaSize = EstimateDeltaSize(settingsDelta);
+            var fullSize = (currentWidgetsData?.Length ?? 0) + (currentWindowSettingsData?.Length ?? 0);
+
+            // If delta is not actually smaller, keep full snapshot for this step.
+            if (widgetsDeltaSize + settingsDeltaSize >= fullSize)
+            {
+                return new UndoSnapshot
+                {
+                    IsFullSnapshot = true,
+                    WidgetsData = currentWidgetsData,
+                    WindowSettingsData = currentWindowSettingsData
+                };
+            }
+
+            return new UndoSnapshot
+            {
+                IsFullSnapshot = false,
+                WidgetsDelta = widgetsDelta,
+                WindowSettingsDelta = settingsDelta
+            };
+        }
+
+        private static int EstimateDeltaSize(ByteArrayDelta delta)
+        {
+            if (delta == null)
+                return 0;
+
+            return sizeof(int) * 2 + (delta.InsertedData?.Length ?? 0);
+        }
+
+        private static byte[] SerializeToBytes<T>(T value)
+        {
+            if (value == null)
+                return null;
+
+            using (var stream = new MemoryStream())
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(stream, value);
+                return stream.ToArray();
+            }
+        }
+
+        private static T DeserializeFromBytes<T>(byte[] data)
+        {
+            if (data == null || data.Length == 0)
+                return default(T);
+
+            using (var stream = new MemoryStream(data))
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                return (T)serializer.Deserialize(stream);
+            }
+        }
+
+        private static ByteArrayDelta CreateDelta(byte[] source, byte[] target)
+        {
+            source = source ?? Array.Empty<byte>();
+            target = target ?? Array.Empty<byte>();
+
+            var maxPrefix = Math.Min(source.Length, target.Length);
+            var prefix = 0;
+            while (prefix < maxPrefix && source[prefix] == target[prefix])
+                prefix++;
+
+            var sourceTail = source.Length - 1;
+            var targetTail = target.Length - 1;
+            var suffix = 0;
+            while (sourceTail - suffix >= prefix &&
+                   targetTail - suffix >= prefix &&
+                   source[sourceTail - suffix] == target[targetTail - suffix])
+            {
+                suffix++;
+            }
+
+            var removedLength = source.Length - prefix - suffix;
+            var insertedLength = target.Length - prefix - suffix;
+            var insertedData = insertedLength > 0
+                ? target.Skip(prefix).Take(insertedLength).ToArray()
+                : Array.Empty<byte>();
+
+            return new ByteArrayDelta
+            {
+                PrefixLength = prefix,
+                RemovedLength = removedLength,
+                InsertedData = insertedData
+            };
+        }
+
+        private static byte[] ApplyDelta(byte[] source, ByteArrayDelta delta)
+        {
+            source = source ?? Array.Empty<byte>();
+            if (delta == null)
+                return source.ToArray();
+
+            var prefixLength = Math.Max(0, Math.Min(delta.PrefixLength, source.Length));
+            var removedLength = Math.Max(0, Math.Min(delta.RemovedLength, source.Length - prefixLength));
+            var suffixStart = prefixLength + removedLength;
+            var suffixLength = source.Length - suffixStart;
+            var inserted = delta.InsertedData ?? Array.Empty<byte>();
+
+            var result = new byte[prefixLength + inserted.Length + suffixLength];
+            Buffer.BlockCopy(source, 0, result, 0, prefixLength);
+            if (inserted.Length > 0)
+                Buffer.BlockCopy(inserted, 0, result, prefixLength, inserted.Length);
+            if (suffixLength > 0)
+                Buffer.BlockCopy(source, suffixStart, result, prefixLength + inserted.Length, suffixLength);
+
+            return result;
+        }
+
+        private UndoSnapshot ResolveUndoState(int index)
+        {
+            if (index < 0 || index >= _undoStack.Count)
+                return new UndoSnapshot
+                {
+                    IsFullSnapshot = true,
+                    WidgetsData = Array.Empty<byte>(),
+                    WindowSettingsData = Array.Empty<byte>()
+                };
+
+            byte[] widgets = Array.Empty<byte>();
+            byte[] settings = Array.Empty<byte>();
+            for (var i = 0; i <= index; i++)
+            {
+                var step = _undoStack[i].Snapshot;
+                if (step.IsFullSnapshot)
+                {
+                    widgets = step.WidgetsData ?? Array.Empty<byte>();
+                    settings = step.WindowSettingsData ?? Array.Empty<byte>();
+                }
+                else
+                {
+                    widgets = ApplyDelta(widgets, step.WidgetsDelta);
+                    settings = ApplyDelta(settings, step.WindowSettingsDelta);
+                }
+            }
+
+            return new UndoSnapshot
+            {
+                IsFullSnapshot = true,
+                WidgetsData = widgets,
+                WindowSettingsData = settings
+            };
+        }
+
         private void LoadUndo()
         {
             try
             {
-                if (UndoState != null)
+                if (_undoStack.Count > 0)
                 {
-                    UndoState.Seek(0, SeekOrigin.Begin);
-                    MainWindowSettings s;
-
-                    foreach (var item in _widgets)
-                        item.Dispose();
-                    _widgets.Clear();
+                    var state = ResolveUndoState(_undoStack.Count - 1);
 
                     var live = LIVE;
 
                     LIVE = true;
 
-                    foreach (var item in Utils.LoadController(UndoState, Functions, out s))
-                        _widgets.Add(item);
+                    ApplyUndoWidgets(state.WidgetsData);
 
-                    foreach (var item in _widgets)
-                        item.Update();
+                    var restoredWindowSettings = DeserializeFromBytes<MainWindowSettings>(state.WindowSettingsData);
+                    if (restoredWindowSettings != null)
+                        WindowSettings = restoredWindowSettings;
 
                     CheckvMixConnection(null, new EventArgs());
 
@@ -945,14 +1163,92 @@ namespace vMixController.ViewModel
 
                     LIVE = live;
 
-                    UndoState.Close();
-                    UndoState = null;
+                    _undoStack.RemoveAt(_undoStack.Count - 1);
+                    UpdateUndoPreview();
                 }
             }
             catch (Exception e)
             {
                 _logger.Error(e, "Error when applying undo");
             }
+        }
+
+        private void ApplyUndoWidgets(byte[] widgetsData)
+        {
+            var restoredWidgets = DeserializeFromBytes<ObservableCollection<vMixControl>>(widgetsData)
+                ?? new ObservableCollection<vMixControl>();
+
+            EnsureWidgetIdentity(restoredWidgets);
+            EnsureWidgetIdentity(_widgets);
+
+            var currentById = _widgets.ToDictionary(x => x.WidgetId);
+            var targetById = restoredWidgets.ToDictionary(x => x.WidgetId);
+
+            var currentSerialized = _widgets.ToDictionary(x => x.WidgetId, SerializeToBytes);
+            var targetSerialized = restoredWidgets.ToDictionary(x => x.WidgetId, SerializeToBytes);
+
+            foreach (var id in currentById.Keys.Except(targetById.Keys).ToArray())
+            {
+                var removed = currentById[id];
+                _widgets.Remove(removed);
+                removed.Dispose();
+                currentById.Remove(id);
+            }
+
+            for (int targetIndex = 0; targetIndex < restoredWidgets.Count; targetIndex++)
+            {
+                var target = restoredWidgets[targetIndex];
+                if (currentById.TryGetValue(target.WidgetId, out var existing))
+                {
+                    var isSame = currentSerialized.TryGetValue(target.WidgetId, out var currentBytes)
+                        && targetSerialized.TryGetValue(target.WidgetId, out var targetBytes)
+                        && currentBytes.SequenceEqual(targetBytes);
+
+                    if (!isSame)
+                    {
+                        var existingIndex = _widgets.IndexOf(existing);
+                        existing.Dispose();
+                        target.State = Model;
+                        if (target is vMixControlTextField textField)
+                            textField.IsLive = LIVE;
+                        target.Update();
+                        if (existingIndex >= 0)
+                            _widgets[existingIndex] = target;
+                        else
+                            _widgets.Insert(Math.Min(targetIndex, _widgets.Count), target);
+                        currentById[target.WidgetId] = target;
+                    }
+
+                    var actualIndex = _widgets.IndexOf(currentById[target.WidgetId]);
+                    if (actualIndex >= 0 && actualIndex != targetIndex)
+                        _widgets.Move(actualIndex, targetIndex);
+                }
+                else
+                {
+                    target.State = Model;
+                    if (target is vMixControlTextField textField)
+                        textField.IsLive = LIVE;
+                    target.Update();
+                    _widgets.Insert(Math.Min(targetIndex, _widgets.Count), target);
+                    currentById[target.WidgetId] = target;
+                }
+            }
+
+            RaisePropertyChanged(nameof(Widgets));
+        }
+
+        private void UpdateUndoPreview()
+        {
+            if (_undoStack.Count == 0)
+            {
+                UndoState = null;
+                UndoReason = "";
+                return;
+            }
+
+            var top = _undoStack[_undoStack.Count - 1];
+            UndoState = top.Snapshot;
+            UndoReason = top.Reason;
         }
 
         private RelayCommand<vMixController.Widgets.vMixControl> _switchLockCommand;
@@ -968,6 +1264,7 @@ namespace vMixController.ViewModel
                     ?? (_switchLockCommand = new RelayCommand<vMixController.Widgets.vMixControl>(
                     p =>
                     {
+                        SaveUndo(string.Format(LocalizationManager.Instance["Undo.LockChanged"], p.Type, p.Name));
                         p.Locked = !p.Locked;
                         p.IsPasswordLocked = p.IsPasswordLockable && p.Locked && (!string.IsNullOrWhiteSpace(WindowSettings.UserName) || !string.IsNullOrWhiteSpace(WindowSettings.Password));
                     }));
@@ -987,7 +1284,7 @@ namespace vMixController.ViewModel
                     ?? (_removeWidgetCommand = new RelayCommand<vMixController.Widgets.vMixControl>(
                     p =>
                     {
-                        SaveUndo(string.Format("Widget {1}[{0}] removed", p.Type, p.Name));
+                        SaveUndo(string.Format(LocalizationManager.Instance["Undo.WidgetRemoved"], p.Type, p.Name));
 
                         int processed = 0;
                         foreach (var widget in Widgets.Where(x => x.Selected).ToArray())
@@ -1022,11 +1319,17 @@ namespace vMixController.ViewModel
                         {
                             vMixControl copy = null;
                             int processed = 0;
+                            bool undoSaved = false;
                             //Process selection
                             foreach (var widget in Widgets.Where(x => x.Selected).ToArray())
                             {
                                 copy = widget.Copy();
                                 if (copy == null) continue;
+                                if (!undoSaved)
+                                {
+                                    SaveUndo(LocalizationManager.Instance["Undo.WidgetCopied"]);
+                                    undoSaved = true;
+                                }
                                 copy.Name += " copy";
                                 copy.State = Model;
                                 copy.Left += 16;
@@ -1046,6 +1349,8 @@ namespace vMixController.ViewModel
                             {
                                 copy = p.Copy();
                                 if (copy == null) return;
+                                if (!undoSaved)
+                                    SaveUndo(LocalizationManager.Instance["Undo.WidgetCopied"]);
                                 copy.Name += " copy";
                                 copy.State = Model;
                                 copy.Left += 16;
@@ -1082,6 +1387,7 @@ namespace vMixController.ViewModel
                     ?? (_moveWidgetCommand = new RelayCommand<ControlIntParameter>(
                     p =>
                     {
+                        SaveUndo(LocalizationManager.Instance["Undo.WidgetPageChanged"]);
                         //Process selection
                         foreach (var widget in Widgets.Where(x => x.Selected))
                         {
@@ -1106,6 +1412,7 @@ namespace vMixController.ViewModel
                     ?? (_toggleCaptionCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        SaveUndo(LocalizationManager.Instance["Undo.WidgetCaptionShowHidden"]);
                         //Process selection
                         foreach (var widget in Widgets.Where(x => x.Selected))
                         {
@@ -1129,6 +1436,7 @@ namespace vMixController.ViewModel
                     ?? (_scaleUpCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        //SaveUndo("Widget scale increased");
                         //Process selection
                         foreach (var widget in Widgets.Where(x => x.Selected))
                         {
@@ -1153,6 +1461,7 @@ namespace vMixController.ViewModel
                     ?? (_scaleDownCommand = new RelayCommand<vMixControl>(
                     p =>
                     {
+                        //SaveUndo("Widget scale decreased");
                         //Process selection
                         foreach (var widget in Widgets.Where(x => x.Selected))
                         {
@@ -1196,7 +1505,7 @@ namespace vMixController.ViewModel
                         var result = _settings.ShowDialog();
                         if (result.HasValue && result.Value)
                         {
-                            SaveUndo(string.Format("Widget {1}[{0}] properties changed", p.Type, p.Name));
+                            SaveUndo(string.Format(LocalizationManager.Instance["Undo.WidgetPropertiesChanged"], p.Type, p.Name));
                             _settings.SaveConnectedWidgetProperties();
                         }
                         p.AfterPropertiesChanged();
@@ -1246,26 +1555,19 @@ namespace vMixController.ViewModel
                                 widget.Update();
 
 
-                                SaveUndo(string.Format("Widget [{0}] created", widget.Type));
-                                UndoState.Seek(0, SeekOrigin.Begin);
-                                using (var beforeCreated = new MemoryStream())
-                                {
-                                    UndoState.CopyTo(beforeCreated);
+                                SaveUndo(string.Format(LocalizationManager.Instance["Undo.WidgetCreated"], widget.Type));
+                                var undoStackDepthBeforeProperties = _undoStack.Count;
 
-                                    InsertWidgetByZIndex(widget);
-                                    if (widget.ZIndex >= 0)
-                                        widget.ZIndex = Widgets.Count;
+                                InsertWidgetByZIndex(widget);
+                                if (widget.ZIndex >= 0)
+                                    widget.ZIndex = Widgets.Count;
 
-                                    _logger.Debug("New {0} widget added.", widget.Type.ToLower());
+                                _logger.Debug("New {0} widget added.", widget.Type.ToLower());
 
-                                    OpenPropertiesCommand.Execute(widget);
-                                    if (UndoState != null)
-                                        UndoState.Close();
-                                    UndoState = new MemoryStream();
-                                    beforeCreated.Seek(0, SeekOrigin.Begin);
-                                    beforeCreated.CopyTo(UndoState);
-                                    UndoReason = string.Format("Widget [{0}] created", widget.Type);
-                                }
+                                OpenPropertiesCommand.Execute(widget);
+                                while (_undoStack.Count > undoStackDepthBeforeProperties)
+                                    _undoStack.RemoveAt(_undoStack.Count - 1);
+                                UpdateUndoPreview();
 
 
 
@@ -1299,7 +1601,7 @@ namespace vMixController.ViewModel
                         if (SelectorWidth != 0 && SelectorHeight != 0)
                         {
 
-                            
+
                             var m = ((MatrixTransform)mw.CanvasContent.RenderTransform).Matrix;
                             m.Invert();
 
@@ -1370,7 +1672,7 @@ namespace vMixController.ViewModel
                             : Mouse.GetPosition((IInputElement)p.Source);
                         if (mw?.LayoutGrid != null && !mw.LayoutGrid.IsMouseCaptured)
                             mw.LayoutGrid.CaptureMouse();
-                        
+
                         if (WindowSettings.UseInfiniteCanvas)
                             pos = ((MatrixTransform)mw.CanvasContent.RenderTransform).Matrix.Transform(pos);
 
@@ -1378,7 +1680,7 @@ namespace vMixController.ViewModel
                         _relativeClickPoint = pos;
                         SelectorEnabled = true;
 
-                        
+
                         _rawSelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
                         SelectorPosition = new Thickness(pos.X, pos.Y, 0, 0);
                         SelectorWidth = 0;
@@ -1506,7 +1808,7 @@ namespace vMixController.ViewModel
                         EditorCursor = "Hand";
                         _createWidget = x =>
                         {
-                            SaveUndo(string.Format("Widget created from template {0}", p.A));
+                            SaveUndo(string.Format(LocalizationManager.Instance["Undo.WidgetCreatedFromTemplate"], p.A));
                             var count = _widgets.Where(y => y.GetType() == p.B.GetType()).Count();
                             if (p.B.MaxCount == -1 || count < p.B.MaxCount)
                             {
@@ -1578,7 +1880,7 @@ namespace vMixController.ViewModel
                     ?? (_newControllerCommand = new RelayCommand(
                     () =>
                     {
-                        SaveUndo("Controller created");
+                        SaveUndo(LocalizationManager.Instance["Undo.ControllerCreated"]);
 
                         foreach (var item in _widgets)
                             item.Dispose();
@@ -1614,7 +1916,7 @@ namespace vMixController.ViewModel
                         var result = opendlg.ShowDialog(App.Current.MainWindow);
                         if (result.HasValue && result.Value)
                         {
-                            SaveUndo("Controller loaded");
+                            SaveUndo(LocalizationManager.Instance["Undo.ControllerLoaded"]);
                             LoadControllerFromFile(opendlg.FileName);
                             WindowSettings.AddRecentFile(opendlg.FileName);
                         }
@@ -1637,7 +1939,7 @@ namespace vMixController.ViewModel
                     {
                         if (File.Exists(path))
                         {
-                            SaveUndo("Controller loaded");
+                            SaveUndo(LocalizationManager.Instance["Undo.ControllerLoaded"]);
                             LoadControllerFromFile(path);
                             WindowSettings.AddRecentFile(path);
                         }
@@ -1665,7 +1967,7 @@ namespace vMixController.ViewModel
                         var result = opendlg.ShowDialog(App.Current.MainWindow);
                         if (result.HasValue && result.Value)
                         {
-                            SaveUndo("Controller loaded");
+                            SaveUndo(LocalizationManager.Instance["Undo.ControllerLoaded"]);
 
                             MainWindowSettings ws;
                             var w = Utils.LoadController(opendlg.FileName, Functions, out ws);
@@ -1908,6 +2210,7 @@ namespace vMixController.ViewModel
                             }
                             else return;
                         }
+                        //SaveUndo(!WindowSettings.Locked ? "Controller widgets locked" : "Controller widgets unlocked");
                         WindowSettings.Locked = !WindowSettings.Locked;
                         foreach (var item in _widgets)
                         {
@@ -1931,6 +2234,7 @@ namespace vMixController.ViewModel
                     ?? (_switchPasswordLockableCommand = new RelayCommand<vMixController.Widgets.vMixControl>(
                     (p) =>
                     {
+                        //SaveUndo(string.Format("Widget {1}[{0}] password lockability changed", p.Type, p.Name));
                         p.IsPasswordLockable = !p.IsPasswordLockable;
                         //p.IsPasswordLocked = (p.Locked && p.IsPasswordLockable && (!string.IsNullOrWhiteSpace(WindowSettings.UserName) || !string.IsNullOrWhiteSpace(WindowSettings.Password)));
                     }));
@@ -2498,7 +2802,11 @@ namespace vMixController.ViewModel
 
             Messenger.Default.Register<Triple<vMixControl, double, double>>(this, (t) =>
             {
-                foreach (var item in _widgets.Where(x => x.Selected && x != t.A).Union(_intersections))
+                var movedWidgets = _widgets.Where(x => x.Selected && x != t.A).Union(_intersections).ToArray();
+                if (movedWidgets.Length == 0)
+                    return;
+
+                foreach (var item in movedWidgets)
                 {
                     item.Left = Math.Round(item.Left + t.B);
                     item.Top = Math.Round(item.Top + t.C);
@@ -2513,7 +2821,9 @@ namespace vMixController.ViewModel
 
 
                 if (!t.B)
+                {
                     _intersections.Clear();
+                }
                 else
                     foreach (var rgn in selectedRegions)
                     {
@@ -2551,6 +2861,22 @@ namespace vMixController.ViewModel
                 {
                     case "PAGE":
                         PageIndex = t.B;
+                        break;
+                }
+            });
+
+            Messenger.Default.Register<WidgetEditMessage>(this, (msg) =>
+            {
+                if (msg?.Widget == null || msg.Widget.Locked || !msg.IsStarted)
+                    return;
+
+                switch (msg.Action)
+                {
+                    case WidgetEditAction.Move:
+                        SaveUndo(LocalizationManager.Instance["Undo.WidgetMoved"]);
+                        break;
+                    case WidgetEditAction.Resize:
+                        SaveUndo(LocalizationManager.Instance["Undo.WidgetResized"]);
                         break;
                 }
             });
@@ -2700,8 +3026,8 @@ namespace vMixController.ViewModel
                     }
                     if (Model != null && (Model.Ip == WindowSettings.IP && Model.Port == WindowSettings.Port))
                     {
-                        var oldInputs = Model.Inputs.Select(x=>x.Key).Skip(3);
-                        var newInputs = Regex.Matches(response, @"<input[^>]*key=""([^""]+)""").OfType<Match>().Select(x=>x.Groups[1].Value);
+                        var oldInputs = Model.Inputs.Select(x => x.Key).Skip(3);
+                        var newInputs = Regex.Matches(response, @"<input[^>]*key=""([^""]+)""").OfType<Match>().Select(x => x.Groups[1].Value);
                         if (oldInputs.Count() != newInputs.Count() || oldInputs.Intersect(newInputs).Count() != oldInputs.Count())
                             Status = Status.InputsChanged;
                         else
@@ -3028,9 +3354,11 @@ namespace vMixController.ViewModel
                                 item.Selected = false;
                             }
                         }
-                        foreach (var item in dups)
+                        if (dups.Count > 0)
                         {
-                            _widgets.Add(item);
+                            SaveUndo(LocalizationManager.Instance["Undo.WidgetsDuplicated"]);
+                            foreach (var item in dups)
+                                _widgets.Add(item);
                         }
                     }));
             }

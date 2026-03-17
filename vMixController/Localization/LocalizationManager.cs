@@ -49,7 +49,8 @@ namespace vMixController.Localization
 					return string.Empty;
 
 				var value = _resourceManager.GetString(key, Culture);
-				return value ?? $"!{key}!";
+				var valueEn = _resourceManager.GetString(key, CultureInfo.GetCultureInfo("en-US"));
+                return (string.IsNullOrEmpty(value) ? valueEn : value) ?? $"!{key}!";
 			}
 		}
 

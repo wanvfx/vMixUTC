@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
+using vMixController.Messages;
 using vMixControllerSkin;
 
 namespace vMixController.Controls
@@ -13,6 +14,20 @@ namespace vMixController.Controls
         public vMixControlResizeThumb()
         {
             DragDelta += new DragDeltaEventHandler(this.ResizeThumb_DragDelta);
+            DragStarted += ResizeThumb_DragStarted;
+            DragCompleted += ResizeThumb_DragCompleted;
+        }
+
+        private void ResizeThumb_DragStarted(object sender, DragStartedEventArgs e)
+        {
+            if (DataContext is vMixController.Widgets.vMixControl item && !item.Locked)
+                GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new WidgetEditMessage { Widget = item, Action = WidgetEditAction.Resize, IsStarted = true });
+        }
+
+        private void ResizeThumb_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (DataContext is vMixController.Widgets.vMixControl item && !item.Locked)
+                GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new WidgetEditMessage { Widget = item, Action = WidgetEditAction.Resize, IsStarted = false });
         }
 
         private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
@@ -38,7 +53,7 @@ namespace vMixController.Controls
                         prevLeft = item.Left;
                         item.Left += deltaHorizontal;
                         item.Left = Math.Floor(item.Left / 8.0) * 8.0;
-                        
+
                         break;
                     default:
                         break;

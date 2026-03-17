@@ -1158,4 +1158,70 @@ Enabled</value>
   <data name="MainWindow.Menu.Language.Russian" xml:space="preserve">
     <value>Русский</value>
   </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+1 Hour" xml:space="preserve">
+    <value>+1 Hour</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.-1 Hour" xml:space="preserve">
+    <value>-1 Hour</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+1 Minute" xml:space="preserve">
+    <value>+1 Minute</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.+1 Second" xml:space="preserve">
+    <value>+1 Second</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.-1 Minute" xml:space="preserve">
+    <value>-1 Minute</value>
+  </data>
+  <data name="WidgetSettings.Hotkeys.Hotkey.-1 Second" xml:space="preserve">
+    <value>-1 Second</value>
+  </data>
+  <data name="Undo.ControllerLoaded" xml:space="preserve">
+    <value>Controller Loaded</value>
+  </data>
+  <data name="Undo.LockChanged" xml:space="preserve">
+    <value>Widget {1}[{0}] Lock Changed</value>
+  </data>
+  <data name="Undo.WidgetRemoved" xml:space="preserve">
+    <value>Widget {1}[{0}] Removed</value>
+  </data>
+  <data name="Undo.WidgetCopied" xml:space="preserve">
+    <value>Widget Copied</value>
+  </data>
+  <data name="Undo.WidgetPageChanged" xml:space="preserve">
+    <value>Widget Page Changed</value>
+  </data>
+  <data name="Undo.WidgetCaptionShowHidden" xml:space="preserve">
+    <value>Widget Caption Showed Or Hidden</value>
+  </data>
+  <data name="Undo.WidgetPropertiesChanged" xml:space="preserve">
+    <value>Widget {1}[{0}] Properties Changed</value>
+  </data>
+  <data name="Undo.WidgetCreated" xml:space="preserve">
+    <value>Widget [{0}] Created</value>
+  </data>
+  <data name="Undo.WidgetCreatedFromTemplate" xml:space="preserve">
+    <value>Widget Created From Template {0}</value>
+  </data>
+  <data name="Undo.ControllerCreated" xml:space="preserve">
+    <value>Controller Created</value>
+  </data>
+  <data name="Undo.WidgetMoved" xml:space="preserve">
+    <value>Widget Moved</value>
+  </data>
+  <data name="Undo.WidgetResized" xml:space="preserve">
+    <value>Widget Resized</value>
+  </data>
+  <data name="Undo.WidgetsDuplicated" xml:space="preserve">
+    <value>Widgets Duplicated</value>
+  </data>
 </root>

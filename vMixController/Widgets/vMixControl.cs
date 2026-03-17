@@ -81,6 +81,29 @@ namespace vMixController.Widgets
             WindowProperties = ((ViewModelLocator)Application.Current.FindResource("Locator")).WidgetSettings.WindowProperties;
         }
 
+        private Guid _widgetId = Guid.NewGuid();
+
+        /// <summary>
+        /// Stable widget identity used for incremental undo/redo patching.
+        /// </summary>
+        public Guid WidgetId
+        {
+            get
+            {
+                return _widgetId;
+            }
+
+            set
+            {
+                if (_widgetId == value)
+                {
+                    return;
+                }
+
+                _widgetId = value;
+                RaisePropertyChanged(nameof(WidgetId));
+            }
+        }
 
         public virtual string Type { get; }
         public virtual bool IsResizeableVertical { get { return false; } }
@@ -923,6 +946,7 @@ namespace vMixController.Widgets
                 s.Serialize(ms, this);
                 ms.Seek(0, SeekOrigin.Begin);
                 var ctrl = (vMixControl)s.Deserialize(ms);
+                ctrl.WidgetId = Guid.NewGuid();
                 //ctrl.Update();
                 return ctrl;
             }
