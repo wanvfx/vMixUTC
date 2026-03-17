@@ -9,7 +9,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
@@ -37,7 +36,6 @@ namespace vMixAPI
         private static string _login = "admin";
         private static string _password = "";
         private static State _base = new State();
-        private static Regex _regex;
 
         public static event EventHandler OnStateCreated;
         //public static event EventHandler<StateUpdatedEventArgs> OnStateUpdated;
@@ -45,7 +43,6 @@ namespace vMixAPI
         static StateFabrique()
         {
             _base.OnStateCreated += _base_OnStateCreated;
-            _regex = new Regex(@"^(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&%\$#_]*)?$");
         }
 
         private static void _base_OnStateCreated(object sender, EventArgs e)
@@ -71,12 +68,13 @@ namespace vMixAPI
 
         public static bool IsUrlValid(string ip, string port)
         {
-            int iport = 0;
-            bool isPortOk = int.TryParse(port, out iport);
-            isPortOk = isPortOk && iport >= 0 && iport <= 65535;
+            bool isPortOk = int.TryParse(port, out int iport) && iport >= 0 && iport <= 65535;
+            if (!isPortOk)
+                return false;
+
             var url = GetUrl(ip, port);
-            Uri uri;
-            return _regex.IsMatch(url) && Uri.TryCreate(url, UriKind.Absolute, out uri) && isPortOk;
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri uri)
+                && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
         }
 
         public static string GetUrl(string _ip, string _port)
@@ -145,21 +143,31 @@ namespace vMixAPI
             try
             {
                 XmlSerializer s = new XmlSerializer(typeof(State));
-                using (var ms = new MemoryStream())
+                if (!textstate.StartsWith("<?xml"))
+                    textstate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + textstate;
+                textstate = textstate.
+                    Replace(">False<", ">false<").
+                    Replace(">True<", ">true<").
+                    Replace("\"False\"", "\"false\"").
+                    Replace("\"True\"", "\"true\"");
+
+                var settings = new XmlReaderSettings()
                 {
-                    XmlDocument doc = new XmlDocument();
-                    if (!textstate.StartsWith("<?xml"))
-                        textstate = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + textstate;
-                    textstate = textstate.
-                        Replace(">False<", ">false<").
-                        Replace(">True<", ">true<").
-                        Replace("\"False\"", "\"false\"").
-                        Replace("\"True\"", "\"true\"");
-                    doc.LoadXml(textstate);
-                    doc.Save(ms);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    var state = (State)s.Deserialize(ms);
+                    DtdProcessing = DtdProcessing.Prohibit,
+                    XmlResolver = null
+                };
+
+                using (var reader = new StringReader(textstate))
+                using (var xmlReader = XmlReader.Create(reader, settings))
+                {
+                    var state = (State)s.Deserialize(xmlReader);
                     state._currentStateText = textstate;
+                    state.Inputs = state.Inputs ?? new List<Input>();
+                    state.Outputs = state.Outputs ?? new List<Output>();
+                    state.Overlays = state.Overlays ?? new List<Overlay>();
+                    state.Audio = state.Audio ?? new List<Master>();
+                    state.Transitions = state.Transitions ?? new List<Transition>();
+                    state.Mixes = state.Mixes ?? new List<Mix>();
 
                     state._changedinputs.Clear();
                     foreach (var item in state.Inputs)
@@ -204,15 +212,11 @@ namespace vMixAPI
 
         public void CreateAsync()
         {
-            SendFunction("", true, (e)=>
+            SendFunction("", true, (e) =>
             {
                 if (string.IsNullOrEmpty(e)) return;
 
-                var state = Create(e);
-                if (state != null)
-                    OnStateCreated?.Invoke(state, null);
-
-                return;
+                Create(e);
             }, ignoreCache: true);
         }
 
@@ -261,13 +265,25 @@ namespace vMixAPI
             catch (Exception) { }
         }*/
 
-        private void Diff(object a, object b, bool lists = false)
+        private void ApplySnapshot(State snapshot)
         {
-            if (a == null || b == null) return;
-            var properties = a.GetType().GetProperties().Where(x => lists || (!x.PropertyType.GetInterfaces().Contains(typeof(IList))));
-            foreach (var item in properties)
-                if (item.CanWrite)
-                    item.GetSetMethod().Invoke(a, new object[] { item.GetValue(b) });
+            if (snapshot == null)
+                return;
+
+            Version = snapshot.Version;
+            Preview = snapshot.Preview;
+            Active = snapshot.Active;
+            FadeToBlack = snapshot.FadeToBlack;
+            Recording = snapshot.Recording;
+            External = snapshot.External;
+            Streaming = snapshot.Streaming;
+            PlayList = snapshot.PlayList;
+            MultiCorder = snapshot.MultiCorder;
+            Ip = snapshot.Ip;
+            Port = snapshot.Port;
+            Login = snapshot.Login;
+            Password = snapshot.Password;
+            ChangedInputs = snapshot.ChangedInputs;
         }
 
         public bool Update()
@@ -289,9 +305,16 @@ namespace vMixAPI
                 }
 
                 _logger.Debug("Calculating difference.");
-                Diff(this, _temp);
+                ApplySnapshot(_temp);
 
                 _logger.Debug("Updating inputs.");
+
+                Inputs = Inputs ?? new List<Input>();
+                Outputs = Outputs ?? new List<Output>();
+                Overlays = Overlays ?? new List<Overlay>();
+                Audio = Audio ?? new List<Master>();
+                Transitions = Transitions ?? new List<Transition>();
+                Mixes = Mixes ?? new List<Mix>();
 
                 Inputs.Clear();
                 foreach (var item in _temp.Inputs)
@@ -299,6 +322,9 @@ namespace vMixAPI
                 Overlays.Clear();
                 foreach (var item in _temp.Overlays)
                     Overlays.Add(item);
+                Outputs.Clear();
+                foreach (var item in _temp.Outputs)
+                    Outputs.Add(item);
                 Audio.Clear();
                 foreach (var item in _temp.Audio)
                     Audio.Add(item);
@@ -331,7 +357,7 @@ namespace vMixAPI
         {
             SendFunction("", true, x =>
             {
-                Dispatcher.Invoke(() =>
+                Action updateAction = () =>
                 {
                     try
                     {
@@ -355,10 +381,11 @@ namespace vMixAPI
 
                             IsInitializing = false;
                             OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = false });
+                            return;
                         }
 
                         _logger.Debug("Calculating difference.");
-                        Diff(this, _temp);
+                        ApplySnapshot(_temp);
 
                         _logger.Debug("Updating inputs.");
                         if (Inputs == null)
@@ -369,6 +396,10 @@ namespace vMixAPI
                             Audio = new List<Master>();
                         if (Transitions == null)
                             Transitions = new List<Transition>();
+                        if (Outputs == null)
+                            Outputs = new List<Output>();
+                        if (Mixes == null)
+                            Mixes = new List<Mix>();
                         Inputs.Clear();
                         foreach (var item in _temp.Inputs)
                             Inputs.Add(item);
@@ -403,12 +434,17 @@ namespace vMixAPI
                         IsInitializing = false;
                         _logger.Error(e, "Exception at UpdateAsync");
                     }
-                });
+                };
+
+                if (Dispatcher == null || Dispatcher.CheckAccess())
+                    updateAction();
+                else
+                    Dispatcher.BeginInvoke(updateAction);
 
             });
         }
 
-        //Fix for "Yellow Sync" status issue - Send Function method was executed too fast, and Weak Action Reference was deleted before APIRequestManager can call it
+        // Hold callback state strongly until async response is received and callback is dispatched.
         private class SendFunctionAPIResponseHandler : IDisposable
         {
             public Action<string> Handler { get; set; }
@@ -420,52 +456,62 @@ namespace vMixAPI
 
             public void SendFunctionAPIResponseAction(string response, Exception error)
             {
-                try
-                {
-                    if (_isDisposed) return;
+                if (_isDisposed) return;
 
-                    if (Dispatcher == null) return;
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        try
-                        {
-                            if (_isDisposed) return;
-
-                            if (error != null)
-                            {
-                                string result = "";
-                                if (error is WebException webEx && webEx.Response != null)
-                                {
-                                    try
-                                    {
-                                        using (var stream = webEx.Response.GetResponseStream())
-                                            if (stream != null)
-                                            {
-                                                using (var sr = new StreamReader(stream))
-                                                    result = sr.ReadToEnd();
-                                            }
-                                    }
-                                    catch { }
-                                }
-                                _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
-                            }
-                            else
-                            {
-                                _logger.Debug("Async function sended, result is \"{0}\".", response);
-                            }
-
-                            Handler?.Invoke(response);
-                        }
-                        finally
-                        {
-
-                        }
-                    });
-                }
-                finally
+                if (Dispatcher == null)
                 {
                     Dispose();
+                    return;
+                }
+
+                Action callbackAction = () =>
+                {
+                    try
+                    {
+                        if (_isDisposed) return;
+
+                        if (error != null)
+                        {
+                            string result = "";
+                            if (error is WebException webEx && webEx.Response != null)
+                            {
+                                try
+                                {
+                                    using (var stream = webEx.Response.GetResponseStream())
+                                        if (stream != null)
+                                        {
+                                            using (var sr = new StreamReader(stream))
+                                                result = sr.ReadToEnd();
+                                        }
+                                }
+                                catch { }
+                            }
+                            _logger.Error(error, string.Format("Error while sending async function with result {0}.", result));
+                        }
+                        else
+                        {
+                            _logger.Debug("Async function sended, result is \"{0}\".", response);
+                        }
+
+                        Handler?.Invoke(response);
+                    }
+                    finally
+                    {
+                        Dispose();
+                    }
+                };
+
+                try
+                {
+                    if (Dispatcher.CheckAccess())
+                        callbackAction();
+                    else
+                        Dispatcher.BeginInvoke(callbackAction);
+                }
+                catch
+                {
+                    Dispose();
+                    throw;
                 }
             }
 
@@ -504,7 +550,11 @@ namespace vMixAPI
 
             if (async)
             {
-                SendFunctionAPIResponseHandler h = new SendFunctionAPIResponseHandler() { Handler = handler, Dispatcher = Dispatcher, OnDisposed = (guid)=>
+                SendFunctionAPIResponseHandler h = new SendFunctionAPIResponseHandler()
+                {
+                    Handler = handler,
+                    Dispatcher = Dispatcher,
+                    OnDisposed = (guid) =>
                     handlers.TryRemove(guid, out _)
                 };
                 handlers.TryAdd(h.GUID, h);
@@ -516,7 +566,7 @@ namespace vMixAPI
                 {
                     // 1. Вызываем тот же менеджер, что и для асинхронных запросов.
                     //    Колбэк здесь не нужен, так как мы обрабатываем результат прямо на месте.
-                    var task = APIRequestManagerV2.GetApiResponseAsync(url, auth: GetCredentials());
+                    var task = APIRequestManagerV2.GetApiResponseAsync(url, auth: GetCredentials(), ignoreCache: ignoreCache);
 
                     // 2. Блокируем выполнение и ждем результат.
                     //    GetAwaiter().GetResult() предпочтительнее, чем .Result.
@@ -582,6 +632,12 @@ namespace vMixAPI
 
         public string SendFunction(params string[] pairs)
         {
+            if (pairs == null || pairs.Length == 0)
+                return SendFunction((Dictionary<string, string>)null);
+
+            if (pairs.Length % 2 != 0)
+                throw new ArgumentException("Pairs length must be even: key/value sequence expected.", nameof(pairs));
+
             var parameters = new Dictionary<string, string>();
             for (int i = 0; i < pairs.Length; i += 2)
                 parameters.Add(pairs[i], pairs[i + 1]);
@@ -600,7 +656,7 @@ namespace vMixAPI
 
         public State()
         {
-        
+
         }
 
         [XmlElement(ElementName = "version")]

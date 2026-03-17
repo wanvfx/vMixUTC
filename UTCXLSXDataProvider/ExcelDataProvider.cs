@@ -92,13 +92,17 @@ namespace UTCGoogleSheetsDataProvider
                                                     if (row >= StartRow)
                                                     {
                                                         string line = "";
-                                                        for (int i = startColIndex; i < (endColIndex >= 0 ? Math.Min(reader.FieldCount, endColIndex) : reader.FieldCount); i++)
+                                                        var safeStartCol = Math.Max(0, startColIndex);
+                                                        var endExclusive = endColIndex >= 0
+                                                            ? Math.Min(reader.FieldCount, endColIndex + 1)
+                                                            : reader.FieldCount;
+                                                        for (int i = safeStartCol; i < endExclusive; i++)
                                                             if (IsTable)
                                                                 line += "|" + (reader.GetValue(i)?.ToString() ?? "");
                                                             else
                                                                 results.Add((reader.GetValue(i)?.ToString() ?? ""));
                                                         if (IsTable)
-                                                            results.Add(line.Substring(1));
+                                                            results.Add(line.Length > 0 ? line.Substring(1) : string.Empty);
                                                     }
                                                     row++;
                                                     if (EndRow >= 0 && row >= EndRow)

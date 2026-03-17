@@ -59,7 +59,8 @@ namespace vMixController.Widgets
         public static TimeSpan ShadowUpdatePollTime
         {
             get { return _shadowUpdate.Interval; }
-            set {
+            set
+            {
                 _shadowUpdate.Interval = value;
                 _shadowUpdate.Stop();
                 _shadowUpdate.Start();
@@ -746,13 +747,15 @@ namespace vMixController.Widgets
 
         }
 
-        public virtual void ExecuteHotkey(int index, object parameter) {
+        public virtual void ExecuteHotkey(int index, object parameter)
+        {
             if (parameter == null)
                 ExecuteHotkey(index);
         }
 
-        public virtual void ExecuteHotkey(int index) {
-            
+        public virtual void ExecuteHotkey(int index)
+        {
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -904,8 +907,8 @@ namespace vMixController.Widgets
                     else
                         found = Dispatcher.Invoke<object>(() =>
                         {
-                        //TODO: CHECK
-                        if (Thread.CurrentThread.ThreadState != System.Threading.ThreadState.Stopped) return propinfo?.GetValue(obj); else return null;
+                            //TODO: CHECK
+                            if (Thread.CurrentThread.ThreadState != System.Threading.ThreadState.Stopped) return propinfo?.GetValue(obj); else return null;
                         });
                 else
                     found = null;
@@ -1032,7 +1035,6 @@ namespace vMixController.Widgets
             var color = vMixController.ViewModel.vMixWidgetSettingsViewModel.Colors.Where(x => x.A.A == this.Color.A && x.A.R == this.Color.R && x.A.G == this.Color.G && x.A.B == this.Color.B).FirstOrDefault();
             BorderColor = color?.B ?? this.Color;
             UpdateHotkeys();
-            GC.Collect(1);
         }
 
         [NonSerialized]

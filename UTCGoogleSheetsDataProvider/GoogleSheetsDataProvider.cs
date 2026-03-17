@@ -23,7 +23,7 @@ namespace UTCGoogleSheetsDataProvider
         //static Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
         public override T DeserializeObject<T>(string data)
         {
-           return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data); 
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data);
         }
 
         public override string SerializeObject(object data)
@@ -59,7 +59,7 @@ namespace UTCGoogleSheetsDataProvider
         // Семафор для предотвращения одновременного выполнения нескольких запросов на обновление для одного экземпляра.
         // Используем SemaphoreSlim(1, 1) как асинхронный аналог lock.
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
-        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public object PreviewKeyUp { get; set; }
         public object GotFocus { get; set; }
@@ -102,7 +102,7 @@ namespace UTCGoogleSheetsDataProvider
 
         public GoogleSheetsDataProvider()
         {
-            SheetsSerializer.Serializer = new JsonSheetsSerializer();   
+            SheetsSerializer.Serializer = new JsonSheetsSerializer();
             try
             {
                 _customUI = new OnWidgetUI() { DataContext = this };
@@ -371,7 +371,7 @@ namespace UTCGoogleSheetsDataProvider
         public int RowsCount
         {
             get => _rowsCount;
-            set 
+            set
             {
                 if (_rowsCount == value) return;
                 _rowsCount = value;
@@ -383,7 +383,18 @@ namespace UTCGoogleSheetsDataProvider
 
         public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(() =>
         {
-            _cancellationTokenSource.Cancel();
+            try
+            {
+                _cancellationTokenSource.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            finally
+            {
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
             _ = UpdateData();
         }));
 

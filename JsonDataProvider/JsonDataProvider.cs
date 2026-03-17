@@ -96,7 +96,7 @@ namespace JsonDataProviderNs
             }
         }
 
-        public static void AddHeadersFromString(HttpClient client, string headersString)
+        private static void AddHeadersFromString(System.Net.Http.Headers.HttpRequestHeaders headers, string headersString)
         {
             if (string.IsNullOrWhiteSpace(headersString))
                 return;
@@ -113,7 +113,7 @@ namespace JsonDataProviderNs
 
                     if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                     {
-                        client.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
+                        headers.TryAddWithoutValidation(key, value);
                     }
                 }
             }
@@ -165,20 +165,16 @@ namespace JsonDataProviderNs
                 }
                 else
                 {
-
-                    AddHeadersFromString(_httpClient, Headers);
-                    using (var response = await _httpClient.GetAsync(uri, token))
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
                     {
-                        // 2. Проверяем, что запрос успешен (статус 2xx)
-                        response.EnsureSuccessStatusCode();
-
-                        // 3. Получаем поток из контента ответа
-                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        AddHeadersFromString(request.Headers, Headers);
+                        using (var response = await _httpClient.SendAsync(request, token))
                         {
-                            // 4. Парсим JSON из потока, также передавая токен отмены
-                            // (на случай, если парсинг очень большого документа тоже нужно прервать)
-                            newDocument = await JsonDocument.ParseAsync(stream, default, token);
-
+                            response.EnsureSuccessStatusCode();
+                            using (var stream = await response.Content.ReadAsStreamAsync())
+                            {
+                                newDocument = await JsonDocument.ParseAsync(stream, default, token);
+                            }
                         }
                     }
                 }
@@ -221,7 +217,7 @@ namespace JsonDataProviderNs
         {
             Error = "";
             if (_document == null) return;
-            
+
             try
             {
                 var path = Json.Path.JsonPath.Parse(JsonPath.Replace("\r", "").Replace("\n", ""));

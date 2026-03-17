@@ -2596,7 +2596,6 @@ namespace vMixController.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            vMixAPI.APIRequestManager.OnStatusChange += APIRequestManager_OnStatusChange;
             LocalizationManager.Instance.CultureChanged += LocalizationManager_CultureChanged;
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
@@ -2964,12 +2963,6 @@ namespace vMixController.ViewModel
 
         }
 
-        private void APIRequestManager_OnStatusChange(object sender, EventArgs e)
-        {
-
-            PollingStatus = PollingStatus == Status.Online ? Status.Offline : Status.Online;
-        }
-
         private const string css = "p { margin-left: 3em; }";
 
         private void CheckUpdate()
@@ -3056,11 +3049,18 @@ namespace vMixController.ViewModel
         private void CheckvMixConnection(object sender, EventArgs e)
         {
             if (IsInDesignMode) return;
+            IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
+            if (!IsUrlValid)
+            {
+                Status = Status.Offline;
+                return;
+            }
+
             var url = new Uri(vMixAPI.StateFabrique.GetUrl(WindowSettings.IP, WindowSettings.Port));
-            //WebClient _client = vMixAPI.APIRequestManager.GetClient(url.ToString(), 1000);
             vMixAPI.APIRequestManagerV2.GetApiResponseAsync(url.ToString(), new WeakAction((response, exception) =>
             {
-                Dispatcher.CurrentDispatcher.Invoke(() =>
+                var dispatcher = Application.Current?.Dispatcher;
+                Action updateAction = () =>
                 {
                     _logger.Debug("Checking vMix server.");
                     if (exception != null)
@@ -3081,16 +3081,13 @@ namespace vMixController.ViewModel
                     else
                         Status = Status.Sync;
 
-                });
-            }), vMixAPI.StateFabrique.GetCredentials(WindowSettings.HttpLogin, WindowSettings.HttpPassword));
-            IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
-            if (!IsUrlValid)
-                return;
+                };
 
-            //_client.DownloadStringCompleted += Client_DownloadStringCompleted;
-            //_client.CancelAsync();
-            //while (_client.IsBusy) Thread.Sleep(100);
-            //_client.DownloadStringAsync(url);
+                if (dispatcher == null || dispatcher.CheckAccess())
+                    updateAction();
+                else
+                    dispatcher.BeginInvoke(updateAction);
+            }), vMixAPI.StateFabrique.GetCredentials(WindowSettings.HttpLogin, WindowSettings.HttpPassword));
         }
 
         public override void Cleanup()
@@ -3116,7 +3113,6 @@ namespace vMixController.ViewModel
             _connectTimer.Tick -= CheckvMixConnection;
             _metricsTimer.Stop();
             LocalizationManager.Instance.CultureChanged -= LocalizationManager_CultureChanged;
-            vMixAPI.APIRequestManager.OnStatusChange -= APIRequestManager_OnStatusChange;
             vMixAPI.StateFabrique.OnStateCreated -= State_OnStateCreated;
         }
 
