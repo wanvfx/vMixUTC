@@ -711,7 +711,7 @@ namespace vMixController.Widgets
 
         private Dictionary<string, object> CaptureGlobalVariablesSnapshot()
         {
-            var snapshot = new Dictionary<string, object>(StringComparer.Ordinal);
+            /*var snapshot = new Dictionary<string, object>(StringComparer.Ordinal);
 
             var cachedVariables = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings?.Variables;
             if (cachedVariables == null)
@@ -720,7 +720,8 @@ namespace vMixController.Widgets
             foreach (var item in cachedVariables)
                 snapshot[item.A] = item.B;
 
-            return snapshot;
+            return snapshot;*/
+            return GlobalVariablesViewModel.GetVariablesSnapshot();
         }
 
         private void ExpressionEvaluateFunction(string name, FunctionArgs args)

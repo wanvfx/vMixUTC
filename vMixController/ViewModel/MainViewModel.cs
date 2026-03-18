@@ -2621,6 +2621,10 @@ namespace vMixController.ViewModel
             };
             _metricsTimer.Start();
 
+            //For loading NCalc before adding buttons to avoid throttle at button click
+            var _expression = new NCalc.Expression("1+1");
+            _expression.TryEvaluate(out _, out _);
+
             _logger.Info("Loading mapped functions.");
             XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixFunctionReference>));
             try
