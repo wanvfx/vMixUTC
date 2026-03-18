@@ -695,6 +695,8 @@ namespace vMixController.Widgets
             foreach (var item in _variables)
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
 
+            _globalVariablesSnapshot = CaptureGlobalVariablesSnapshot();
+
             var globals = _globalVariablesSnapshot;
             if (globals != null)
             {
@@ -801,6 +803,7 @@ namespace vMixController.Widgets
                         var globals = _globalVariablesSnapshot;
                         var result = _commands.CalculateStateDependency(doc, (inputKey) =>
                         {
+                            if (inputKey == null) return "NOINPUT";
                             if (globals != null && globals.TryGetValue(inputKey, out var value) && value != null)
                                 return value.ToString();
                             return inputKey;

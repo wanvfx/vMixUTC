@@ -43,8 +43,8 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="WatsonWebsocket, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b91cb133bf2a61f3, processorArchitecture=MSIL">
-      <HintPath>..\packages\WatsonWebsocket.4.1.4\lib\net462\WatsonWebsocket.dll</HintPath>
+    <Reference Include="WatsonWebsocket, Version=4.1.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WatsonWebsocket.4.1.8\lib\net462\WatsonWebsocket.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

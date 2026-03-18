@@ -293,35 +293,38 @@ namespace vMixController.Widgets.Button
                     return true;
                 }
 
-                object rawResult = expression.Evaluate();
-
-                // Если результат уже нужного типа, возвращаем его напрямую.
-                if (rawResult is T)
+                object rawResult = null;
+                if (expression.TryEvaluate(out rawResult, out _))
                 {
-                    result = (T)rawResult;
+
+                    // Если результат уже нужного типа, возвращаем его напрямую.
+                    if (rawResult is T)
+                    {
+                        result = (T)rawResult;
+                        return false;
+                    }
+
+                    //Обработка для случая возврата строк в числовом параметре
+                    if (typeof(T) == typeof(int))
+                    {
+                        if (!int.TryParse((string)rawResult, out var intResult))
+                        {
+                            result = ExpressionOrDefaultValue<T>(expressionString);
+                            return true;
+                        }
+                    }
+                    // Попытка универсального и безопасного преобразования типа.
+                    // Convert.ChangeType хорошо работает с базовыми типами и Nullable<T>.
+                    result = (T)Convert.ChangeType(rawResult, typeof(T), CultureInfo.InvariantCulture);
                     return false;
                 }
-
-                //Обработка для случая возврата строк в числовом параметре
-                if (typeof(T) == typeof(int))
+                else
                 {
-                    if (!int.TryParse((string)rawResult, out var intResult))
-                    {
-                        result = ExpressionOrDefaultValue<T>(expressionString);
-                        return true;
-                    }
+                    // Ловим любые ошибки (при вычислении, приведении типов и т.д.)
+                    // и возвращаем значение по умолчанию для типа T.
+                    result = ExpressionOrDefaultValue<T>(expressionString);
+                    return true;
                 }
-                // Попытка универсального и безопасного преобразования типа.
-                // Convert.ChangeType хорошо работает с базовыми типами и Nullable<T>.
-                result = (T)Convert.ChangeType(rawResult, typeof(T), CultureInfo.InvariantCulture);
-                return false;
-            }
-            catch (Exception)
-            {
-                // Ловим любые ошибки (при вычислении, приведении типов и т.д.)
-                // и возвращаем значение по умолчанию для типа T.
-                result = ExpressionOrDefaultValue<T>(expressionString);
-                return true;
             }
             finally
             {

@@ -326,15 +326,17 @@ namespace vMixController.Widgets
             {
                 try
                 {
-                    if (DataProvider == null || State == null)
-                        return;
 
-                    var values = DataProvider.Values;
-                    if (values == null || values.Length < 1)
-                        return;
 
                     Dispatcher.Invoke(() =>
                     {
+                        if (DataProvider == null || State == null)
+                            return;
+
+                        var values = DataProvider.Values;
+                        if (values == null || values.Length < 1)
+                            return;
+
                         Data = new ObservableCollection<string>(values);
 
                         for (int i = 0; i < pathsSnapshot.Length; i++)
