@@ -166,7 +166,7 @@ namespace vMixController.Classes
             byte[] signature = new byte[3];
             stream.Read(signature, 0, 3);
             Stream memstream = null;
-            
+
             if (signature[0] == 0x44 && signature[1] == 0x77 && signature[2] == 0xCC)
             {
                 memstream = new MemoryStream();
@@ -449,6 +449,21 @@ namespace vMixController.Classes
             // 3. Во всех остальных случаях → добавляем "copy"
             return originalName + " copy";
         }
+
+        public static object NormalizeParameterValue(object value)
+        {
+            if (value is string str)
+            {
+                if (decimal.TryParse(str, NumberStyles.Number, CultureInfo.InvariantCulture, out var invariant))
+                    return invariant;
+
+                if (decimal.TryParse(str, NumberStyles.Number, CultureInfo.CurrentCulture, out var current))
+                    return current;
+            }
+
+            return value;
+        }
+
     }
 
     /// <summary>

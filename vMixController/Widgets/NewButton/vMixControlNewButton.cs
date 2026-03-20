@@ -693,7 +693,7 @@ namespace vMixController.Widgets
         private void PopulateVariables(NCalc.Expression exp)
         {
             foreach (var item in _variables)
-                exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), item.Value);
+                exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), Utils.NormalizeParameterValue(item.Value));
 
             _globalVariablesSnapshot = CaptureGlobalVariablesSnapshot();
 
@@ -703,10 +703,10 @@ namespace vMixController.Widgets
                 foreach (var item in globals)
                 {
                     if (!exp.Parameters.ContainsKey(item.Key))
-                        exp.Parameters.Add(item.Key, item.Value);
+                        exp.Parameters.Add(item.Key, Utils.NormalizeParameterValue(item.Value));
                 }
             }
-            exp.Parameters.Add(parameterName, parameterValue);
+            exp.Parameters.Add(parameterName, Utils.NormalizeParameterValue(parameterValue));
         }
 
         private Dictionary<string, object> CaptureGlobalVariablesSnapshot()
