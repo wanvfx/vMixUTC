@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Serialization;
 using vMixController.Classes;
+using vMixController.Classes.Scripting;
 using vMixController.ViewModel;
 using vMixController.Widgets;
 

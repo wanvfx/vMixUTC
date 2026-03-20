@@ -24,8 +24,7 @@ using vMixAPI;
 using vMixController.Classes;
 using vMixController.Messages;
 using vMixController.ViewModel;
-using vMixController.Widgets.Button;
-using vMixController.Widgets.NewButton;
+using vMixController.Classes.Scripting;
 
 namespace vMixController.Widgets
 {

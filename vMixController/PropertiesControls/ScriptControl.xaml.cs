@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 using vMixController.Classes;
+using vMixController.Classes.Scripting;
 using vMixController.Interfaces;
 using vMixController.Widgets;
 

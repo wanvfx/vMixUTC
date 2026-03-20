@@ -11,7 +11,7 @@ using System.Windows.Threading;
 using vMixController.Classes;
 using vMixController.ViewModel;
 
-namespace vMixController.Widgets
+namespace vMixController.Classes.Scripting
 {
     [Serializable]
     public class vMixControlNewButtonCommand : ObservableObject, ICloneable

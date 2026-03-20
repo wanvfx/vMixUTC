@@ -3,35 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Xml;
-using vMixController.Classes;
 
-namespace vMixController.Widgets.Button
+namespace vMixController.Classes.Scripting
 {
     #region Вспомогательные классы для передачи данных
-
-    /// <summary>
-    /// Класс для хранения результата выполнения основной функции.
-    /// Заменяет кортеж (bool, bool).
-    /// </summary>
-    public class XPathNewStateResult
-    {
-        public bool IsStateDependent { get; }
-        public bool HasErrors { get; }
-
-        public XPathNewStateResult(bool isStateDependent, bool hasErrors)
-        {
-            IsStateDependent = isStateDependent;
-            HasErrors = hasErrors;
-        }
-    }
 
     /// <summary>
     /// Неизменяемый класс для передачи аргументов форматирования.
@@ -60,8 +37,6 @@ namespace vMixController.Widgets.Button
             Resolve = resolve;
         }
     }
-
-    public delegate void NewPopulateVariablesDelegate(NCalc.Expression expression);
 
     /// <summary>
     /// Класс для хранения результата подготовки аргументов.
@@ -252,106 +227,8 @@ namespace vMixController.Widgets.Button
             return false;
         }
 
-        /// <summary>
-        /// Вычисляет строковое выражение и безопасно преобразует результат в указанный тип T.
-        /// Этот метод заменяет CalculateExpression, CalculateBoolExpression и CalculateExpression<T>.
-        /// </summary>
-        /// <typeparam name="T">Целевой тип результата (например, bool, int, string, double).</typeparam>
-        /// <param name="expressionString">Строка с выражением для вычисления.</param>
-        /// <param name="populateVariables">Делегат для заполнения выражения переменными.</param>
-        /// <param name="evaluateFunctionHandler">Обработчик для пользовательских функций в выражении.</param>
-        /// <param name="result">Результат вычисления выражения.</param>
-        /// <returns>Была ли ошибка при вычислении.</returns>
-        public static bool CalculateExpression<T>(string expressionString, NewPopulateVariablesDelegate populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
-        {
-            if (string.IsNullOrWhiteSpace(expressionString))
-            {
-                // Для T=string вернет null, для T=bool вернет false, для T=int вернет 0.
-                result = default(T);
-                return false;
-            }
-
-            var expression = new Expression(expressionString);
-
-            // Подписываемся на события. Отписка будет в блоке finally, что гарантирует ее выполнение.
-            if (evaluateFunctionHandler != null)
-            {
-                expression.EvaluateFunction += evaluateFunctionHandler;
-            }
-            expression.EvaluateParameter += OnEvaluateParameter;
-
-            try
-            {
-                if (populateVariables != null)
-                {
-                    populateVariables(expression);
-                }
-
-                if (expression.HasErrors())
-                {
-                    result = ExpressionOrDefaultValue<T>(expressionString);
-                    return true;
-                }
-
-                object rawResult = null;
-                if (expression.TryEvaluate(out rawResult, out _))
-                {
-
-                    // Если результат уже нужного типа, возвращаем его напрямую.
-                    if (rawResult is T)
-                    {
-                        result = (T)rawResult;
-                        return false;
-                    }
-
-                    //Обработка для случая возврата строк в числовом параметре
-                    if (typeof(T) == typeof(int))
-                    {
-                        if (!int.TryParse((string)rawResult, out var intResult))
-                        {
-                            result = ExpressionOrDefaultValue<T>(expressionString);
-                            return true;
-                        }
-                    }
-                    // Попытка универсального и безопасного преобразования типа.
-                    // Convert.ChangeType хорошо работает с базовыми типами и Nullable<T>.
-                    result = (T)Convert.ChangeType(rawResult, typeof(T), CultureInfo.InvariantCulture);
-                    return false;
-                }
-                else
-                {
-                    // Ловим любые ошибки (при вычислении, приведении типов и т.д.)
-                    // и возвращаем значение по умолчанию для типа T.
-                    result = ExpressionOrDefaultValue<T>(expressionString);
-                    return true;
-                }
-            }
-            finally
-            {
-                // Гарантированная отписка от событий, чтобы избежать утечек памяти.
-                if (evaluateFunctionHandler != null)
-                {
-                    expression.EvaluateFunction -= evaluateFunctionHandler;
-                }
-                expression.EvaluateParameter -= OnEvaluateParameter;
-            }
-        }
-
-        private static T ExpressionOrDefaultValue<T>(string expressionString)
-        {
-            T result;
-            if (typeof(T) == typeof(string) || typeof(T) == typeof(object))
-                result = (T)((object)expressionString);
-            else
-                result = default(T);
-            return result;
-        }
-
-        private static void OnEvaluateParameter(string name, ParameterArgs args)
-        {
-            //Avoid non-defined parameters with their names
-            args.Result = name;
-        }
+        public static bool CalculateExpression<T>(string expressionString, Action<Expression> populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
+            => vMixControlExpressionHelper.CalculateExpression(expressionString, populateVariables, evaluateFunctionHandler, out result);
 
 
         /// <summary>
@@ -360,7 +237,7 @@ namespace vMixController.Widgets.Button
         /// <param name="doc">XML-документ для проверки.</param>
         /// <param name="variableExpander">Функция для раскрытия переменных (например, "[VAR]").</param>
         /// <returns>Объект XPathStateResult, содержащий результат и флаг наличия ошибок.</returns>
-        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlNewButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
+        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlNewButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, Action<Expression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             if (doc == null || variableExpander == null)
             {
@@ -369,7 +246,7 @@ namespace vMixController.Widgets.Button
 
             bool isStateDependent = false;
             bool hasErrors = false;
-            BuildInputMaps(doc, out var inputNumberByKey, out var inputKeyByNumber);
+            vMixControlExpressionHelper.BuildInputMaps(doc, out var inputNumberByKey, out var inputKeyByNumber);
 
             foreach (var command in _commands)
             {
@@ -395,7 +272,7 @@ namespace vMixController.Widgets.Button
                 }
 
                 // 3. Извлечение фактического значения из XML
-                string actualValue = GetNodeValue(doc, xpath);
+                string actualValue = vMixControlExpressionHelper.GetNodeValue(doc, xpath);
                 if (actualValue == null) // Узел не найден
                 {
                     continue;
@@ -416,7 +293,7 @@ namespace vMixController.Widgets.Button
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, NewPopulateVariablesDelegate PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
+        private static NewPrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlNewButtonCommand item, Func<string, string> variableExpander, Action<Expression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
         {
             try
             {
@@ -473,33 +350,6 @@ namespace vMixController.Widgets.Button
             }
         }
 
-        private static void BuildInputMaps(XmlDocument doc, out Dictionary<string, int> inputNumberByKey, out Dictionary<int, string> inputKeyByNumber)
-        {
-            inputNumberByKey = new Dictionary<string, int>(StringComparer.Ordinal);
-            inputKeyByNumber = new Dictionary<int, string>();
-
-            if (doc == null)
-                return;
-
-            var nodes = doc.SelectNodes("//inputs/input");
-            if (nodes == null)
-                return;
-
-            foreach (XmlNode node in nodes)
-            {
-                var key = node.Attributes?["key"]?.Value;
-                var numberStr = node.Attributes?["number"]?.Value;
-                if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(numberStr))
-                    continue;
-
-                if (!int.TryParse(numberStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
-                    continue;
-
-                inputNumberByKey[key] = number;
-                inputKeyByNumber[number] = key;
-            }
-        }
-
         /// <summary>
         /// Определяет и форматирует итоговый XPath-путь для выполнения.
         /// </summary>
@@ -517,19 +367,6 @@ namespace vMixController.Widgets.Button
             }
 
             return pathTemplate.ReplacePlaceholdersFromObject(args);
-        }
-
-        /// <summary>
-        /// Безопасно извлекает значение из XML-узла по XPath.
-        /// </summary>
-        /// <returns>Строковое значение узла или null, если узел не найден.</returns>
-        private static string GetNodeValue(XmlDocument doc, string xpath)
-        {
-            XmlNode node = doc.SelectSingleNode(xpath);
-            if (node == null) return null;
-
-            XmlAttribute attr = node as XmlAttribute;
-            return attr != null ? attr.Value : node.InnerText;
         }
 
         private enum ComparisonOperator

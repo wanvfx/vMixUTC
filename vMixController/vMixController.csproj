@@ -407,11 +407,12 @@
     <Compile Include="Classes\Hotkey.cs" />
     <Compile Include="Classes\MenuStyleSelector.cs" />
     <Compile Include="Classes\Messages.cs" />
-    <Compile Include="Classes\NativeFunctions.cs" />
+    <Compile Include="Classes\Scripting\NativeFunctions.cs" />
     <Compile Include="Classes\One.cs" />
     <Compile Include="Classes\Pair.cs" />
     <Compile Include="Classes\PerfMetrics.cs" />
     <Compile Include="Classes\Quadriple.cs" />
+    <Compile Include="Classes\Scripting\vMixControlExpressionHelper.cs" />
     <Compile Include="Classes\SharedData.cs" />
     <Compile Include="Classes\Singleton.cs" />
     <Compile Include="Classes\StreamDeckConnector.cs" />
@@ -571,13 +572,13 @@
     </Compile>
     <Compile Include="ViewModel\GlobalVariablesViewModel.cs" />
     <Compile Include="vMixControlUtils.cs" />
-    <Compile Include="Widgets\Button\vMixControlButtonHelper.cs" />
+    <Compile Include="Classes\Scripting\vMixControlButtonHelper.cs" />
     <Compile Include="Widgets\IvMixAutoUpdateWidget.cs" />
     <Compile Include="Classes\MainWindowSettings.cs" />
-    <Compile Include="Widgets\NewButton\NewNativeFunctions.cs" />
-    <Compile Include="Widgets\NewButton\vMixControlNewButtonHelper.cs" />
-    <Compile Include="Widgets\NewButton\vMixControlNewButton.cs" />
-    <Compile Include="Widgets\NewButton\vMixControlNewButtonCommand.cs" />
+    <Compile Include="Classes\Scripting\NewNativeFunctions.cs" />
+    <Compile Include="Classes\Scripting\vMixControlNewButtonHelper.cs" />
+    <Compile Include="Widgets\vMixControlNewButton.cs" />
+    <Compile Include="Classes\Scripting\vMixControlNewButtonCommand.cs" />
     <Compile Include="Widgets\vMixControlVariableViewer.cs" />
     <Compile Include="Widgets\vMixControlPlaylist.cs" />
     <Compile Include="Widgets\vMixControlSlider.cs" />
@@ -587,7 +588,7 @@
     <Compile Include="Widgets\vMixControlClock.cs" />
     <Compile Include="Widgets\vMixControlContainer.cs" />
     <Compile Include="Widgets\vMixControlButton.cs" />
-    <Compile Include="Widgets\vMixControlButtonCommand.cs" />
+    <Compile Include="Classes\Scripting\vMixControlButtonCommand.cs" />
     <Compile Include="Widgets\vMixControlRegion.cs" />
     <Compile Include="Widgets\vMixControlLabel.cs" />
     <Compile Include="Widgets\vMixControlExternalData.cs" />

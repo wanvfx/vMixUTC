@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vMixController.Widgets.NewButton
+namespace vMixController.Classes.Scripting
 {
     public class NewNativeFunctions
     {
