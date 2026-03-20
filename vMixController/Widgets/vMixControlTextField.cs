@@ -93,7 +93,7 @@ namespace vMixController.Widgets
                     if (exp != null && exp.Status == BindingStatus.Active && exp.BindingExpressions.Count > 0)
                         exp.UpdateSource();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Логирование ошибки
                     //Console.WriteLine($"Error updating source: {ex.Message}");

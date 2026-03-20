@@ -137,12 +137,4 @@ namespace vMixController.Classes
         }
     }
 
-    public class ColorInfo: Pair<string, Widgets.vMixControl>
-    {
-        public ColorInfo()
-        {
-            A = "";
-            B = new Widgets.vMixControl() { };
-        }
-    }
 }

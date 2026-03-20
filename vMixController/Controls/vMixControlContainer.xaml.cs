@@ -31,8 +31,6 @@ namespace vMixController.Controls
     /// </summary>
     public partial class vMixControlContainer : System.Windows.Controls.UserControl, INotifyPropertyChanged
     {
-
-        static int _prevCount = 0;
         static Queue<vMixControlContainer> _initList = new Queue<vMixControlContainer>();
         static bool? _lastLoadingState = null;
 
@@ -50,7 +48,6 @@ namespace vMixController.Controls
 
             if (_initList.Count > 0)
                 _initList.Dequeue().LoadViewFromUri("vMixController;component/Controls/vMixControlContainer.xaml");
-            _prevCount = _initList.Count;
             if (_initList.Count == 0)
                 _timer.Stop();
 
@@ -107,11 +104,6 @@ namespace vMixController.Controls
             //this.LoadViewFromUri("vMixController;component/Controls/vMixControlContainerPlaceholder.xaml");
             //InitializeComponent();
             //this.LoadViewFromUri("vMixController;component/Controls/vMixControlContainer.xaml");
-        }
-
-        private void VMixControlContainer_Loaded(object sender, RoutedEventArgs e)
-        {
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

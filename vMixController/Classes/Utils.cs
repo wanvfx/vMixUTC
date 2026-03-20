@@ -78,17 +78,7 @@ namespace vMixController.Classes
         Online,
         InputsChanged
     }
-    public enum MessageType
-    {
-        Button,
-        Volume
-    }
-    public struct DocumentMessage
-    {
-        public MessageType Type;
-        public XmlDocument Document;
-        public DateTime Timestamp;
-    }
+
     public static class Utils
     {
 
@@ -502,19 +492,6 @@ namespace vMixController.Classes
             MediumLow = 142,
             Low = 109,
             XLow = 45
-        }
-
-
-        /// <summary>
-        /// Defines hint alpha levels.
-        /// </summary>
-        public enum HintAlpha
-                : byte
-        {
-            Low = 64,
-            XLow = 48,
-            XxLow = 32,
-            XxxLow = 16
         }
 
 

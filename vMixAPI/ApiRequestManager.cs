@@ -275,7 +275,7 @@ namespace vMixAPI
                     _pendingRequests.TryRemove(cacheKey, out _);
                     pending.Complete(response, address, OnDownloadCompleted);
                 }
-                catch (OperationCanceledException ex)
+                catch (OperationCanceledException)
                 {
                     _pendingRequests.TryRemove(cacheKey, out _);
                     pending.Cancel();

@@ -740,7 +740,9 @@
     <EmbeddedResource Include="Properties\Strings.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Strings.ru-RU.resx" />
+    <EmbeddedResource Include="Properties\Strings.ru-RU.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Strings.zh-CN.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -791,7 +793,6 @@
     </None>
     <None Include="packages.config" />
     <None Include="Usage.txt" />
-    <None Include="RegisterFilters.cmd" />
     <None Include="vmixUTC.streamDeckPlugin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

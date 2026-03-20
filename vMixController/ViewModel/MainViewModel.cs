@@ -451,31 +451,6 @@ namespace vMixController.ViewModel
             }
         }
 
-        private ObservableCollection<Triple<vMixControl, vMixControl, string>> _execLinks = new ObservableCollection<Triple<vMixControl, vMixControl, string>>();
-
-        /// <summary>
-        /// Sets and gets the ExecLinks property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public ObservableCollection<Triple<vMixControl, vMixControl, string>> ExecLinks
-        {
-            get
-            {
-                return _execLinks;
-            }
-
-            set
-            {
-                if (_execLinks == value)
-                {
-                    return;
-                }
-
-                _execLinks = value;
-                RaisePropertyChanged(nameof(ExecLinks));
-            }
-        }
-
         private ObservableCollection<Pair<string, vMixControl>> _widgetTemplates = new ObservableCollection<Pair<string, vMixControl>>();
 
         /// <summary>
@@ -1167,7 +1142,6 @@ namespace vMixController.ViewModel
                         IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
                         SyncTovMixState();
-                        UpdateExecLinks();
 
                         LIVE = live;
 
@@ -2043,56 +2017,10 @@ namespace vMixController.ViewModel
                 IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
                 SyncTovMixState();
-                UpdateExecLinks();
             }
             catch (Exception e)
             {
                 _logger.Error(e, "Error while loading controller");
-            }
-        }
-
-
-        private void UpdateExecLinks()
-        {
-            using (PerfMetrics.Measure("exec-links.rebuild"))
-            {
-                ExecLinks.Clear();
-                foreach (var item in _widgets)
-                {
-                    var active = item.Hotkey.Where(x => !string.IsNullOrWhiteSpace(x.Link) && x.Active).Select(x => x.Link).ToArray();
-                    foreach (var item1 in _widgets)
-                    {
-                        switch (item1)
-                        {
-                            case vMixControlButton b:
-                                foreach (var cmd in b.Commands)
-                                {
-                                    if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.StringParameter))
-                                        ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.StringParameter });
-                                }
-                                break;
-                            case vMixControlNewButton nb:
-                                foreach (var cmd in nb.Commands)
-                                {
-                                    if (cmd.Action.Function == "ExecLink" && active.Contains(cmd.Value))
-                                        ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = cmd.Value });
-                                }
-                                break;
-                            case vMixControlTimer t:
-                                foreach (var l in t.Links.Where(x => active.Contains(x)))
-                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l });
-                                break;
-                            case vMixControlMidiInterface m:
-                                foreach (var l in m.Midis.Where(x => active.Contains(x.C)))
-                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.C });
-                                break;
-                            case vMixControlClock c:
-                                foreach (var l in c.Events.Where(x => active.Contains(x.Command)))
-                                    ExecLinks.Add(new Triple<vMixControl, vMixControl, string>() { A = item, B = item1, C = l.Command });
-                                break;
-                        }
-                    }
-                }
             }
         }
 
