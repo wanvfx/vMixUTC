@@ -75,10 +75,10 @@ namespace vMixController.Controls
                 var px = item.Left;
                 var py = item.Top;
 
-                item.Left = Math.Round(item.Left + e.HorizontalChange);
-                item.Top = Math.Round(item.Top + e.VerticalChange);
+                item.Left += e.HorizontalChange;
+                item.Top += e.VerticalChange;
 
-                item.AlignByGrid();
+                item.AlignPositionByGrid();
 
                 GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Triple<vMixControl, double, double>(item, item.Left - px, item.Top - py));
             }

@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -53,6 +54,8 @@ namespace vMixController.Widgets
         internal static List<UserControl> ControlsStoreUsage = new List<UserControl>();
         internal static State _internalState;
         internal static Regex _regexInt = new Regex(@"^\d+$");
+        private static readonly ConcurrentDictionary<Tuple<Type, string>, PropertyInfo> _propertyCache =
+            new ConcurrentDictionary<Tuple<Type, string>, PropertyInfo>();
 
         protected static DispatcherTimer _shadowUpdate;
 
@@ -758,11 +761,30 @@ namespace vMixController.Widgets
 
         }
 
+        protected void RunOnUiThread(Action action, DispatcherPriority priority = DispatcherPriority.Background)
+        {
+            if (action == null)
+                return;
+
+            if (Dispatcher == null || Dispatcher.CheckAccess())
+            {
+                action();
+                return;
+            }
+
+            Dispatcher.BeginInvoke(action, priority);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected static PropertyInfo GetPropertyOrNull(Type type, string name)
         {
-            return type.GetProperties().Where(x => x.Name == name).FirstOrDefault();
+            if (type == null || string.IsNullOrEmpty(name))
+                return null;
+
+            var cacheKey = Tuple.Create(type, name);
+            return _propertyCache.GetOrAdd(cacheKey, key =>
+                key.Item1.GetProperty(key.Item2, BindingFlags.Instance | BindingFlags.Public));
         }
 
         private string[] GetValueAndPropertyInfo(object obj, string path, out PropertyInfo found_prop, out object found)
@@ -953,6 +975,16 @@ namespace vMixController.Widgets
                 //ctrl.Update();
                 return ctrl;
             }
+        }
+
+        public int GetHotkeyNumber(string name)
+        {
+            if (_hotkey == null)
+                _hotkey = GetHotkeys();
+            for (int i = 0; i < _hotkey.Length; i++)
+                if (_hotkey[i].Name == name)
+                    return i;
+            return -1;
         }
 
         public virtual void Update()

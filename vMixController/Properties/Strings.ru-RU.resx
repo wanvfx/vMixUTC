@@ -1224,4 +1224,20 @@
   <data name="Undo.WidgetsDuplicated" xml:space="preserve">
     <value>Widgets Duplicated</value>
   </data>
+  <data name="MainWindow.StatusBar.ShowLinks" xml:space="preserve">
+    <value>Отображать связи</value>
+  </data>
+  <data name="MainWindow.Settings.Field.EnableLoopGuard" xml:space="preserve">
+    <value>Включить защиту от зацикливания скриптов</value>
+  </data>
+  <data name="MainWindow.StatusBar.StopScripts" xml:space="preserve">
+    <value>Остановить скрипты</value>
+  </data>
+  <data name="Dialog.Warning.PossibleScriptError.Loop" xml:space="preserve">
+    <value>Обнаружен потенциальный цикл выполнения, выполнение заблокировано.
+Корневая ссылка: {0}
+Последняя ссылка: {1}
+Переходов по цепочке: {2}
+Срабатываний за &lt;1 с: {3}</value>
+  </data>
 </root>

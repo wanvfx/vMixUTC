@@ -237,7 +237,7 @@ namespace vMixController.PropertiesControls
                     ?? (_addCommandCommand = new RelayCommand(
                     () =>
                     {
-                        var cmd = new vMixControlNewButtonCommand() { Action = new Classes.vMixNewFunctionReference() };
+                        var cmd = new vMixControlNewButtonCommand() { Action = new vMixNewFunctionReference() };
                         Commands.Add(cmd);
                         var index = Math.Max(Commands.Count - 2, 0);
                         RearrangeCommnads();

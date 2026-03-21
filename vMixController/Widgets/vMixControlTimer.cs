@@ -1,18 +1,18 @@
 ﻿using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
+using HighPrecisionTimer;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixController.Classes;
-using System.Windows.Controls;
+using vMixController.Classes.Scripting;
 using vMixController.ViewModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using GalaSoft.MvvmLight.Messaging;
-using HighPrecisionTimer;
-using System.Windows;
-using System.Globalization;
-using System.Threading;
 
 namespace vMixController.Widgets
 {
@@ -24,47 +24,108 @@ namespace vMixController.Widgets
 
     public static class GlobalTimer
     {
-        private static long _refCount = 0;
+        private static int _refCount = 0;
+        private static int _highPrecisionRefCount = 0;
+        private static bool _isTimerRunning = false;
         private static readonly object _sync = new object();
 
         private static readonly MultimediaTimer _mtimer = new MultimediaTimer();
         private static readonly Stopwatch _sw = new Stopwatch();
         private static TimeSpan _accum; // для суммирования фактического elapsed
-        private static readonly TimeSpan Tick50ms = TimeSpan.FromMilliseconds(50);
+        private static readonly TimeSpan HighPrecisionTick = TimeSpan.FromMilliseconds(100);
+        private static readonly TimeSpan NormalTick = TimeSpan.FromMilliseconds(1000);
+        private static readonly TimeSpan OneSecond = TimeSpan.FromSeconds(1);
 
         static GlobalTimer()
         {
-            _mtimer.Interval = (int)Tick50ms.TotalMilliseconds; // 100
+            _mtimer.Interval = (int)HighPrecisionTick.TotalMilliseconds;
             _mtimer.Resolution = 5;
             _mtimer.Elapsed += OnElapsed;
         }
 
-        public static void Increment()
+        public static void Increment(bool isHighPrecision)
         {
-            var val = Interlocked.Increment(ref _refCount);
-            if (val == 1)
+            lock (_sync)
             {
-                lock (_sync)
+                _refCount++;
+                if (isHighPrecision)
+                    _highPrecisionRefCount++;
+
+                if (_refCount == 1)
                 {
                     _accum = TimeSpan.Zero;
                     _sw.Restart();
-                    _mtimer.Start();
                 }
+
+                ReconfigureTimerLocked();
             }
         }
 
-        public static void Decrement()
+        public static void Decrement(bool isHighPrecision)
         {
-            var val = Interlocked.Decrement(ref _refCount);
-            if (val <= 0)
+            lock (_sync)
             {
-                lock (_sync)
+                if (_refCount > 0)
+                    _refCount--;
+
+                if (isHighPrecision && _highPrecisionRefCount > 0)
+                    _highPrecisionRefCount--;
+
+                if (_refCount <= 0)
                 {
-                    _mtimer.Stop();
+                    if (_isTimerRunning)
+                    {
+                        _mtimer.Stop();
+                        _isTimerRunning = false;
+                    }
                     _sw.Reset();
                     _refCount = 0;
+                    _highPrecisionRefCount = 0;
                     _accum = TimeSpan.Zero;
+                    return;
                 }
+
+                ReconfigureTimerLocked();
+            }
+        }
+
+        public static void UpdatePrecisionMode(bool oldIsHighPrecision, bool newIsHighPrecision)
+        {
+            if (oldIsHighPrecision == newIsHighPrecision)
+                return;
+
+            lock (_sync)
+            {
+                if (_refCount <= 0)
+                    return;
+
+                if (oldIsHighPrecision && _highPrecisionRefCount > 0)
+                    _highPrecisionRefCount--;
+                if (newIsHighPrecision)
+                    _highPrecisionRefCount++;
+
+                ReconfigureTimerLocked();
+            }
+        }
+
+        private static void ReconfigureTimerLocked()
+        {
+            var tick = _highPrecisionRefCount > 0 ? HighPrecisionTick : NormalTick;
+            var newInterval = (int)tick.TotalMilliseconds;
+            if (_mtimer.Interval != newInterval)
+            {
+                if (_isTimerRunning)
+                {
+                    _mtimer.Stop();
+                    _isTimerRunning = false;
+                }
+                _mtimer.Interval = newInterval;
+            }
+
+            if (!_isTimerRunning)
+            {
+                _mtimer.Start();
+                _isTimerRunning = true;
             }
         }
 
@@ -73,13 +134,31 @@ namespace vMixController.Widgets
             // Фактическая дельта с прошлой итерации
             var elapsed = _sw.Elapsed;
             _sw.Restart();
-
-            Messenger.Default.Send(elapsed, TimerTokens.HighPrecision);
+            int oneSecondTicks = 0;
             _accum += elapsed;
-            while (_accum >= TimeSpan.FromSeconds(1))
+            while (_accum >= OneSecond)
             {
-                Messenger.Default.Send(TimeSpan.FromSeconds(1), TimerTokens.OneSecond);
-                _accum -= TimeSpan.FromSeconds(1);
+                oneSecondTicks++;
+                _accum -= OneSecond;
+            }
+
+            var appDispatcher = Application.Current?.Dispatcher;
+            if (appDispatcher == null || appDispatcher.CheckAccess())
+            {
+                DispatchTick(elapsed, oneSecondTicks);
+            }
+            else
+            {
+                appDispatcher.BeginInvoke(new Action(() => DispatchTick(elapsed, oneSecondTicks)), DispatcherPriority.Background);
+            }
+        }
+
+        private static void DispatchTick(TimeSpan elapsed, int oneSecondTicks)
+        {
+            Messenger.Default.Send(elapsed, TimerTokens.HighPrecision);
+            for (var i = 0; i < oneSecondTicks; i++)
+            {
+                Messenger.Default.Send(OneSecond, TimerTokens.OneSecond);
             }
         }
     }
@@ -99,11 +178,11 @@ namespace vMixController.Widgets
         {
             Messenger.Default.Register<TimeSpan>(this, TimerTokens.HighPrecision, t =>
             {
-                if (IsHighPrecision) Dispatcher.BeginInvoke(new Action(() => Tick(t)));
+                if (IsHighPrecision) RunOnUiThread(() => Tick(t));
             });
             Messenger.Default.Register<TimeSpan>(this, TimerTokens.OneSecond, t =>
             {
-                if (!IsHighPrecision) Dispatcher.BeginInvoke(new Action(() => Tick(t)));
+                if (!IsHighPrecision) RunOnUiThread(() => Tick(t));
             });
 
             _width = 256;
@@ -155,7 +234,7 @@ namespace vMixController.Widgets
             }
 
             if (Links.Length > 4 && !string.IsNullOrWhiteSpace(Links[4]))
-                Messenger.Default.Send(new Pair<string, object>(Links[4], null));
+                Messenger.Default.Send(new Pair<string, object>(Links[4], ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
         }
 
         private void Finish()
@@ -164,7 +243,7 @@ namespace vMixController.Widgets
             if (Active)
             {
                 Active = false;
-                GlobalTimer.Decrement();
+                GlobalTimer.Decrement(IsHighPrecision);
             }
             SendLink(2); // OnStop/OnComplete?
             SendLink(3);
@@ -173,7 +252,7 @@ namespace vMixController.Widgets
         private void SendLink(int index)
         {
             if (!string.IsNullOrWhiteSpace(Links[index]))
-                Messenger.Default.Send(new Pair<string, object>(Links[index], null));
+                Messenger.Default.Send(new Pair<string, object>(Links[index], ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
         }
 
         private void UpdateTimer()
@@ -227,7 +306,10 @@ namespace vMixController.Widgets
                     return;
                 }
 
+                var oldValue = _isHighPrecision;
                 _isHighPrecision = value;
+                if (Active)
+                    GlobalTimer.UpdatePrecisionMode(oldValue, _isHighPrecision);
                 RaisePropertyChanged(nameof(IsHighPrecision));
             }
         }
@@ -448,7 +530,7 @@ namespace vMixController.Widgets
                     {
                         _time = parsed;
                         RaisePropertyChanged(nameof(Time));
-                        if (_time != TimeSpan.Zero)
+                        if (_time != TimeSpan.Zero && !Active)
                             Paused = true;
                     }
                 }
@@ -564,24 +646,24 @@ namespace vMixController.Widgets
                                     if (!Paused) UpdateTimer();
                                     Paused = false;
                                     Active = true;
-                                    GlobalTimer.Increment();
+                                    GlobalTimer.Increment(IsHighPrecision);
                                     SendLink(0);
                                 }
                                 break;
 
                             case "Pause":
-                                if (Active && !Paused)
+                                if (Active)
                                 {
                                     Paused = true;
                                     Active = false;
-                                    GlobalTimer.Decrement();
+                                    GlobalTimer.Decrement(IsHighPrecision);
                                     SendLink(1);
                                 }
-                                else if (!Active && Paused)
+                                else if (Paused)
                                 {
                                     Paused = false;
                                     Active = true;
-                                    GlobalTimer.Increment();
+                                    GlobalTimer.Increment(IsHighPrecision);
                                     SendLink(0);
                                 }
                                 break;
@@ -589,7 +671,7 @@ namespace vMixController.Widgets
                             case "Stop":
                                 if (Active)
                                 {
-                                    GlobalTimer.Decrement();
+                                    GlobalTimer.Decrement(IsHighPrecision);
                                     Active = false;
                                 }
                                 Paused = false;
@@ -631,7 +713,7 @@ namespace vMixController.Widgets
             if (managed)
             {
                 Messenger.Default.Unregister(this);
-                if (Active) GlobalTimer.Decrement(); // а не безусловный --
+                if (Active) GlobalTimer.Decrement(IsHighPrecision); // а не безусловный --
                 base.Dispose(managed);
                 GC.SuppressFinalize(this);
             }

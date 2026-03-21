@@ -76,6 +76,52 @@ namespace vMixController.Classes
         }
 
 
+        private bool _showLinks = false;
+
+        /// <summary>
+        /// Sets and gets the Left property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool ShowLinks
+        {
+            get
+            {
+                return _showLinks;
+            }
+
+            set
+            {
+                if (_showLinks == value)
+                {
+                    return;
+                }
+
+                _showLinks = value;
+                RaisePropertyChanged(nameof(ShowLinks));
+            }
+        }
+
+        private bool _enableLoopGuard = true;
+
+        public bool EnableLoopGuard
+        {
+            get
+            {
+                return _enableLoopGuard;
+            }
+
+            set
+            {
+                if (_enableLoopGuard == value)
+                {
+                    return;
+                }
+
+                _enableLoopGuard = value;
+                RaisePropertyChanged(nameof(EnableLoopGuard));
+            }
+        }
+
         /// <summary>
         /// The <see cref="Left" /> property's name.
         /// </summary>

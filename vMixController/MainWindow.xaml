@@ -621,6 +621,7 @@
                                 <CheckBox TabIndex="12" Tag="{loc:Loc Key=MainWindow.Settings.Field.ShowWidgetLock}" IsChecked="{Binding WindowSettings.ShowIndividualLock, Mode=TwoWay}"/>
                                 <CheckBox TabIndex="13" Tag="{loc:Loc Key=MainWindow.Settings.Field.BlinkLightsNeedRestart}" IsChecked="{Binding WindowSettings.BlinkLights, Mode=TwoWay}" Cursor=""/>
                                 <CheckBox TabIndex="14" Tag="{loc:Loc Key=MainWindow.Settings.Field.UseInfiniteCanvas}" IsChecked="{Binding WindowSettings.UseInfiniteCanvas, Mode=TwoWay}" Cursor=""/>
+                                <CheckBox TabIndex="15" Tag="{loc:Loc Key=MainWindow.Settings.Field.EnableLoopGuard}" IsChecked="{Binding WindowSettings.EnableLoopGuard, Mode=TwoWay}" Cursor=""/>
                             </CompositeCollection>
                         </skin:PropertiesListView>
                         <Grid Background="Transparent" DataContext="{Binding GlobalSettings, Source={StaticResource Locator}}">
@@ -846,16 +847,22 @@
                                     </Style.Triggers>
                                 </Style>
                             </ScrollViewer.Style>
-                            <Grid Name="LayoutGrid" Tag="{Binding WindowSettings.Locked, Mode=TwoWay}" ClipToBounds="True" PreviewMouseDown="LayoutGrid_PreviewMouseDown" PreviewMouseMove="LayoutGrid_PreviewMouseMove" PreviewMouseUp="LayoutGrid_PreviewMouseUp" PreviewMouseWheel="LayoutGrid_PreviewMouseWheel">
-                                <Grid.Background>
-                                    <ImageBrush x:Name="CanvasGridBrush" ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
-                                </Grid.Background>
+                            <Grid Name="LayoutGrid" ClipToBounds="True" PreviewMouseDown="LayoutGrid_PreviewMouseDown" PreviewMouseMove="LayoutGrid_PreviewMouseMove" PreviewMouseUp="LayoutGrid_PreviewMouseUp" PreviewMouseWheel="LayoutGrid_PreviewMouseWheel">
                                 <Grid.Style>
                                     <Style TargetType="{x:Type Grid}">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <ImageBrush x:Name="CanvasGridBrush" ImageSource="Grid.png" TileMode="Tile" ViewportUnits="Absolute" Viewport="0 0 8 8"/>
+                                            </Setter.Value>
+                                        </Setter>
                                         <Style.Triggers>
-                                            <Trigger Property="Tag" Value="True">
-                                                <Setter Property="Background" Value="#FF1E2328"/>
-                                            </Trigger>
+                                            <DataTrigger Binding="{Binding WindowSettings.Locked}" Value="True">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="#FF1E2328"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
@@ -898,6 +905,7 @@
                                 <Canvas IsHitTestVisible="False">
                                     <Grid Width="{Binding ElementName=MainScrollViewer, Path=ViewportWidth}" Height="{Binding ElementName=MainScrollViewer, Path=ViewportHeight}"
 							  Canvas.Left="{Binding ElementName=MainScrollViewer, Path=HorizontalOffset}" Canvas.Top="{Binding ElementName=MainScrollViewer, Path=VerticalOffset}">
+
                                         <TextBlock Margin="0,0,16,2" FontFamily="Segoe UI" FontWeight="Bold" Opacity="0.25" FontSize="120" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsHitTestVisible="False">
                                             <TextBlock.Text>
                                                 <MultiBinding Converter="{c:StringListToStringConverter}">
@@ -975,6 +983,7 @@
                                           Width="8" Height="8" 
                                           HorizontalAlignment="Left" 
                                           VerticalAlignment="Bottom" Opacity="0.5"/>
+                                        <ctrls:WidgetLinksOverlay Visibility="{Binding WindowSettings.ShowLinks, Converter={wpfc:BoolToVisibilityConverter}}" x:Name="ConnectionsOverlay" Items="{Binding Widgets}" CurrentPage="{Binding PageIndex}" PopupHost="{Binding ElementName=Viewfinder}" ScrollHost="{Binding ElementName=MainScrollViewer}"/>
                                         <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening" ClipToBounds="False">
                                             <ListView.Template>
                                                 <ControlTemplate TargetType="ListView">
@@ -1015,18 +1024,6 @@
                                                             <ctrls:TypeTemplateSelector Page="0"/>
                                                         </Setter.Value>
                                                     </Setter>
-                                                    <!--<Style.Triggers>
-                                        <DataTrigger Binding="{Binding PageIndex}">
-                                            <DataTrigger.Value>
-                                                <sys:Int32>1</sys:Int32>
-                                            </DataTrigger.Value>
-                                            <Setter Property="ItemTemplateSelector">
-                                                <Setter.Value>
-                                                    <ctrls:TypeTemplateSelector Page="1"/>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>-->
                                                 </Style>
                                             </ListView.Style>
 
@@ -1210,6 +1207,8 @@
             </StatusBarItem>-->
             <StatusBarItem HorizontalAlignment="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal">
+                    <Button Margin="0,0,8,0" Command="{Binding StopAllScriptsCommand}" Content="{loc:Loc Key=MainWindow.StatusBar.StopScripts}"/>
+                    <CheckBox IsChecked="{Binding WindowSettings.ShowLinks}" Content="{loc:Loc Key=MainWindow.StatusBar.ShowLinks}" Margin="0,0,8,0"/>
                     <CheckBox Margin="0,0,8,0" IsChecked="{Binding IsGhosted, Mode=TwoWay}" ToolTip="{loc:Loc Key=MainWindow.StatusBar.Ghosted.ToolTip}" IsEnabled="{Binding WindowSettings.Locked, Mode=OneWay, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox">

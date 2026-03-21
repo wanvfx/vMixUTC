@@ -1224,4 +1224,20 @@ Enabled</value>
   <data name="Undo.WidgetsDuplicated" xml:space="preserve">
     <value>Widgets Duplicated</value>
   </data>
+  <data name="MainWindow.StatusBar.ShowLinks" xml:space="preserve">
+    <value>Show Widget Links</value>
+  </data>
+  <data name="MainWindow.Settings.Field.EnableLoopGuard" xml:space="preserve">
+    <value>Enable Loop Guard</value>
+  </data>
+  <data name="MainWindow.StatusBar.StopScripts" xml:space="preserve">
+    <value>Stop Scripts</value>
+  </data>
+  <data name="Dialog.Warning.PossibleScriptError.Loop" xml:space="preserve">
+    <value>Potential execution loop detected and blocked.
+Root link: {0}
+Last link: {1}
+Chain hops: {2}
+Hits in &lt;1s: {3}</value>
+  </data>
 </root>

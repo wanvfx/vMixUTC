@@ -39,6 +39,8 @@ namespace vMixController.Classes
 
         private static int _activeRequests;
         private static int _pollFailures;
+        private static long _lastDocumentTimestampTicksUtc;
+        private static int _stateRecalcVersion;
 
         public static bool Sync { get; set; } = true;
 
@@ -77,6 +79,8 @@ namespace vMixController.Classes
         public static int Rate { get; set; }
 
         public static int MaxConcurrentRequests { get; set; } = 1;
+        public static long LastDocumentTimestampTicksUtc => Interlocked.Read(ref _lastDocumentTimestampTicksUtc);
+        public static int StateRecalcVersion => Volatile.Read(ref _stateRecalcVersion);
 
         private static event DocumentDownloaded _onDocumentDownloaded;
         public static event DocumentDownloaded OnDocumentDownloaded
@@ -105,6 +109,28 @@ namespace vMixController.Classes
                 _cts = new CancellationTokenSource();
                 _pollLoopTask = Task.Run(() => PollLoopAsync(_cts.Token));
             }
+        }
+
+        public static void RequestImmediateUpdate()
+        {
+            CancellationToken token;
+            lock (_stateLock)
+            {
+                if (_cts == null || _cts.IsCancellationRequested)
+                    return;
+                token = _cts.Token;
+            }
+
+            if (_onDocumentDownloaded == null)
+                return;
+
+            _ = PollOnceAsync(token);
+        }
+
+        public static void RequestImmediateUpdateWithForcedStateRecalc()
+        {
+            Interlocked.Increment(ref _stateRecalcVersion);
+            RequestImmediateUpdate();
         }
 
         public static async Task StopAsync()
@@ -267,6 +293,8 @@ namespace vMixController.Classes
         {
             var handler = _onDocumentDownloaded;
             if (handler == null) return;
+
+            Interlocked.Exchange(ref _lastDocumentTimestampTicksUtc, timestamp.ToUniversalTime().Ticks);
 
             var dispatcher = Application.Current != null ? Application.Current.Dispatcher : null;
             if (dispatcher != null && !dispatcher.CheckAccess())

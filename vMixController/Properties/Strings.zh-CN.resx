@@ -1223,4 +1223,20 @@
   <data name="Undo.WidgetsDuplicated" xml:space="preserve">
     <value>Widgets Duplicated</value>
   </data>
+  <data name="MainWindow.StatusBar.ShowLinks" xml:space="preserve">
+    <value>显示小组件连接</value>
+  </data>
+  <data name="MainWindow.Settings.Field.EnableLoopGuard" xml:space="preserve">
+    <value>启用脚本死循环保护</value>
+  </data>
+  <data name="MainWindow.StatusBar.StopScripts" xml:space="preserve">
+    <value>停止脚本</value>
+  </data>
+  <data name="Dialog.Warning.PossibleScriptError.Loop" xml:space="preserve">
+    <value>检测到潜在的执行循环，执行已被阻止。
+根链接：{0}
+最后一个链接：{1}
+链路跳转次数：{2}
+1 秒内触发次数：{3}</value>
+  </data>
 </root>

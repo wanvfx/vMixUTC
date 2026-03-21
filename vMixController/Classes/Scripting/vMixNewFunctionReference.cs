@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace vMixController.Classes
+namespace vMixController.Classes.Scripting
 {
     public enum NumericValueType
     {

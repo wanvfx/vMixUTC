@@ -364,7 +364,7 @@ namespace vMixController.Widgets
                     // Обновляем время последнего изменения для этой пары DO/DP
                     _pendingUpdates[key] = DateTime.Now;
                     // Если этого элемента еще нет в очереди, добавляем его
-                    if (!_updateQueue.Contains(key)) // O(N) для Contains, можно оптимизировать, если нужно
+                    if (_queuedKeys.Add(key))
                     {
                         _updateQueue.Enqueue(key);
                     }

@@ -125,6 +125,7 @@ namespace vMixController
             if (_canvasTransform != null)
                 _canvasTransform.Matrix = m;
             CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
+            ConnectionsOverlay?.RequestRender();
             e.Handled = true;
         }
 
@@ -188,7 +189,7 @@ namespace vMixController
             _canvasTransform.Matrix = m;
 
             CanvasContent.SetCurrentValue(Grid.RenderTransformProperty, _canvasTransform);
-
+            ConnectionsOverlay?.RequestRender();
             e.Handled = true;
         }
 

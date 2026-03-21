@@ -333,7 +333,7 @@
 
 
                             </Border>
-                            <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="{loc:Loc Key=Widget.Button.ToolTip.PossibleLoopDetected}">&#xf071;</TextBlock>
+                            <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="{Binding PotentialLoopParticipants}">&#xf071;</TextBlock>
 
                         </StackPanel>
                         <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>

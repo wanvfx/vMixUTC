@@ -32,68 +32,58 @@ namespace vMixController.Controls
 
         private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-
             if (this.DataContext is vMixController.Widgets.vMixControl item && !item.Locked)
             {
-                double deltaHorizontal = 0;
-                double deltaVertical = 0;
-                var prevLeft = item.Left;
-                var prevTop = item.Top;
+                var left = item.Left;
+                var top = item.Top;
+                var right = item.Left + item.Width;
+                var bottom = item.Top + item.Height;
+
+                var newLeft = left;
+                var newTop = top;
+                var newRight = right;
+                var newBottom = bottom;
 
                 switch (HorizontalAlignment)
                 {
-                    case System.Windows.HorizontalAlignment.Right:
-
-                        deltaHorizontal = Math.Min(-e.HorizontalChange, item.Width - 64);
-                        item.Width -= deltaHorizontal;
-                        break;
                     case System.Windows.HorizontalAlignment.Left:
-                        deltaHorizontal = Math.Min(e.HorizontalChange, item.Width - 64);
-                        // Запоминаем Left до выравнивания
-                        prevLeft = item.Left;
-                        item.Left += deltaHorizontal;
-                        item.Left = Math.Floor(item.Left / 8.0) * 8.0;
-
+                        newLeft = vMixControlUtils.SnapToGrid(left + e.HorizontalChange);
                         break;
-                    default:
+                    case System.Windows.HorizontalAlignment.Right:
+                        newRight = vMixControlUtils.SnapToGrid(right + e.HorizontalChange);
                         break;
                 }
 
                 switch (VerticalAlignment)
                 {
-                    case System.Windows.VerticalAlignment.Bottom:
-                        deltaVertical = Math.Min(-e.VerticalChange, item.Height - 8);
-                        item.Height -= deltaVertical;
-                        item.AlignByGrid();
-                        break;
                     case System.Windows.VerticalAlignment.Top:
-                        deltaVertical = Math.Min(e.VerticalChange, item.Height - 8);
-                        prevTop = item.Top;
-                        item.Top += deltaVertical;
-                        item.Top = Math.Floor(item.Top / 8.0) * 8.0;
+                        newTop = vMixControlUtils.SnapToGrid(top + e.VerticalChange);
                         break;
-                    default:
+                    case System.Windows.VerticalAlignment.Bottom:
+                        newBottom = vMixControlUtils.SnapToGrid(bottom + e.VerticalChange);
                         break;
                 }
 
-                item.Width -= item.Left - prevLeft;
-                item.Width = Math.Floor(item.Width / 8.0) * 8.0;
-                if (item.Width < 64)
+                if (newRight - newLeft < 64)
                 {
-                    item.Width = 64;
-                    item.Left = prevLeft;
+                    if (HorizontalAlignment == System.Windows.HorizontalAlignment.Left)
+                        newLeft = newRight - 64;
+                    else
+                        newRight = newLeft + 64;
                 }
 
-                item.Height -= item.Top - prevTop;
-                item.Height = Math.Floor(item.Height / 8.0) * 8.0;
-                if (item.Height < 8)
+                if (newBottom - newTop < vMixControlUtils.GridSize)
                 {
-                    item.Height = 8;
-                    item.Top = prevTop;
+                    if (VerticalAlignment == System.Windows.VerticalAlignment.Top)
+                        newTop = newBottom - vMixControlUtils.GridSize;
+                    else
+                        newBottom = newTop + vMixControlUtils.GridSize;
                 }
 
-                item.AlignByGrid();
-
+                item.Left = newLeft;
+                item.Top = newTop;
+                item.Width = newRight - newLeft;
+                item.Height = newBottom - newTop;
             }
 
             e.Handled = true;

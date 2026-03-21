@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using vMixController.Classes;
+using vMixController.Classes.Scripting;
 using vMixController.Extensions;
 
 namespace vMixController.Widgets
@@ -111,7 +112,7 @@ namespace vMixController.Widgets
                 // - Событие еще не срабатывало сегодня
                 if (ev.Days.HasFlag(today) && now >= ev.TimeOfDay && !_firedEventsToday.Contains(ev))
                 {
-                    Messenger.Default.Send(new Pair<string, object>(ev.Command, null));
+                    Messenger.Default.Send(new Pair<string, object>(ev.Command, ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
                     _firedEventsToday.Add(ev);
                     Debug.Print($"Event '{ev.Command}' at {ev.TimeOfDay} fired.");
 

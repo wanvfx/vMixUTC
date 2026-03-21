@@ -241,7 +241,7 @@ namespace vMixController.PropertiesControls
                     ?? (_addCommandCommand = new RelayCommand(
                     () =>
                     {
-                        var cmd = new vMixControlButtonCommand() { Action = new Classes.vMixFunctionReference() };
+                        var cmd = new vMixControlButtonCommand() { Action = new vMixFunctionReference() };
                         for (int i = 0; i < 10; i++)
                             cmd.AdditionalParameters.Add(new One<string>() { A = "" });
                         Commands.Add(cmd);

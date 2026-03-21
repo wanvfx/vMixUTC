@@ -25,6 +25,7 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
+using vMixController.Classes.Scripting;
 using vMixController.Classes.vMixController.Classes;
 using vMixController.Extensions;
 using vMixController.Localization;
@@ -70,6 +71,10 @@ namespace vMixController.ViewModel
         //LowLevelInput.Hooks.LowLevelMouseHook mouseHook = new LowLevelInput.Hooks.LowLevelMouseHook(true);
         vMixWidgetSettingsView _settings = new vMixWidgetSettingsView();
         NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        private readonly ScriptExecutionLoopGuard _scriptExecutionLoopGuard = new ScriptExecutionLoopGuard(20, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
+        private DateTime _lastScriptLoopGuardWarningUtc = DateTime.MinValue;
+        private static readonly TimeSpan ScriptLoopGuardWarningThrottle = TimeSpan.FromSeconds(2);
 
         Point _clickPoint;
         Point _relativeClickPoint;
@@ -1314,7 +1319,7 @@ namespace vMixController.ViewModel
                                     SaveUndo(LocalizationManager.Instance["Undo.WidgetCopied"]);
                                     undoSaved = true;
                                 }
-                                copy.Name += " copy";
+                                copy.Name = Utils.GetNextCopyName(copy.Name);
                                 copy.State = Model;
                                 copy.Left += 16;
                                 copy.Top += 16;
@@ -1335,7 +1340,7 @@ namespace vMixController.ViewModel
                                 if (copy == null) return;
                                 if (!undoSaved)
                                     SaveUndo(LocalizationManager.Instance["Undo.WidgetCopied"]);
-                                copy.Name += " copy";
+                                copy.Name = Utils.GetNextCopyName(copy.Name);
                                 copy.State = Model;
                                 copy.Left += 16;
                                 copy.Top += 16;
@@ -1493,6 +1498,10 @@ namespace vMixController.ViewModel
                             _settings.SaveConnectedWidgetProperties();
                         }
                         p.AfterPropertiesChanged();
+
+                        //Analyze script loops
+                        ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
+
                         _logger.Debug("Properties updated.");
                         _settings = null;
 
@@ -1549,6 +1558,7 @@ namespace vMixController.ViewModel
                                 _logger.Debug("New {0} widget added.", widget.Type.ToLower());
 
                                 OpenPropertiesCommand.Execute(widget);
+
                                 while (_undoStack.Count > undoStackDepthBeforeProperties)
                                     _undoStack.RemoveAt(_undoStack.Count - 1);
                                 UpdateUndoPreview();
@@ -1902,6 +1912,10 @@ namespace vMixController.ViewModel
                         {
                             SaveUndo(LocalizationManager.Instance["Undo.ControllerLoaded"]);
                             LoadControllerFromFile(opendlg.FileName);
+
+                            //Analyze script loops
+                            ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
+
                             WindowSettings.AddRecentFile(opendlg.FileName);
                         }
                     }));
@@ -1925,6 +1939,10 @@ namespace vMixController.ViewModel
                         {
                             SaveUndo(LocalizationManager.Instance["Undo.ControllerLoaded"]);
                             LoadControllerFromFile(path);
+
+                            //Analyze script loops
+                            ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
+
                             WindowSettings.AddRecentFile(path);
                         }
                     }));
@@ -1974,6 +1992,9 @@ namespace vMixController.ViewModel
                                     wgt.AlignByGrid();
                                     _widgets.Add(wgt);
                                 }
+
+                                //Analyze script loops
+                                ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
 
                             };
                             _skipClick = true;
@@ -2218,6 +2239,27 @@ namespace vMixController.ViewModel
             }
         }
 
+        private RelayCommand _stopAllScriptsCommand;
+
+        public RelayCommand StopAllScriptsCommand
+        {
+            get
+            {
+                return _stopAllScriptsCommand
+                    ?? (_stopAllScriptsCommand = new RelayCommand(
+                    () =>
+                    {
+                        foreach (var widget in Widgets)
+                        {
+                            if (widget is vMixControlButton btn)
+                                btn.ExecuteHotkey(btn.GetHotkeyNumber("Reset"));
+                            if (widget is vMixControlNewButton nbtn)
+                                nbtn.ExecuteHotkey(nbtn.GetHotkeyNumber("Reset"));
+                        }
+                    }));
+            }
+        }
+
         private void SyncTovMixState()
         {
             using (PerfMetrics.Measure("sync.to-vmix-state"))
@@ -2312,17 +2354,6 @@ namespace vMixController.ViewModel
 
         bool ProcessHotkey(Key key, Key systemKey, ModifierKeys modifiers, bool onPress = true)
         {
-
-            //Debug.Print("Hotkey processing");
-
-            /*Grid grid = (Grid)App.Current.MainWindow.FindName("LayoutGrid");
-            if (grid != null)
-            {
-                Keyboard.ClearFocus();
-                FocusManager.SetFocusedElement(grid, (IInputElement)grid);
-                ((FrameworkElement)grid).MoveFocus(new TraversalRequest(FocusNavigationDirection.Last) { });
-                Keyboard.ClearFocus();
-            }*/
             FocusManager.SetFocusedElement(App.Current.MainWindow, (IInputElement)App.Current.MainWindow);
 
             var result = false;
@@ -2346,23 +2377,128 @@ namespace vMixController.ViewModel
                 }
             }
 
-            //FocusManager.SetFocusedElement(App.Current.MainWindow, (IInputElement)App.Current.MainWindow);
-
             return result;
         }
-
         void ProcessHotkey(string link, object parameter = null)
         {
-            foreach (var ctrl in _widgets)
-                for (int i = 0; i < ctrl.Hotkey.Length; i++)
+            if (string.IsNullOrWhiteSpace(link))
+                return;
+
+            var normalizedLink = link.Trim();
+            ScriptExecutionChainToken incomingChain = null;
+            object payload = parameter;
+            if (parameter is ScriptExecutionDispatchPayload wrapped)
+            {
+                incomingChain = wrapped.ChainToken;
+                payload = wrapped.Payload;
+            }
+
+            var chain = _scriptExecutionLoopGuard.CreateOrContinueChain(incomingChain, normalizedLink, DateTime.UtcNow);
+            var previousChain = ScriptExecutionDispatchRuntime.Push(chain);
+            var entered = false;
+            try
+            {
+                if (WindowSettings != null && !WindowSettings.EnableLoopGuard)
                 {
-                    if (ctrl.Hotkey[i].Link == link && ctrl.Hotkey[i].Active)
-                        if (parameter != null)
-                            ctrl.ExecuteHotkey(i, parameter);
-                        else
-                            ctrl.ExecuteHotkey(i);
+                    foreach (var ctrl in _widgets)
+                        for (int i = 0; i < ctrl.Hotkey.Length; i++)
+                        {
+                            if (ctrl.Hotkey[i].Link == link && ctrl.Hotkey[i].Active)
+                                if (ctrl is vMixControlButton || ctrl is vMixControlNewButton)
+                                    ctrl.ExecuteHotkey(i, new ScriptExecutionDispatchPayload { ChainToken = chain, Payload = payload });
+                                else if (payload != null)
+                                    ctrl.ExecuteHotkey(i, payload);
+                                else
+                                    ctrl.ExecuteHotkey(i);
+                        }
+
+                    return;
                 }
+
+                var reentrantCycleResult = _scriptExecutionLoopGuard.TryEnterLink(chain, normalizedLink);
+                if (reentrantCycleResult != null && !reentrantCycleResult.IsAllowed)
+                {
+                    HandleScriptLoopGuard(reentrantCycleResult);
+                    return;
+                }
+
+                entered = true;
+
+                var guardResult = _scriptExecutionLoopGuard.CheckAndRegister(chain, normalizedLink, DateTime.UtcNow);
+                if (!guardResult.IsAllowed)
+                {
+                    HandleScriptLoopGuard(guardResult);
+                    return;
+                }
+
+                foreach (var ctrl in _widgets)
+                    for (int i = 0; i < ctrl.Hotkey.Length; i++)
+                    {
+                        if (ctrl.Hotkey[i].Link == link && ctrl.Hotkey[i].Active)
+                            if (ctrl is vMixControlButton || ctrl is vMixControlNewButton)
+                                ctrl.ExecuteHotkey(i, new ScriptExecutionDispatchPayload { ChainToken = chain, Payload = payload });
+                            else if (payload != null)
+                                ctrl.ExecuteHotkey(i, payload);
+                            else
+                                ctrl.ExecuteHotkey(i);
+                    }
+            }
+            finally
+            {
+                if (entered)
+                    _scriptExecutionLoopGuard.ExitLink(chain, normalizedLink);
+
+                ScriptExecutionDispatchRuntime.Pop(previousChain);
+            }
         }
+
+        private void HandleScriptLoopGuard(ScriptExecutionLoopGuardResult result)
+        {
+            _logger.Warn("Script execution loop guard blocked exec link chain. Chain='{0}', Root='{1}', Current='{2}', Hops={3}, HitsInWindow={4}, RetryAfterMs={5}.",
+                result.Chain?.Id.ToString("N"),
+                result.Chain?.RootLink,
+                result.CurrentLink,
+                result.Chain?.HopCount ?? 0,
+                result.HitsInWindow,
+                (int)Math.Max(0, result.RetryAfter.TotalMilliseconds));
+
+            if (!result.JustTriggered)
+                return;
+
+            var nowUtc = DateTime.UtcNow;
+            if ((nowUtc - _lastScriptLoopGuardWarningUtc) < ScriptLoopGuardWarningThrottle)
+                return;
+
+            _lastScriptLoopGuardWarningUtc = nowUtc;
+
+            Action showWarning = () =>
+            {
+                try
+                {
+                    var title = LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Title"];
+                    var content = string.Format(LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Loop"], result.Chain?.RootLink, result.CurrentLink, result.Chain?.HopCount ?? 0, result.HitsInWindow);
+                    var dialog = new Ookii.Dialogs.Wpf.TaskDialog
+                    {
+                        WindowTitle = string.IsNullOrWhiteSpace(title) ? "Warning" : title,
+                        MainIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Warning,
+                        Content = content
+                    };
+                    dialog.Buttons.Add(new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok));
+                    dialog.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Warn(ex, "Failed to show script loop guard warning dialog.");
+                }
+            };
+
+            var dispatcher = Application.Current?.Dispatcher;
+            if (dispatcher != null && !dispatcher.CheckAccess())
+                dispatcher.BeginInvoke((Action)showWarning);
+            else
+                showWarning();
+        }
+
 
         private RelayCommand<KeyEventArgs> _previewKeyUpCommand;
 
@@ -3332,6 +3468,7 @@ namespace vMixController.ViewModel
                                     copy.ZIndex++;
                                 copy.State = Model;
                                 item.Selected = false;
+                                copy.Name = Utils.GetNextCopyName(copy.Name);
                             }
                         }
                         if (dups.Count > 0)

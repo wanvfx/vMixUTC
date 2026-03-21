@@ -412,6 +412,8 @@
     <Compile Include="Classes\Pair.cs" />
     <Compile Include="Classes\PerfMetrics.cs" />
     <Compile Include="Classes\Quadriple.cs" />
+    <Compile Include="Classes\Scripting\ScriptExecutionLoopGuard.cs" />
+    <Compile Include="Classes\Scripting\ScriptLoopAnalyzer.cs" />
     <Compile Include="Classes\Scripting\vMixControlExpressionHelper.cs" />
     <Compile Include="Classes\SharedData.cs" />
     <Compile Include="Classes\Singleton.cs" />
@@ -419,8 +421,8 @@
     <Compile Include="Classes\Triple.cs" />
     <Compile Include="Classes\UpdateScheduler.cs" />
     <Compile Include="Classes\Utils.cs" />
-    <Compile Include="Classes\vMixNewFunctionReference.cs" />
-    <Compile Include="Classes\vMixFunctionReference.cs" />
+    <Compile Include="Classes\Scripting\vMixNewFunctionReference.cs" />
+    <Compile Include="Classes\Scripting\vMixFunctionReference.cs" />
     <Compile Include="Classes\XmlDocumentMessenger.cs" />
     <Compile Include="Classes\ScheduledEvent.cs" />
     <Compile Include="Controls\ComboBox.cs" />
@@ -439,6 +441,9 @@
     </Compile>
     <Compile Include="Controls\VolumeSlider.cs" />
     <Compile Include="Controls\WheelControlledScrollViewer.cs" />
+    <Compile Include="Controls\WidgetLinksOverlay.xaml.cs">
+      <DependentUpon>WidgetLinksOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\ColorToColorFromListConverter.cs" />
     <Compile Include="Converters\ContentToVisibilityConverter.cs" />
     <Compile Include="Converters\BitToVisibilityConverter.cs" />
@@ -610,6 +615,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\vMixPathSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\WidgetLinksOverlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
