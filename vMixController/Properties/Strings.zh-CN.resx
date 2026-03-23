@@ -1239,4 +1239,54 @@
 链路跳转次数：{2}
 1 秒内触发次数：{3}</value>
   </data>
+  <data name="Help.Button.Colorize" xml:space="preserve">
+    <value>勾选后，颜色参数不仅会应用于标题，也会应用于按钮主体。</value>
+  </data>
+  <data name="Help.Button.ExecuteAfterLoad" xml:space="preserve">
+    <value>勾选后，按钮脚本将在 UTC 加载完成后立即执行。</value>
+  </data>
+  <data name="Help.Button.StateDependent" xml:space="preserve">
+    <value>勾选后，按钮会根据脚本命令显示状态指示灯。</value>
+  </data>
+  <data name="Help.DataSource.Default" xml:space="preserve">
+    <value>用来自其他控件的数据填充列表。</value>
+  </data>
+  <data name="Help.Hotkeys.Default" xml:space="preserve">
+    <value>在这里可以启用控件热键。
+热键名称不言自明。
+当用户在布局面板中按下热键且没有任何控件获得焦点时，将执行相应事件。
+“Link” 参数用于从脚本中调用事件。</value>
+  </data>
+  <data name="Help.List.Default" xml:space="preserve">
+    <value>编辑将在控件下拉列表中显示的条目。
+使用 ~ 符号为列表项添加描述。</value>
+  </data>
+  <data name="Help.Midi.Default" xml:space="preserve">
+    <value>在这里可以将 MIDI 命令分配给其他控件的热键。
+在按钮脚本中使用参数 P 来访问推子/旋钮的值。</value>
+  </data>
+  <data name="Help.SaveTemplate.Default" xml:space="preserve">
+    <value>将当前控件及其属性保存为模板，便于快速使用。</value>
+  </data>
+  <data name="Help.Scheduler.Default" xml:space="preserve">
+    <value>在这里可以创建事件列表，这些事件会在指定的时间和星期几执行。</value>
+  </data>
+  <data name="Help.Script.Default" xml:space="preserve">
+    <value>在这里可以自动化一些操作，例如切换叠加层或向节目/预览发送输入。
+从单条命令开始，或使用条件创建复杂脚本。</value>
+  </data>
+  <data name="Help.StaticVariables.Default" xml:space="preserve">
+    <value>在这里可以创建脚本可访问的静态变量。
+以 "@" 开头的变量将被视为输入变量。
+输入变量可用于标题映射以及脚本命令中的输入选择器。</value>
+  </data>
+  <data name="Help.StreamDeck.Default" xml:space="preserve">
+    <value>在这里可以将 StreamDeck 命令分配给其他控件的热键。</value>
+  </data>
+  <data name="Help.TextField.Table" xml:space="preserve">
+    <value>勾选后，该控件的文本框将以 `table` 模式工作。
+这意味着所有映射的标题文本会以 `|` 分隔显示在文本框中。
+用户可以一次编辑一个标题，或替换所有标题中的文本。
+该选项对列表控件很有用。</value>
+  </data>
 </root>

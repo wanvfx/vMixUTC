@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixController.Classes;
 using vMixController.Classes.Scripting;
+using vMixController.Messages;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets
@@ -234,7 +235,7 @@ namespace vMixController.Widgets
             }
 
             if (Links.Length > 4 && !string.IsNullOrWhiteSpace(Links[4]))
-                Messenger.Default.Send(new Pair<string, object>(Links[4], ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
+                Messenger.Default.Send(new HotkeyLinkMessage() { Link = Links[4], Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) });
         }
 
         private void Finish()
@@ -252,7 +253,7 @@ namespace vMixController.Widgets
         private void SendLink(int index)
         {
             if (!string.IsNullOrWhiteSpace(Links[index]))
-                Messenger.Default.Send(new Pair<string, object>(Links[index], ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
+                Messenger.Default.Send(new HotkeyLinkMessage() { Link = Links[index], Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) });
         }
 
         private void UpdateTimer()

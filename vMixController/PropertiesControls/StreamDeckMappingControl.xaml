@@ -16,7 +16,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary  Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <this:Help x:Key="Help"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <i:Interaction.Behaviors>
@@ -29,7 +28,7 @@
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf11c;</Run>
                     <Run Text="{loc:Loc Key=StreamDeckMapping.Title}"/></TextBlock>
                 <Button ToolTip="{loc:Loc Key=StreamDeckMapping.ToolTip.Add}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
-                <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding StreamDeck_Default, Source={StaticResource Help}}"/>
+                <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.StreamDeck.Default}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Keys, ElementName=Me}" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                 <ListView.ItemContainerStyle>

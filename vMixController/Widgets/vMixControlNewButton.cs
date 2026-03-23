@@ -934,14 +934,14 @@ namespace vMixController.Widgets
                         switch (cmd.Action.Function)
                         {
                             case NewNativeFunctions.NEXTPAGE:
-                                Messenger.Default.Send(new Pair<string, bool>("PAGE", true));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.Next });
                                 break;
                             case NewNativeFunctions.PREVPAGE:
-                                Messenger.Default.Send(new Pair<string, bool>("PAGE", false));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.Previous });
                                 break;
                             case NewNativeFunctions.SETPAGE:
                                 vMixControlButtonHelper.CalculateExpression<int>(cmd.Value, PopulateVariables, ExpressionEvaluateFunction, out parameter);
-                                Messenger.Default.Send(new Pair<string, int>("PAGE", parameter));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.SetIndex, PageIndex = parameter });
                                 break;
                             case NewNativeFunctions.WIN:
                                 Process.Start(GetObjectParameter().ToString());
@@ -979,7 +979,7 @@ namespace vMixController.Widgets
                             case NewNativeFunctions.UPDATESTATE:
                             case NewNativeFunctions.SYNC:
                                 AddLog("{0}) STATE UPDATING", _pointer + 1);
-                                RunOnUiThread(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true }));
+                                RunOnUiThread(() => Messenger.Default.Send(new SyncStateRequestMessage() { Force = true }));
                                 break;
                             case NewNativeFunctions.UPDATEINTERNALBUTTONSTATE:
                             case NewNativeFunctions.SYNCINTERNALBUTTONSTATE:
@@ -1000,7 +1000,7 @@ namespace vMixController.Widgets
                             case NewNativeFunctions.EXECLINK:
                                 strparameter = GetObjectParameter()?.ToString() ?? string.Empty;
                                 AddLog("{2}) EXECLINK {0} [{1}]", cmd.Value, strparameter, _pointer + 1);
-                                RunOnUiThread(() => Messenger.Default.Send(new Pair<string, object>(strparameter, ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null))));
+                                RunOnUiThread(() => Messenger.Default.Send(new HotkeyLinkMessage() { Link = strparameter, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) }));
                                 break;
                             case NewNativeFunctions.LIVETOGGLE:
                                 AddLog("{0}) LIVETOGGLE", _pointer + 1);

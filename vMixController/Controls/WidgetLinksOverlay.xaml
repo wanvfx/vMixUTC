@@ -6,7 +6,7 @@
              Background="Transparent">
     <Grid IsHitTestVisible="False" Focusable="False">
         <Path x:Name="PART_Path"
-              Stroke="#B44A5C70"
+              Stroke="White"
               StrokeThickness="1.4"
               Fill="Transparent"
               StrokeDashArray="6,4"
@@ -14,12 +14,12 @@
               StrokeEndLineCap="Round"
               SnapsToDevicePixels="True"/>
         <Path x:Name="PART_Arrows"
-              Fill="#B44A5C70"
-              Stroke="#B44A5C70"
+              Fill="White"
+              Stroke="White"
               StrokeThickness="1"
               SnapsToDevicePixels="True"/>
         <Path x:Name="PART_DevicePath"
-              Stroke="#B4518F7A"
+              Stroke="Lime"
               StrokeThickness="1.4"
               Fill="Transparent"
               StrokeDashArray="6,4"
@@ -27,8 +27,8 @@
               StrokeEndLineCap="Round"
               SnapsToDevicePixels="True"/>
         <Path x:Name="PART_DeviceArrows"
-              Fill="#B4518F7A"
-              Stroke="#B4518F7A"
+              Fill="Lime"
+              Stroke="Lime"
               StrokeThickness="1"
               SnapsToDevicePixels="True"/>
         <Canvas x:Name="PART_DynamicLayer"

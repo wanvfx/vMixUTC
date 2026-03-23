@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
+using vMixController.Messages;
 using vMixController.ViewModel;
 
 namespace vMixController.Widgets
@@ -1105,7 +1106,7 @@ namespace vMixController.Widgets
                                 Application.Current.MainWindow.MoveFocus(new TraversalRequest(FocusNavigationDirection.Last) { });
                             }
 
-                            GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Pair<string, bool>() { A = "Hotkeys", B = true });
+                            GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new HotkeysEnabledMessage() { IsEnabled = true });
                             p.Handled = true;
                         }
                     }));
@@ -1125,7 +1126,7 @@ namespace vMixController.Widgets
                     ?? (_gotFocus = new RelayCommand<RoutedEventArgs>(
                     p =>
                     {
-                        GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Pair<string, bool>() { A = "Hotkeys", B = false });
+                        GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new HotkeysEnabledMessage() { IsEnabled = false });
                     }));
             }
         }
@@ -1143,7 +1144,7 @@ namespace vMixController.Widgets
                     ?? (_lostFocus = new RelayCommand<RoutedEventArgs>(
                     p =>
                     {
-                        GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new Pair<string, bool>() { A = "Hotkeys", B = true });
+                        GalaSoft.MvvmLight.Messaging.Messenger.Default.Send(new HotkeysEnabledMessage() { IsEnabled = true });
                     }));
             }
         }

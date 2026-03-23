@@ -36,4 +36,51 @@ namespace vMixController.Messages
         public bool IsStarted { get; set; }
     }
 
+    public class HoveredWidgetMessage
+    {
+        public vMixControl Widget { get; set; }
+    }
+
+    public class HotkeyLinkMessage
+    {
+        public string Link { get; set; }
+        public object Parameter { get; set; }
+    }
+
+    public class WidgetMoveStateMessage
+    {
+        public vMixControl Widget { get; set; }
+        public bool IsStarted { get; set; }
+    }
+
+    public class WidgetMoveDeltaMessage
+    {
+        public vMixControl Widget { get; set; }
+        public double DeltaX { get; set; }
+        public double DeltaY { get; set; }
+    }
+
+    public class HotkeysEnabledMessage
+    {
+        public bool IsEnabled { get; set; }
+    }
+
+    public class SyncStateRequestMessage
+    {
+        public bool Force { get; set; } = true;
+    }
+
+    public enum PageNavigationMode
+    {
+        Next,
+        Previous,
+        SetIndex
+    }
+
+    public class PageNavigationMessage
+    {
+        public PageNavigationMode Mode { get; set; }
+        public int PageIndex { get; set; }
+    }
+
 }

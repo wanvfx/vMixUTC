@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Xml.Serialization;
 using vMixController.Classes;
 using vMixController.Classes.Scripting;
+using vMixController.Messages;
 
 namespace vMixController.Widgets
 {
@@ -106,7 +107,7 @@ namespace vMixController.Widgets
                     foreach (var item in Keys)
                     {
                         if (item.A == e.Context && e.Type == vMixStreamDeckLibrary.StreamDeckEvent.KeyUp)
-                            Messenger.Default.Send(new Pair<string, object>(item.B, ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null)));
+                            Messenger.Default.Send(new HotkeyLinkMessage() { Link = item.B, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) });
                     }
                     Context = e.Context.ToUpper();
                 }

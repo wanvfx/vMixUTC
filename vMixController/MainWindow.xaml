@@ -37,7 +37,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <!--<this:Help x:Key="Help"/>-->
             <Rect x:Key="IconViewbox">0.18,0.18,0.64,0.64</Rect>
             <c:Int32ToVisibilityConverter x:Key="Int32ToVisibilityConverter"/>
             <Storyboard x:Key="StoryboardFadeIn">
@@ -403,10 +402,26 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}">
-                <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=en-US}" Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
+            <MenuItem Header="{loc:Loc Key=MainWindow.Menu.Language}" ItemsSource="{x:Static loc:LocalizationManager.Locales}" Click="LanguageMenuItem_Click">
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem">
+                        <Style.Setters>
+                            <Setter Property="Header" Value="{Binding NativeName}"/>
+                            <Setter Property="Tag" Value="{Binding}"/>
+                            <Setter Property="IsChecked">
+                                <Setter.Value>
+                                    <MultiBinding Converter="{c:MultipleValueEqualsConverter}">
+                                        <Binding Source="{x:Static loc:LocalizationManager.Instance}" Path="Culture"/>
+                                        <Binding RelativeSource="{RelativeSource Self}" Path="Tag"/>
+                                    </MultiBinding>
+                                </Setter.Value>
+                            </Setter>
+                        </Style.Setters>
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+                <!--<MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=en-US}" Header="{loc:Loc Key=MainWindow.Menu.Language.English}" Tag="en-US" Click="LanguageMenuItem_Click" />
                 <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=zh-CN}" Header="{loc:Loc Key=MainWindow.Menu.Language.Chinese}" Tag="zh-CN" Click="LanguageMenuItem_Click" />
-                <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=ru-RU}" Header="{loc:Loc Key=MainWindow.Menu.Language.Russian}" Tag="ru-RU" Click="LanguageMenuItem_Click" />
+                <MenuItem IsChecked="{Binding Source={x:Static loc:LocalizationManager.Instance}, Path=Culture, Converter={wpfc:ObjectToStringEqualsParameterToBoolConverter}, ConverterParameter=ru-RU}" Header="{loc:Loc Key=MainWindow.Menu.Language.Russian}" Tag="ru-RU" Click="LanguageMenuItem_Click" />-->
             </MenuItem>
             <MenuItem IsEnabled="{Binding WindowSettings.Locked, Converter={wpfc:BoolToInverseBoolConverter}}" Header="{loc:Loc Key=MainWindow.Menu.Edit}">
                 <MenuItem IsEnabled="{Binding UndoState, Converter={wpfc:ValueNullToInverseBoolConverter}}" Command="{Binding UndoCommand}">
@@ -661,7 +676,7 @@
                                         <TextBlock Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" Text="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Title}" FontSize="14"/>
                                         <StackPanel Orientation="Horizontal" Grid.Column="1">
                                             <Button ToolTip="{loc:Loc Key=MainWindow.Settings.GlobalVariables.Tooltip.Add}" Margin="2,0" Style="{StaticResource TitleButton}" Command="{Binding AddItemCommand}" Content="&#x2b;"/>
-                                            <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{x:Static this:Help.StaticVariables_Default}"/>
+                                            <Control Style="{StaticResource HelpBorder}" Margin="{StaticResource LeftRightStdMargin}" ToolTip="{loc:Loc Key=Help.StaticVariables.Default}"/>
                                         </StackPanel>
                                         <Border VerticalAlignment="Center" Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
                                         <Grid HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="4">
@@ -983,7 +998,6 @@
                                           Width="8" Height="8" 
                                           HorizontalAlignment="Left" 
                                           VerticalAlignment="Bottom" Opacity="0.5"/>
-                                        <ctrls:WidgetLinksOverlay Visibility="{Binding WindowSettings.ShowLinks, Converter={wpfc:BoolToVisibilityConverter}}" x:Name="ConnectionsOverlay" Items="{Binding Widgets}" CurrentPage="{Binding PageIndex}" PopupHost="{Binding ElementName=Viewfinder}" ScrollHost="{Binding ElementName=MainScrollViewer}"/>
                                         <ListView e:ListViewSortBehavior.IsSortable="True" e:ListViewSortBehavior.SortableItemsSource="{Binding Widgets}" e:ListViewSortBehavior.DefaultSortDirection="Ascending" e:ListViewSortBehavior.DefaultSortProperty="ZIndex" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Standard" VirtualizingPanel.IsContainerVirtualizable="True" x:Name="Layout" BorderThickness="0" Background="Transparent" ContextMenuOpening="Layout_ContextMenuOpening" ClipToBounds="False">
                                             <ListView.Template>
                                                 <ControlTemplate TargetType="ListView">
@@ -1067,6 +1081,7 @@
                                                 </Style>
                                             </ListView.ItemContainerStyle>
                                         </ListView>
+                                        <ctrls:WidgetLinksOverlay Visibility="{Binding WindowSettings.ShowLinks, Converter={wpfc:BoolToVisibilityConverter}}" x:Name="ConnectionsOverlay" Items="{Binding Widgets}" CurrentPage="{Binding PageIndex}" PopupHost="{Binding ElementName=Viewfinder}" ScrollHost="{Binding ElementName=MainScrollViewer}"/>
                                     </Grid>
                                 </Grid>
 

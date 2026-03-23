@@ -131,6 +131,8 @@ namespace vMixController.Controls
             //sb.Begin(LockButton);
             RightButtons.IsHitTestVisible = true;
             //LockButton.IsHitTestVisible = true;
+            if (ParentContainer?.Control != null)
+                Messenger.Default.Send(new HoveredWidgetMessage { Widget = ParentContainer.Control });
         }
 
         private void Border_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
@@ -144,6 +146,8 @@ namespace vMixController.Controls
             //sb.Begin(LockButton);
             RightButtons.IsHitTestVisible = false;
             //LockButton.IsHitTestVisible = false;
+            if (ParentContainer?.Control != null)
+                Messenger.Default.Send(new HoveredWidgetMessage { Widget = null });
         }
     }
 

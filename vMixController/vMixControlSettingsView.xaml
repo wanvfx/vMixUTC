@@ -183,7 +183,7 @@
                                 </CheckBox.Template>
                             </CheckBox>
                             <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="14" Style="{StaticResource PropertyName}" Margin="-4,0,0,0"><Run Text="{loc:Loc Key=WidgetSettings.Hotkeys}"/></TextBlock>
-                            <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{x:Static this:Help.Hotkeys_Default}" Margin="{StaticResource LeftRightStdMargin}"/>
+                            <Control Grid.Column="2" Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.Hotkeys.Default}" Margin="{StaticResource LeftRightStdMargin}"/>
                             <Border VerticalAlignment="Center"  Grid.Column="3" BorderThickness="0,2,0,0" BorderBrush="White"/>
                         </Grid>
                         <Grid Background="{StaticResource BYTile}">
@@ -378,7 +378,7 @@
             </VirtualizingStackPanel>
         </ScrollViewer>
         <StackPanel Margin="2" HorizontalAlignment="Right" Orientation="Horizontal" Grid.Row="1">
-            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="{loc:Loc Key=WidgetSettings.Button.SaveTemplate}" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{x:Static this:Help.SaveTemplate_Default}" Click="SaveTemplateClick"/>
+            <Button Margin="0,0,4,0" Command="{Binding SaveTemplateCommand}" Content="{loc:Loc Key=WidgetSettings.Button.SaveTemplate}" IsEnabled="{Binding Widget.IsTemplate, Converter={wpfc:BoolToInverseBoolConverter}}" ToolTip="{loc:Loc Key=Help.SaveTemplate.Default}" Click="SaveTemplateClick"/>
             <Button Margin="0,0,4,0" Command="{Binding CancelCommand}" IsCancel="True" Content="{loc:Loc Key=WidgetSettings.Button.Cancel}" Click="CancelClick"/>
             <Button Command="{Binding OkCommand}" Content="{loc:Loc Key=WidgetSettings.Button.Ok}" IsDefault="True" Click="OkClick"/>
         </StackPanel>

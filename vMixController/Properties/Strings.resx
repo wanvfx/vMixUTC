@@ -1240,4 +1240,54 @@ Last link: {1}
 Chain hops: {2}
 Hits in &lt;1s: {3}</value>
   </data>
+  <data name="Help.Button.Colorize" xml:space="preserve">
+    <value>If checked, color parameter applied not only for caption, but also for button body.</value>
+  </data>
+  <data name="Help.Button.ExecuteAfterLoad" xml:space="preserve">
+    <value>If checked, button script will be executed right after UTC loaded.</value>
+  </data>
+  <data name="Help.Button.StateDependent" xml:space="preserve">
+    <value>If checked, button will show status LED, according to script commands.</value>
+  </data>
+  <data name="Help.DataSource.Default" xml:space="preserve">
+    <value>Fill list with data from another widget.</value>
+  </data>
+  <data name="Help.Hotkeys.Default" xml:space="preserve">
+    <value>Here you can activate widget hotkeys.
+Name of the hotkey is self-explanatory.
+Event will be executed, when user press hotkey into layout panel, while no widget is focused.
+Link parameter is for calling events from scripts.</value>
+  </data>
+  <data name="Help.List.Default" xml:space="preserve">
+    <value>Edit items, that will be shown in widget dropdown list.
+Put ~ symbol to add description for list item.</value>
+  </data>
+  <data name="Help.Midi.Default" xml:space="preserve">
+    <value>Here you can assign MIDI commands to hotkeys in another widgets.
+Use P as parameter in button script to access fader/knob value.</value>
+  </data>
+  <data name="Help.SaveTemplate.Default" xml:space="preserve">
+    <value>Save current widget with properties as template for fast access.</value>
+  </data>
+  <data name="Help.Scheduler.Default" xml:space="preserve">
+    <value>Here you can make list of events, that will be executed at specified time and day of the week.</value>
+  </data>
+  <data name="Help.Script.Default" xml:space="preserve">
+    <value>Here you can automate some actions, like toggling overlay or sending input to program/preview.
+Start with one command or create complex scripts with conditions.</value>
+  </data>
+  <data name="Help.StaticVariables.Default" xml:space="preserve">
+    <value>Here you can create static variables, accessible from scripts.
+Variables started from "@" symbol treat as input variables.
+Input variables are accessible from title mappings and input selector into script command.</value>
+  </data>
+  <data name="Help.StreamDeck.Default" xml:space="preserve">
+    <value>Here you can assign StreamDeck commands to hotkeys in another widgets.</value>
+  </data>
+  <data name="Help.TextField.Table" xml:space="preserve">
+    <value>If checked, text field of this widget will be working in `table` mode.
+It means, that all mapped title texts will be shown into text field with `|` delimiter.
+User can edit one title at time, or replace text in all titles.
+This option is useful for List Widget.</value>
+  </data>
 </root>

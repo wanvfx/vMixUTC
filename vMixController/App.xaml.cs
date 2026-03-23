@@ -93,7 +93,6 @@ namespace vMixController
         protected override void OnStartup(StartupEventArgs e)
         {
             LocalizationManager.Instance.InitializeFromSettings();
-
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             AppDomain.CurrentDomain.FirstChanceException += CurrentDomain_FirstChanceException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;

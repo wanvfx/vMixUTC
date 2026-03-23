@@ -14,7 +14,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <this:Help x:Key="Help"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="{StaticResource TopBottomStdMargin}">
@@ -30,7 +29,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="1" Orientation="Horizontal">
             <TextBlock Style="{StaticResource PropertyName}" HorizontalAlignment="Center" Text="{loc:Loc Key=DataSourceControl.Header.DataSource}"/>
-            <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding DataSource_Default, Source={StaticResource Help}}"/>
+            <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.DataSource.Default}"/>
         </StackPanel>
         <TextBlock Style="{StaticResource PropertyName}" Grid.Column="3" HorizontalAlignment="Center" Text="{loc:Loc Key=DataSourceControl.Header.Property}"/>
         <CheckBox Margin="{StaticResource StdMargin}" IsChecked="{Binding Active, ElementName=Me, Mode=TwoWay}" Grid.Row="1" VerticalAlignment="Center"/>

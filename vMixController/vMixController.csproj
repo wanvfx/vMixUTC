@@ -461,6 +461,7 @@
     <Compile Include="Converters\MatrixInverterConverter.cs" />
     <Compile Include="Converters\MatrixInverterWidgetsConverter.cs" />
     <Compile Include="Converters\MatrixToThicknessConverter.cs" />
+    <Compile Include="Converters\MultipleValueEqualsConverter.cs" />
     <Compile Include="Converters\ObservableCollectionCopyConverter.cs" />
     <Compile Include="Converters\StringArrayToLocalizedArrayConverter.cs" />
     <Compile Include="Converters\StringCollectionToDummyStringPropertyCollectionConverter.cs" />
@@ -507,11 +508,6 @@
     <Compile Include="Extensions\IgnoreMouseWheelBehavior.cs" />
     <Compile Include="Extensions\ScrollViewerHelper.cs" />
     <Compile Include="Extensions\VisualTreeUtils.cs" />
-    <Compile Include="Help.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Help.resx</DependentUpon>
-    </Compile>
     <Compile Include="Interfaces\ICancellable.cs" />
     <Compile Include="Localization\LocalizationManager.cs" />
     <Compile Include="Localization\LocExtension.cs" />
@@ -742,10 +738,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="costura-mac-x64\Melanchall_DryWetMidi_Native64.dylib" />
-    <EmbeddedResource Include="Help.ru-RU.resx" />
-    <EmbeddedResource Include="Help.zh-CN.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Strings.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -833,10 +825,6 @@
     <EmbeddedResource Include="costura-win-x86\Processing.NDI.Lib.x86.dll" />
     <Resource Include="settings-gears %281%29.ico" />
     <Resource Include="settings-gears.ico" />
-    <EmbeddedResource Include="Help.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Help.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight.Ioc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -82,13 +84,20 @@ namespace vMixController.Widgets
 
         private static IEnumerable<vMixControl> ResolveWidgets()
         {
-            var app = Application.Current;
-            if (app == null)
-                return Array.Empty<vMixControl>();
+            // Avoid forcing MainViewModel creation while it may still be constructing.
+            // Calling locator.Main from this path can recurse and overflow stack on startup.
+            if (!SimpleIoc.Default.ContainsCreated<MainViewModel>())
+                return Enumerable.Empty<vMixControl>();
 
-            var locator = app.TryFindResource("Locator") as ViewModelLocator;
-            var widgets = locator?.Main?.Widgets;
-            return widgets ?? Enumerable.Empty<vMixControl>();
+            try
+            {
+                var main = ServiceLocator.Current.GetInstance<MainViewModel>();
+                return main?.Widgets ?? Enumerable.Empty<vMixControl>();
+            }
+            catch
+            {
+                return Enumerable.Empty<vMixControl>();
+            }
         }
 
         private static Dictionary<string, List<vMixControl>> BuildLinkTargets(IEnumerable<vMixControl> widgets)

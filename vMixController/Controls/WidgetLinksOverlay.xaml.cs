@@ -9,6 +9,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using GalaSoft.MvvmLight.Messaging;
+using vMixController.Messages;
 using vMixController.ViewModel;
 using vMixController.Widgets;
 
@@ -21,10 +23,12 @@ namespace vMixController.Controls
         private readonly Popup _legendPopup;
         private INotifyCollectionChanged _itemsCollection;
         private bool _renderScheduled;
-        private static readonly Pen LinkPen = CreatePen();
-        private static readonly Pen DeviceLinkPen = CreatePen(180, 81, 143, 122);
+        private Window _ownerWindow;
+        private vMixControl _hoveredWidget;
+        private static readonly Pen LinkPen = CreatePen(128, 255, 255, 255);
+        private static readonly Pen DeviceLinkPen = CreatePen(128, 0, 255, 0);
         private static readonly DoubleCollection LinkDashArray = CreateDashArray();
-        private static readonly SolidColorBrush CrossPageCycleBrush = CreateBrush(210, 190, 70, 70);
+        private static readonly SolidColorBrush CrossPageCycleBrush = CreateBrush(128, 255, 0, 0);
 
         public WidgetLinksOverlay()
         {
@@ -38,9 +42,11 @@ namespace vMixController.Controls
             };
             Loaded += (_, __) =>
             {
+                AttachOwnerWindowHandlers();
                 SubscribeCollection(Items);
                 UpdateWidgetSubscriptions(Items);
                 UpdateLegendPopupPresentation();
+                Messenger.Default.Register<HoveredWidgetMessage>(this, OnHoveredWidgetChanged);
                 ScheduleRender();
             };
             SizeChanged += (_, __) => ScheduleRender();
@@ -289,6 +295,19 @@ namespace vMixController.Controls
             {
                 HideLegendPopup();
                 return;
+            }
+
+            var hovered = _hoveredWidget;
+            if (hovered != null && !widgets.Contains(hovered))
+                hovered = null;
+
+            if (hovered != null)
+            {
+                var focusedEdges = visibleEdges
+                    .Where(e => e.Source == hovered || e.Target == hovered)
+                    .ToList();
+                if (focusedEdges.Count > 0)
+                    visibleEdges = focusedEdges;
             }
             var cycleEdges = BuildCycleEdgeSet(edges);
 
@@ -958,6 +977,8 @@ namespace vMixController.Controls
         private void DisposeSubscriptions()
         {
             HideLegendPopup();
+            Messenger.Default.Unregister<HoveredWidgetMessage>(this);
+            DetachOwnerWindowHandlers();
             if (ScrollHost != null)
                 ScrollHost.ScrollChanged -= ScrollHostScrollChanged;
 
@@ -974,6 +995,62 @@ namespace vMixController.Controls
             _subscribedWidgets.Clear();
         }
 
+        private void AttachOwnerWindowHandlers()
+        {
+            var nextWindow = Window.GetWindow(this);
+            if (ReferenceEquals(_ownerWindow, nextWindow))
+                return;
+
+            DetachOwnerWindowHandlers();
+            _ownerWindow = nextWindow;
+            if (_ownerWindow == null)
+                return;
+
+            _ownerWindow.Activated += OwnerWindowActivationChanged;
+            _ownerWindow.Deactivated += OwnerWindowActivationChanged;
+            _ownerWindow.StateChanged += OwnerWindowActivationChanged;
+            _ownerWindow.LocationChanged += OwnerWindowLayoutChanged;
+            _ownerWindow.SizeChanged += OwnerWindowLayoutChanged;
+        }
+
+        private void DetachOwnerWindowHandlers()
+        {
+            if (_ownerWindow == null)
+                return;
+
+            _ownerWindow.Activated -= OwnerWindowActivationChanged;
+            _ownerWindow.Deactivated -= OwnerWindowActivationChanged;
+            _ownerWindow.StateChanged -= OwnerWindowActivationChanged;
+            _ownerWindow.LocationChanged -= OwnerWindowLayoutChanged;
+            _ownerWindow.SizeChanged -= OwnerWindowLayoutChanged;
+            _ownerWindow = null;
+        }
+
+        private void OwnerWindowLayoutChanged(object sender, EventArgs e)
+        {
+            ScheduleRender();
+        }
+
+        private void OwnerWindowLayoutChanged(object sender, SizeChangedEventArgs e)
+        {
+            ScheduleRender();
+        }
+
+        private void OwnerWindowActivationChanged(object sender, EventArgs e)
+        {
+            UpdateLegendPopupPresentation();
+        }
+
+        private void OnHoveredWidgetChanged(HoveredWidgetMessage msg)
+        {
+            var next = msg?.Widget;
+            if (ReferenceEquals(_hoveredWidget, next))
+                return;
+
+            _hoveredWidget = next;
+            ScheduleRender();
+        }
+
         private void HideLegendPopup()
         {
             _legendPopup.IsOpen = false;
@@ -985,7 +1062,9 @@ namespace vMixController.Controls
             if (!(_legendPopup.Child is UIElement child))
                 return;
 
-            var canShow = IsVisible && IsEnabled && Visibility == Visibility.Visible && Opacity > 0.001;
+            AttachOwnerWindowHandlers();
+            var ownerActive = _ownerWindow == null || (_ownerWindow.IsActive && _ownerWindow.WindowState != WindowState.Minimized);
+            var canShow = IsVisible && IsEnabled && Visibility == Visibility.Visible && Opacity > 0.001 && ownerActive;
             _legendPopup.IsOpen = canShow;
             child.Opacity = Math.Max(0.0, Math.Min(1.0, Opacity));
         }

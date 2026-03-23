@@ -29,9 +29,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Help="{x:Static this:Help.Button_StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.StateDependent}" Grouped="True"></prop:BoolControl>
-                <prop:BoolControl Help="{x:Static this:Help.Button_ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ExecuteAfterLoad}" Grouped="True"></prop:BoolControl>
-                <prop:BoolControl  Help="{x:Static this:Help.Button_Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ColorizeButton}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{loc:Loc Key=Help.Button.StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.StateDependent}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{loc:Loc Key=Help.Button.ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ExecuteAfterLoad}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl  Help="{loc:Loc Key=Help.Button.Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ColorizeButton}" Grouped="True"></prop:BoolControl>
             </Grid>
             <prop:ScriptControl Commands="{Binding Commands, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Log="{Binding Log}"/>
         </StackPanel>
@@ -54,9 +54,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <prop:BoolControl Help="{x:Static this:Help.Button_StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.StateDependent}" Grouped="True"></prop:BoolControl>
-                <prop:BoolControl Help="{x:Static this:Help.Button_ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ExecuteAfterLoad}" Grouped="True"></prop:BoolControl>
-                <prop:BoolControl  Help="{x:Static this:Help.Button_Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ColorizeButton}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{loc:Loc Key=Help.Button.StateDependent}" Value="{Binding IsStateDependent, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.StateDependent}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl Help="{loc:Loc Key=Help.Button.ExecuteAfterLoad}" Grid.Column="1" Value="{Binding AutoStart, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ExecuteAfterLoad}" Grouped="True"></prop:BoolControl>
+                <prop:BoolControl  Help="{loc:Loc Key=Help.Button.Colorize}" Grid.Column="2" Value="{Binding IsColorized, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Title="{loc:Loc Key=PropertyEditor.Button.ColorizeButton}" Grouped="True"></prop:BoolControl>
             </Grid>
             <prop:NewScriptControl Commands="{Binding Commands, UpdateSourceTrigger=Explicit, Mode=TwoWay}" Log="{Binding Log}"/>
         </StackPanel>

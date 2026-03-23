@@ -24,7 +24,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <this:Help x:Key="Help"/>
             <Storyboard x:Key="Blink">
                 <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="Lime" Duration="00:00:00.5" AutoReverse="True" RepeatBehavior="2x"/>
             </Storyboard>
@@ -44,7 +43,7 @@
                     <Border BorderThickness="1,0,0,0" Margin="1" BorderBrush="White"/>
                     <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ExportScript}" Style="{StaticResource TitleButton}" Command="{Binding ExportScriptCommand, ElementName=Me}" Content="&#xF574;"/>
                     <Button ToolTip="{loc:Loc Key=ScriptEditor.ToolTip.ImportScript}" Style="{StaticResource TitleButton}" Command="{Binding ImportScriptCommand, ElementName=Me}" Content="&#xF56d;"/>
-                    <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Script_Default, Source={StaticResource Help}}"/>
+                    <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.Script.Default}"/>
                 </StackPanel>
 
                 <TabControl SelectionChanged="TabControl_SelectionChanged" BorderBrush="LightSlateGray" Background="DarkSlateGray">

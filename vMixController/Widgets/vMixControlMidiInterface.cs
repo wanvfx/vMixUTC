@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using vMixController.Classes;
 using vMixController.Classes.Scripting;
 using vMixController.Extensions;
+using vMixController.Messages;
 
 namespace vMixController.Widgets
 {
@@ -150,22 +151,22 @@ namespace vMixController.Widgets
                         case Melanchall.DryWetMidi.Core.MidiEventType.NoteAftertouch:
                             var note = (e.Event as Melanchall.DryWetMidi.Core.NoteEvent);
                             if (note.Channel == item.A && item.B == note.NoteNumber)
-                                Messenger.Default.Send(new Pair<string, object>(item.C, ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)note.Velocity)));
+                                Messenger.Default.Send(new HotkeyLinkMessage() { Link = item.C, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)note.Velocity) });
                             break;
                         case Melanchall.DryWetMidi.Core.MidiEventType.ControlChange:
                             var cc = (e.Event as Melanchall.DryWetMidi.Core.ControlChangeEvent);
                             if (cc.Channel == item.A && item.B == cc.ControlNumber)
-                                Messenger.Default.Send(new Pair<string, object>(item.C, ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)cc.ControlValue)));
+                                Messenger.Default.Send(new HotkeyLinkMessage() { Link = item.C, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)cc.ControlValue) });
                             break;
                         case Melanchall.DryWetMidi.Core.MidiEventType.ProgramChange:
                             var pc = (e.Event as Melanchall.DryWetMidi.Core.ProgramChangeEvent);
                             if (pc.Channel == item.A)
-                                Messenger.Default.Send(new Pair<string, object>(item.C, ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)pc.ProgramNumber)));
+                                Messenger.Default.Send(new HotkeyLinkMessage() { Link = item.C, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)pc.ProgramNumber) });
                             break;
                         case Melanchall.DryWetMidi.Core.MidiEventType.PitchBend:
                             var pb = (e.Event as Melanchall.DryWetMidi.Core.PitchBendEvent);
                             if (pb.Channel == item.A)
-                                Messenger.Default.Send(new Pair<string, object>(item.C, ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)pb.PitchValue)));
+                                Messenger.Default.Send(new HotkeyLinkMessage() { Link = item.C, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter((byte)pb.PitchValue) });
                             break;
                         default:
 

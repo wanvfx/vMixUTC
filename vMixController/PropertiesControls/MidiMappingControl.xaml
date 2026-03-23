@@ -23,7 +23,6 @@
                     <x:Type TypeName="midi:MidiEventType"/>
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
-            <this:Help x:Key="Help"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <i:Interaction.Behaviors>
@@ -36,7 +35,7 @@
                     <Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf001;</Run>
                     <Run Text="{loc:Loc Key=MidiMapping.Title}"/></TextBlock>
                 <Button ToolTip="{loc:Loc Key=MidiMapping.ToolTip.Add}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
-                <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Midi_Default, Source={StaticResource Help}}"/>
+                <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.Midi.Default}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Midis, ElementName=Me}" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                 <ListView.ItemContainerStyle>

@@ -959,13 +959,13 @@ namespace vMixController.Widgets
                         switch (cmd.Action.Function)
                         {
                             case NativeFunctions.NEXTPAGE:
-                                Messenger.Default.Send(new Pair<string, bool>("PAGE", true));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.Next });
                                 break;
                             case NativeFunctions.PREVPAGE:
-                                Messenger.Default.Send(new Pair<string, bool>("PAGE", false));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.Previous });
                                 break;
                             case NativeFunctions.SETPAGE:
-                                Messenger.Default.Send(new Pair<string, int>("PAGE", int.Parse(cmd.Parameter)));
+                                Messenger.Default.Send(new PageNavigationMessage() { Mode = PageNavigationMode.SetIndex, PageIndex = int.Parse(cmd.Parameter) });
                                 break;
                             case NativeFunctions.WIN:
                                 Process.Start(cmd.StringParameter);
@@ -1003,7 +1003,7 @@ namespace vMixController.Widgets
                             case NativeFunctions.UPDATESTATE:
                             case NativeFunctions.SYNC:
                                 AddLog("{0}) STATE UPDATING", _pointer + 1);
-                                RunOnUiThread(() => Messenger.Default.Send(new Pair<string, bool>() { A = "SYNC", B = true }));
+                                RunOnUiThread(() => Messenger.Default.Send(new SyncStateRequestMessage() { Force = true }));
                                 break;
                             case NativeFunctions.UPDATEINTERNALBUTTONSTATE:
                             case NativeFunctions.SYNCINTERNALBUTTONSTATE:
@@ -1024,7 +1024,7 @@ namespace vMixController.Widgets
                             case NativeFunctions.EXECLINK:
                                 strparameter = GetObjectParameter()?.ToString() ?? string.Empty;
                                 AddLog("{2}) EXECLINK {0} [{1}]", cmd.StringParameter, strparameter, _pointer + 1);
-                                RunOnUiThread(() => Messenger.Default.Send(new Pair<string, object>(strparameter, ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null))));
+                                RunOnUiThread(() => Messenger.Default.Send(new HotkeyLinkMessage() { Link = strparameter, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) }));
                                 break;
                             case NativeFunctions.LIVETOGGLE:
                                 AddLog("{0}) LIVETOGGLE", _pointer + 1);

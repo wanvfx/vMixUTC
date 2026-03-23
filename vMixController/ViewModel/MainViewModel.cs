@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -72,7 +73,7 @@ namespace vMixController.ViewModel
         vMixWidgetSettingsView _settings = new vMixWidgetSettingsView();
         NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        private readonly ScriptExecutionLoopGuard _scriptExecutionLoopGuard = new ScriptExecutionLoopGuard(20, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
+        private readonly ScriptExecutionLoopGuard _scriptExecutionLoopGuard = new ScriptExecutionLoopGuard(100, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2));
         private DateTime _lastScriptLoopGuardWarningUtc = DateTime.MinValue;
         private static readonly TimeSpan ScriptLoopGuardWarningThrottle = TimeSpan.FromSeconds(2);
 
@@ -2038,6 +2039,7 @@ namespace vMixController.ViewModel
                 IsUrlValid = vMixAPI.StateFabrique.IsUrlValid(WindowSettings.IP, WindowSettings.Port);
 
                 SyncTovMixState();
+                ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
             }
             catch (Exception e)
             {
@@ -2661,6 +2663,7 @@ namespace vMixController.ViewModel
         public MainViewModel()
         {
             LocalizationManager.Instance.CultureChanged += LocalizationManager_CultureChanged;
+
             _logger.Info(Environment.Version);
             _logger.Info(Environment.OSVersion);
             ThreadPool.GetAvailableThreads(out int t1, out int t2);
@@ -2833,9 +2836,9 @@ namespace vMixController.ViewModel
             if (Model == null)
                 vMixAPI.StateFabrique.CreateAsync();
 
-            MessengerInstance.Register<Pair<string, object>>(this, (hk) =>
+            MessengerInstance.Register<HotkeyLinkMessage>(this, (hk) =>
             {
-                ProcessHotkey(hk.A, hk.B);
+                ProcessHotkey(hk.Link, hk.Parameter);
             });
 
             MessengerInstance.Register<string>(this, (hk) =>
@@ -2895,11 +2898,12 @@ namespace vMixController.ViewModel
                 IsLoading = msg.Loading;
             });
 
-            Messenger.Default.Register<Triple<vMixControl, double, double>>(this, (t) =>
+
+            Messenger.Default.Register<WidgetMoveDeltaMessage>(this, (t) =>
             {
                 _movedWidgetsBuffer.Clear();
                 foreach (var widget in _widgets)
-                    if (widget.Selected && widget != t.A)
+                    if (widget.Selected && widget != t.Widget)
                         _movedWidgetsBuffer.Add(widget);
                 foreach (var widget in _intersections)
                     _movedWidgetsBuffer.Add(widget);
@@ -2909,24 +2913,24 @@ namespace vMixController.ViewModel
 
                 foreach (var item in _movedWidgetsBuffer)
                 {
-                    item.Left = Math.Round(item.Left + t.B);
-                    item.Top = Math.Round(item.Top + t.C);
+                    item.Left = Math.Round(item.Left + t.DeltaX);
+                    item.Top = Math.Round(item.Top + t.DeltaY);
                 }
             });
 
-            Messenger.Default.Register<Pair<vMixControl, bool>>(this, (t) =>
+            Messenger.Default.Register<WidgetMoveStateMessage>(this, (t) =>
             {
                 _selectedStickyRegionsBuffer.Clear();
                 foreach (var widget in _widgets)
                     if (widget.Selected && widget is vMixControlRegion selectedRegion && selectedRegion.Sticky)
                         _selectedStickyRegionsBuffer.Add(selectedRegion);
 
-                if (!(t.A is vMixControlRegion reg) || (_selectedStickyRegionsBuffer.Count == 0 && !reg.Sticky))
+                if (!(t.Widget is vMixControlRegion reg) || (_selectedStickyRegionsBuffer.Count == 0 && !reg.Sticky))
                     return;
                 _selectedStickyRegionsBuffer.Add(reg);
 
 
-                if (!t.B)
+                if (!t.IsStarted)
                 {
                     _intersections.Clear();
                 }
@@ -2945,34 +2949,29 @@ namespace vMixController.ViewModel
 
             });
 
-            Messenger.Default.Register<Pair<string, bool>>(this, (t) =>
+            Messenger.Default.Register<HotkeysEnabledMessage>(this, (t) =>
             {
-                switch (t.A)
-                {
-                    case "Hotkeys":
-                        IsHotkeysEnabled = t.B;
-                        break;
-                    case "SYNC":
-                        if (t.B == true)
-                            SyncTovMixState();
-                        break;
-                    case "PAGE":
-                        if (t.B)
-                            PageIndex = (PageIndex + 1) % 7;
-                        else
-                            PageIndex = Math.Max(0, PageIndex - 1);
-                        break;
-                    default:
-                        break;
-                }
+                IsHotkeysEnabled = t.IsEnabled;
             });
 
-            Messenger.Default.Register<Pair<string, int>>(this, (t) =>
+            Messenger.Default.Register<SyncStateRequestMessage>(this, (t) =>
             {
-                switch (t.A)
+                if (t.Force)
+                    SyncTovMixState();
+            });
+
+            Messenger.Default.Register<PageNavigationMessage>(this, (t) =>
+            {
+                switch (t.Mode)
                 {
-                    case "PAGE":
-                        PageIndex = t.B;
+                    case PageNavigationMode.Next:
+                        PageIndex = (PageIndex + 1) % 7;
+                        break;
+                    case PageNavigationMode.Previous:
+                        PageIndex = Math.Max(0, PageIndex - 1);
+                        break;
+                    case PageNavigationMode.SetIndex:
+                        PageIndex = t.PageIndex;
                         break;
                 }
             });

@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -262,8 +263,8 @@ namespace vMixController
 
         private void LanguageMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is MenuItem menuItem && menuItem.Tag is string cultureName)
-                LocalizationManager.Instance.SetCulture(cultureName);
+            if (e.OriginalSource is MenuItem menuItem && menuItem.Tag is CultureInfo cultureName)
+                LocalizationManager.Instance.SetCulture(cultureName.ToString());
         }
     }
 }

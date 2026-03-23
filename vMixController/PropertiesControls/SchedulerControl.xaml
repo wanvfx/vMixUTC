@@ -13,8 +13,6 @@
              x:Name="Me">
     <UserControl.Resources>
         <ResourceDictionary>
-            <!--<c:DateTimeToDayOfWeekConverter x:Key="dttw"/>-->
-            <this:Help x:Key="Help"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -28,7 +26,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Foreground="Black" Style="{StaticResource PropertyName}" Margin="{StaticResource RightStdMargin}" VerticalAlignment="Center"><Run FontWeight="Normal" FontFamily="{StaticResource FontAwesome}">&#xf017;</Run><Run Text=" "></Run><Run Text="{loc:Loc Key=Scheduler.Title}"/></TextBlock>
                 <Button ToolTip="{loc:Loc Key=Scheduler.ToolTip.AddClockTime}" Style="{StaticResource TitleButton}" Command="{Binding AddPathCommand, ElementName=Me}" Content="&#x2b;"/>
-                <Control Style="{StaticResource HelpBorder}" ToolTip="{Binding Scheduler_Default, Source={StaticResource Help}}"/>
+                <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=Help.Scheduler.Default}"/>
             </StackPanel>
             <ListView BorderThickness="0" ItemsSource="{Binding Events, ElementName=Me}" HorizontalContentAlignment="Stretch" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" ScrollViewer.CanContentScroll="True">
                 <ListView.ItemContainerStyle>
