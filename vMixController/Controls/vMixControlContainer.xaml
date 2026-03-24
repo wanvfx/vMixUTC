@@ -51,7 +51,6 @@
     <Border Tag="{Binding ParentContainer, ElementName=CC}" Background="#1E2328" Margin="0" Padding="0" IsHitTestVisible="{Binding ParentContainer.Control.IsGhosted, ElementName=CC, Converter={wpfc:BoolToInverseBoolConverter}}" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave">
         <Border.Style>
             <Style TargetType="Border">
-                <!--Value=""-->
                 <Setter Property="BorderBrush" Value="{Binding ParentContainer.BorderColorProxy, ElementName=CC, Converter={conv:ColorToSolidBrushConverter}}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Style.Triggers>
@@ -166,11 +165,6 @@
                         </MenuItem.Icon>
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
-                                <!--<Setter Property="DataContext">
-                                    <Setter.Value>
-                                        <cls:ControlIntParameter A="{Binding Tag, Source={StaticResource ControlHandler}}" B=""/>
-                                    </Setter.Value>
-                                </Setter>-->
                                 <Setter Property="Header">
                                     <Setter.Value>
                                         <MultiBinding Converter="{conv:StringListToStringConverter}">
@@ -190,7 +184,6 @@
                                 </Setter>
                             </Style>
                         </MenuItem.ItemContainerStyle>
-                        <!--Command="{Binding MoveCommand}" CommandParameter="{Binding Control}"-->
                     </MenuItem>
                     <MenuItem Header="{loc:Loc Key=WidgetContainer.Menu.Properties}" Command="{Binding SettingsCommand}" CommandParameter="{Binding Control}" IsEnabled="{Binding Control.Locked, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <MenuItem.Icon>

@@ -1290,4 +1290,16 @@ It means, that all mapped title texts will be shown into text field with `|` del
 User can edit one title at time, or replace text in all titles.
 This option is useful for List Widget.</value>
   </data>
+  <data name="MainWindow.StatusBar.LinksType.None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksType.All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksType.Hover" xml:space="preserve">
+    <value>Hover</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksStyle" xml:space="preserve">
+    <value>Links Style</value>
+  </data>
 </root>

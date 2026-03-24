@@ -1288,4 +1288,16 @@
 Это значит, что все сопоставленные титры будут объединены в одну строку с разделителем "|".
 Вы можете редактировать несколько титров одновременно, полезно для виджета "Список".</value>
   </data>
+  <data name="MainWindow.StatusBar.LinksType.None" xml:space="preserve">
+    <value>Скрыть</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksType.All" xml:space="preserve">
+    <value>Показать все</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksType.Hover" xml:space="preserve">
+    <value>При наведении</value>
+  </data>
+  <data name="MainWindow.StatusBar.LinksStyle" xml:space="preserve">
+    <value>Отображение связей</value>
+  </data>
 </root>

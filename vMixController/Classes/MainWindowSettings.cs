@@ -101,6 +101,32 @@ namespace vMixController.Classes
             }
         }
 
+
+        private string _linksStyle = Constants.LINKS_NONE;
+
+        /// <summary>
+        /// Sets and gets the Left property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string LinksStyle
+        {
+            get
+            {
+                return _linksStyle;
+            }
+
+            set
+            {
+                if (_linksStyle == value)
+                {
+                    return;
+                }
+
+                _linksStyle = value;
+                RaisePropertyChanged(nameof(LinksStyle));
+            }
+        }
+
         private bool _enableLoopGuard = true;
 
         public bool EnableLoopGuard

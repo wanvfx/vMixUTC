@@ -47,7 +47,12 @@ namespace vMixController.Controls
         {
 
             if (_initList.Count > 0)
-                _initList.Dequeue().LoadViewFromUri("vMixController;component/Controls/vMixControlContainer.xaml");
+            {
+                var container = _initList.Dequeue();
+                container.InitializeComponent();
+                //container.LoadViewFromUri("vMixController;component/Controls/vMixControlContainer.xaml");
+                
+            }
             if (_initList.Count == 0)
                 _timer.Stop();
 

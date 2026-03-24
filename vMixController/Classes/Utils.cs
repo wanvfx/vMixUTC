@@ -1,24 +1,19 @@
-﻿using CommonServiceLocator;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Serialization;
-using vMixController.Classes;
 using vMixController.Classes.Scripting;
 using vMixController.ViewModel;
 using vMixController.Widgets;
@@ -81,6 +76,21 @@ namespace vMixController.Classes
 
     public static class Utils
     {
+        private static readonly ConcurrentDictionary<Type, XmlSerializer> XmlSerializerCache =
+            new ConcurrentDictionary<Type, XmlSerializer>();
+
+        public static XmlSerializer GetXmlSerializer(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            return XmlSerializerCache.GetOrAdd(type, t => new XmlSerializer(t));
+        }
+
+        public static XmlSerializer GetXmlSerializer<T>()
+        {
+            return GetXmlSerializer(typeof(T));
+        }
 
         public static string MAINPAGENAME = "MAIN";
         public static string DATAPAGENAME = "DATA";
@@ -185,7 +195,7 @@ namespace vMixController.Classes
                 reader.ReadStartElement();
                 reader.ReadStartElement();
                 _logger.Info("Loading widgets.");
-                XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixControl>));
+                XmlSerializer s = GetXmlSerializer<ObservableCollection<vMixControl>>();
                 var collection = (ObservableCollection<vMixControl>)s.Deserialize(reader);
                 foreach (var item in collection)
                 {
@@ -205,7 +215,7 @@ namespace vMixController.Classes
                 reader.ReadStartElement();
 
                 _logger.Info("Loading window settings.");
-                s = new XmlSerializer(typeof(MainWindowSettings));
+                s = GetXmlSerializer<MainWindowSettings>();
 
                 var settings = (MainWindowSettings)s.Deserialize(reader);
 
@@ -229,7 +239,7 @@ namespace vMixController.Classes
                 {
                     reader.ReadStartElement();
 
-                    s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
+                    s = GetXmlSerializer<ObservableCollection<Pair<string, string>>>();
                     var globals = (ObservableCollection<Pair<string, string>>)s.Deserialize(reader);
                     //Add or update global variable, according to controller variables
                     foreach (var item in globals)
@@ -306,12 +316,12 @@ namespace vMixController.Classes
                     writer.WriteStartDocument();
                     writer.WriteStartElement("Root");
                     writer.WriteStartElement("Controls");
-                    XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixControl>));
+                    XmlSerializer s = GetXmlSerializer<ObservableCollection<vMixControl>>();
                     _logger.Info("Writing widgets.");
                     s.Serialize(writer, _controls);
                     writer.WriteEndElement();
                     writer.WriteStartElement("WindowSettings");
-                    s = new XmlSerializer(typeof(MainWindowSettings));
+                    s = GetXmlSerializer<MainWindowSettings>();
                     _logger.Info("Writing window settings.");
                     s.Serialize(writer, _windowSettings);
                     writer.WriteEndElement();
@@ -319,7 +329,7 @@ namespace vMixController.Classes
 
                     var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
                     writer.WriteStartElement("GlobalVariables");
-                    s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
+                    s = GetXmlSerializer<ObservableCollection<Pair<string, string>>>();
                     _logger.Info("Writing global variables.");
                     s.Serialize(writer, globalSettings.Variables);
                     writer.WriteEndElement();

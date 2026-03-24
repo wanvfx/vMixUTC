@@ -42,7 +42,7 @@ namespace vMixController.Classes
         private static long _lastDocumentTimestampTicksUtc;
         private static int _stateRecalcVersion;
 
-        public static bool Sync { get; set; } = true;
+        public static bool Sync { get; set; } = false;
 
         public static string Url
         {

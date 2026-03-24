@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using GalaSoft.MvvmLight.Messaging;
+using Microsoft.VisualBasic;
 using vMixController.Messages;
 using vMixController.ViewModel;
 using vMixController.Widgets;
@@ -93,6 +95,12 @@ namespace vMixController.Controls
             set => SetValue(TransformSourceProperty, value);
         }
 
+        public string Mode
+        {
+            get => (string)GetValue(ModeProperty);
+            set => SetValue(ModeProperty, value);
+        }
+
         public static readonly DependencyProperty ItemsProperty =
             DependencyProperty.Register(
                 nameof(Items),
@@ -127,6 +135,19 @@ namespace vMixController.Controls
                 typeof(FrameworkElement),
                 typeof(WidgetLinksOverlay),
                 new PropertyMetadata(null, TransformSourceChanged));
+
+        public static readonly DependencyProperty ModeProperty =
+            DependencyProperty.Register(
+                nameof(Mode),
+                typeof(string),
+                typeof(WidgetLinksOverlay),
+                new PropertyMetadata(vMixController.Classes.Constants.LINKS_NONE, ModeChanged));
+
+        private static void ModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is WidgetLinksOverlay overlay)
+                overlay.ScheduleRender();
+        }
 
         private static void ItemsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -267,6 +288,10 @@ namespace vMixController.Controls
             PART_DevicePath.Data = null;
             PART_DeviceArrows.Data = null;
             PART_DynamicLayer.Children.Clear();
+
+            if (Mode == vMixController.Classes.Constants.LINKS_NONE)
+                return;
+
             RefreshActualSizeCache();
 
             var widgets = (Items ?? Enumerable.Empty<vMixControl>())
@@ -288,9 +313,14 @@ namespace vMixController.Controls
             var widgetOrder = widgets
                 .Select((widget, index) => new { widget, index })
                 .ToDictionary(x => x.widget, x => x.index);
-            var visibleEdges = edges
-                .Where(e => e.Source != null && e.Target != null && (e.Source.Page == CurrentPage || e.Target.Page == CurrentPage))
-                .ToList();
+            var visibleEdges = new List<ScriptLoopAnalyzer.LinkEdge>();
+            
+            if ((Mode == vMixController.Classes.Constants.LINKS_HOVER && _hoveredWidget != null) ||
+                 Mode == vMixController.Classes.Constants.LINKS_ALL)
+                visibleEdges = edges
+                    .Where(e => e.Source != null && e.Target != null && (e.Source.Page == CurrentPage || e.Target.Page == CurrentPage))
+                    .ToList();
+
             if (visibleEdges.Count == 0)
             {
                 HideLegendPopup();
@@ -298,6 +328,10 @@ namespace vMixController.Controls
             }
 
             var hovered = _hoveredWidget;
+            
+            if (Mode == vMixController.Classes.Constants.LINKS_ALL)
+                hovered = null;
+
             if (hovered != null && !widgets.Contains(hovered))
                 hovered = null;
 
@@ -306,9 +340,10 @@ namespace vMixController.Controls
                 var focusedEdges = visibleEdges
                     .Where(e => e.Source == hovered || e.Target == hovered)
                     .ToList();
-                if (focusedEdges.Count > 0)
+                if (focusedEdges.Count > 0 || Mode == vMixController.Classes.Constants.LINKS_HOVER)
                     visibleEdges = focusedEdges;
             }
+
             var cycleEdges = BuildCycleEdgeSet(edges);
 
             var pageFlow = BuildCrossPageFlow(visibleEdges);

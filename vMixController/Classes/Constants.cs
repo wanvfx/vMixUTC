@@ -60,6 +60,12 @@ namespace vMixController.Classes
         };
 
         public static byte[] XORKEY = new byte[] { 0x44, 0x77, 0xCC, 0xA, 0x10,  0x33, 0x01, 0x05 };
+
+
+        public const string LINKS_ALL = "All";
+        public const string LINKS_HOVER = "Hover";
+        public const string LINKS_NONE = "None";
+        public static string[] Links { get; } = new string[] { LINKS_ALL, LINKS_HOVER, LINKS_NONE };
         //public static byte[] DESIV = new byte[] { 0x10, 0x33, 0xFA, 0x6E, 0x3F, 0xAA, 0x90, 0x5D };
     }
 }

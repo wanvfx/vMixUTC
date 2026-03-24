@@ -183,15 +183,22 @@
                                 <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8">
                                 </Ellipse>
                             </Border>
-                            <Grid Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
-                                <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="{Binding PotentialLoopParticipants}">&#xf071;</TextBlock>
-                            </Grid>
                         </StackPanel>
-                        <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>
+                        <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}">
+                            <Run Text="{Binding Name}"/>
+                            <Border Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
+                                <TextBlock Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" ToolTip="{Binding PotentialLoopParticipants}" Margin="0,0,0,-2">&#xf071;</TextBlock>
+                            </Border>
+                        </TextBlock>
                         <Grid Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}}">
                             <ContentControl Content="{StaticResource IMG}"/>
                             <Viewbox Stretch="Uniform" Height="{Binding ActualHeight, Source={StaticResource IMG}}">
-                                <TextBlock Foreground="{Binding Source, Source={StaticResource IMG}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Text="{Binding Name}"/>
+                                <TextBlock Foreground="{Binding Source, Source={StaticResource IMG}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center">
+                                    <Run Text="{Binding Name}"/>
+                                    <Border Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
+                                        <TextBlock Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" ToolTip="{Binding PotentialLoopParticipants}" Margin="0,0,0,-2">&#xf071;</TextBlock>
+                                    </Border>
+                                </TextBlock>
                             </Viewbox>
                         </Grid>
                     </Grid>
@@ -330,22 +337,27 @@
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                             <Border Grid.Column="0" Margin="{StaticResource LeftStdMargin}" Visibility="{Binding ImageType, Converter={wpfc:ObjectToStringEqualsParameterToVisibilityConverter}, ConverterParameter=1}">
                                 <!--{Binding Active, Converter={c:BoolToSolidColorBrushConverter}}-->
-
                                 <Ellipse x:Name="stateDep" Visibility="{Binding IsStateDependent, Converter={wpfc:BoolToVisibilityConverter}}" Fill="SlateGray" Width="8" Height="8"></Ellipse>
-
-
                             </Border>
-                            <Grid Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
-                                <TextBlock Margin="6,0,0,0" Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" Foreground="Yellow" ToolTip="{Binding PotentialLoopParticipants}">&#xf071;</TextBlock>
-                            </Grid>
                         </StackPanel>
-                        <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Text="{Binding Name}" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}"/>
+                        <TextBlock Foreground="{Binding Background.Color, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}, ConverterParameter=true}">
+                            <Run Text="{Binding Name}"/>
+                            <Border Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
+                                <TextBlock Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" ToolTip="{Binding PotentialLoopParticipants}" Margin="0,0,0,-2">&#xf071;</TextBlock>
+                            </Border>
+                        </TextBlock>
                         <Grid Grid.Column="1" Visibility="{Binding Image, Converter={c:ImagePathToVisibilityConverter}}">
                             <ContentControl Content="{StaticResource IMG}"/>
                             <Viewbox Stretch="Uniform" Height="{Binding ActualHeight, Source={StaticResource IMG}}">
-                                <TextBlock Foreground="{Binding Source, Source={StaticResource IMG}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center" Text="{Binding Name}"/>
+                                <TextBlock Foreground="{Binding Source, Source={StaticResource IMG}, Converter={c:ColorToBlackOrWhiteConverter}}" HorizontalAlignment="Center">
+                                    <Run Text="{Binding Name}"/>
+                                    <Border Visibility="{Binding Locked, Converter={wpfc:BoolToInverseVisibilityConverter}}">
+                                        <TextBlock Visibility="{Binding PotentialLoopWarning, Converter={wpfc:BoolToVisibilityConverter}}" FontFamily="{StaticResource FontAwesome}" ToolTip="{Binding PotentialLoopParticipants}" Margin="0,0,0,-2">&#xf071;</TextBlock>
+                                    </Border>
+                                    </TextBlock>
                             </Viewbox>
                         </Grid>
+
                     </Grid>
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">

@@ -711,7 +711,7 @@ namespace vMixController.Widgets
             XmlDocumentMessenger.OnDocumentDownloaded += OnXmlDocumentDownloaded;
         }
 
-        private void PopulateVariables(NCalc.Expression exp)
+        private void PopulateVariables(NCalc.SafeExpression exp)
         {
             foreach (var item in _variables)
                 exp.Parameters.Add(string.Format("{0}{1}", VARIABLEPREFIX, item.Key), Utils.NormalizeParameterValue(item.Value));
@@ -1098,7 +1098,7 @@ namespace vMixController.Widgets
                     }
                     else if (state != null)
                     {
-                        var key = Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher);
+                        var key = Utils.FindInputKeyByVariable(cmd.InputKey ?? "NOKEY", Dispatcher);
 
                         int p1 = 0;
                         float p1f = 0.0f;
@@ -1259,7 +1259,7 @@ namespace vMixController.Widgets
             base.Update();
             if (AutoStart)
                 ExecuteScriptCommand.Execute(null);
-            CheckScriptLoop();
+            //CheckScriptLoop();
         }
 
         protected override void Dispose(bool managed)

@@ -723,6 +723,23 @@ namespace vMixController.Widgets
         public static readonly DependencyProperty StateProperty =
             DependencyProperty.Register("State", typeof(vMixAPI.State), typeof(vMixControl), new PropertyMetadata(null, InternalPropertyChanged));
 
+        [XmlIgnore]
+        public bool IsVisualReady
+        {
+            get
+            {
+                return _isVisualReady;
+            }
+            set
+            {
+                if (_isVisualReady == value)
+                    return;
+                _isVisualReady = value;
+                RaisePropertyChanged(nameof(IsVisualReady));
+            }
+        }
+        private bool _isVisualReady = true;
+
         private static void InternalPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.Property.Name == "State")

@@ -6,41 +6,55 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using vMixController.Widgets;
 
 namespace vMixController.Controls
 {
     public class TypeTemplateSelector : DataTemplateSelector
     {
-
+        private readonly Dictionary<Type, DataTemplate> _templateCache = new Dictionary<Type, DataTemplate>();
+        private readonly HashSet<Type> _templateMissCache = new HashSet<Type>();
 
         public int Page { get; set; } = 0;
         public string Suffix { get; set; } = "";
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            //Debug.Print(Page.ToString());
-            FrameworkElement element = container as FrameworkElement;
-            //if (((int?)item.GetType().GetProperty("Page")?.GetValue(item) ?? 0) == Page)
-            //{
-            if (item == null) return null;
-            try
+            var element = container as FrameworkElement;
+            if (item == null || element == null)
+                return null;
+
+            /*if (item is vMixControl widget && !widget.IsVisualReady)
+                return element.TryFindResource("WidgetSkeletonTemplate") as DataTemplate;*/
+
+            var itemType = item.GetType();
+            if (_templateCache.TryGetValue(itemType, out var cachedTemplate))
+                return cachedTemplate;
+
+            if (_templateMissCache.Contains(itemType))
+                return null;
+
+            var template = element.TryFindResource(itemType.Name + Suffix) as DataTemplate;
+            if (template != null)
             {
-                return (DataTemplate)element.FindResource(item.GetType().Name + Suffix);
+                _templateCache[itemType] = template;
+                return template;
             }
-            catch (ResourceReferenceKeyNotFoundException)
+
+            var baseType = itemType.BaseType;
+            if (baseType == null)
             {
-                try
-                {
-                    return (DataTemplate)element.FindResource(item.GetType().BaseType.Name + Suffix);
-                }
-                catch (ResourceReferenceKeyNotFoundException)
-                {
-                    return null;
-                }
+                _templateMissCache.Add(itemType);
+                return null;
             }
-            //}
-            //else
-            //   return (DataTemplate)element.FindResource("Dummy");
+
+            var baseTemplate = element.TryFindResource(baseType.Name + Suffix) as DataTemplate;
+            if (baseTemplate != null)
+                _templateCache[itemType] = baseTemplate;
+            else
+                _templateMissCache.Add(itemType);
+
+            return baseTemplate;
         }
     }
 }

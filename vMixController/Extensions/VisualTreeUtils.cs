@@ -16,28 +16,28 @@ namespace vMixController.Extensions
         public static List<T> FindChild<T>(this DependencyObject parent)
             where T : DependencyObject
         {
-            // Confirm parent is valid.
-            if (parent == null) return null;
+            var foundChildren = new List<T>();
+            if (parent == null)
+                return foundChildren;
 
-            //T foundChild = null;
-            List<T> foundChilds = new List<T>();
+            var queue = new Queue<DependencyObject>();
+            queue.Enqueue(parent);
 
-            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (int i = 0; i < childrenCount; i++)
+            while (queue.Count > 0)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                // If the child is not of the request child type child
-                if (!(child is T childType))
-                    // recursively drill down the tree
-                    foundChilds = foundChilds.Union(FindChild<T>(child)).ToList();
-                else
+                var node = queue.Dequeue();
+                var childrenCount = VisualTreeHelper.GetChildrenCount(node);
+                for (var i = 0; i < childrenCount; i++)
                 {
-                    // child element found.
-                    foundChilds.Add((T)child);
+                    var child = VisualTreeHelper.GetChild(node, i);
+                    if (child is T typedChild)
+                        foundChildren.Add(typedChild);
 
+                    queue.Enqueue(child);
                 }
             }
-            return foundChilds;
+
+            return foundChildren;
         }
 
         /// <summary>

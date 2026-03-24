@@ -2,6 +2,7 @@ using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using Melanchall.DryWetMidi.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -128,7 +129,13 @@ namespace vMixController.ViewModel
                     return;
                 }
 
+
                 _isLoading = value;
+
+                if (!_isLoading)
+                    foreach (var item in Widgets)
+                        item.IsVisualReady = true;
+
                 RaisePropertyChanged(nameof(IsLoading));
             }
         }
@@ -415,14 +422,14 @@ namespace vMixController.ViewModel
 
             set
             {
+                XmlDocumentMessenger.Sync = value == Status.Online || value == Status.InputsChanged;
+
                 if (_status == value)
                 {
                     return;
                 }
 
                 _status = value;
-
-                XmlDocumentMessenger.Sync = Status == Status.Online || Status == Status.InputsChanged;
 
                 _logger.Debug("Status changed to {0}.", value);
 
@@ -1012,7 +1019,7 @@ namespace vMixController.ViewModel
 
             using (var stream = new MemoryStream())
             {
-                var serializer = new XmlSerializer(typeof(T));
+                var serializer = Utils.GetXmlSerializer(typeof(T));
                 serializer.Serialize(stream, value);
                 return stream.ToArray();
             }
@@ -1025,7 +1032,7 @@ namespace vMixController.ViewModel
 
             using (var stream = new MemoryStream(data))
             {
-                var serializer = new XmlSerializer(typeof(T));
+                var serializer = Utils.GetXmlSerializer(typeof(T));
                 return (T)serializer.Deserialize(stream);
             }
         }
@@ -2010,6 +2017,8 @@ namespace vMixController.ViewModel
             {
                 ControllerPath = opendlg;
 
+                //IsWidgetsVisualLoading = true;
+
                 foreach (var item in _widgets)
                     item.Dispose();
                 _widgets.Clear();
@@ -2026,8 +2035,13 @@ namespace vMixController.ViewModel
                 _windowSettings.OpenLastAtStart = ol;
                 _windowSettings.RecentFiles = recent;
 
+                NormalizeMainWindowPlacement(WindowSettings);
+
                 foreach (var item in _widgets)
+                {
+                    item.IsVisualReady = false;
                     item.Update();
+                }
 
                 RaisePropertyChanged(nameof(WindowSettings));
                 _logger.Debug("Configuring API.");
@@ -2040,9 +2054,13 @@ namespace vMixController.ViewModel
 
                 SyncTovMixState();
                 ScriptLoopAnalyzer.RefreshPotentialLoopWarnings(Widgets);
+
+                //IsWidgetsVisualLoading = false;
+
             }
             catch (Exception e)
             {
+                //IsWidgetsVisualLoading = false;
                 _logger.Error(e, "Error while loading controller");
             }
         }
@@ -2478,6 +2496,7 @@ namespace vMixController.ViewModel
                 try
                 {
                     var title = LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Title"];
+                    
                     var content = string.Format(LocalizationManager.Instance["Dialog.Warning.PossibleScriptError.Loop"], result.Chain?.RootLink, result.CurrentLink, result.Chain?.HopCount ?? 0, result.HitsInWindow);
                     var dialog = new Ookii.Dialogs.Wpf.TaskDialog
                     {
@@ -2570,23 +2589,14 @@ namespace vMixController.ViewModel
                     () =>
                     {
                         _logger.Info("Saving templates.");
-                        XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<Pair<string, vMixControl>>));
+                        XmlSerializer s = Utils.GetXmlSerializer(typeof(ObservableCollection<Pair<string, vMixControl>>));
                         using (var fs = new FileStream(Path.Combine(_documentsPath, "Templates.xml"), FileMode.Create))
                             s.Serialize(fs, _widgetTemplates);
 
                         _logger.Info("Saving window settings.");
-                        s = new XmlSerializer(typeof(MainWindowSettings));
+                        s = Utils.GetXmlSerializer(typeof(MainWindowSettings));
                         using (var fs = new FileStream(Path.Combine(_documentsPath, "WindowSettings.xml"), FileMode.Create))
                             s.Serialize(fs, _windowSettings);
-
-                        //Save global variables only in controller now because it can confuse someone working with many controllers
-                        /*_logger.Info("Saving variables.");
-                        s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>));
-                        using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Create))
-                        {
-                            var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-                            s.Serialize(fs, globalSettings.Variables);
-                        }*/
 
 
                         _logger.Info("Saving last controller");
@@ -2657,6 +2667,61 @@ namespace vMixController.ViewModel
         private readonly HashSet<vMixControl> _movedWidgetsBuffer = new HashSet<vMixControl>();
         private readonly List<vMixControlRegion> _selectedStickyRegionsBuffer = new List<vMixControlRegion>();
 
+
+        private static Rect ToRect(System.Drawing.Rectangle bounds)
+        {
+            return new Rect(bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+        }
+
+        private static double IntersectionArea(Rect a, Rect b)
+        {
+            var intersection = Rect.Intersect(a, b);
+            if (intersection.IsEmpty || intersection.Width <= 0 || intersection.Height <= 0)
+                return 0;
+
+            return intersection.Width * intersection.Height;
+        }
+
+        private static void NormalizeMainWindowPlacement(MainWindowSettings settings)
+        {
+            if (settings == null)
+                return;
+
+            var screens = WpfScreenHelper.Screen.AllScreens?.ToArray() ?? Array.Empty<WpfScreenHelper.Screen>();
+            if (screens.Length == 0)
+                return;
+
+            var primary = WpfScreenHelper.Screen.PrimaryScreen ?? screens[0];
+            var primaryWork = primary.WorkingArea;
+
+            var minWidth = 400.0;
+            var minHeight = 400.0;
+            var maxWidth = Math.Max(minWidth, screens.Max(s => s.WorkingArea.Width) - 32);
+            var maxHeight = Math.Max(minHeight, screens.Max(s => s.WorkingArea.Height) - 32);
+
+            settings.Width = Math.Max(minWidth, Math.Min(settings.Width, maxWidth));
+            settings.Height = Math.Max(minHeight, Math.Min(settings.Height, maxHeight));
+
+            var windowRect = new Rect(settings.Left, settings.Top, settings.Width, settings.Height);
+            var workingAreas = screens.Select(x => x.WorkingArea).ToArray();
+            var windowArea = Math.Max(1.0, windowRect.Width * windowRect.Height);
+            var visibleArea = workingAreas.Sum(area => IntersectionArea(windowRect, area));
+            var visibleRatio = visibleArea / windowArea;
+
+            var titleHeight = Math.Max(24.0, SystemParameters.CaptionHeight + 8.0);
+            var titleRect = new Rect(windowRect.Left, windowRect.Top, windowRect.Width, titleHeight);
+            var isTitleVisible = workingAreas.Any(area => area.IntersectsWith(titleRect));
+
+            if (visibleRatio < 0.2 || !isTitleVisible)
+            {
+                settings.Left = primaryWork.Left + 64;
+                settings.Top = primaryWork.Top + 64;
+
+                settings.Left = Math.Max(primaryWork.Left, Math.Min(settings.Left, primaryWork.Right - settings.Width));
+                settings.Top = Math.Max(primaryWork.Top, Math.Min(settings.Top, primaryWork.Bottom - settings.Height));
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -2693,7 +2758,7 @@ namespace vMixController.ViewModel
             _expression.TryEvaluate(out _, out _);
 
             _logger.Info("Loading mapped functions.");
-            XmlSerializer s = new XmlSerializer(typeof(ObservableCollection<vMixFunctionReference>));
+            XmlSerializer s = Utils.GetXmlSerializer(typeof(ObservableCollection<vMixFunctionReference>));
             try
             {
                 if (File.Exists("Functions.xml"))
@@ -2704,7 +2769,7 @@ namespace vMixController.ViewModel
             {
                 _logger.Error(ex, "Error while loading mapped functions.");
             }
-            s = new XmlSerializer(typeof(ObservableCollection<vMixNewFunctionReference>));
+            s = Utils.GetXmlSerializer(typeof(ObservableCollection<vMixNewFunctionReference>));
             try
             {
                 if (File.Exists("NewFunctions.xml"))
@@ -2725,7 +2790,7 @@ namespace vMixController.ViewModel
             try
             {
                 _logger.Info("Loading templates.");
-                s = new XmlSerializer(typeof(ObservableCollection<Pair<string, vMixControl>>));
+                s = Utils.GetXmlSerializer(typeof(ObservableCollection<Pair<string, vMixControl>>));
                 if (File.Exists(Path.Combine(_documentsPath, "Templates.xml")))
                     using (var fs = new FileStream(Path.Combine(_documentsPath, "Templates.xml"), FileMode.Open))
                         _widgetTemplates = (ObservableCollection<Pair<string, vMixControl>>)s.Deserialize(fs);
@@ -2777,26 +2842,15 @@ namespace vMixController.ViewModel
             try
             {
                 _logger.Info("Loading window settings.");
-                s = new XmlSerializer(typeof(MainWindowSettings));
+                s = Utils.GetXmlSerializer(typeof(MainWindowSettings));
                 if (File.Exists(Path.Combine(_documentsPath, "WindowSettings.xml")))
                     using (var fs = new FileStream(Path.Combine(_documentsPath, "WindowSettings.xml"), FileMode.Open))
                         WindowSettings = (MainWindowSettings)s.Deserialize(fs);
                 else
                     WindowSettings = new MainWindowSettings();
 
-
-
-                var totalwidth = WpfScreenHelper.Screen.AllScreens.Select(x => x.Bounds.Width).Aggregate((x, y) => x + y);
-                var totalheight = WpfScreenHelper.Screen.AllScreens.Select(x => x.Bounds.Height).Max();
-
-                if (_windowSettings.Left > totalwidth)
-                    _windowSettings.Left = 128;
-                if (_windowSettings.Top > totalheight)
-                    _windowSettings.Top = 128;
-                if (_windowSettings.Width > WpfScreenHelper.Screen.PrimaryScreen.Bounds.Width)
-                    _windowSettings.Width = WpfScreenHelper.Screen.PrimaryScreen.Bounds.Width - 32;
-                if (_windowSettings.Height > WpfScreenHelper.Screen.PrimaryScreen.Bounds.Height)
-                    _windowSettings.Height = WpfScreenHelper.Screen.PrimaryScreen.Bounds.Height - 32;
+                NormalizeMainWindowPlacement(WindowSettings);
+                RaisePropertyChanged(nameof(WindowSettings));
 
             }
             catch (Exception)
@@ -2816,25 +2870,11 @@ namespace vMixController.ViewModel
                 _windowSettings.Pages.Add(Utils.PAGE5PAGENAME);
             }
 
-            /*try
-            {
-                _logger.Info("Loading variables.");
-                s = new XmlSerializer(typeof(ObservableCollection<Pair<string, string>>);
-                if (File.Exists(Path.Combine(_documentsPath, "Variables.xml")))
-                    using (var fs = new FileStream(Path.Combine(_documentsPath, "Variables.xml"), FileMode.Open))
-                    {
-                        var globalSettings = ((ViewModelLocator)App.Current.FindResource("Locator"))?.GlobalSettings;
-                        globalSettings.Variables = (ObservableCollection<Pair<string, string>>)s.Deserialize(fs);
-                    }
-
-            }
-            catch (Exception)
-            {
-
-            }*/
-
             if (Model == null)
+            {
+                vMixAPI.StateFabrique.Configure(_windowSettings.IP, _windowSettings.Port, _windowSettings.HttpLogin, _windowSettings.HttpPassword);
                 vMixAPI.StateFabrique.CreateAsync();
+            }
 
             MessengerInstance.Register<HotkeyLinkMessage>(this, (hk) =>
             {
@@ -3020,19 +3060,20 @@ namespace vMixController.ViewModel
                     {
                         _logger.Info("Trying to load {0}.", last);
                         LoadControllerFromFile(last);
+
                     }
                     catch (Exception e)
                     {
                         _logger.Error(e, "Error loading controller. {0}");
                     }
             }
-            CheckUpdate();
+            _ = CheckUpdate();
 
         }
 
         private const string css = "p { margin-left: 3em; }";
 
-        private void CheckUpdate()
+        private async Task CheckUpdate()
         {
             //https://forums.vmix.com/posts/t6468--FREE--Universal-Title-Controller
             ///html/body/form/div/div[3]/div/table[3]/tbody/tr[2]/td[2]/div/div/div/span[6]/strong/span
@@ -3042,7 +3083,7 @@ namespace vMixController.ViewModel
             try
             {
                 Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("vMixUTC"));
-                IReadOnlyList<Octokit.Release> _releases = AsyncHelpers.RunSync(() => client.Repository.Release.GetAll("elgarf", "vMixUTC"));
+                IReadOnlyList<Octokit.Release> _releases = await client.Repository.Release.GetAll("elgarf", "vMixUTC");
                 foreach (var release in _releases)
                 {
                     var version = DateTime.Parse(release.Name, new CultureInfo("RU-ru"));

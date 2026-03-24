@@ -70,7 +70,7 @@ namespace vMixController.Classes.Scripting
     #endregion
     public static class vMixControlButtonHelper
     {
-        public static bool CalculateExpression<T>(string expressionString, Action<Expression> populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
+        public static bool CalculateExpression<T>(string expressionString, Action<SafeExpression> populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
             => vMixControlExpressionHelper.CalculateExpression(expressionString, populateVariables, evaluateFunctionHandler, out result);
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace vMixController.Classes.Scripting
         /// <param name="doc">XML-документ для проверки.</param>
         /// <param name="variableExpander">Функция для раскрытия переменных (например, "[VAR]").</param>
         /// <returns>Объект XPathStateResult, содержащий результат и флаг наличия ошибок.</returns>
-        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, Action<Expression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
+        public static XPathStateResult CalculateStateDependency(this ObservableCollection<vMixControlButtonCommand> _commands, XmlDocument doc, Func<string, string> variableExpander, Action<SafeExpression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction)
         {
             if (doc == null || variableExpander == null)
             {
@@ -137,7 +137,7 @@ namespace vMixController.Classes.Scripting
         /// <summary>
         /// Готовит и вычисляет все аргументы, необходимые для форматирования строк XPath и значений.
         /// </summary>
-        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, Action<Expression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
+        private static PrepareArgsResult PrepareFormattingArgs(XmlDocument doc, vMixControlButtonCommand item, Func<string, string> variableExpander, Action<SafeExpression> PopulateVariables, EvaluateFunctionHandler Exp_EvaluateFunction, Dictionary<string, int> inputNumberByKey, Dictionary<int, string> inputKeyByNumber)
         {
             try
             {

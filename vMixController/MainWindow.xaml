@@ -1081,7 +1081,8 @@
                                                 </Style>
                                             </ListView.ItemContainerStyle>
                                         </ListView>
-                                        <ctrls:WidgetLinksOverlay Visibility="{Binding WindowSettings.ShowLinks, Converter={wpfc:BoolToVisibilityConverter}}" x:Name="ConnectionsOverlay" Items="{Binding Widgets}" CurrentPage="{Binding PageIndex}" PopupHost="{Binding ElementName=Viewfinder}" ScrollHost="{Binding ElementName=MainScrollViewer}"/>
+                                        <!--Visibility="{Binding WindowSettings.ShowLinks, Converter={wpfc:BoolToVisibilityConverter}}"-->
+                                        <ctrls:WidgetLinksOverlay x:Name="ConnectionsOverlay" Items="{Binding Widgets}" CurrentPage="{Binding PageIndex}" PopupHost="{Binding ElementName=Viewfinder}" ScrollHost="{Binding ElementName=MainScrollViewer}" Mode="{Binding WindowSettings.LinksStyle}"/>
                                     </Grid>
                                 </Grid>
 
@@ -1223,7 +1224,11 @@
             <StatusBarItem HorizontalAlignment="Right" HorizontalContentAlignment="Right">
                 <StackPanel Orientation="Horizontal">
                     <Button Margin="0,0,8,0" Command="{Binding StopAllScriptsCommand}" Content="{loc:Loc Key=MainWindow.StatusBar.StopScripts}"/>
-                    <CheckBox IsChecked="{Binding WindowSettings.ShowLinks}" Content="{loc:Loc Key=MainWindow.StatusBar.ShowLinks}" Margin="0,0,8,0"/>
+                    <!--<CheckBox IsChecked="{Binding WindowSettings.ShowLinks}" Content="{loc:Loc Key=MainWindow.StatusBar.ShowLinks}" Margin="0,0,8,0"/>-->
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,8,0" Text="{loc:Loc Key=MainWindow.StatusBar.LinksStyle}"/>
+                    <ComboBox MinWidth="128" Margin="0,0,8,0" SelectedValue="{Binding WindowSettings.LinksStyle, UpdateSourceTrigger=Default, Mode=TwoWay}" ItemsSource="{Binding Source={x:Static cls:Constants.Links}, Converter={c:StringArrayToLocalizedArrayConverter}, ConverterParameter=MainWindow.StatusBar.LinksType}" DisplayMemberPath="Localized" SelectedValuePath="Original">
+                        
+                    </ComboBox>
                     <CheckBox Margin="0,0,8,0" IsChecked="{Binding IsGhosted, Mode=TwoWay}" ToolTip="{loc:Loc Key=MainWindow.StatusBar.Ghosted.ToolTip}" IsEnabled="{Binding WindowSettings.Locked, Mode=OneWay, Converter={wpfc:BoolToInverseBoolConverter}}">
                         <CheckBox.Style>
                             <Style TargetType="CheckBox">

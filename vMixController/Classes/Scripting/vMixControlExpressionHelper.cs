@@ -8,7 +8,7 @@ namespace vMixController.Classes.Scripting
 {
     public static class vMixControlExpressionHelper
     {
-        public static bool CalculateExpression<T>(string expressionString, Action<Expression> populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
+        public static bool CalculateExpression<T>(string expressionString, Action<SafeExpression> populateVariables, EvaluateFunctionHandler evaluateFunctionHandler, out T result)
         {
             if (string.IsNullOrWhiteSpace(expressionString))
             {
@@ -16,7 +16,7 @@ namespace vMixController.Classes.Scripting
                 return false;
             }
 
-            var expression = new Expression(expressionString);
+            var expression = new SafeExpression(expressionString);
 
             if (evaluateFunctionHandler != null)
             {

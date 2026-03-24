@@ -162,6 +162,12 @@ namespace vMixAPI
                 {
                     var state = (State)s.Deserialize(xmlReader);
                     state._currentStateText = textstate;
+
+                    state.Password = Password;
+                    state.Login = Login;
+                    state.Ip = Ip;
+                    state.Port = Port;
+
                     state.Inputs = state.Inputs ?? new List<Input>();
                     state.Outputs = state.Outputs ?? new List<Output>();
                     state.Overlays = state.Overlays ?? new List<Overlay>();
@@ -179,9 +185,6 @@ namespace vMixAPI
                     state.Inputs.Insert(0, new Input() { Number = 0, Key = "0", Title = "[Preview]" });
                     state.Inputs.Insert(0, new Input() { Number = -1, Key = "-1", Title = "[Active]" });
 
-
-
-                    IsInitializing = false;
                     if (state != null)
                         _logger.Debug("vMix state created.");
                     else
@@ -201,6 +204,10 @@ namespace vMixAPI
             {
                 _logger.Error(ex, "vMix state was not created.");
                 return null;
+            }
+            finally
+            {
+                IsInitializing = false;
             }
 
         }
@@ -342,14 +349,17 @@ namespace vMixAPI
                 _logger.Debug("Firing \"updated\" event.");
 
                 OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = true, OldInputs = null, NewInputs = null });
-                IsInitializing = false;
+                
                 return true;
             }
             catch (Exception e)
             {
-                IsInitializing = false;
                 _logger.Error(e, "Exception at Update");
                 return false;
+            }
+            finally
+            {
+                IsInitializing = false;
             }
         }
 
@@ -425,14 +435,16 @@ namespace vMixAPI
 
                         _logger.Debug("Firing \"updated\" event.");
 
-                        IsInitializing = false;
                         OnStateSynced?.Invoke(this, new StateSyncedEventArgs() { Successfully = true, OldInputs = null, NewInputs = null });
                         return;
                     }
                     catch (Exception e)
                     {
-                        IsInitializing = false;
                         _logger.Error(e, "Exception at UpdateAsync");
+                    }
+                    finally
+                    {
+                        IsInitializing = false;
                     }
                 };
 
