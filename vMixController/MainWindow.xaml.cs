@@ -13,7 +13,7 @@ using System.Windows.Media.Animation;
 using vMixController.Classes;
 using vMixController.Controls;
 using vMixController.Extensions;
-using vMixController.Localization;
+using vMixControllerSkin.Localization;
 using vMixController.Messages;
 using vMixController.ViewModel;
 

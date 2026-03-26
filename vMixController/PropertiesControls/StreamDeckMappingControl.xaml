@@ -7,7 +7,7 @@
              xmlns:e="clr-namespace:vMixController.Extensions"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:loc="clr-namespace:vMixController.Localization"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="496"
              x:Name="Me">

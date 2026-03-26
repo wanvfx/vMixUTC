@@ -26,7 +26,7 @@ namespace vMixController.Converters
         {
             if (value is string[] array && parameter is string p)
             {
-                return array.Select(x=> new LocalizedItem() { Original = x, Localized = Localization.LocalizationManager.Instance[$"{p}.{x}"] }).ToArray();
+                return array.Select(x=> new LocalizedItem() { Original = x, Localized = vMixControllerSkin.Localization.LocalizationManager.Instance[$"{p}.{x}"] }).ToArray();
             }
             return null;
         }

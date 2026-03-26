@@ -1173,7 +1173,7 @@ namespace vMixController.Widgets
         {
             object result = null;
             vMixControlButtonHelper.CalculateExpression<object>(string.Format(cmd.Value, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "", PopulateVariables, ExpressionEvaluateFunction, out result);
-            return result;
+            return result ?? cmd.Value;
         }
 
         public override void ExecuteHotkey(int index)

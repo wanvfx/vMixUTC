@@ -34,6 +34,7 @@ namespace UTCNDIMonitorDataProvider
         private static OMT.Finder _finderOMT;
         private static int _instances;
         private static bool _initialized = false;
+        private bool _eventsSubscribed;
 
         private static event EventHandler OnReset;
 
@@ -364,14 +365,14 @@ namespace UTCNDIMonitorDataProvider
                 _ui.Preview.Disconnect();
                 _ui.Preview.Dispose();
                 OnReset -= NDIMonitorDataProvider_OnReset;
+                UnsubscribeFinderEvents();
                 _instances--;
                 if (_instances <= 0)
                 {
-                    if (_finder != null)
-                        _finder.Sources.CollectionChanged -= Sources_CollectionChanged;
-
                     _finder?.Dispose();
                     _finder = null;
+                    _finderOMT?.Dispose();
+                    _finderOMT = null;
 
                     NDIlib.destroy();
                     _initialized = false;
@@ -399,10 +400,10 @@ namespace UTCNDIMonitorDataProvider
             }
             else
             {
-                Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
+                RefreshSources();
             }
-            _finder.Sources.CollectionChanged += Sources_CollectionChanged;
-            _finderOMT.Sources.CollectionChanged += Sources_CollectionChanged;
+            SubscribeFinderEvents();
+            RefreshSources();
 
 
             // Not required, but "correct". (see the SDK documentation)
@@ -413,12 +414,12 @@ namespace UTCNDIMonitorDataProvider
                     // you can check this directly with a call to NDIlib.is_supported_CPU()
                     if (!NDIlib.is_supported_CPU())
                     {
-                        MessageBox.Show(Properties.Strings.CpuUnsupported);
+                        MessageBox.Show("CPU unsupported");
                     }
                     else
                     {
                         // not sure why, but it's not going to run
-                        MessageBox.Show(Properties.Strings.CannotRunNdi);
+                        MessageBox.Show("Cannot run NDI");
                     }
 
                     // we can't go on
@@ -433,16 +434,14 @@ namespace UTCNDIMonitorDataProvider
         private void NDIMonitorDataProvider_OnReset(object sender, EventArgs e)
         {
             _ui.Preview.Disconnect();
-            if (_finder != null)
-                _finder.Sources.CollectionChanged += Sources_CollectionChanged;
+            SubscribeFinderEvents();
 
             RaisePropertyChanged("Source");
         }
 
         private void Sources_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (_finder != null && _finderOMT != null)
-                Sources = new ObservableCollection<string>(_finder.Sources.Select(x => x.Name).Union(_finderOMT.Sources.Select(x => "OMT: " + x)).ToArray());
+            RefreshSources();
             //foreach (var item in _finder.Sources)
             //    Sources.Add(item.Name);
         }
@@ -500,6 +499,7 @@ namespace UTCNDIMonitorDataProvider
                     {
                         if (_finder != null)
                         {
+                            UnsubscribeFinderEvents();
                             _finder.Dispose();
                             _finder = null;
                             _finderOMT.Dispose();
@@ -507,10 +507,56 @@ namespace UTCNDIMonitorDataProvider
 
                             _finder = new Finder(true);
                             _finderOMT = new OMT.Finder();
+                            SubscribeFinderEvents();
+                            RefreshSources();
                             OnReset?.Invoke(this, new EventArgs());
                         }
                     }));
             }
+        }
+
+        private void SubscribeFinderEvents()
+        {
+            if (_eventsSubscribed || _finder == null || _finderOMT == null)
+            {
+                return;
+            }
+
+            _finder.Sources.CollectionChanged += Sources_CollectionChanged;
+            _finderOMT.Sources.CollectionChanged += Sources_CollectionChanged;
+            _eventsSubscribed = true;
+        }
+
+        private void UnsubscribeFinderEvents()
+        {
+            if (!_eventsSubscribed || _finder == null || _finderOMT == null)
+            {
+                return;
+            }
+
+            _finder.Sources.CollectionChanged -= Sources_CollectionChanged;
+            _finderOMT.Sources.CollectionChanged -= Sources_CollectionChanged;
+            _eventsSubscribed = false;
+        }
+
+        private void RefreshSources()
+        {
+            if (_finder == null || _finderOMT == null)
+            {
+                Sources = new ObservableCollection<string>();
+                return;
+            }
+
+            var updated = _finder.Sources.Select(x => x.Name)
+                .Union(_finderOMT.Sources.Select(x => "OMT: " + x))
+                .ToArray();
+
+            if (_sources.SequenceEqual(updated))
+            {
+                return;
+            }
+
+            Sources = new ObservableCollection<string>(updated);
         }
     }
 }

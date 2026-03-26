@@ -121,7 +121,7 @@ namespace vMixController.Classes
                 token = _cts.Token;
             }
 
-            if (_onDocumentDownloaded == null)
+            if (_onDocumentDownloaded == null || !Sync)
                 return;
 
             _ = PollOnceAsync(token);

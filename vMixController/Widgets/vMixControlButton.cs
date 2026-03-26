@@ -23,7 +23,7 @@ using System.Xml.Serialization;
 using vMixAPI;
 using vMixController.Classes;
 using vMixController.Classes.Scripting;
-using vMixController.Localization;
+using vMixControllerSkin.Localization;
 using vMixController.Messages;
 using vMixController.ViewModel;
 
@@ -1165,7 +1165,7 @@ namespace vMixController.Widgets
         {
             object result = null;
             vMixControlButtonHelper.CalculateExpression<object>(string.Format(cmd.StringParameter, Utils.FindInputKeyByVariable(cmd.InputKey, Dispatcher))?.ToString() ?? "", PopulateVariables, ExpressionEvaluateFunction, out result);
-            return result;
+            return result ?? cmd.StringParameter;
         }
 
         public override void ExecuteHotkey(int index)

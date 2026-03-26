@@ -150,47 +150,43 @@ namespace UTCGoogleSheetsDataProvider
                 var token = _cancellationTokenSource.Token;
                 if (token.IsCancellationRequested) return;
 
-                // Выполняем всю "тяжелую" работу в фоновом потоке.
-                await Task.Run(async () =>
+                try
                 {
-                    try
+                    // 1. Авторизация (используем кэш)
+                    if (!_authCache.TryGetValue(APIKey, out var auth))
                     {
-                        // 1. Авторизация (используем кэш)
-                        if (!_authCache.TryGetValue(APIKey, out var auth))
-                        {
-                            auth = await Popcron.Sheets.Authorization.Authorize(APIKey);
-                            _authCache.TryAdd(APIKey, auth);
-                        }
-
-                        token.ThrowIfCancellationRequested();
-
-                        // 2. Проверка необходимости обновления данных
-                        _lastModifiedCache.TryGetValue(SheetKey, out var lastModified);
-                        if ((DateTime.Now - lastModified).TotalMilliseconds > Period)
-                        {
-                            //Error = ($"Loading {SheetKey} at {DateTime.Now}");
-                            var sst = await Popcron.Sheets.Spreadsheet.Get(SheetKey, auth);
-                            _spreadsheetCache[SheetKey] = sst;
-                            _lastModifiedCache[SheetKey] = DateTime.Now;
-                        }
-
-                        token.ThrowIfCancellationRequested();
-
-                        // 3. Обработка данных и обновление UI
-                        ProcessAndCacheData();
+                        auth = await Popcron.Sheets.Authorization.Authorize(APIKey);
+                        _authCache.TryAdd(APIKey, auth);
                     }
-                    catch (OperationCanceledException)
+
+                    token.ThrowIfCancellationRequested();
+
+                    // 2. Проверка необходимости обновления данных
+                    _lastModifiedCache.TryGetValue(SheetKey, out var lastModified);
+                    if ((DateTime.Now - lastModified).TotalMilliseconds > Period)
                     {
-                        // Это ожидаемое исключение при закрытии, игнорируем его.
-                        Error = ("Data update was canceled.");
+                        //Error = ($"Loading {SheetKey} at {DateTime.Now}");
+                        var sst = await Popcron.Sheets.Spreadsheet.Get(SheetKey, auth);
+                        _spreadsheetCache[SheetKey] = sst;
+                        _lastModifiedCache[SheetKey] = DateTime.Now;
                     }
-                    catch (Exception ex)
-                    {
-                        Error = ($"Error loading or processing spreadsheet: {ex.Message}");
-                        // В случае ошибки сбрасываем кэш, чтобы показать пустое значение
-                        UpdateCachedData(Array.Empty<string>());
-                    }
-                }, token);
+
+                    token.ThrowIfCancellationRequested();
+
+                    // 3. Обработка данных и обновление UI
+                    ProcessAndCacheData();
+                }
+                catch (OperationCanceledException)
+                {
+                    // Это ожидаемое исключение при закрытии, игнорируем его.
+                    Error = ("Data update was canceled.");
+                }
+                catch (Exception ex)
+                {
+                    Error = ($"Error loading or processing spreadsheet: {ex.Message}");
+                    // В случае ошибки сбрасываем кэш, чтобы показать пустое значение
+                    UpdateCachedData(Array.Empty<string>());
+                }
             }
             finally
             {
@@ -250,7 +246,7 @@ namespace UTCGoogleSheetsDataProvider
         private void UpdateCachedData(string[] newCache)
         {
             // Используем диспетчер для обновления свойств, привязанных к UI.
-            Application.Current.Dispatcher.Invoke(() =>
+            RunOnUi(() =>
             {
                 _cached = newCache;
                 RowsCount = _cached.Length;
@@ -282,12 +278,7 @@ namespace UTCGoogleSheetsDataProvider
                 if (_sheetKey == value) return;
                 if (Uri.TryCreate(value, UriKind.Absolute, out var k))
                 {
-                    var parts = k.LocalPath.Split('/', '\\').ToList();
-                    int idx = parts.IndexOf("edit");
-                    int idx1 = parts.IndexOf("d");
-                    if (idx == -1)
-                        idx = idx1 + 2;
-                    _sheetKey = parts[(idx == -1 ? parts.Count : idx) - 1];
+                    _sheetKey = ParseSheetKeyFromUri(k);
                 }
                 else
                     _sheetKey = value;
@@ -460,10 +451,52 @@ namespace UTCGoogleSheetsDataProvider
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+                Application.Current.Dispatcher.BeginInvoke(new Action(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName))));
             }
         }
 
         #endregion
+
+        private static void RunOnUi(Action action)
+        {
+            if (action == null) return;
+
+            if (Application.Current?.Dispatcher?.CheckAccess() ?? true)
+            {
+                action();
+            }
+            else
+            {
+                Application.Current.Dispatcher.BeginInvoke(action);
+            }
+        }
+
+        private static string ParseSheetKeyFromUri(Uri uri)
+        {
+            if (uri == null)
+            {
+                return string.Empty;
+            }
+
+            var parts = uri.LocalPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            var editIndex = Array.IndexOf(parts, "edit");
+            if (editIndex > 0)
+            {
+                return parts[editIndex - 1];
+            }
+
+            var dIndex = Array.IndexOf(parts, "d");
+            if (dIndex >= 0 && dIndex + 1 < parts.Length)
+            {
+                return parts[dIndex + 1];
+            }
+
+            return parts[parts.Length - 1];
+        }
     }
 }

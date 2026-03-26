@@ -3,10 +3,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace vMixController.Localization
+namespace vMixControllerSkin.Localization
 {
 	[MarkupExtensionReturnType(typeof(string))]
-	internal sealed class LocExtension : MarkupExtension
+	public sealed class LocExtension : MarkupExtension
 	{
 		public LocExtension()		{
 		}

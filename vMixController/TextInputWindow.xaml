@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:vMixController"
         xmlns:conv="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
         xmlns:self="clr-namespace:vMixController"
-        xmlns:loc="clr-namespace:vMixController.Localization"
+        xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
         mc:Ignorable="d"
         x:Name="Me"
         Title="{loc:Loc Key=TextInputWindow.Title}" Height="450" Width="450" SizeToContent="Height" Background="#1e2328" WindowStartupLocation="CenterScreen" Activated="Me_Activated" WindowStyle="None" ResizeMode="NoResize"

@@ -9,7 +9,7 @@
         xmlns:ctrls="clr-namespace:vMixController.Controls"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:props="clr-namespace:vMixController.Properties"
-        xmlns:loc="clr-namespace:vMixController.Localization"
+        xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         xmlns:e="clr-namespace:vMixController.Extensions"

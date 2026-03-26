@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vMixController"
-        xmlns:loc="clr-namespace:vMixController.Localization"
+        xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
         ShowInTaskbar="False"
         mc:Ignorable="d"
         Title="{loc:Loc Key=KeyLearnWindow.Title}" Height="300" Width="300" KeyUp="Window_KeyUp" WindowStyle="None" ResizeMode="NoResize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Topmost="True">

@@ -7,8 +7,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using vMixControllerSkin;
 
 namespace UTCGoogleSheetsDataProvider
@@ -19,11 +22,33 @@ namespace UTCGoogleSheetsDataProvider
         private string[] _cached = Array.Empty<string>();
         private bool _hasError = false;
         private System.Windows.UIElement _customUI;
+        private static readonly Regex ColumnRegex = new Regex("^[A-Z]+$", RegexOptions.Compiled);
+        private readonly DispatcherTimer _refreshTimer;
+        private int _period = 1000;
 
         public object PreviewKeyUp { get; set; }
         public object GotFocus { get; set; }
         public object LostFocus { get; set; }
-        public int Period { get; set; }
+        public int Period
+        {
+            get => _period;
+            set
+            {
+                var normalized = Math.Max(250, value);
+                if (_period == normalized)
+                {
+                    return;
+                }
+
+                _period = normalized;
+                if (_refreshTimer != null)
+                {
+                    _refreshTimer.Interval = TimeSpan.FromMilliseconds(_period);
+                }
+
+                _lastModified = DateTime.MinValue;
+            }
+        }
         public bool IsProvidingCustomProperties => false;
 
         private int ParseExcelColumn(string input)
@@ -44,7 +69,7 @@ namespace UTCGoogleSheetsDataProvider
             // Если есть буквы - это буквенное обозначение
             input = input.ToUpper();
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(input, "^[A-Z]+$"))
+            if (!ColumnRegex.IsMatch(input))
                 return -1;//throw new ArgumentException("Input must contain only letters A-Z or only digits");
 
             int result = 0;
@@ -79,33 +104,44 @@ namespace UTCGoogleSheetsDataProvider
                                     using (var reader = ExcelReaderFactory.CreateReader(xls))
                                     {
                                         List<string> results = new List<string>();
-                                        int row = 0;
                                         int sheet = 0;
                                         int startColIndex = ParseExcelColumn(StartCol);
                                         int endColIndex = ParseExcelColumn(EndCol);
                                         do
                                         {
+                                            int row = 0;
                                             int sheetIndex = 0;
                                             if ((int.TryParse(SheetIndex, out sheetIndex) && sheet == sheetIndex) || reader.Name == SheetIndex)
                                                 while (reader.Read())
                                                 {
                                                     if (row >= StartRow)
                                                     {
-                                                        string line = "";
                                                         var safeStartCol = Math.Max(0, startColIndex);
                                                         var endExclusive = endColIndex >= 0
                                                             ? Math.Min(reader.FieldCount, endColIndex + 1)
                                                             : reader.FieldCount;
+                                                        StringBuilder lineBuilder = IsTable ? new StringBuilder() : null;
                                                         for (int i = safeStartCol; i < endExclusive; i++)
+                                                        {
+                                                            var value = reader.GetValue(i)?.ToString() ?? "";
                                                             if (IsTable)
-                                                                line += "|" + (reader.GetValue(i)?.ToString() ?? "");
+                                                            {
+                                                                if (lineBuilder.Length > 0)
+                                                                {
+                                                                    lineBuilder.Append('|');
+                                                                }
+                                                                lineBuilder.Append(value);
+                                                            }
                                                             else
-                                                                results.Add((reader.GetValue(i)?.ToString() ?? ""));
+                                                            {
+                                                                results.Add(value);
+                                                            }
+                                                        }
                                                         if (IsTable)
-                                                            results.Add(line.Length > 0 ? line.Substring(1) : string.Empty);
+                                                            results.Add(lineBuilder?.ToString() ?? string.Empty);
                                                     }
                                                     row++;
-                                                    if (EndRow >= 0 && row >= EndRow)
+                                                    if (EndRow >= 0 && row > EndRow)
                                                         break;
                                                 }
                                             sheet++;
@@ -114,7 +150,7 @@ namespace UTCGoogleSheetsDataProvider
 
                                         Cached = results.ToArray();
                                         RowsCount = Cached.Length;
-                                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilePath)));
+                                        RaisePropertyChanged(nameof(Values));
                                         return Cached;
                                     }
                                 }
@@ -122,6 +158,8 @@ namespace UTCGoogleSheetsDataProvider
                                 {
                                     _hasError = true;
                                     RowsCount = 0;
+                                    Cached = Array.Empty<string>();
+                                    RaisePropertyChanged(nameof(Values));
                                     Debug.Print($"Error reading Excel file: {ex.Message}");
                                     return Array.Empty<string>();
                                 }
@@ -129,6 +167,8 @@ namespace UTCGoogleSheetsDataProvider
                                 {
                                     _hasError = true;
                                     RowsCount = 0;
+                                    Cached = Array.Empty<string>();
+                                    RaisePropertyChanged(nameof(Values));
                                     Debug.Print($"Unexpected error: {ex.Message}");
                                     return Array.Empty<string>();
                                 }
@@ -141,6 +181,8 @@ namespace UTCGoogleSheetsDataProvider
                     {
                         _hasError = true;
                         RowsCount = 0;
+                        Cached = Array.Empty<string>();
+                        RaisePropertyChanged(nameof(Values));
                         Debug.Print("File not found.");
                         return Array.Empty<string>();
                     }
@@ -149,6 +191,8 @@ namespace UTCGoogleSheetsDataProvider
                 {
                     _hasError = true;
                     RowsCount = 0;
+                    Cached = Array.Empty<string>();
+                    RaisePropertyChanged(nameof(Values));
                     Debug.Print($"An error occurred: {ex.Message}");
                     return Array.Empty<string>();
                 }
@@ -168,6 +212,13 @@ namespace UTCGoogleSheetsDataProvider
             {
                 _customUI = new TextBox() { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             }
+
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(Period)
+            };
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer.Start();
         }
 
         public string FilePath
@@ -332,11 +383,11 @@ namespace UTCGoogleSheetsDataProvider
                             error = "File not found or is not a valid excel file!";
                         break;
                     case nameof(StartCol):
-                        if (!int.TryParse(StartCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(StartCol, "^[A-Z]+$"))
+                        if (!int.TryParse(StartCol, out _) && !ColumnRegex.IsMatch(StartCol?.ToUpperInvariant() ?? string.Empty))
                             error = "Start column is in wrong format!";
                         break;
                     case nameof(EndCol):
-                        if (!int.TryParse(EndCol, out _) && !System.Text.RegularExpressions.Regex.IsMatch(EndCol, "^[A-Z]+$"))
+                        if (!int.TryParse(EndCol, out _) && !ColumnRegex.IsMatch(EndCol?.ToUpperInvariant() ?? string.Empty))
                             error = "End column is in wrong format!";
                         break;
                 }
@@ -385,6 +436,11 @@ namespace UTCGoogleSheetsDataProvider
         public void ShowProperties(System.Windows.Window owner)
         {
             // Consider implementing a custom properties window if needed.
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            _ = Values;
         }
     }
 }

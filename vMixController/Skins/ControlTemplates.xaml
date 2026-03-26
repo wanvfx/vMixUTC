@@ -14,7 +14,7 @@
         xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
         xmlns:widget="clr-namespace:vMixController.Widgets"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        xmlns:loc="clr-namespace:vMixController.Localization"
+        xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
         mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/vMixControllerSkin;component/MainSkin.xaml"/>

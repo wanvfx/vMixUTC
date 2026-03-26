@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using vMixControllerDataProvider;
 using vMixControllerSkin;
 using Json.Path;
@@ -29,8 +30,12 @@ namespace JsonDataProviderNs
         private DateTime _previousQuery;
 
         private List<string> _data = new List<string>();
-        private volatile bool _retrievingData = false;
-        private readonly object _retrievingDataLock = new object(); // Lock для управления флагом _retrievingData
+        private string[] _valuesCache = Array.Empty<string>();
+        private int _retrievingData = 0;
+        private readonly object _pathLock = new object();
+        private readonly object _ctsLock = new object();
+        private Json.Path.JsonPath _compiledPath;
+        private string _compiledPathSource = string.Empty;
 
         // Источник токенов для отмены предыдущего запроса
         private CancellationTokenSource _cancellationTokenSource;
@@ -40,15 +45,35 @@ namespace JsonDataProviderNs
         private string _headers = "";
         private string _error = "";
         private int _groupBy = 1;
-        private bool _reload = false;
+        private int _period = 5000;
         private UIElement _ui;
+        private readonly DispatcherTimer _refreshTimer;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public object PreviewKeyUp { get; set; }
         public object GotFocus { get; set; }
         public object LostFocus { get; set; }
-        public int Period { get; set; } = 5000; // Установим значение по умолчанию
+        public int Period
+        {
+            get => _period;
+            set
+            {
+                var normalized = Math.Max(250, value);
+                if (_period == normalized)
+                {
+                    return;
+                }
+
+                _period = normalized;
+                if (_refreshTimer != null)
+                {
+                    _refreshTimer.Interval = TimeSpan.FromMilliseconds(_period);
+                }
+
+                _ = RetrieveDataAsync();
+            }
+        }
 
         private RelayCommand<KeyEventArgs> _previewKeyUpCommand;
         public RelayCommand<KeyEventArgs> PreviewKeyUpCommand => _previewKeyUpCommand ?? (_previewKeyUpCommand = new RelayCommand<KeyEventArgs>(
@@ -84,15 +109,7 @@ namespace JsonDataProviderNs
         {
             get
             {
-                // Проверяем, нужно ли обновить данные по таймеру
-                if ((DateTime.Now - _previousQuery).TotalMilliseconds >= Period || _reload)
-                {
-                    _reload = false;
-                    // Запускаем асинхронное получение данных, не блокируя UI
-                    // Используем "fire and forget" с отловом ошибок внутри метода
-                    _ = RetrieveDataAsync();
-                }
-                return Data.ToArray();
+                return _valuesCache;
             }
         }
 
@@ -126,12 +143,9 @@ namespace JsonDataProviderNs
         private async Task RetrieveDataAsync()
         {
             Error = "";
-            // Блокируем, чтобы проверить и установить флаг _retrievingData атомарно
-            lock (_retrievingDataLock)
+            if (Interlocked.Exchange(ref _retrievingData, 1) == 1)
             {
-                // Если уже идет процесс получения данных, выходим
-                if (_retrievingData) return;
-                _retrievingData = true;
+                return;
             }
 
             _previousQuery = DateTime.Now;
@@ -139,15 +153,21 @@ namespace JsonDataProviderNs
             // Если URL невалидный, просто выходим
             if (!Uri.TryCreate(Url, UriKind.Absolute, out var uri))
             {
-                _retrievingData = false;
+                Interlocked.Exchange(ref _retrievingData, 0);
                 return;
             }
 
             // Отменяем предыдущую операцию, если она была, и создаем новый CancellationTokenSource
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
-            _cancellationTokenSource = new CancellationTokenSource();
-            var token = _cancellationTokenSource.Token;
+            CancellationTokenSource cts;
+            lock (_ctsLock)
+            {
+                var previous = _cancellationTokenSource;
+                cts = new CancellationTokenSource();
+                _cancellationTokenSource = cts;
+                previous?.Cancel();
+                previous?.Dispose();
+            }
+            var token = cts.Token;
 
             try
             {
@@ -179,7 +199,7 @@ namespace JsonDataProviderNs
                     }
                 }
                 // После успешного получения и парсинга, обновляем данные в потоке UI
-                Application.Current?.Dispatcher.Invoke(() =>
+                RunOnUi(() =>
                 {
                     // Проверяем, не была ли операция отменена, пока мы ждали диспетчер
                     if (token.IsCancellationRequested) return;
@@ -208,7 +228,7 @@ namespace JsonDataProviderNs
             finally
             {
                 // Вне зависимости от результата, сбрасываем флаг
-                _retrievingData = false;
+                Interlocked.Exchange(ref _retrievingData, 0);
             }
         }
 
@@ -220,7 +240,12 @@ namespace JsonDataProviderNs
 
             try
             {
-                var path = Json.Path.JsonPath.Parse(JsonPath.Replace("\r", "").Replace("\n", ""));
+                var path = GetOrParseJsonPath();
+                if (path == null)
+                {
+                    Data = new List<string>();
+                    return;
+                }
                 var results = path.Evaluate(_document.RootElement.AsNode()).Matches.Take(100 * (_groupBy <= 0 ? 1 : _groupBy)).Select(x => x.Value.ToString()).ToList();
 
                 if (_groupBy > 1)
@@ -275,6 +300,11 @@ namespace JsonDataProviderNs
             {
                 if (_jsonPath == value) return;
                 _jsonPath = value;
+                lock (_pathLock)
+                {
+                    _compiledPath = null;
+                    _compiledPathSource = string.Empty;
+                }
                 OnPropertyChanged(nameof(JsonPath));
                 // Если документ уже загружен, просто перепарсим его с новым путем
                 UpdateData();
@@ -310,8 +340,10 @@ namespace JsonDataProviderNs
             get => _data;
             set
             {
-                _data = value;
+                _data = value ?? new List<string>();
+                _valuesCache = _data.ToArray();
                 OnPropertyChanged(nameof(Data));
+                OnPropertyChanged(nameof(Values));
             }
         }
 
@@ -353,8 +385,10 @@ namespace JsonDataProviderNs
         public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(
             () =>
             {
-                _reload = true;
-                _cancellationTokenSource?.Cancel();
+                lock (_ctsLock)
+                {
+                    _cancellationTokenSource?.Cancel();
+                }
                 _ = RetrieveDataAsync();
             }));
 
@@ -368,6 +402,14 @@ namespace JsonDataProviderNs
             {
                 _ui = new TextBox { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             }
+
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(Period)
+            };
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer.Start();
+            _ = RetrieveDataAsync();
         }
 
         public void ShowProperties(Window owner)
@@ -384,9 +426,55 @@ namespace JsonDataProviderNs
         public void Dispose()
         {
             // Реализуем IDisposable для корректной очистки ресурсов
-            _cancellationTokenSource?.Cancel();
-            _cancellationTokenSource?.Dispose();
+            _refreshTimer.Stop();
+            _refreshTimer.Tick -= RefreshTimer_Tick;
+            lock (_ctsLock)
+            {
+                _cancellationTokenSource?.Cancel();
+                _cancellationTokenSource?.Dispose();
+                _cancellationTokenSource = null;
+            }
             _document?.Dispose();
+        }
+
+        private Json.Path.JsonPath GetOrParseJsonPath()
+        {
+            var normalized = (JsonPath ?? string.Empty).Replace("\r", "").Replace("\n", "");
+            if (string.IsNullOrWhiteSpace(normalized))
+            {
+                return null;
+            }
+
+            lock (_pathLock)
+            {
+                if (_compiledPath != null && string.Equals(_compiledPathSource, normalized, StringComparison.Ordinal))
+                {
+                    return _compiledPath;
+                }
+
+                _compiledPath = Json.Path.JsonPath.Parse(normalized);
+                _compiledPathSource = normalized;
+                return _compiledPath;
+            }
+        }
+
+        private static void RunOnUi(Action action)
+        {
+            if (action == null) return;
+
+            if (Application.Current?.Dispatcher?.CheckAccess() ?? true)
+            {
+                action();
+            }
+            else
+            {
+                Application.Current.Dispatcher.BeginInvoke(action);
+            }
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            _ = RetrieveDataAsync();
         }
     }
 }

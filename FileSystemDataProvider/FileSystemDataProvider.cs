@@ -1,23 +1,14 @@
 ﻿// Требуется добавить ссылку на System.Net.Http
 using GalaSoft.MvvmLight.CommandWpf;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using System.Windows.Threading;
 using vMixControllerDataProvider;
 using vMixControllerSkin;
 
@@ -29,38 +20,37 @@ namespace FileSystemDataProviderNs
 
         public System.Windows.UIElement CustomUI { get; }
         public bool IsProvidingCustomProperties => false;
-        public int Period { get; set; } = 1000; // По умолчанию 1 секунда
+        public int Period
+        {
+            get => _period;
+            set
+            {
+                var normalized = Math.Max(100, value);
+                if (_period == normalized)
+                {
+                    return;
+                }
 
-        public bool _changing = false;
+                _period = normalized;
+                if (_refreshTimer != null)
+                {
+                    _refreshTimer.Interval = TimeSpan.FromMilliseconds(_period);
+                }
+            }
+        }
+
+        private readonly object _valuesSync = new object();
+        private string[] _cachedValues = Array.Empty<string>();
+        private DateTime _lastRefreshUtc = DateTime.MinValue;
+        private readonly DispatcherTimer _refreshTimer;
+        private int _period = 1000;
 
         public string[] Values
         {
             get
             {
-                try
-                {
-                    if (!_changing)
-                    {
-                        _changing = true;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Values)));
-                        _changing = false;
-                    }
-                    Dispatcher.Invoke(() =>
-                    {
-                        Error = "";
-                    });
-                    if (!string.IsNullOrWhiteSpace(_path) && Directory.Exists(_path))
-                        return Directory.GetFiles(_path, _filter ?? "*.*", _includeSub ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-                    else
-                        return Array.Empty<string>();
-                } catch (Exception ex) 
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        Error = ($"Error retrieving file list: {ex.Message}"); ;
-                    });
-                    return Array.Empty<string>();
-                }
+                RefreshValuesIfNeeded();
+                return _cachedValues;
             }
         }
 
@@ -143,14 +133,17 @@ namespace FileSystemDataProviderNs
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            var provider = d as FileSystemDataProvider;
+            if (provider == null) return;
 
             if (e.Property == PathProperty)
-                (d as FileSystemDataProvider)._path = (string)e.NewValue;
+                provider._path = (string)e.NewValue;
             else if (e.Property == FilterProperty)
-                (d as FileSystemDataProvider)._filter = (string)e.NewValue;
+                provider._filter = (string)e.NewValue;
             else
-                (d as FileSystemDataProvider)._includeSub = (bool)e.NewValue;
+                provider._includeSub = (bool)e.NewValue;
 
+            provider.InvalidateValuesCache();
         }
         #endregion
 
@@ -184,10 +177,85 @@ namespace FileSystemDataProviderNs
             {
                 CustomUI = new TextBox { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             }
+
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(Period)
+            };
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer.Start();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+        private void RefreshValuesIfNeeded()
+        {
+            var refreshInterval = Math.Max(100, Period);
+            if ((DateTime.UtcNow - _lastRefreshUtc).TotalMilliseconds < refreshInterval)
+            {
+                return;
+            }
+
+            lock (_valuesSync)
+            {
+                if ((DateTime.UtcNow - _lastRefreshUtc).TotalMilliseconds < refreshInterval)
+                {
+                    return;
+                }
+
+                try
+                {
+                    SetError(string.Empty);
+                    var newValues = (!string.IsNullOrWhiteSpace(_path) && Directory.Exists(_path))
+                        ? Directory.GetFiles(_path, _filter ?? "*.*", _includeSub ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                        : Array.Empty<string>();
+
+                    if (!newValues.SequenceEqual(_cachedValues))
+                    {
+                        _cachedValues = newValues;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Values)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SetError($"Error retrieving file list: {ex.Message}");
+                    _cachedValues = Array.Empty<string>();
+                }
+                finally
+                {
+                    _lastRefreshUtc = DateTime.UtcNow;
+                }
+            }
+        }
+
+        private void InvalidateValuesCache()
+        {
+            lock (_valuesSync)
+            {
+                _lastRefreshUtc = DateTime.MinValue;
+            }
+
+            RefreshValuesIfNeeded();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Values)));
+        }
+
+        private void SetError(string error)
+        {
+            if (Dispatcher.CheckAccess())
+            {
+                Error = error;
+            }
+            else
+            {
+                Dispatcher.BeginInvoke(new Action(() => Error = error));
+            }
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            RefreshValuesIfNeeded();
+        }
     }
 }

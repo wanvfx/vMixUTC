@@ -30,7 +30,7 @@ using vMixController.Classes;
 using vMixController.Classes.Scripting;
 using vMixController.Classes.vMixController.Classes;
 using vMixController.Extensions;
-using vMixController.Localization;
+using vMixControllerSkin.Localization;
 using vMixController.Messages;
 using vMixController.Widgets;
 using vMixControllerSkin;

@@ -23,7 +23,7 @@ namespace vMixController.Converters
                 // Нам не важно значение values[1] (культура), 
                 // сам факт его изменения вызовет этот метод.
                 string key = $"{p}.{enumValue}";
-                return Localization.LocalizationManager.Instance[key];
+                return vMixControllerSkin.Localization.LocalizationManager.Instance[key];
             }
             return string.Empty;
         }
@@ -32,7 +32,7 @@ namespace vMixController.Converters
         {
             if (value is string val && parameter is string p)
             {
-                var v = Localization.LocalizationManager.Instance.GetKey(val, p).Substring(p.Length + 1);
+                var v = vMixControllerSkin.Localization.LocalizationManager.Instance.GetKey(val, p).Substring(p.Length + 1);
                 object[] result = new object[targetTypes.Length];
                 result[0] = Enum.Parse(targetTypes[0], v);
                 result[1] = null;

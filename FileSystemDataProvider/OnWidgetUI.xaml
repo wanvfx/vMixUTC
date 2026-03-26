@@ -6,6 +6,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="_xmlUi">
@@ -22,7 +23,7 @@
                 <CompositeCollection>
                     <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Path}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Path</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvder.Filesystem.Path}"></TextBlock>
                         </TextBox.Tag>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewKeyUp">
@@ -38,7 +39,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Filter}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Filter</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvder.Filesystem.Filter}"/>
                         </TextBox.Tag>
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="PreviewKeyUp">
@@ -54,7 +55,7 @@
                     </TextBox>
                     <CheckBox IsChecked="{Binding IncludeSubDirectories}">
                         <CheckBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Include SubDirectories</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvder.Filesystem.IncludeSubDirectories}"></TextBlock>
                         </CheckBox.Tag>
                     </CheckBox>
                 </CompositeCollection>
@@ -67,8 +68,8 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}">Loaded <Run Text="{Binding Values.Length, Mode=OneWay}"></Run> row(s)</TextBlock>
-            <Button Grid.Column="1" Command="{Binding ShowRowsCommand}">Show Rows</Button>
+            <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run Text="{loc:Loc Key=DataProvider.Shared.Loaded}"/> <Run Text="{Binding Values.Length, Mode=OneWay}"></Run> <Run Text="{loc:Loc Key=DataProvider.Shared.Rows}"/></TextBlock>
+            <Button Grid.Column="1" Command="{Binding ShowRowsCommand}" Content="{loc:Loc Key=DataProvider.Shared.ShowRows}"></Button>
         </Grid>
     </StackPanel>
 </UserControl>

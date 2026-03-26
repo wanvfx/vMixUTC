@@ -330,7 +330,7 @@ namespace vMixController.Widgets
 
                     Dispatcher.Invoke(() =>
                     {
-                        if (DataProvider == null || State == null)
+                        if (DataProvider == null)
                             return;
 
                         var values = DataProvider.Values;
@@ -338,6 +338,9 @@ namespace vMixController.Widgets
                             return;
 
                         Data = new ObservableCollection<string>(values);
+
+                        if (State == null)
+                            return;
 
                         for (int i = 0; i < pathsSnapshot.Length; i++)
                         {

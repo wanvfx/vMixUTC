@@ -5,8 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:vMixControllerSkin"
              xmlns:conv="clr-namespace:vMixControllerSkin.Converters"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization"
              mc:Ignorable="d" 
-        Title="Rows Viewer"
+        Title="{loc:Loc Key=RowsViewer.Title}"
              d:DesignHeight="512" d:DesignWidth="512" Width="512" Height="512" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
@@ -38,6 +39,6 @@
             </ListView.ItemTemplate>
         </ListView>
         </ScrollViewer>
-        <Button Grid.Row="1" IsDefault="True" Click="Button_Click">Close</Button>
+        <Button Grid.Row="1" IsDefault="True" Click="Button_Click" Content="{loc:Loc Key=RowsViewer.Close}"/>
     </Grid>
 </Window>

@@ -21,7 +21,7 @@ namespace vMixController.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string s && parameter is string p)
-                return Localization.LocalizationManager.Instance[$"{p}.{s.Replace('\n', ' ')}"];
+                return vMixControllerSkin.Localization.LocalizationManager.Instance[$"{p}.{s.Replace('\n', ' ')}"];
             return null;
         }
 

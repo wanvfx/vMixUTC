@@ -1300,4 +1300,94 @@
   <data name="MainWindow.StatusBar.LinksStyle" xml:space="preserve">
     <value>Отображение связей</value>
   </data>
+  <data name="Culture.Available" xml:space="preserve">
+    <value>_</value>
+  </data>
+  <data name="DataProvider.Excel.FilePath" xml:space="preserve">
+    <value>Путь к файлу</value>
+  </data>
+  <data name="DataProvider.Shared.StartRow" xml:space="preserve">
+    <value>Начальная строка</value>
+  </data>
+  <data name="DataProvider.Shared.EndRow" xml:space="preserve">
+    <value>Конечная строка</value>
+  </data>
+  <data name="DataProvider.Shared.StartCol" xml:space="preserve">
+    <value>Начальный столбец</value>
+  </data>
+  <data name="DataProvider.Shared.EndCol" xml:space="preserve">
+    <value>Конечный столбец</value>
+  </data>
+  <data name="DataProvider.Shared.SheetNumber" xml:space="preserve">
+    <value>Номер листа</value>
+  </data>
+  <data name="DataProvider.Shared.MultipleColumnsByRow" xml:space="preserve">
+    <value>Несколько столбцов в строке</value>
+  </data>
+  <data name="DataProvider.Shared.MultipleColumnsByRow.Help" xml:space="preserve">
+    <value>Если выбрано, данные из строки возвращаются как столбец1|столбец2|столбец3|и т.д</value>
+  </data>
+  <data name="DataProvider.Shared.Loaded" xml:space="preserve">
+    <value>Загружено</value>
+  </data>
+  <data name="DataProvider.Shared.Rows" xml:space="preserve">
+    <value>строк(а/и)</value>
+  </data>
+  <data name="DataProvider.Shared.ShowRows" xml:space="preserve">
+    <value>Показать строки</value>
+  </data>
+  <data name="DataProvder.Filesystem.Path" xml:space="preserve">
+    <value>Путь к каталогу</value>
+  </data>
+  <data name="DataProvder.Filesystem.Filter" xml:space="preserve">
+    <value>Фильтр</value>
+  </data>
+  <data name="DataProvder.Filesystem.IncludeSubDirectories" xml:space="preserve">
+    <value>Искать в подкаталогах</value>
+  </data>
+  <data name="DataProvder.Filesystem.Loaded" xml:space="preserve">
+    <value>Загружено</value>
+  </data>
+  <data name="DataProvider.Shared.Reload" xml:space="preserve">
+    <value>Перезагрузить</value>
+  </data>
+  <data name="DataProvider.GoogleSheets.APIKey" xml:space="preserve">
+    <value>Ключ API</value>
+  </data>
+  <data name="DataProvider.GoogleSheets.SheetKey" xml:space="preserve">
+    <value>Ключ листа</value>
+  </data>
+  <data name="DataProvider.Shared.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="DataProvider.JSON.Headers" xml:space="preserve">
+    <value>Заголовки</value>
+  </data>
+  <data name="DataProvider.JSON.Headers.Help" xml:space="preserve">
+    <value>Ctrl+Enter для переноса строки</value>
+  </data>
+  <data name="DataProvider.JSON.JSONPath" xml:space="preserve">
+    <value>JSONPath</value>
+  </data>
+  <data name="DataProvider.Shared.GroupBy" xml:space="preserve">
+    <value>Группировать по</value>
+  </data>
+  <data name="DataProvider.XML.XPath" xml:space="preserve">
+    <value>XPath</value>
+  </data>
+  <data name="DataProvider.XML.XPath.Help" xml:space="preserve">
+    <value>Ctrl+Enter для переноса строки</value>
+  </data>
+  <data name="DataProvider.NDI.Audio" xml:space="preserve">
+    <value>Звук</value>
+  </data>
+  <data name="DataProvider.NDI.LowBandwidth" xml:space="preserve">
+    <value>Низкое качество</value>
+  </data>
+  <data name="RowsViewer.Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="RowsViewer.Title" xml:space="preserve">
+    <value>Просмотрщик строк</value>
+  </data>
 </root>

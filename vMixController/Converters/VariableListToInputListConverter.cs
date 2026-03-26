@@ -10,7 +10,7 @@ using System.Windows.Data;
 using System.Windows.Markup;
 using vMixAPI;
 using vMixController.Classes;
-using vMixController.Localization;
+using vMixControllerSkin.Localization;
 using vMixController.ViewModel;
 
 namespace vMixController.Converters

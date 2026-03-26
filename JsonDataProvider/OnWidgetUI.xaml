@@ -7,6 +7,7 @@
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
              xmlns:local="clr-namespace:JsonDataProviderNs"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
              
@@ -22,7 +23,7 @@
             <CompositeCollection>
                 <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Url}">
                     <TextBox.Tag>
-                        <TextBlock Style="{StaticResource CaptionText}">URL</TextBlock>
+                        <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.URL}"/>
                     </TextBox.Tag>
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="PreviewKeyUp">
@@ -39,8 +40,8 @@
                 <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding Headers}" TextWrapping="Wrap" Height="Auto" AcceptsReturn="True">
                     <TextBox.Tag>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource CaptionText}">Headers</TextBlock>
-                            <Control Margin="{StaticResource LeftStdMargin}" Style="{StaticResource HelpBorder}" ToolTip="Press Ctrl+Return to enter new line"/>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.JSON.Headers}"/>
+                            <Control Margin="{StaticResource LeftStdMargin}" Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=DataProvider.JSON.Headers.Help}"/>
                         </StackPanel>
                     </TextBox.Tag>
                     <i:Interaction.Triggers>
@@ -62,8 +63,8 @@
                 <TextBox Style="{StaticResource WidgetTextBox}" Text="{Binding JsonPath}" TextWrapping="Wrap" Height="Auto" AcceptsReturn="True">
                     <TextBox.Tag>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource CaptionText}">JSONPath</TextBlock>
-                            <Control Margin="{StaticResource LeftStdMargin}" Style="{StaticResource HelpBorder}" ToolTip="Press Ctrl+Return to enter new line"/>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.JSON.JSONPath}"/>
+                            <Control Margin="{StaticResource LeftStdMargin}" Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=DataProvider.JSON.Headers.Help}"/>
                         </StackPanel>
                     </TextBox.Tag>
                     <i:Interaction.Triggers>
@@ -84,7 +85,7 @@
 
                 <TextBox Style="{StaticResource WidgetTextBox}">
                     <TextBox.Tag>
-                        <TextBlock Style="{StaticResource CaptionText}">Group By</TextBlock>
+                        <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.GroupBy}"/>
                     </TextBox.Tag>
                     <TextBox.Text>
                         <Binding Path="GroupBy">
@@ -115,9 +116,9 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}">Loaded <Run Text="{Binding Data.Count, Mode=OneWay}"></Run> row(s)</TextBlock>
-            <Button Grid.Column="1" Command="{Binding ShowRowsCommand}">Show Rows</Button>
-            <Button Grid.Column="2" Command="{Binding ReloadCommand}">Reload</Button>
+            <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run Text="{loc:Loc Key=DataProvider.Shared.Loaded}"/> <Run Text="{Binding Data.Count, Mode=OneWay}"></Run> <Run Text="{loc:Loc Key=DataProvider.Shared.Rows}"/></TextBlock>
+            <Button Grid.Column="1" Command="{Binding ShowRowsCommand}" Content="{loc:Loc Key=DataProvider.Shared.ShowRows}"/>
+            <Button Grid.Column="2" Command="{Binding ReloadCommand}" Content="{loc:Loc Key=DataProvider.Shared.Reload}"/>
         </Grid>
     </StackPanel>
 </UserControl>

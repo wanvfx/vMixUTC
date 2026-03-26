@@ -8,6 +8,8 @@
              xmlns:ndi="clr-namespace:NewTek.NDI.WPF;assembly=NDILibDotNet2"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:omt="clr-namespace:UTCNDIMonitorDataProvider.OMT"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
+             xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -214,9 +216,9 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <CheckBox IsChecked="{Binding IsAudioEnabled, Mode=TwoWay}" Foreground="White" FontSize="12">Audio</CheckBox>
+                <CheckBox IsChecked="{Binding IsAudioEnabled, Mode=TwoWay}" Foreground="White" FontSize="12" Content="{loc:Loc Key=DataProvider.NDI.Audio}"/>
                 <!--<Slider Value="{Binding Volume, ElementName=Preview, Mode=TwoWay}" Grid.Column="1" Margin="4,3,4,0" Maximum="1" Minimum="0"></Slider>-->
-                <CheckBox Grid.Column="2" FontSize="12" Foreground="White" IsChecked="{Binding IsLowBandwidth}" HorizontalAlignment="Right" VerticalAlignment="Bottom">Low Bandwidth Mode</CheckBox>
+                <CheckBox Grid.Column="2" FontSize="12" Foreground="White" IsChecked="{Binding IsLowBandwidth}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="{loc:Loc Key=DataProvider.NDI.LowBandwidth}"/>
                 <Button Margin="4,0,0,0" Grid.Column="3" Command="{Binding ResetCommand}" Style="{StaticResource TitleButton}" ToolTip="Reset">&#xF2f9;</Button>
             </Grid>
         </Border>

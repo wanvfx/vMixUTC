@@ -118,137 +118,137 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="KeyLearnWindow.Title" xml:space="preserve">
-    <value>Key Learn</value>
+    <value>按键学习</value>
   </data>
   <data name="KeyLearnWindow.PressKey" xml:space="preserve">
-    <value>Press Key</value>
+    <value>请按下按键</value>
   </data>
   <data name="PropertiesControls.FilePathControl.SelectFile" xml:space="preserve">
-    <value>Select File</value>
+    <value>选择文件</value>
   </data>
   <data name="MainViewModel.GlobalVariables.InputTitle" xml:space="preserve">
-    <value>[Global Variables]</value>
+    <value>[全局变量]</value>
   </data>
   <data name="MainViewModel.VirtualInputs.Active" xml:space="preserve">
-    <value>[Active]</value>
+    <value>[输出]</value>
   </data>
   <data name="MainViewModel.VirtualInputs.Preview" xml:space="preserve">
-    <value>[Preview]</value>
+    <value>[预监]</value>
   </data>
   <data name="Converter.VariableListToInputList.VarPrefix" xml:space="preserve">
-    <value>[VAR]</value>
+    <value>[变量]</value>
   </data>
   <data name="Scheduler.DayHeader.Mon" xml:space="preserve">
-    <value>M</value>
+    <value>一</value>
   </data>
   <data name="Scheduler.DayHeader.Tue" xml:space="preserve">
-    <value>T</value>
+    <value>二</value>
   </data>
   <data name="Scheduler.DayHeader.Wed" xml:space="preserve">
-    <value>W</value>
+    <value>三</value>
   </data>
   <data name="Scheduler.DayHeader.Thu" xml:space="preserve">
-    <value>TH</value>
+    <value>四</value>
   </data>
   <data name="Scheduler.DayHeader.Fri" xml:space="preserve">
-    <value>F</value>
+    <value>五</value>
   </data>
   <data name="Scheduler.DayHeader.Sat" xml:space="preserve">
-    <value>S</value>
+    <value>六</value>
   </data>
   <data name="Scheduler.DayHeader.Sun" xml:space="preserve">
-    <value>SU</value>
+    <value>日</value>
   </data>
   <data name="MainWindow.Loading" xml:space="preserve">
-    <value>loading</value>
+    <value>加载中</value>
   </data>
   <data name="SplashScreen.Subtitle" xml:space="preserve">
-    <value>Universal Title Controller</value>
+    <value>通用标题控制器</value>
   </data>
   <data name="SplashScreen.BuildInfo.Template" xml:space="preserve">
-    <value>Carelessly builded @{0:d} by elgarf, use at your own risk
+    <value>由 elgarf 于 {0:d} 构建，使用风险自负
 {1}</value>
   </data>
   <data name="SplashScreen.BuildInfo.HttpClientVersion" xml:space="preserve">
-    <value>HTTPClient version</value>
+    <value>HTTPClient 版本</value>
   </data>
   <data name="NDIMonitor.Error.CpuUnsupported" xml:space="preserve">
-    <value>CPU unsupported.</value>
+    <value>CPU 不受支持。</value>
   </data>
   <data name="NDIMonitor.Error.CannotRunNdi" xml:space="preserve">
-    <value>Cannot run NDI.</value>
+    <value>无法运行 NDI。</value>
   </data>
   <data name="Dialog.About.ExpandedInformation" xml:space="preserve">
-    <value>This software using Antlr3 (c) 2010 Terence Parr; Avalonedit (c) AvalonEdit Contributors; Common.Logging by Aleksandar Seovic, Mark Pollack, Erich Eichinger, Stephen Bohlen; Extended.Wpf.Toolkit (c) Xceed Software, Inc. -2019; Fody, Costura.Fody (c) 2012 Simon Cropp and contributors; HtmlAgilityPack (c) ZZZ Projects, Simon Mourrier, Jeff Klawiter, Stephan Grell; MouseKeyHook (c) 2004-2015, George Mamaladze; MvvmLightLibs (c) 2009-2018 Laurent Bugnion; NAudio by Mark Heath &amp; Contributors; NLog (c) 2004-2020 Jaroslaw Kowalski, Kim Christensen, Julian Verdurmen; Ookii.Dialogs by Sven Groot; Sanford.Multimedia.Midi by Leslie Sanford, Tebjan Halm, Andreas Grimme, Andres Fernandez de Prado; WpfScreenHelper (c) 2014 Michael Denny; WriteableBitmapEx (c) Schulte Software Development; NDI SDK (c) NewTek Inc.</value>
+    <value>本软件使用了以下组件/库：Antlr3 (c) 2010 Terence Parr；AvalonEdit (c) AvalonEdit Contributors；Common.Logging（作者：Aleksandar Seovic、Mark Pollack、Erich Eichinger、Stephen Bohlen）；Extended.Wpf.Toolkit (c) Xceed Software, Inc. -2019；Fody、Costura.Fody (c) 2012 Simon Cropp and contributors；HtmlAgilityPack (c) ZZZ Projects, Simon Mourrier, Jeff Klawiter, Stephan Grell；MouseKeyHook (c) 2004-2015 George Mamaladze；MvvmLightLibs (c) 2009-2018 Laurent Bugnion；NAudio（作者：Mark Heath &amp; Contributors）；NLog (c) 2004-2020 Jaroslaw Kowalski, Kim Christensen, Julian Verdurmen；Ookii.Dialogs（作者：Sven Groot）；Sanford.Multimedia.Midi（作者：Leslie Sanford、Tebjan Halm、Andreas Grimme、Andres Fernandez de Prado）；WpfScreenHelper (c) 2014 Michael Denny；WriteableBitmapEx (c) Schulte Software Development；NDI SDK (c) NewTek Inc.</value>
   </data>
   <data name="MainWindow.SubMenu.AddWidget" xml:space="preserve">
-    <value>Add Widget</value>
+    <value>添加控件</value>
   </data>
   <data name="MainWindow.SubMenu.EditTemplate" xml:space="preserve">
-    <value>Edit Template</value>
+    <value>编辑模板</value>
   </data>
   <data name="MainWindow.SubMenu.RemoveTemplate" xml:space="preserve">
-    <value>Remove Template</value>
+    <value>删除模板</value>
   </data>
   <data name="MainWindow.CreateItems.Button" xml:space="preserve">
-    <value>Button</value>
+    <value>按钮</value>
   </data>
   <data name="MainWindow.CreateItems.NewButton" xml:space="preserve">
-    <value>Button+</value>
+    <value>按钮+</value>
   </data>
   <data name="MainWindow.CreateItems.Label" xml:space="preserve">
-    <value>Label</value>
+    <value>标签</value>
   </data>
   <data name="MainWindow.CreateItems.VariableViewer" xml:space="preserve">
-    <value>Variable Viewer</value>
+    <value>变量查看器</value>
   </data>
   <data name="MainWindow.CreateItems.Region" xml:space="preserve">
-    <value>Region</value>
+    <value>区域</value>
   </data>
   <data name="MainWindow.CreateItems.List" xml:space="preserve">
-    <value>List</value>
+    <value>列表</value>
   </data>
   <data name="MainWindow.CreateItems.Score" xml:space="preserve">
-    <value>Score</value>
+    <value>比分</value>
   </data>
   <data name="MainWindow.CreateItems.TextField" xml:space="preserve">
-    <value>Text Field</value>
+    <value>文本框</value>
   </data>
   <data name="MainWindow.CreateItems.Timer" xml:space="preserve">
-    <value>Timer</value>
+    <value>计时器</value>
   </data>
   <data name="MainWindow.CreateItems.Clock" xml:space="preserve">
-    <value>Clock</value>
+    <value>时钟</value>
   </data>
   <data name="MainWindow.CreateItems.Volume" xml:space="preserve">
-    <value>Volume</value>
+    <value>音量</value>
   </data>
   <data name="MainWindow.CreateItems.TBar" xml:space="preserve">
     <value>T-Bar</value>
   </data>
   <data name="MainWindow.CreateItems.Playlist" xml:space="preserve">
-    <value>Playlist</value>
+    <value>播放列表</value>
   </data>
   <data name="MainWindow.CreateItems.Container" xml:space="preserve">
-    <value>Container</value>
+    <value>容器</value>
   </data>
   <data name="MainWindow.CreateItems.ExternalData" xml:space="preserve">
-    <value>External Data</value>
+    <value>外部数据</value>
   </data>
   <data name="MainWindow.CreateItems.MidiDevice" xml:space="preserve">
-    <value>MIDI Device</value>
+    <value>MIDI 设备</value>
   </data>
   <data name="MainWindow.CreateItems.StreamDeckDevice" xml:space="preserve">
-    <value>StreamDeck Device</value>
+    <value>StreamDeck 设备</value>
   </data>
   <data name="MainWindow.CreateItems.MultiState" xml:space="preserve">
-    <value>Multi State</value>
+    <value>多状态</value>
   </data>
   <data name="MainWindow.CreateItems.Templates" xml:space="preserve">
-    <value>Templates</value>
+    <value>模板</value>
   </data>
   <data name="MainWindow.Menu.Language" xml:space="preserve">
-    <value>Language</value>
+    <value>语言</value>
   </data>
   <data name="MainWindow.Menu.Language.English" xml:space="preserve">
     <value>English</value>
@@ -257,74 +257,74 @@
     <value>中文（简体）</value>
   </data>
   <data name="MainWindow.Menu.File" xml:space="preserve">
-    <value>File</value>
+    <value>文件</value>
   </data>
   <data name="MainWindow.Menu.File.New" xml:space="preserve">
-    <value>New</value>
+    <value>新建</value>
   </data>
   <data name="MainWindow.Menu.File.Open" xml:space="preserve">
-    <value>Open</value>
+    <value>打开</value>
   </data>
   <data name="MainWindow.Menu.File.RecentFiles" xml:space="preserve">
-    <value>Recent Files</value>
+    <value>最近文件</value>
   </data>
   <data name="MainWindow.Menu.File.Append" xml:space="preserve">
-    <value>Append</value>
+    <value>追加</value>
   </data>
   <data name="MainWindow.Menu.File.Save" xml:space="preserve">
-    <value>Save</value>
+    <value>保存</value>
   </data>
   <data name="MainWindow.Menu.File.DownloadUpdate.Prefix" xml:space="preserve">
-    <value>Download</value>
+    <value>下载</value>
   </data>
   <data name="MainWindow.Menu.File.DownloadUpdate.Suffix" xml:space="preserve">
-    <value>Update</value>
+    <value>更新</value>
   </data>
   <data name="MainWindow.Menu.File.About" xml:space="preserve">
-    <value>About</value>
+    <value>关于</value>
   </data>
   <data name="MainWindow.Menu.File.Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>退出</value>
   </data>
   <data name="MainWindow.Menu.Edit" xml:space="preserve">
-    <value>Edit</value>
+    <value>编辑</value>
   </data>
   <data name="MainWindow.Menu.Edit.Undo" xml:space="preserve">
-    <value>Undo</value>
+    <value>撤销</value>
   </data>
   <data name="MainWindow.Menu.Edit.DuplicateSelected" xml:space="preserve">
-    <value>Duplicate Selected</value>
+    <value>复制所选</value>
   </data>
   <data name="MainWindow.Menu.Widget" xml:space="preserve">
-    <value>Widget</value>
+    <value>控件</value>
   </data>
   <data name="MainWindow.Menu.Lock" xml:space="preserve">
-    <value>Lock</value>
+    <value>锁定</value>
   </data>
   <data name="MainWindow.Menu.Lock.ToolTip" xml:space="preserve">
-    <value>Click = Lock widgets, Shift+Click = Lock with password</value>
+    <value>单击 = 锁定控件，Shift+单击 = 使用密码锁定</value>
   </data>
   <data name="MainWindow.Menu.Sync" xml:space="preserve">
-    <value>Sync</value>
+    <value>同步</value>
   </data>
   <data name="MainWindow.Menu.Sync.ToolTip" xml:space="preserve">
-    <value>Sync UTC to vMix state</value>
+    <value>将 UTC 与 vMix 状态同步</value>
   </data>
   <data name="Dialog.ExitConfirmation.Title" xml:space="preserve">
-    <value>Exit confirmation</value>
+    <value>退出确认</value>
   </data>
   <data name="Dialog.ExitConfirmation.MainInstruction" xml:space="preserve">
-    <value>Do you really want to quit?</value>
+    <value>确定要退出吗？</value>
   </data>
   <data name="Dialog.About.Title" xml:space="preserve">
-    <value>About</value>
+    <value>关于</value>
   </data>
   <data name="Dialog.About.MainInstruction" xml:space="preserve">
-    <value>One controller to rule them all.
-Donate if you like it 😉</value>
+    <value>一个控制器统治一切。
+如果你喜欢它，欢迎捐赠</value>
   </data>
   <data name="Dialog.About.Button.Forum" xml:space="preserve">
-    <value>vMix Forum</value>
+    <value>vMix 论坛</value>
   </data>
   <data name="Dialog.About.Button.GitHub" xml:space="preserve">
     <value>GitHub</value>
@@ -333,454 +333,454 @@ Donate if you like it 😉</value>
     <value>Reddit</value>
   </data>
   <data name="Dialog.About.Button.Donate" xml:space="preserve">
-    <value>Donate</value>
+    <value>捐赠</value>
   </data>
   <data name="Dialog.About.Button.Close" xml:space="preserve">
-    <value>Close</value>
+    <value>关闭</value>
   </data>
   <data name="MainWindow.Layout.Button.RenamePage.ToolTip" xml:space="preserve">
-    <value>Rename Page</value>
+    <value>重命名页面</value>
   </data>
   <data name="MainWindow.Layout.Hint" xml:space="preserve">
-    <value>Click on the layout to add widget(s).
-Or press ESC to cancel.</value>
+    <value>点击布局区域以添加控件。
+或按 ESC 取消。</value>
   </data>
   <data name="MainWindow.StatusBar.Live" xml:space="preserve">
-    <value>LIVE</value>
+    <value>直播</value>
   </data>
   <data name="MainWindow.StatusBar.Ghosted" xml:space="preserve">
-    <value>Ghosted</value>
+    <value>穿透</value>
   </data>
   <data name="MainWindow.StatusBar.Visible" xml:space="preserve">
-    <value>Visible</value>
+    <value>可见</value>
   </data>
   <data name="MainWindow.StatusBar.Ghosted.ToolTip" xml:space="preserve">
-    <value>Make top layer transparent</value>
+    <value>使顶层透明（点击穿透）</value>
   </data>
   <data name="Dialog.Error.PasswordMismatch" xml:space="preserve">
-    <value>Passwords don't match!
-Locked without password.</value>
+    <value>密码不匹配！
+已锁定，但无密码保护。</value>
   </data>
   <data name="Dialog.Error.IncorrectPassword" xml:space="preserve">
-    <value>Incorrect password!</value>
+    <value>密码错误！</value>
   </data>
   <data name="MainWindow.Tab.Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>设置</value>
   </data>
   <data name="MainWindow.Tab.Layout" xml:space="preserve">
-    <value>Layout</value>
+    <value>布局</value>
   </data>
   <data name="MainWindow.Settings.WindowProperties" xml:space="preserve">
-    <value>Window Properties</value>
+    <value>窗口属性</value>
   </data>
   <data name="MainWindow.Settings.Field.IP" xml:space="preserve">
     <value>IP</value>
   </data>
   <data name="MainWindow.Settings.Field.Port" xml:space="preserve">
-    <value>Port</value>
+    <value>端口</value>
   </data>
   <data name="MainWindow.Settings.Field.ApiLogin" xml:space="preserve">
-    <value>API Login</value>
+    <value>API 登录</value>
   </data>
   <data name="MainWindow.Settings.Field.ApiPassword" xml:space="preserve">
-    <value>API Password</value>
+    <value>API 密码</value>
   </data>
   <data name="MainWindow.Settings.Field.PollTime" xml:space="preserve">
-    <value>Poll Time, msec</value>
+    <value>轮询间隔（毫秒）</value>
   </data>
   <data name="MainWindow.Settings.Field.Scaling" xml:space="preserve">
-    <value>Scaling</value>
+    <value>缩放</value>
   </data>
   <data name="MainWindow.Settings.Field.OpenLastAtStart" xml:space="preserve">
-    <value>Open Last At Start</value>
+    <value>启动时打开上次</value>
   </data>
   <data name="MainWindow.Settings.Field.IsTopmost" xml:space="preserve">
-    <value>Is Topmost</value>
+    <value>置顶</value>
   </data>
   <data name="MainWindow.Settings.Field.EnableLog" xml:space="preserve">
-    <value>Enable Log</value>
+    <value>启用日志</value>
   </data>
   <data name="MainWindow.Settings.Field.ShowWidgetLock" xml:space="preserve">
-    <value>Show Widget Lock</value>
+    <value>显示控件锁</value>
   </data>
   <data name="MainWindow.Settings.Field.BlinkLightsNeedRestart" xml:space="preserve">
-    <value>Blink Lights (need restart)</value>
+    <value>闪烁灯光（需重启）</value>
   </data>
   <data name="MainWindow.Settings.Button.Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>重置</value>
   </data>
   <data name="MainWindow.Settings.Button.OpenLogFolder" xml:space="preserve">
-    <value>Open Log Folder</value>
+    <value>打开日志文件夹</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Title" xml:space="preserve">
-    <value>Global Variables</value>
+    <value>全局变量</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Tooltip.Add" xml:space="preserve">
-    <value>Add Variable</value>
+    <value>添加变量</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Tooltip.Remove" xml:space="preserve">
-    <value>Remove Variable</value>
+    <value>删除变量</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Header.Index" xml:space="preserve">
-    <value>Index</value>
+    <value>序号</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Header.Name" xml:space="preserve">
-    <value>Name</value>
+    <value>名称</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Header.Value" xml:space="preserve">
-    <value>Value</value>
+    <value>值</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Empty" xml:space="preserve">
-    <value>Click "Append Variable" to add a new variable.</value>
+    <value>点击“添加变量”以新增变量。</value>
   </data>
   <data name="MainWindow.Settings.GlobalVariables.Button.Append" xml:space="preserve">
-    <value>Append Variable</value>
+    <value>添加变量</value>
   </data>
   <data name="Dialog.Warning.PossibleScriptError.Title" xml:space="preserve">
-    <value>Possible Script Error</value>
+    <value>脚本可能有错误</value>
   </data>
   <data name="Dialog.Warning.PossibleScriptError.Content" xml:space="preserve">
-    <value>Your script contains TIMER or possible LOOPS!
-Use Momentary buttons for this type of scripts.</value>
+    <value>你的脚本包含 TIMER 或可能的循环！
+此类脚本建议使用“瞬时”按钮样式。</value>
   </data>
   <data name="PropertyEditor.Common.Image" xml:space="preserve">
-    <value>Image</value>
+    <value>图片</value>
   </data>
   <data name="PropertyEditor.Common.ImageType" xml:space="preserve">
-    <value>Image Type</value>
+    <value>图片类型</value>
   </data>
   <data name="PropertyEditor.Common.Style" xml:space="preserve">
-    <value>Style</value>
+    <value>样式</value>
   </data>
   <data name="PropertyEditor.Common.Table" xml:space="preserve">
-    <value>Table</value>
+    <value>表格</value>
   </data>
   <data name="PropertyEditor.Common.Editable" xml:space="preserve">
-    <value>Editable</value>
+    <value>可编辑</value>
   </data>
   <data name="PropertyEditor.Common.FormatString" xml:space="preserve">
-    <value>Format String</value>
+    <value>格式字符串</value>
   </data>
   <data name="PropertyEditor.Common.Input" xml:space="preserve">
-    <value>Input</value>
+    <value>输入</value>
   </data>
   <data name="PropertyEditor.Common.Info" xml:space="preserve">
-    <value>Info</value>
+    <value>信息</value>
   </data>
   <data name="PropertyEditor.Common.Device" xml:space="preserve">
-    <value>Device</value>
+    <value>设备</value>
   </data>
   <data name="PropertyEditor.Common.Target" xml:space="preserve">
-    <value>Target</value>
+    <value>目标</value>
   </data>
   <data name="PropertyEditor.Common.ShowMeters" xml:space="preserve">
-    <value>Show Meters</value>
+    <value>显示电平</value>
   </data>
   <data name="PropertyEditor.Common.ShowSlider" xml:space="preserve">
-    <value>Show Slider</value>
+    <value>显示滑块</value>
   </data>
   <data name="PropertyEditor.Common.Mode" xml:space="preserve">
-    <value>Mode</value>
+    <value>模式</value>
   </data>
   <data name="PropertyEditor.Common.IP" xml:space="preserve">
     <value>IP</value>
   </data>
   <data name="PropertyEditor.Common.Port" xml:space="preserve">
-    <value>Port</value>
+    <value>端口</value>
   </data>
   <data name="PropertyEditor.Common.Login" xml:space="preserve">
-    <value>Login</value>
+    <value>登录</value>
   </data>
   <data name="PropertyEditor.Common.Password" xml:space="preserve">
-    <value>Password</value>
+    <value>密码</value>
   </data>
   <data name="PropertyEditor.Common.Variable" xml:space="preserve">
-    <value>Variable</value>
+    <value>变量</value>
   </data>
   <data name="PropertyEditor.Common.ShowVariableName" xml:space="preserve">
-    <value>Show Variable Name</value>
+    <value>显示变量名</value>
   </data>
   <data name="PropertyEditor.Button.StateDependent" xml:space="preserve">
-    <value>State Dependent</value>
+    <value>状态依赖</value>
   </data>
   <data name="PropertyEditor.Button.ExecuteAfterLoad" xml:space="preserve">
-    <value>Execute After Load</value>
+    <value>加载后执行</value>
   </data>
   <data name="PropertyEditor.Button.ColorizeButton" xml:space="preserve">
-    <value>Colorize Button</value>
+    <value>按钮着色</value>
   </data>
   <data name="PropertyEditor.Score.ActiveButtons" xml:space="preserve">
-    <value>Active Buttons</value>
+    <value>启用按钮</value>
   </data>
   <data name="PropertyEditor.ExternalData.UpdatePeriod" xml:space="preserve">
-    <value>Update Period</value>
+    <value>更新周期</value>
   </data>
   <data name="PropertyEditor.ExternalData.LoopData" xml:space="preserve">
-    <value>Loop Data</value>
+    <value>循环数据</value>
   </data>
   <data name="PropertyEditor.Timer.SplitText" xml:space="preserve">
-    <value>Split Text</value>
+    <value>拆分文本</value>
   </data>
   <data name="PropertyEditor.Timer.SplitText.Help" xml:space="preserve">
-    <value>Split text by chars: if your text is 11:22, you will get 1|1|:|2|2.\nUseful for creating animated timers.</value>
+    <value>按字符拆分文本：例如 11:22 将拆分为 1|1|:|2|2。\n可用于制作动画计时器。</value>
   </data>
   <data name="PropertyEditor.Timer.HighPrecision" xml:space="preserve">
-    <value>High Precision</value>
+    <value>高精度</value>
   </data>
   <data name="PropertyEditor.Timer.HighPrecision.Help" xml:space="preserve">
-    <value>1/10 millisecond</value>
+    <value>0.1 毫秒</value>
   </data>
   <data name="PropertyEditor.Timer.RecoverOnSync" xml:space="preserve">
-    <value>Recover On Sync</value>
+    <value>同步时恢复</value>
   </data>
   <data name="PropertyEditor.Timer.RecoverOnSync.Help" xml:space="preserve">
-    <value>Recover timer value from vMix state on sync, it can not work with some format strings</value>
+    <value>同步时从 vMix 状态恢复计时器值，某些格式字符串下可能无法工作。</value>
   </data>
   <data name="PropertyEditor.Timer.Events" xml:space="preserve">
-    <value>Events</value>
+    <value>事件</value>
   </data>
   <data name="PropertyEditor.Timer.Events.Help" xml:space="preserve">
-    <value>Execute ExecLink on corresponding event</value>
+    <value>在对应事件触发时执行 ExecLink</value>
   </data>
   <data name="PropertyEditor.Timer.OnStart" xml:space="preserve">
-    <value>On Start</value>
+    <value>开始时</value>
   </data>
   <data name="PropertyEditor.Timer.OnPause" xml:space="preserve">
-    <value>On Pause</value>
+    <value>暂停时</value>
   </data>
   <data name="PropertyEditor.Timer.OnStop" xml:space="preserve">
-    <value>On Stop</value>
+    <value>停止时</value>
   </data>
   <data name="PropertyEditor.Timer.OnCompletion" xml:space="preserve">
-    <value>On Completion</value>
+    <value>完成时</value>
   </data>
   <data name="PropertyEditor.Timer.OnTick" xml:space="preserve">
-    <value>On Tick</value>
+    <value>每次 Tick</value>
   </data>
   <data name="PropertyEditor.FileDialog.ImagesFilter" xml:space="preserve">
-    <value>Images|*.bmp;*.jpg;*.png;*.ico</value>
+    <value>图片|*.bmp;*.jpg;*.png;*.ico</value>
   </data>
   <data name="PropertyEditor.FileDialog.ExternalDataFilter" xml:space="preserve">
-    <value>External Data|*.dll</value>
+    <value>外部数据|*.dll</value>
   </data>
   <data name="PropertyEditor.FileDialog.VmcFilter" xml:space="preserve">
-    <value>vMix Title Controller|*.vmc</value>
+    <value>vMix 标题控制器|*.vmc</value>
   </data>
   <data name="Widget.Playlist.AppendItem" xml:space="preserve">
-    <value>Append Item</value>
+    <value>添加条目</value>
   </data>
   <data name="Widget.Playlist.ToolTip.Previous" xml:space="preserve">
-    <value>Previous</value>
+    <value>上一项</value>
   </data>
   <data name="Widget.Playlist.ToolTip.Shuffle" xml:space="preserve">
-    <value>Shuffle</value>
+    <value>随机</value>
   </data>
   <data name="Widget.Playlist.ToolTip.PlayOut" xml:space="preserve">
-    <value>Play Out</value>
+    <value>播出</value>
   </data>
   <data name="Widget.Playlist.ToolTip.PlayPause" xml:space="preserve">
-    <value>Play/Pause</value>
+    <value>播放/暂停</value>
   </data>
   <data name="Widget.Playlist.ToolTip.Next" xml:space="preserve">
-    <value>Next</value>
+    <value>下一项</value>
   </data>
   <data name="Widget.Button.ToolTip.PossibleLoopDetected" xml:space="preserve">
-    <value>Possible loop detected</value>
+    <value>检测到可能的循环</value>
   </data>
   <data name="Widget.Button.ToolTip.StopScript" xml:space="preserve">
-    <value>Stop script</value>
+    <value>停止脚本</value>
   </data>
   <data name="Widget.Score.ToolTip.Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>重置</value>
   </data>
   <data name="Widget.ExternalData.Properties" xml:space="preserve">
-    <value>Properties</value>
+    <value>属性</value>
   </data>
   <data name="Widget.ExternalData.ToolTip.ToggleEnabled" xml:space="preserve">
-    <value>Toggle enabled</value>
+    <value>切换启用状态</value>
   </data>
   <data name="Widget.Timer.Tag.TargetTime" xml:space="preserve">
-    <value>Target Time</value>
+    <value>目标时间</value>
   </data>
   <data name="Widget.Timer.Tag.CurrentTime" xml:space="preserve">
-    <value>Current Time</value>
+    <value>当前时间</value>
   </data>
   <data name="Widget.Timer.Tag.Reverse" xml:space="preserve">
-    <value>Reverse</value>
+    <value>反向</value>
   </data>
   <data name="Widget.Timer.ToolTip.Start" xml:space="preserve">
-    <value>Start</value>
+    <value>开始</value>
   </data>
   <data name="Widget.Timer.ToolTip.Pause" xml:space="preserve">
-    <value>Pause</value>
+    <value>暂停</value>
   </data>
   <data name="Widget.Timer.ToolTip.StopReset" xml:space="preserve">
-    <value>Stop/Reset</value>
+    <value>停止/重置</value>
   </data>
   <data name="Widget.Timer.ToolTip.Minus1Hour" xml:space="preserve">
-    <value>-1 Hour</value>
+    <value>-1 小时</value>
   </data>
   <data name="Widget.Timer.ToolTip.Minus1Minute" xml:space="preserve">
-    <value>-1 Minute</value>
+    <value>-1 分钟</value>
   </data>
   <data name="Widget.Timer.ToolTip.Minus1Second" xml:space="preserve">
-    <value>-1 Second</value>
+    <value>-1 秒</value>
   </data>
   <data name="Widget.Timer.ToolTip.Plus1Hour" xml:space="preserve">
-    <value>+1 Hour</value>
+    <value>+1 小时</value>
   </data>
   <data name="Widget.Timer.ToolTip.Plus1Minute" xml:space="preserve">
-    <value>+1 Minute</value>
+    <value>+1 分钟</value>
   </data>
   <data name="Widget.Timer.ToolTip.Plus1Second" xml:space="preserve">
-    <value>+1 Second</value>
+    <value>+1 秒</value>
   </data>
   <data name="Widget.Region.ToolTip.Sticky" xml:space="preserve">
-    <value>Sticky</value>
+    <value>置顶</value>
   </data>
   <data name="Widget.MultiState.Title" xml:space="preserve">
-    <value>Multi State</value>
+    <value>多状态</value>
   </data>
   <data name="ScriptEditor.Title" xml:space="preserve">
-    <value>Script</value>
+    <value>脚本</value>
   </data>
   <data name="ScriptEditor.ToolTip.AddCommand" xml:space="preserve">
-    <value>Add Script Command</value>
+    <value>添加脚本命令</value>
   </data>
   <data name="ScriptEditor.ToolTip.ClearScript" xml:space="preserve">
-    <value>Clear Script</value>
+    <value>清空脚本</value>
   </data>
   <data name="ScriptEditor.ToolTip.ExportScript" xml:space="preserve">
-    <value>Export Script</value>
+    <value>导出脚本</value>
   </data>
   <data name="ScriptEditor.ToolTip.ImportScript" xml:space="preserve">
-    <value>Import Script</value>
+    <value>导入脚本</value>
   </data>
   <data name="ScriptEditor.Tab.Constructor" xml:space="preserve">
-    <value>Constructor</value>
+    <value>构造器</value>
   </data>
   <data name="ScriptEditor.Tab.Code" xml:space="preserve">
-    <value>Code</value>
+    <value>代码</value>
   </data>
   <data name="ScriptEditor.Tab.Log" xml:space="preserve">
-    <value>Log</value>
+    <value>日志</value>
   </data>
   <data name="ScriptEditor.Tab.Help" xml:space="preserve">
-    <value>Help</value>
+    <value>帮助</value>
   </data>
   <data name="ScriptEditor.Field.Command" xml:space="preserve">
-    <value>Command</value>
+    <value>命令</value>
   </data>
   <data name="ScriptEditor.Field.Input" xml:space="preserve">
-    <value>Input</value>
+    <value>输入</value>
   </data>
   <data name="ScriptEditor.Field.Index" xml:space="preserve">
-    <value>Index</value>
+    <value>索引</value>
   </data>
   <data name="ScriptEditor.Field.Duration" xml:space="preserve">
-    <value>Duration</value>
+    <value>时长</value>
   </data>
   <data name="ScriptEditor.Field.Mix" xml:space="preserve">
-    <value>Mix</value>
+    <value>混合</value>
   </data>
   <data name="ScriptEditor.Field.Channel" xml:space="preserve">
-    <value>Channel</value>
+    <value>通道</value>
   </data>
   <data name="ScriptEditor.Field.Condition" xml:space="preserve">
-    <value>Condition</value>
+    <value>条件</value>
   </data>
   <data name="ScriptEditor.ToolTip.FillTitleIndex" xml:space="preserve">
-    <value>Fill Title Index</value>
+    <value>填充标题索引</value>
   </data>
   <data name="ScriptEditor.Warning.NoInputAssigned" xml:space="preserve">
-    <value>No Input Assigned To This Command!</value>
+    <value>此功能未分配输入！</value>
   </data>
   <data name="ScriptEditor.ToolTip.ExecuteThisFunction" xml:space="preserve">
-    <value>Execute This Command</value>
+    <value>执行此功能</value>
   </data>
   <data name="ScriptEditor.ToolTip.UseInStateDependency" xml:space="preserve">
-    <value>Use In State Dependency</value>
+    <value>用于状态依赖</value>
   </data>
   <data name="ScriptEditor.Menu.MoveUp" xml:space="preserve">
-    <value>Move Up</value>
+    <value>上移</value>
   </data>
   <data name="ScriptEditor.Menu.MoveDown" xml:space="preserve">
-    <value>Move Down</value>
+    <value>下移</value>
   </data>
   <data name="ScriptEditor.Menu.Duplicate" xml:space="preserve">
-    <value>Duplicate</value>
+    <value>复制</value>
   </data>
   <data name="ScriptEditor.Menu.Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>移除</value>
   </data>
   <data name="ScriptEditor.Button.AppendCommand" xml:space="preserve">
-    <value>Append Command</value>
+    <value>添加命令</value>
   </data>
   <data name="ScriptEditor.Hint.CtrlSpace" xml:space="preserve">
-    <value>Ctrl+Space -- completion window</value>
+    <value>Ctrl+Space -- 补全窗口</value>
   </data>
   <data name="ScriptEditor.Hint.Tab" xml:space="preserve">
-    <value>Tab -- loop through # parameters</value>
+    <value>Tab -- 在 # 参数间循环</value>
   </data>
   <data name="ScriptEditor.Log.NoLogAvailable" xml:space="preserve">
-    <value>No Log Available</value>
+    <value>无可用日志</value>
   </data>
   <data name="ScriptEditor.Help.Intro" xml:space="preserve">
-    <value>Scripting is very important part of automation. When you need to make two or more events at one time, use script.</value>
+    <value>脚本是自动化中非常重要的一部分。当你需要同时触发两个或更多事件时，请使用脚本。</value>
   </data>
   <data name="ScriptEditor.Help.Section.Constructor" xml:space="preserve">
-    <value>Constructor</value>
+    <value>构造器</value>
   </data>
   <data name="ScriptEditor.Help.Constructor.1" xml:space="preserve">
-    <value>In visual script constructor you can make script from `blocks`. Every block represent one command.</value>
+    <value>在可视化脚本构造器中，你可以使用“块”来构建脚本。每个块代表一条命令。</value>
   </data>
   <data name="ScriptEditor.Help.Constructor.2" xml:space="preserve">
-    <value>There are pure vMix commands from vMix User Guide, and internal UTC commands, like [Timer] or [Condition].</value>
+    <value>这里既有来自 vMix 用户手册的纯 vMix 命令，也有内部 UTC 命令，例如 [Timer] 或 [Condition]。</value>
   </data>
   <data name="ScriptEditor.Help.Constructor.3" xml:space="preserve">
-    <value>While vMix commands does not affect UTC, with internal commands you can control script flow (conditions and loops available through [GoTo] and [Condition] commands), and update some UTC settings.</value>
+    <value>vMix 命令不会影响 UTC；而通过内部命令你可以控制脚本流程（条件与循环可通过 [GoTo] 与 [Condition] 命令实现），并更新部分 UTC 设置。</value>
   </data>
   <data name="ScriptEditor.Help.Section.CodeEditor" xml:space="preserve">
-    <value>Code Editor</value>
+    <value>代码编辑器</value>
   </data>
   <data name="ScriptEditor.Help.CodeEditor.1" xml:space="preserve">
-    <value>Code editor translate commands from constructor to text representation. You can edit parameters faster, than in visual style of constructor.</value>
+    <value>代码编辑器会将构造器中的命令转换为文本形式。相比可视化方式，你可以更快地编辑参数。</value>
   </data>
   <data name="ScriptEditor.Help.CodeEditor.2" xml:space="preserve">
-    <value>The rule is: one command - one line.</value>
+    <value>规则是：一条命令占一行。</value>
   </data>
   <data name="ScriptEditor.Help.CodeEditor.3" xml:space="preserve">
-    <value>Start with visual constructor, then switch to code.</value>
+    <value>建议先从可视化构造器开始，然后再切换到代码编辑。</value>
   </data>
   <data name="WidgetSettings.Window.Title" xml:space="preserve">
-    <value>Properties</value>
+    <value>属性</value>
   </data>
   <data name="WidgetSettings.WidgetSuffix" xml:space="preserve">
-    <value>Widget</value>
+    <value>控件</value>
   </data>
   <data name="WidgetSettings.CommonProperties" xml:space="preserve">
-    <value>Common Properties</value>
+    <value>通用属性</value>
   </data>
   <data name="WidgetSettings.IndividualProperties" xml:space="preserve">
-    <value>Individual Properties</value>
+    <value>单独属性</value>
   </data>
   <data name="WidgetSettings.Field.Name" xml:space="preserve">
-    <value>Name</value>
+    <value>名称</value>
   </data>
   <data name="WidgetSettings.Field.Color" xml:space="preserve">
-    <value>Color</value>
+    <value>颜色</value>
   </data>
   <data name="WidgetSettings.Field.ZIndex" xml:space="preserve">
     <value>Z-Index</value>
   </data>
   <data name="WidgetSettings.Hotkeys" xml:space="preserve">
-    <value>Hotkeys</value>
+    <value>快捷键</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Name" xml:space="preserve">
-    <value>Name</value>
+    <value>名称</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Active" xml:space="preserve">
-    <value>A</value>
+    <value>启</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Alt" xml:space="preserve">
     <value>Alt</value>
@@ -789,7 +789,7 @@ Use Momentary buttons for this type of scripts.</value>
     <value>Alt</value>
   </data>
   <data name="WidgetSettings.Hotkeys.ToolTip.Active" xml:space="preserve">
-    <value>Active</value>
+    <value>启用</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Ctrl" xml:space="preserve">
     <value>Ctrl</value>
@@ -807,274 +807,274 @@ Use Momentary buttons for this type of scripts.</value>
     <value>P</value>
   </data>
   <data name="WidgetSettings.Hotkeys.ToolTip.OnPress" xml:space="preserve">
-    <value>On Press</value>
+    <value>按下时</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Key" xml:space="preserve">
-    <value>Key</value>
+    <value>键</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Column.Link" xml:space="preserve">
-    <value>Link</value>
+    <value>链接</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Button.Learn" xml:space="preserve">
-    <value>Learn</value>
+    <value>学习</value>
   </data>
   <data name="WidgetSettings.Button.SaveTemplate" xml:space="preserve">
-    <value>Save Template</value>
+    <value>保存模板</value>
   </data>
   <data name="WidgetSettings.Button.Cancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>取消</value>
   </data>
   <data name="WidgetSettings.Button.Ok" xml:space="preserve">
-    <value>Ok</value>
+    <value>确定</value>
   </data>
   <data name="MidiMapping.Title" xml:space="preserve">
-    <value>MIDI Mapping</value>
+    <value>MIDI 映射</value>
   </data>
   <data name="MidiMapping.ToolTip.Add" xml:space="preserve">
-    <value>Add MIDI mapping</value>
+    <value>添加 MIDI 映射</value>
   </data>
   <data name="MidiMapping.Column.Channel" xml:space="preserve">
-    <value>Channel</value>
+    <value>通道</value>
   </data>
   <data name="MidiMapping.Column.ControlNote" xml:space="preserve">
-    <value>Control/Note</value>
+    <value>控制/音符</value>
   </data>
   <data name="MidiMapping.Column.ExecutionLink" xml:space="preserve">
-    <value>Execution Link</value>
+    <value>执行链接</value>
   </data>
   <data name="MidiMapping.Column.EventType" xml:space="preserve">
-    <value>MIDI Event Type</value>
+    <value>MIDI 事件类型</value>
   </data>
   <data name="MidiMapping.Button.Learn" xml:space="preserve">
-    <value>Learn</value>
+    <value>学习</value>
   </data>
   <data name="MidiMapping.Button.AddMapping" xml:space="preserve">
-    <value>Add MIDI Mapping</value>
+    <value>添加 MIDI 映射</value>
   </data>
   <data name="StreamDeckMapping.Title" xml:space="preserve">
-    <value>Stream Deck Mapping</value>
+    <value>Stream Deck 映射</value>
   </data>
   <data name="StreamDeckMapping.ToolTip.Add" xml:space="preserve">
-    <value>Add Stream Deck mapping</value>
+    <value>添加 Stream Deck 映射</value>
   </data>
   <data name="StreamDeckMapping.Column.Context" xml:space="preserve">
-    <value>Context</value>
+    <value>上下文</value>
   </data>
   <data name="StreamDeckMapping.Column.ExecutionLink" xml:space="preserve">
-    <value>Execution Link</value>
+    <value>执行链接</value>
   </data>
   <data name="StreamDeckMapping.Button.Learn" xml:space="preserve">
-    <value>Learn</value>
+    <value>学习</value>
   </data>
   <data name="StreamDeckMapping.Button.AddMapping" xml:space="preserve">
-    <value>Add Stream Deck Mapping</value>
+    <value>添加 Stream Deck 映射</value>
   </data>
   <data name="Scheduler.Title" xml:space="preserve">
-    <value>Scheduler</value>
+    <value>计划器</value>
   </data>
   <data name="Scheduler.ToolTip.AddClockTime" xml:space="preserve">
-    <value>Add clock time</value>
+    <value>添加时间</value>
   </data>
   <data name="Scheduler.Column.Time" xml:space="preserve">
-    <value>Time</value>
+    <value>时间</value>
   </data>
   <data name="Scheduler.Column.ExecLink" xml:space="preserve">
-    <value>Exec Link</value>
+    <value>执行链接</value>
   </data>
   <data name="Scheduler.Button.AppendEvent" xml:space="preserve">
-    <value>Append Event</value>
+    <value>追加事件</value>
   </data>
   <data name="TitleMapping.Title" xml:space="preserve">
-    <value>Title Mapping</value>
+    <value>标题映射</value>
   </data>
   <data name="TitleMapping.ToolTip.Add" xml:space="preserve">
-    <value>Add title mapping</value>
+    <value>添加标题映射</value>
   </data>
   <data name="TitleMapping.Help.Line1" xml:space="preserve">
-    <value>Here you can assign XAML/GT title to widget text field.</value>
+    <value>在这里可以将 XAML/GT 标题绑定到控件文本字段。</value>
   </data>
   <data name="TitleMapping.Help.Line2" xml:space="preserve">
-    <value>All mapped titles will get same text or image path and will update simultaneously.</value>
+    <value>所有映射的标题将获得相同的文本或图片路径，并会同步更新。</value>
   </data>
   <data name="TitleMapping.Button.Append" xml:space="preserve">
-    <value>Append Title Mapping</value>
+    <value>追加标题映射</value>
   </data>
   <data name="WidgetContainer.Menu.ToggleCaption" xml:space="preserve">
-    <value>Toggle Caption</value>
+    <value>切换标题栏</value>
   </data>
   <data name="WidgetContainer.Menu.PasswordLockable" xml:space="preserve">
-    <value>Password Lockable</value>
+    <value>可密码锁定</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleUp" xml:space="preserve">
-    <value>Scale Up (Ctrl + Wheel)</value>
+    <value>放大 (Ctrl + 鼠标滚轮)</value>
   </data>
   <data name="WidgetContainer.Menu.ScaleDown" xml:space="preserve">
-    <value>Scale Down (Ctrl + Wheel)</value>
+    <value>缩小 (Ctrl +鼠标滚轮)</value>
   </data>
   <data name="WidgetContainer.Menu.Duplicate" xml:space="preserve">
-    <value>Duplicate</value>
+    <value>复制</value>
   </data>
   <data name="WidgetContainer.Menu.MoveTo" xml:space="preserve">
-    <value>Move To</value>
+    <value>移动到</value>
   </data>
   <data name="WidgetContainer.Menu.Properties" xml:space="preserve">
-    <value>Properties</value>
+    <value>属性</value>
   </data>
   <data name="WidgetContainer.Menu.Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>移除</value>
   </data>
   <data name="WidgetContainer.ToolTip.LockWidget" xml:space="preserve">
-    <value>Lock widget</value>
+    <value>锁定控件</value>
   </data>
   <data name="WidgetContainer.ToolTip.ActiveExecLinks" xml:space="preserve">
-    <value>Active Exec Links:</value>
+    <value>活动执行链接：</value>
   </data>
   <data name="WidgetContainer.ToolTip.Hotkey" xml:space="preserve">
-    <value>Hotkey:</value>
+    <value>快捷键：</value>
   </data>
   <data name="WidgetContainer.ToolTip.ScaleUp" xml:space="preserve">
-    <value>Scale up</value>
+    <value>放大</value>
   </data>
   <data name="WidgetContainer.ToolTip.ScaleDown" xml:space="preserve">
-    <value>Scale down</value>
+    <value>缩小</value>
   </data>
   <data name="WidgetContainer.ToolTip.DuplicateWidget" xml:space="preserve">
-    <value>Duplicate widget</value>
+    <value>复制控件</value>
   </data>
   <data name="WidgetContainer.ToolTip.WidgetProperties" xml:space="preserve">
-    <value>Widget properties</value>
+    <value>控件属性</value>
   </data>
   <data name="WidgetContainer.ToolTip.RemoveWidget" xml:space="preserve">
-    <value>Remove widget</value>
+    <value>移除控件</value>
   </data>
   <data name="MainWindow.StatusBar.Donate.ToolTip" xml:space="preserve">
-    <value>Support vMix Universal Title Controller!</value>
+    <value>支持 vMix Universal Title Controller！</value>
   </data>
   <data name="DataSourceControl.Header.DataSource" xml:space="preserve">
-    <value>Data Source</value>
+    <value>数据源</value>
   </data>
   <data name="DataSourceControl.Header.Property" xml:space="preserve">
-    <value>Property</value>
+    <value>属性</value>
   </data>
   <data name="ListControl.Title.Items" xml:space="preserve">
-    <value>Items</value>
+    <value>项目</value>
   </data>
   <data name="ListControl.ToolTip.SaveList" xml:space="preserve">
-    <value>Save list</value>
+    <value>保存列表</value>
   </data>
   <data name="ListControl.ToolTip.LoadList" xml:space="preserve">
-    <value>Load list</value>
+    <value>加载列表</value>
   </data>
   <data name="ListControl.ToolTip.AddListItem" xml:space="preserve">
-    <value>Add list item</value>
+    <value>添加列表项</value>
   </data>
   <data name="ListControl.Button.AppendListItem" xml:space="preserve">
-    <value>Append List Item</value>
+    <value>追加列表项</value>
   </data>
   <data name="LearnWindow.Label.CloseHint" xml:space="preserve">
-    <value>or any key to close this window</value>
+    <value>或按任意键关闭此窗口</value>
   </data>
   <data name="MidiLearnWindow.Title" xml:space="preserve">
-    <value>MIDI Learn</value>
+    <value>MIDI 学习</value>
   </data>
   <data name="MidiLearnWindow.Label.PressKey" xml:space="preserve">
-    <value>Press MIDI Key</value>
+    <value>请按下 MIDI 键</value>
   </data>
   <data name="StreamDeckLearnWindow.Title" xml:space="preserve">
-    <value>Stream Deck Learn</value>
+    <value>Stream Deck 学习</value>
   </data>
   <data name="StreamDeckLearnWindow.Label.PressKey" xml:space="preserve">
-    <value>Press Stream Deck Key</value>
+    <value>请按下 Stream Deck 按键</value>
   </data>
   <data name="TextInputWindow.Title" xml:space="preserve">
-    <value>Input Request</value>
+    <value>输入请求</value>
   </data>
   <data name="TextInputWindow.Label.Password" xml:space="preserve">
-    <value>Password</value>
+    <value>密码</value>
   </data>
   <data name="TextInputWindow.Label.ConfirmPassword" xml:space="preserve">
-    <value>Confirm Password</value>
+    <value>确认密码</value>
   </data>
   <data name="TextInputWindow.Button.Cancel" xml:space="preserve">
-    <value>_Cancel</value>
+    <value>_取消</value>
   </data>
   <data name="TextInputWindow.Button.Ok" xml:space="preserve">
-    <value>_OK</value>
+    <value>_确定</value>
   </data>
   <data name="Dialog.PasswordLock.Title" xml:space="preserve">
-    <value>Enter password to lock controller</value>
+    <value>输入密码以锁定控制器</value>
   </data>
   <data name="Dialog.PasswordLock.InputTitle" xml:space="preserve">
-    <value>User Name</value>
+    <value>用户名</value>
   </data>
   <data name="Dialog.PasswordUnlock.Title" xml:space="preserve">
-    <value>Enter password to unlock controller</value>
+    <value>输入密码以解锁控制器</value>
   </data>
   <data name="Dialog.PasswordUnlock.InputTitle" xml:space="preserve">
-    <value>User Name</value>
+    <value>用户名</value>
   </data>
   <data name="Dialog.FileFilter.VmixController" xml:space="preserve">
-    <value>vMix Controller|*.vmc</value>
+    <value>vMix 控制器|*.vmc</value>
   </data>
   <data name="Dialog.PageName.Title" xml:space="preserve">
-    <value>Input Request</value>
+    <value>输入请求</value>
   </data>
   <data name="Dialog.PageName.InputTitle" xml:space="preserve">
-    <value>Page Name</value>
+    <value>页面名称</value>
   </data>
   <data name="Enum.Connection.Offline" xml:space="preserve">
-    <value>Offline</value>
+    <value>离线</value>
   </data>
   <data name="Enum.Connection.Sync" xml:space="preserve">
-    <value>Sync</value>
+    <value>等待同步</value>
   </data>
   <data name="Enum.Connection.Online" xml:space="preserve">
-    <value>Online</value>
+    <value>在线</value>
   </data>
   <data name="PropertyEditor.Common.ImageType.Default" xml:space="preserve">
-    <value>Default</value>
+    <value>默认</value>
   </data>
   <data name="PropertyEditor.Common.ImageType.Default+Pressed" xml:space="preserve">
-    <value>Default+Pressed</value>
+    <value>默认+按下</value>
   </data>
   <data name="PropertyEditor.Common.Style.Momentary" xml:space="preserve">
-    <value>Momentary</value>
+    <value>瞬时</value>
   </data>
   <data name="PropertyEditor.Common.Style.Toggle" xml:space="preserve">
-    <value>Press</value>
+    <value>按下</value>
   </data>
   <data name="PropertyEditor.Common.Style.Press" xml:space="preserve">
-    <value>Toggle</value>
+    <value>切换</value>
   </data>
   <data name="PropertyEditor.Common.Style.Volume.Vertical" xml:space="preserve">
-    <value>Vertical</value>
+    <value>垂直</value>
   </data>
   <data name="PropertyEditor.Common.Style.Volume.Horizontal" xml:space="preserve">
-    <value>Horizontal</value>
+    <value>水平</value>
   </data>
   <data name="PropertyEditor.Common.Style.TextField.Text" xml:space="preserve">
-    <value>Text</value>
+    <value>文件</value>
   </data>
   <data name="PropertyEditor.Common.Style.TextField.File" xml:space="preserve">
-    <value>File</value>
+    <value>文本</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Execute" xml:space="preserve">
-    <value>Execute</value>
+    <value>执行</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>重置</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Press" xml:space="preserve">
-    <value>Press</value>
+    <value>按下</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Release" xml:space="preserve">
-    <value>Release</value>
+    <value>松开</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Clear Variables" xml:space="preserve">
-    <value>Clear Variables</value>
+    <value>清除变量</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Focus" xml:space="preserve">
-    <value>Focus</value>
+    <value>聚焦</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.+1" xml:space="preserve">
     <value>+1</value>
@@ -1101,89 +1101,88 @@ Use Momentary buttons for this type of scripts.</value>
     <value>+4</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus A" xml:space="preserve">
-    <value>Toggle Bus A</value>
+    <value>切换总线 A</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus B" xml:space="preserve">
-    <value>Toggle Bus B</value>
+    <value>切换总线 B</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus C" xml:space="preserve">
-    <value>Toggle Bus C</value>
+    <value>切换总线 C</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus D" xml:space="preserve">
-    <value>Toggle Bus D</value>
+    <value>切换总线 D</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus E" xml:space="preserve">
-    <value>Toggle Bus E</value>
+    <value>切换总线 E</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus F" xml:space="preserve">
-    <value>Toggle Bus F</value>
+    <value>切换总线 F</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus G" xml:space="preserve">
-    <value>Toggle Bus G</value>
+    <value>切换总线 G</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Bus M" xml:space="preserve">
-    <value>Toggle Bus M</value>
+    <value>切换总线 M</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Muted" xml:space="preserve">
-    <value>Toggle Muted</value>
+    <value>切换静音</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Previous Item" xml:space="preserve">
-    <value>Previous Item</value>
+    <value>上一个项目</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Shuffle" xml:space="preserve">
-    <value>Shuffle</value>
+    <value>随机播放</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Next Item" xml:space="preserve">
-    <value>Next Item</value>
+    <value>下一个项目</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.PlayOut" xml:space="preserve">
-    <value>Play Out</value>
+    <value>播出</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Play/Pause" xml:space="preserve">
-    <value>Play/Pause</value>
+    <value>播放/暂停</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Toggle Enabled" xml:space="preserve">
-    <value>Toggle
-Enabled</value>
+    <value>切换启用</value>
   </data>
   <data name="PropertyEditor.FileDialog.Title" xml:space="preserve">
-    <value>File Path</value>
+    <value>文件路径</value>
   </data>
   <data name="MainWindow.Settings.Field.UseInfiniteCanvas" xml:space="preserve">
-    <value>Use Infinite Canvas</value>
+    <value>使用无限画布</value>
   </data>
   <data name="Enum.Connection.InputsChanged" xml:space="preserve">
-    <value>Inputs Were Changed</value>
+    <value>输入已更改</value>
   </data>
   <data name="MainWindow.Menu.Language.Russian" xml:space="preserve">
     <value>Русский</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Start" xml:space="preserve">
-    <value>Start</value>
+    <value>开始</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Pause" xml:space="preserve">
-    <value>Pause</value>
+    <value>暂停</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.Stop" xml:space="preserve">
-    <value>Stop</value>
+    <value>停止</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.+1 Hour" xml:space="preserve">
-    <value>+1 Hour</value>
+    <value>+1小时</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.-1 Hour" xml:space="preserve">
-    <value>-1 Hour</value>
+    <value>-1小时</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.+1 Minute" xml:space="preserve">
-    <value>+1 Minute</value>
+    <value>+1分钟</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.+1 Second" xml:space="preserve">
-    <value>+1 Second</value>
+    <value>+1秒</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.-1 Minute" xml:space="preserve">
-    <value>-1 Minute</value>
+    <value>-1分钟</value>
   </data>
   <data name="WidgetSettings.Hotkeys.Hotkey.-1 Second" xml:space="preserve">
-    <value>-1 Second</value>
+    <value>-1秒</value>
   </data>
   <data name="Undo.ControllerLoaded" xml:space="preserve">
     <value>Controller Loaded</value>
@@ -1225,81 +1224,171 @@ Enabled</value>
     <value>Widgets Duplicated</value>
   </data>
   <data name="MainWindow.StatusBar.ShowLinks" xml:space="preserve">
-    <value>Show Widget Links</value>
+    <value>显示小组件连接</value>
   </data>
   <data name="MainWindow.Settings.Field.EnableLoopGuard" xml:space="preserve">
-    <value>Enable Loop Guard</value>
+    <value>启用脚本死循环保护</value>
   </data>
   <data name="MainWindow.StatusBar.StopScripts" xml:space="preserve">
-    <value>Stop Scripts</value>
+    <value>停止脚本</value>
   </data>
   <data name="Dialog.Warning.PossibleScriptError.Loop" xml:space="preserve">
-    <value>Potential execution loop detected and blocked.
-Root link: {0}
-Last link: {1}
-Chain hops: {2}
-Hits in &lt;1s: {3}</value>
+    <value>检测到潜在的执行循环，执行已被阻止。
+根链接：{0}
+最后一个链接：{1}
+链路跳转次数：{2}
+1 秒内触发次数：{3}</value>
   </data>
   <data name="Help.Button.Colorize" xml:space="preserve">
-    <value>If checked, color parameter applied not only for caption, but also for button body.</value>
+    <value>勾选后，颜色参数不仅会应用于标题，也会应用于按钮主体。</value>
   </data>
   <data name="Help.Button.ExecuteAfterLoad" xml:space="preserve">
-    <value>If checked, button script will be executed right after UTC loaded.</value>
+    <value>勾选后，按钮脚本将在 UTC 加载完成后立即执行。</value>
   </data>
   <data name="Help.Button.StateDependent" xml:space="preserve">
-    <value>If checked, button will show status LED, according to script commands.</value>
+    <value>勾选后，按钮会根据脚本命令显示状态指示灯。</value>
   </data>
   <data name="Help.DataSource.Default" xml:space="preserve">
-    <value>Fill list with data from another widget.</value>
+    <value>用来自其他控件的数据填充列表。</value>
   </data>
   <data name="Help.Hotkeys.Default" xml:space="preserve">
-    <value>Here you can activate widget hotkeys.
-Name of the hotkey is self-explanatory.
-Event will be executed, when user press hotkey into layout panel, while no widget is focused.
-Link parameter is for calling events from scripts.</value>
+    <value>在这里可以启用控件热键。
+热键名称不言自明。
+当用户在布局面板中按下热键且没有任何控件获得焦点时，将执行相应事件。
+“Link” 参数用于从脚本中调用事件。</value>
   </data>
   <data name="Help.List.Default" xml:space="preserve">
-    <value>Edit items, that will be shown in widget dropdown list.
-Put ~ symbol to add description for list item.</value>
+    <value>编辑将在控件下拉列表中显示的条目。
+使用 ~ 符号为列表项添加描述。</value>
   </data>
   <data name="Help.Midi.Default" xml:space="preserve">
-    <value>Here you can assign MIDI commands to hotkeys in another widgets.
-Use P as parameter in button script to access fader/knob value.</value>
+    <value>在这里可以将 MIDI 命令分配给其他控件的热键。
+在按钮脚本中使用参数 P 来访问推子/旋钮的值。</value>
   </data>
   <data name="Help.SaveTemplate.Default" xml:space="preserve">
-    <value>Save current widget with properties as template for fast access.</value>
+    <value>将当前控件及其属性保存为模板，便于快速使用。</value>
   </data>
   <data name="Help.Scheduler.Default" xml:space="preserve">
-    <value>Here you can make list of events, that will be executed at specified time and day of the week.</value>
+    <value>在这里可以创建事件列表，这些事件会在指定的时间和星期几执行。</value>
   </data>
   <data name="Help.Script.Default" xml:space="preserve">
-    <value>Here you can automate some actions, like toggling overlay or sending input to program/preview.
-Start with one command or create complex scripts with conditions.</value>
+    <value>在这里可以自动化一些操作，例如切换叠加层或向节目/预览发送输入。
+从单条命令开始，或使用条件创建复杂脚本。</value>
   </data>
   <data name="Help.StaticVariables.Default" xml:space="preserve">
-    <value>Here you can create static variables, accessible from scripts.
-Variables started from "@" symbol treat as input variables.
-Input variables are accessible from title mappings and input selector into script command.</value>
+    <value>在这里可以创建脚本可访问的静态变量。
+以 "@" 开头的变量将被视为输入变量。
+输入变量可用于标题映射以及脚本命令中的输入选择器。</value>
   </data>
   <data name="Help.StreamDeck.Default" xml:space="preserve">
-    <value>Here you can assign StreamDeck commands to hotkeys in another widgets.</value>
+    <value>在这里可以将 StreamDeck 命令分配给其他控件的热键。</value>
   </data>
   <data name="Help.TextField.Table" xml:space="preserve">
-    <value>If checked, text field of this widget will be working in `table` mode.
-It means, that all mapped title texts will be shown into text field with `|` delimiter.
-User can edit one title at time, or replace text in all titles.
-This option is useful for List Widget.</value>
+    <value>勾选后，该控件的文本框将以 `table` 模式工作。
+这意味着所有映射的标题文本会以 `|` 分隔显示在文本框中。
+用户可以一次编辑一个标题，或替换所有标题中的文本。
+该选项对列表控件很有用。</value>
   </data>
   <data name="MainWindow.StatusBar.LinksType.None" xml:space="preserve">
-    <value>None</value>
+    <value>无</value>
   </data>
   <data name="MainWindow.StatusBar.LinksType.All" xml:space="preserve">
-    <value>All</value>
+    <value>全部</value>
   </data>
   <data name="MainWindow.StatusBar.LinksType.Hover" xml:space="preserve">
-    <value>Hover</value>
+    <value>悬停</value>
   </data>
   <data name="MainWindow.StatusBar.LinksStyle" xml:space="preserve">
-    <value>Links Style</value>
+    <value>连接显示</value>
+  </data>
+  <data name="Culture.Available" xml:space="preserve">
+    <value>_</value>
+  </data>
+  <data name="DataProvider.Excel.FilePath" xml:space="preserve">
+    <value>文件路径</value>
+  </data>
+  <data name="DataProvider.Shared.StartRow" xml:space="preserve">
+    <value>起始行</value>
+  </data>
+  <data name="DataProvider.Shared.EndRow" xml:space="preserve">
+    <value>结束行</value>
+  </data>
+  <data name="DataProvider.Shared.StartCol" xml:space="preserve">
+    <value>起始列</value>
+  </data>
+  <data name="DataProvider.Shared.EndCol" xml:space="preserve">
+    <value>结束列</value>
+  </data>
+  <data name="DataProvider.Shared.SheetNumber" xml:space="preserve">
+    <value>工作表编号</value>
+  </data>
+  <data name="DataProvider.Shared.MultipleColumnsByRow" xml:space="preserve">
+    <value>按行多列</value>
+  </data>
+  <data name="DataProvider.Shared.MultipleColumnsByRow.Help" xml:space="preserve">
+    <value>如果勾选，按 UTC 表格处理行数据：column1|column2|column3|等等...</value>
+  </data>
+  <data name="DataProvider.Shared.Loaded" xml:space="preserve">
+    <value>已加载</value>
+  </data>
+  <data name="DataProvider.Shared.Rows" xml:space="preserve">
+    <value>行</value>
+  </data>
+  <data name="DataProvider.Shared.ShowRows" xml:space="preserve">
+    <value>显示行</value>
+  </data>
+  <data name="DataProvder.Filesystem.Path" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="DataProvder.Filesystem.Filter" xml:space="preserve">
+    <value>筛选器</value>
+  </data>
+  <data name="DataProvder.Filesystem.IncludeSubDirectories" xml:space="preserve">
+    <value>包含子目录</value>
+  </data>
+  <data name="DataProvder.Filesystem.Loaded" xml:space="preserve">
+    <value>已加载</value>
+  </data>
+  <data name="DataProvider.Shared.Reload" xml:space="preserve">
+    <value>重新加载</value>
+  </data>
+  <data name="DataProvider.GoogleSheets.APIKey" xml:space="preserve">
+    <value>API 密钥</value>
+  </data>
+  <data name="DataProvider.GoogleSheets.SheetKey" xml:space="preserve">
+    <value>表格密钥</value>
+  </data>
+  <data name="DataProvider.Shared.URL" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="DataProvider.JSON.Headers" xml:space="preserve">
+    <value>请求头</value>
+  </data>
+  <data name="DataProvider.JSON.Headers.Help" xml:space="preserve">
+    <value>按 Ctrl+Enter 换行</value>
+  </data>
+  <data name="DataProvider.JSON.JSONPath" xml:space="preserve">
+    <value>JSONPath</value>
+  </data>
+  <data name="DataProvider.Shared.GroupBy" xml:space="preserve">
+    <value>分组数量</value>
+  </data>
+  <data name="DataProvider.XML.XPath" xml:space="preserve">
+    <value>XPath</value>
+  </data>
+  <data name="DataProvider.XML.XPath.Help" xml:space="preserve">
+    <value>按 Ctrl+Enter 换行</value>
+  </data>
+  <data name="DataProvider.NDI.Audio" xml:space="preserve">
+    <value>音频</value>
+  </data>
+  <data name="DataProvider.NDI.LowBandwidth" xml:space="preserve">
+    <value>低带宽</value>
+  </data>
+  <data name="RowsViewer.Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="RowsViewer.Title" xml:space="preserve">
+    <value>行查看器</value>
   </data>
 </root>

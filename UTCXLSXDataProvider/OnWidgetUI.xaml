@@ -7,6 +7,7 @@
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
              xmlns:local="clr-namespace:UTCGoogleSheetsDataProvider"
+             xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -18,16 +19,17 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="800*"/>
             <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <!--<TextBlock FontFamily="{StaticResource FontAwesome}" Margin="16" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="128" Foreground="Lime" Opacity="0.25" Text="&#xf1c3;"/>-->
-        <StackPanel Grid.ColumnSpan="2">
+        <StackPanel>
             <skin:PropertiesListView>
                 <CompositeCollection>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">File Path</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Excel.FilePath}"></TextBlock>
                         </TextBox.Tag>
                         <TextBox.Text>
                             <Binding Path="FilePath" UpdateSourceTrigger="PropertyChanged">
@@ -51,7 +53,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Start Row</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.StartRow}"></TextBlock>
                         </TextBox.Tag>
                         <Binding Path="StartRow" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -72,7 +74,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">End Row</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.EndRow}"></TextBlock>
                         </TextBox.Tag>
                         <Binding Path="EndRow" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -93,7 +95,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Start Col</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.StartCol}"></TextBlock>
                         </TextBox.Tag>
                         <Binding Path="StartCol" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -115,7 +117,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">End Col</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.EndCol}"></TextBlock>
                         </TextBox.Tag>
                         <Binding Path="EndCol" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -137,7 +139,7 @@
                     </TextBox>
                     <TextBox Style="{StaticResource WidgetTextBox}">
                         <TextBox.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Sheet Number</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.SheetNumber}"></TextBlock>
                         </TextBox.Tag>
                         <Binding Path="SheetIndex" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -158,10 +160,10 @@
                     </TextBox>
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Tag>
-                            <TextBlock Style="{StaticResource CaptionText}">Multiple Columns By Row</TextBlock>
+                            <TextBlock Style="{StaticResource CaptionText}" Text="{loc:Loc Key=DataProvider.Shared.MultipleColumnsByRow}"></TextBlock>
                         </StackPanel.Tag>
                         <CheckBox IsChecked="{Binding IsTable}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <Control Style="{StaticResource HelpBorder}" ToolTip="If checked, data from row treat as UTC table: column1|column2|column3|etc..."/>
+                        <Control Style="{StaticResource HelpBorder}" ToolTip="{loc:Loc Key=DataProvider.Shared.MultipleColumnsByRow.Help}"/>
                     </StackPanel>
                 </CompositeCollection>
             </skin:PropertiesListView>
@@ -171,8 +173,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}">Loaded <Run Text="{Binding RowsCount}"></Run> row(s)</TextBlock>
-                <Button Grid.Column="1" Command="{Binding ShowRowsCommand}">Show Rows</Button>
+                <TextBlock Margin="{StaticResource StdMargin}" Style="{StaticResource PropertyName}"><Run Text="{loc:Loc Key=DataProvider.Shared.Loaded}"/> <Run Text="{Binding RowsCount}"></Run> <Run Text="{loc:Loc Key=DataProvider.Shared.Rows}"/></TextBlock>
+                <Button Grid.Column="1" Command="{Binding ShowRowsCommand}" Content="{loc:Loc Key=DataProvider.Shared.ShowRows}"></Button>
             </Grid>
         </StackPanel>
     </Grid>

@@ -9,25 +9,26 @@ using System.Resources;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using System.Windows.Input;
 
-namespace vMixController.Localization
+namespace vMixControllerSkin.Localization
 {
-    internal sealed class LocalizationManager : INotifyPropertyChanged
+    public class LocalizationManager : INotifyPropertyChanged
     {
         private static readonly Lazy<LocalizationManager> _instance = new Lazy<LocalizationManager>(() => new LocalizationManager());
         public static CultureInfo[] Locales { get; private set; }
 
         private readonly ResourceManager _resourceManager;
         private CultureInfo _culture;
-        private static string _defaultLocale = "en-US";
+        private static string[] _defaultLocales = new string[] { "en-US", "ru-RU", "zh-CN" };
 
         private static Dictionary<string, Dictionary<string, string>> _userLocales = new Dictionary<string, Dictionary<string, string>>();
 
         private LocalizationManager()
         {
-            _resourceManager = new ResourceManager("vMixController.Properties.Strings", typeof(LocalizationManager).Assembly);
+            _resourceManager = new ResourceManager("vMixControllerSkin.Properties.Strings", typeof(LocalizationManager).Assembly);
 
-            var culture = new CultureInfo(_defaultLocale);
+            var culture = new CultureInfo(_defaultLocales[0]);
 
             var resourceSet = _resourceManager.GetResourceSet(culture, true, true);
 
@@ -35,15 +36,14 @@ namespace vMixController.Localization
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var userLocales = Path.Combine(baseDir, "UserLocales");
             if (!Directory.Exists(userLocales))
-            {
                 Directory.CreateDirectory(userLocales);
-                Dictionary<string, string> enLocale = new Dictionary<string, string>();
-                foreach (DictionaryEntry entry in resourceSet)
-                {
-                    enLocale.Add((string)entry.Key, (string)entry.Value);
-                }
-                File.WriteAllText(Path.Combine(userLocales, _defaultLocale + ".json"), JsonSerializer.Serialize(enLocale, new JsonSerializerOptions() { WriteIndented = true }));
+
+            Dictionary<string, string> enLocale = new Dictionary<string, string>();
+            foreach (DictionaryEntry entry in resourceSet)
+            {
+                enLocale.Add((string)entry.Key, (string)entry.Value);
             }
+            File.WriteAllText(Path.Combine(userLocales, _defaultLocales[0] + ".json"), JsonSerializer.Serialize(enLocale, new JsonSerializerOptions() { WriteIndented = true }));
 
             Locales = GetAvailableCultures().ToArray();
         }
@@ -84,7 +84,7 @@ namespace vMixController.Localization
                     if (_userLocales.TryGetValue(Culture.Name, out locale))
                         locale.TryGetValue(key, out value);
                 }
-                var valueEn = _resourceManager.GetString(key, CultureInfo.GetCultureInfo(_defaultLocale));
+                var valueEn = _resourceManager.GetString(key, CultureInfo.GetCultureInfo(_defaultLocales[0]));
                 return (string.IsNullOrEmpty(value) ? valueEn : value) ?? $"!{key}!";
             }
         }
@@ -99,7 +99,7 @@ namespace vMixController.Localization
 
         public void InitializeFromSettings()
         {
-            var name = Properties.Settings.Default.UiCulture;
+            var name = vMixControllerSkin.Properties.Settings.Default.UiCulture;
             if (!string.IsNullOrWhiteSpace(name))
             {
                 SetCulture(name, persist: false);
@@ -119,8 +119,8 @@ namespace vMixController.Localization
 
             if (persist)
             {
-                Properties.Settings.Default.UiCulture = cultureName;
-                Properties.Settings.Default.Save();
+                vMixControllerSkin.Properties.Settings.Default.UiCulture = cultureName;
+                vMixControllerSkin.Properties.Settings.Default.Save();
             }
         }
 
@@ -143,34 +143,15 @@ namespace vMixController.Localization
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
             //Default culture
-            result.Add(CultureInfo.GetCultureInfo(_defaultLocale));
-
-            foreach (var dir in Directory.GetDirectories(baseDir))
-            {
-                var name = Path.GetFileName(dir);
-
-                try
-                {
-                    var culture = CultureInfo.GetCultureInfo(name);
-
-                    var resourceFile = Path.Combine(dir, "vMixController.resources.dll");
-                    if (File.Exists(resourceFile))
-                    {
-                        result.Add(culture);
-                    }
-                }
-                catch (CultureNotFoundException)
-                {
-                    // не culture Ч игнорируем
-                }
-            }
+            foreach (var locale in _defaultLocales)
+                result.Add(CultureInfo.GetCultureInfo(locale));
 
             var userLocales = Path.Combine(baseDir, "UserLocales");
             if (Directory.Exists(userLocales))
                 foreach (var file in Directory.GetFiles(userLocales, "*.json"))
                 {
                     var customLocale = Path.GetFileNameWithoutExtension(file);
-                    if (customLocale != _defaultLocale)
+                    if (customLocale != _defaultLocales[0])
                     {
                         result.Add(CultureInfo.GetCultureInfo(customLocale));
                         _userLocales.Add(customLocale, JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file)));

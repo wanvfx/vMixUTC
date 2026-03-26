@@ -17,7 +17,7 @@
         xmlns:pctrl="clr-namespace:vMixController.PropertiesControls"
         xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
         xmlns:skin="clr-namespace:vMixControllerSkin;assembly=vMixControllerSkin"
-        xmlns:loc="clr-namespace:vMixController.Localization"
+        xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin"
         mc:Ignorable="d ignore"
         Title="{loc:Loc Key=WidgetSettings.Window.Title}"
         Closing="Window_Closing" d:DesignWidth="382.485" d:DesignHeight="364.71"

@@ -373,9 +373,9 @@ namespace vMixController
             }*/
 
             Build.Text = string.Format(CultureInfo.CurrentCulture,
-                Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.Template"],
+                vMixControllerSkin.Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.Template"],
                 MainViewModel.GetBuildDateTime(Assembly.GetExecutingAssembly()),
-                Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.HttpClientVersion"]);
+                vMixControllerSkin.Localization.LocalizationManager.Instance["SplashScreen.BuildInfo.HttpClientVersion"]);
             
             //Icon.Text = new string(ch, 1);
             //this.RenderSize = new System.Windows.Size(400, 225);

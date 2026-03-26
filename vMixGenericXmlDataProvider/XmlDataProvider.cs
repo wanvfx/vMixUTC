@@ -4,17 +4,16 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -36,6 +35,10 @@ namespace XmlDataProviderNs
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
 
         private List<string> _data = new List<string>();
+        private string[] _valuesCache = Array.Empty<string>();
+        private int _loadScheduled;
+        private readonly DispatcherTimer _refreshTimer;
+        private int _currentTimerPeriodMs;
 
         #endregion
 
@@ -51,12 +54,8 @@ namespace XmlDataProviderNs
         {
             get
             {
-                // Запускаем асинхронную загрузку данных, не блокируя UI поток.
-                // Метод сам проверит, нужно ли обновлять данные.
-#pragma warning disable CS4014
-                Dispatcher.Invoke(() => LoadDataIfNeededAsync());
-#pragma warning restore CS4014
-                return _data.ToArray();
+                ScheduleLoadIfNeeded();
+                return _valuesCache;
             }
         }
 
@@ -65,10 +64,12 @@ namespace XmlDataProviderNs
             get => _data;
             private set // Сеттер сделан приватным, чтобы данные менялись только внутри класса
             {
-                // Проверяем, действительно ли данные изменились, чтобы избежать лишних обновлений
-                if (!EqualityComparer<List<string>>.Default.Equals(_data, value))
+                var newData = value ?? new List<string>();
+                if (!_data.SequenceEqual(newData))
                 {
-                    _data = value;
+                    _data = newData;
+                    _valuesCache = _data.ToArray();
+                    OnPropertyChanged(nameof(Values));
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Data)));
                 }
             }
@@ -114,7 +115,7 @@ namespace XmlDataProviderNs
         private RelayCommand _reloadCommand;
         public RelayCommand ReloadCommand => _reloadCommand ?? (_reloadCommand = new RelayCommand(() =>
         {
-            Dispatcher.Invoke(() => LoadDataIfNeededAsync());
+            _ = ForceReloadAsync();
         }));
         #endregion
 
@@ -122,53 +123,58 @@ namespace XmlDataProviderNs
 
         private async Task LoadDataIfNeededAsync()
         {
-            var url = Url; // Получаем значение из DependencyProperty
-            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(XPath))
-            {
-                Data = new List<string>();
-                return;
-            }
-
-            // Проверка кэша
-            if (_cache.TryGetValue(url, out var cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
-            {
-                // Если данные в кэше актуальны, просто обновим текущий экземпляр из них
-                UpdateDataFromCache(cacheEntry.Document);
-                return;
-            }
-
-            // Входим в семафор, чтобы только один поток мог загружать данные
-            await _asyncLock.WaitAsync();
             try
             {
-                // Повторная проверка кэша после входа в семафор.
-                // Возможно, другой поток уже обновил данные, пока мы ждали.
-                if (_cache.TryGetValue(url, out cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
+                var url = Url; // Получаем значение из DependencyProperty
+                if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(XPath))
                 {
+                    Data = new List<string>();
+                    SetError(string.Empty);
+                    return;
+                }
+
+                // Проверка кэша
+                if (_cache.TryGetValue(url, out var cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
+                {
+                    // Если данные в кэше актуальны, просто обновим текущий экземпляр из них
                     UpdateDataFromCache(cacheEntry.Document);
                     return;
                 }
 
-                // Загрузка и обработка данных
-                var doc = await FetchXmlAsync(url);
-                if (doc != null)
+                // Входим в семафор, чтобы только один поток мог загружать данные
+                await _asyncLock.WaitAsync();
+                try
                 {
-                    _cache[url] = new CacheEntry { Document = doc, LastUpdated = DateTime.UtcNow };
-                    UpdateDataFromCache(doc);
+                    // Повторная проверка кэша после входа в семафор.
+                    // Возможно, другой поток уже обновил данные, пока мы ждали.
+                    if (_cache.TryGetValue(url, out cacheEntry) && (DateTime.UtcNow - cacheEntry.LastUpdated).TotalMilliseconds < Period)
+                    {
+                        UpdateDataFromCache(cacheEntry.Document);
+                        return;
+                    }
+
+                    // Загрузка и обработка данных
+                    var doc = await FetchXmlAsync(url);
+                    if (doc != null)
+                    {
+                        _cache[url] = new CacheEntry { Document = doc, LastUpdated = DateTime.UtcNow };
+                        UpdateDataFromCache(doc);
+                    }
+                }
+                finally
+                {
+                    _asyncLock.Release();
                 }
             }
             finally
             {
-                _asyncLock.Release();
+                Interlocked.Exchange(ref _loadScheduled, 0);
             }
         }
 
         private async Task<XDocument> FetchXmlAsync(string url)
         {
-            Dispatcher.Invoke(() =>
-            {
-                Error = "";
-            });
+            SetError(string.Empty);
             try
             {
                 if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
@@ -192,10 +198,7 @@ namespace XmlDataProviderNs
             }
             catch (Exception ex)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    Error = ($"Error retrieving XML data from {url}: {ex.Message}");
-                });
+                SetError($"Error retrieving XML data from {url}: {ex.Message}");
                 return null;
             }
         }
@@ -203,70 +206,92 @@ namespace XmlDataProviderNs
         private void UpdateDataFromCache(XDocument doc)
         {
             if (doc == null) return;
-
-            // Обновление должно происходить в UI потоке, так как оно меняет свойство Data,
-            // на которое может быть подписан интерфейс.
-            Application.Current?.Dispatcher.Invoke(() =>
+            try
             {
-                Error = "";
-                try
+                var nsManager = new XmlNamespaceManager(new NameTable());
+                var namespaces = NameSpaces; // Получаем значение из DependencyProperty
+                if (!string.IsNullOrEmpty(namespaces))
                 {
-                    var nsManager = new XmlNamespaceManager(new NameTable());
-                    var namespaces = NameSpaces; // Получаем значение из DependencyProperty
-                    if (!string.IsNullOrEmpty(namespaces))
+                    foreach (var item in namespaces.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        foreach (var item in namespaces.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                        var parts = item.Trim().Split(new[] { ' ' }, 2);
+                        if (parts.Length == 2)
                         {
-                            try
-                            {
-                                var parts = item.Trim().Split(new[] { ' ' }, 2);
-                                if (parts.Length == 2)
-                                    nsManager.AddNamespace(parts[0], parts[1]);
-                            }
-                            catch (Exception ex)
-                            {
-                                Error = ($"Error adding namespace: {ex.Message}");
-                            }
+                            nsManager.AddNamespace(parts[0], parts[1]);
                         }
-                    }
-
-                    // 6. Используем XPathSelectElements из LINQ to XML
-                    var nodes = (IEnumerable<object>)doc.XPathEvaluate(XPath, nsManager);
-                    var groupBy = GroupBy;
-
-                    var newData = nodes.OfType<XObject>().Select(node =>
-                    {
-                        switch (node.NodeType)
-                        {
-                            case XmlNodeType.Element:
-                                return ((XElement)node).Value;
-                            case XmlNodeType.Text:
-                                return ((XText)node).Value;
-                            case XmlNodeType.Attribute:
-                                return ((XAttribute)node).Value;
-                        }
-                        return String.Empty;
-                    }).Take(100 * (groupBy <= 0 ? 1 : groupBy)).ToList();
-
-                    if (groupBy > 1)
-                    {
-                        // 7. Группировка с помощью LINQ - более кратко и понятно.
-                        Data = newData.Select((item, index) => new { item, index })
-                                      .GroupBy(x => x.index / groupBy)
-                                      .Select(g => string.Join("|", g.Select(x => x.item)))
-                                      .ToList();
-                    }
-                    else
-                    {
-                        Data = newData;
                     }
                 }
-                catch (Exception ex)
+
+                // 6. Используем XPathSelectElements из LINQ to XML
+                var nodes = (IEnumerable<object>)doc.XPathEvaluate(XPath, nsManager);
+                var groupBy = GroupBy;
+                var maxItems = 100 * (groupBy <= 0 ? 1 : groupBy);
+                var extracted = new List<string>(maxItems);
+
+                foreach (var node in nodes.OfType<XObject>())
                 {
-                    Error = ($"Error updating data from XML: {ex.Message}");
+                    if (extracted.Count >= maxItems)
+                    {
+                        break;
+                    }
+
+                    switch (node.NodeType)
+                    {
+                        case XmlNodeType.Element:
+                            extracted.Add(((XElement)node).Value);
+                            break;
+                        case XmlNodeType.Text:
+                            extracted.Add(((XText)node).Value);
+                            break;
+                        case XmlNodeType.Attribute:
+                            extracted.Add(((XAttribute)node).Value);
+                            break;
+                        default:
+                            extracted.Add(string.Empty);
+                            break;
+                    }
+                }
+
+                List<string> newData;
+                if (groupBy > 1)
+                {
+                    newData = new List<string>((extracted.Count + groupBy - 1) / groupBy);
+                    var builder = new StringBuilder();
+                    for (int i = 0; i < extracted.Count; i++)
+                    {
+                        if (i > 0 && i % groupBy == 0)
+                        {
+                            newData.Add(builder.ToString().TrimEnd('|'));
+                            builder.Clear();
+                        }
+
+                        builder.Append(extracted[i]).Append('|');
+                    }
+
+                    if (builder.Length > 0)
+                    {
+                        newData.Add(builder.ToString().TrimEnd('|'));
+                    }
+                }
+                else
+                {
+                    newData = extracted;
+                }
+
+                RunOnUi(() =>
+                {
+                    SetError(string.Empty);
+                    Data = newData;
+                });
+            }
+            catch (Exception ex)
+            {
+                RunOnUi(() =>
+                {
+                    SetError($"Error updating data from XML: {ex.Message}");
                     Data = new List<string>();
-                }
-            });
+                });
+            }
         }
 
 
@@ -353,6 +378,15 @@ namespace XmlDataProviderNs
             {
                 CustomUI = new TextBox { Text = e.ToString(), AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, Height = 256, FontWeight = FontWeights.Normal, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             }
+
+            _currentTimerPeriodMs = Math.Max(250, Period);
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(_currentTimerPeriodMs)
+            };
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer.Start();
+            ScheduleLoadIfNeeded();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -373,5 +407,68 @@ namespace XmlDataProviderNs
         // private string _url, _xpath, _namespaces;
         // private int _groupBy;
         // PropertyChangedCallback больше не нужен, т.к. мы читаем значения напрямую из DP.
+
+        private void ScheduleLoadIfNeeded()
+        {
+            if (Interlocked.CompareExchange(ref _loadScheduled, 1, 0) != 0)
+            {
+                return;
+            }
+
+            _ = LoadDataIfNeededAsync();
+        }
+
+        private async Task ForceReloadAsync()
+        {
+            if (!string.IsNullOrWhiteSpace(Url))
+            {
+                _cache.TryRemove(Url, out _);
+            }
+
+            await LoadDataIfNeededAsync();
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void SetError(string error)
+        {
+            if (Application.Current?.Dispatcher?.CheckAccess() ?? true)
+            {
+                Error = error;
+            }
+            else
+            {
+                Application.Current.Dispatcher.BeginInvoke(new Action(() => Error = error));
+            }
+        }
+
+        private static void RunOnUi(Action action)
+        {
+            if (action == null) return;
+
+            if (Application.Current?.Dispatcher?.CheckAccess() ?? true)
+            {
+                action();
+            }
+            else
+            {
+                Application.Current.Dispatcher.BeginInvoke(action);
+            }
+        }
+
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            var targetPeriod = Math.Max(250, Period);
+            if (targetPeriod != _currentTimerPeriodMs)
+            {
+                _currentTimerPeriodMs = targetPeriod;
+                _refreshTimer.Interval = TimeSpan.FromMilliseconds(_currentTimerPeriodMs);
+            }
+
+            ScheduleLoadIfNeeded();
+        }
     }
 }

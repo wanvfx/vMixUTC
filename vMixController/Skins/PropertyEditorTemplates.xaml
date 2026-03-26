@@ -10,7 +10,7 @@
                     xmlns:ctrl="clr-namespace:vMixController.Controls"
                     xmlns:ext="clr-namespace:vMixController.Extensions"
                     xmlns:wpfc="clr-namespace:NKristek.Wpf.Converters;assembly=NKristek.Wpf.Converters"
-                    xmlns:loc="clr-namespace:vMixController.Localization">
+                    xmlns:loc="clr-namespace:vMixControllerSkin.Localization;assembly=vMixControllerSkin">
     <DataTemplate x:Key="vMixControlButtonPropEditor" DataType="{x:Type widget:vMixControlButton}">
         <StackPanel>
             <prop:FilePathControl Filter="{loc:Loc Key=PropertyEditor.FileDialog.ImagesFilter}" Title="{loc:Loc Key=PropertyEditor.Common.Image}" Value="{Binding Image, UpdateSourceTrigger=Explicit, Mode=TwoWay}"/>
