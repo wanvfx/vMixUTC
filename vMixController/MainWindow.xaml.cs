@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Messaging;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -10,12 +11,13 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using vMixController.Classes;
 using vMixController.Controls;
 using vMixController.Extensions;
-using vMixControllerSkin.Localization;
 using vMixController.Messages;
 using vMixController.ViewModel;
+using vMixControllerSkin.Localization;
 
 namespace vMixController
 {
@@ -259,6 +261,59 @@ namespace vMixController
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Keyboard.Focus(Layout);
+            _ = PrewarmPopupInfrastructureAsync();
+        }
+
+        private async Task PrewarmPopupInfrastructureAsync()
+        {
+            try
+            {
+                // Run after initial layout to avoid competing with first paint.
+                await Dispatcher.Yield(DispatcherPriority.ApplicationIdle);
+
+                var host = new Grid
+                {
+                    Width = 1,
+                    Height = 1,
+                    Visibility = Visibility.Collapsed,
+                    IsHitTestVisible = false
+                };
+
+                LayoutRoot.Children.Add(host);
+                try
+                {
+                    var combo = new vMixController.Controls.ComboBox
+                    {
+                        Width = 1,
+                        Height = 1,
+                        ItemsSource = new[] { "warmup" },
+                        SelectedIndex = 0
+                    };
+                    host.Children.Add(combo);
+                    combo.ApplyTemplate();
+                    await Dispatcher.Yield(DispatcherPriority.Background);
+                    combo.IsDropDownOpen = true;
+                    await Dispatcher.Yield(DispatcherPriority.Background);
+                    combo.IsDropDownOpen = false;
+
+                    var contextMenu = new ContextMenu
+                    {
+                        PlacementTarget = host
+                    };
+                    contextMenu.Items.Add(new MenuItem { Header = "warmup" });
+                    contextMenu.IsOpen = true;
+                    await Dispatcher.Yield(DispatcherPriority.Background);
+                    contextMenu.IsOpen = false;
+                }
+                finally
+                {
+                    LayoutRoot.Children.Remove(host);
+                }
+            }
+            catch
+            {
+                // Best-effort warmup only.
+            }
         }
 
         private void LanguageMenuItem_Click(object sender, RoutedEventArgs e)
