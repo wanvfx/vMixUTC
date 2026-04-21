@@ -445,28 +445,28 @@
 		<Description>Set countdown duration according to Value as hh:mm:ss (00:00:00)</Description>
 		<Function>SetCountdown</Function>
 		<ValueName>Duration 00:00:00</ValueName>
-		<FormatString>Function=SetCountdown&amp;Input=$InputKey&amp;Value=$Value</FormatString>
+		<FormatString>Function=SetCountdown&amp;Input=$InputKey&amp;Value=$Value&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
 	<vMixNewFunctionReference>
 		<Description></Description>
 		<Function>StartCountdown</Function>
-		<FormatString>Function=StartCountdown&amp;Input=$InputKey</FormatString>
+		<FormatString>Function=StartCountdown&amp;Input=$InputKey&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
 	<vMixNewFunctionReference>
 		<Description>Pause or Resume Countdown or if complete, Start from beginning.</Description>
 		<Function>PauseCountdown</Function>
-		<FormatString>Function=PauseCountdown&amp;Input=$InputKey</FormatString>
+		<FormatString>Function=PauseCountdown&amp;Input=$InputKey&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
 	<vMixNewFunctionReference>
 		<Description>Stop and Reset Countdown</Description>
 		<Function>StopCountdown</Function>
-		<FormatString>Function=StopCountdown&amp;Input=$InputKey</FormatString>
+		<FormatString>Function=StopCountdown&amp;Input=$InputKey&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
@@ -474,7 +474,7 @@
 		<Description>Seconds to add or subtract from current Countdown time</Description>
 		<Function>AdjustCountdown</Function>
 		<ValueName>Seconds</ValueName>
-		<FormatString>Function=AdjustCountdown&amp;Input=$InputKey&amp;Value=$Value</FormatString>
+		<FormatString>Function=AdjustCountdown&amp;Input=$InputKey&amp;Value=$Value&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
@@ -482,14 +482,14 @@
 		<Description>Change countdown time according to Value as hh:mm:ss (00:00:00)</Description>
 		<Function>ChangeCountdown</Function>
 		<ValueName>Time 00:00:00</ValueName>
-		<FormatString>Function=ChangeCountdown&amp;Input=$InputKey&amp;Value=$Value</FormatString>
+		<FormatString>Function=ChangeCountdown&amp;Input=$InputKey&amp;Value=$Value&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
 	<vMixNewFunctionReference>
 		<Description>Pause Countdown Only</Description>
 		<Function>SuspendCountdown</Function>
-		<FormatString>Function=SuspendCountdown&amp;Input=$InputKey</FormatString>
+		<FormatString>Function=SuspendCountdown&amp;Input=$InputKey&amp;SelectedIndex=$SelectedIndex</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 

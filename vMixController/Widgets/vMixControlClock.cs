@@ -111,7 +111,7 @@ namespace vMixController.Widgets
                 // - Событие запланировано на сегодня
                 // - Время события уже наступило
                 // - Событие еще не срабатывало сегодня
-                if (ev.Days.HasFlag(today) && now >= ev.TimeOfDay && !_firedEventsToday.Contains(ev))
+                if (ev.Days.HasFlag(today) && now.TimeOfDay >= ev.TimeOfDay.TimeOfDay && !_firedEventsToday.Contains(ev))
                 {
                     Messenger.Default.Send(new HotkeyLinkMessage() { Link = ev.Command, Parameter = ScriptExecutionDispatchRuntime.CreateOutgoingParameter(null) });
                     _firedEventsToday.Add(ev);
