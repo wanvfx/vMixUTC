@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using vMixController.Classes;
@@ -71,8 +72,6 @@ namespace vMixController.Widgets
                 RaisePropertyChanged(nameof(NextEventAt));
             }
         }
-
-
         // --- Конструктор и методы ---
 
         public vMixControlClock()
@@ -80,11 +79,21 @@ namespace vMixController.Widgets
             _timer.Tick += Timer_Tick;
             // Подписываемся на изменение коллекции, чтобы поддерживать _sortedEvents в актуальном состоянии
             Events.CollectionChanged += (s, e) => UpdateSortedEvents();
+            _lastTickDate = DateTime.Now; // Инициализируем дату последнего тика
         }
 
         private void UpdateSortedEvents()
         {
             _sortedEvents = Events.OrderBy(x => x.TimeOfDay).ToList();
+            _firedEventsToday.Clear(); // Сброс сработавших событий при любом изменении расписания
+            foreach (var ev in _sortedEvents)
+            {
+                if (ev.Days.HasFlag(ToDaysOfWeek(DateTime.Now.DayOfWeek)) && ev.TimeOfDay <= DateTime.Now)
+                {
+                    _firedEventsToday.Add(ev); // Помечаем все события, которые уже должны были сработать сегодня
+                    Debug.Print($"Event '{ev.Command}' at {ev.TimeOfDay} marked as fired on update.");
+                }
+            }
             // После изменения списка событий нужно пересчитать следующее событие
             UpdateNextEventDisplay();
         }
