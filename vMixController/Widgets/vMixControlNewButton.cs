@@ -1112,16 +1112,19 @@ namespace vMixController.Widgets
                         }
 
                         vMixControlButtonHelper.CalculateExpression(cmd.SelectedIndex, PopulateVariables, ExpressionEvaluateFunction, out string index);
+                        vMixControlButtonHelper.CalculateExpression(cmd.SelectedName, PopulateVariables, ExpressionEvaluateFunction, out string selectedName);
+                        if (string.IsNullOrEmpty(selectedName))
+                            selectedName = cmd.SelectedName;
 
                         var formatter = new XPathNewFormattingArgs(key, input.HasValue ? input.Value : -2,
                             cmd.Action.NumericValue == NumericValueType.Integer ? ((int)calculatedParameter).ToString(CultureInfo.InvariantCulture) :
                             (cmd.Action.NumericValue == NumericValueType.Float ? ((float)calculatedParameter).ToString(CultureInfo.InvariantCulture) : (string)calculatedParameter),
-                            index,
+                            index, selectedName,
                             cmd.Mix, cmd.Channel, cmd.Duration);
 
                         var command = (cmd.Action.FormatString ?? string.Empty).ReplacePlaceholdersFromObject(formatter);
 
-                        if (string.IsNullOrWhiteSpace(cmd.Action.DirectPath))
+                        if (string.IsNullOrWhiteSpace(cmd.Action.DirectPath) || !string.IsNullOrWhiteSpace(cmd.SelectedName))
                             AddLog("{2}) SEND {0} WITH RESULT {1}", command, state.SendFunction(command, false, timeout: cmd.Action.Timeout), _pointer + 1);
                         else
                         {

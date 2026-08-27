@@ -686,6 +686,9 @@
   <data name="ScriptEditor.Field.Index" xml:space="preserve">
     <value>Индекс</value>
   </data>
+  <data name="ScriptEditor.Field.Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
   <data name="ScriptEditor.Field.Duration" xml:space="preserve">
     <value>Продолжительность</value>
   </data>

@@ -686,6 +686,9 @@ Use Momentary buttons for this type of scripts.</value>
   <data name="ScriptEditor.Field.Index" xml:space="preserve">
     <value>Index</value>
   </data>
+  <data name="ScriptEditor.Field.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="ScriptEditor.Field.Duration" xml:space="preserve">
     <value>Duration</value>
   </data>
