@@ -76,7 +76,20 @@ namespace vMixController.Classes.Scripting
 
         public string GetSignature()
         {
-            return "";
+            var parameters = new List<string>();
+            if (HasInput)
+                parameters.Add("Input");
+            if (HasValue)
+                parameters.Add("Value");
+            if (HasChannel)
+                parameters.Add("Channel");
+            if (HasMix)
+                parameters.Add("Mix");
+            if (HasDuration)
+                parameters.Add("Duration");
+            if (HasIndex)
+                parameters.Add("SelectedIndex");
+            return parameters.Count > 0 ? Function + "(" + string.Join(", ", parameters) + ")" : Function;
         }
 
     }

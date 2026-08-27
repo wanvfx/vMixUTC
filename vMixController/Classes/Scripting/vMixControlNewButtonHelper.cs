@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -248,7 +249,7 @@ namespace vMixController.Classes.Scripting
             bool hasErrors = false;
             vMixControlExpressionHelper.BuildInputMaps(doc, out var inputNumberByKey, out var inputKeyByNumber);
 
-            foreach (var command in _commands)
+            foreach (var command in _commands.ToList())
             {
                 if (!command.UseInActiveState)
                 {

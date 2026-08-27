@@ -55,7 +55,7 @@
 	<vMixNewFunctionReference>
 		<Description></Description>
 		<Function>HasVariable</Function>
-		<FormatString>Function=HasVariable&amp;$SelectedIndex</FormatString>
+		<FormatString>Function=HasVariable&amp;Value=$SelectedIndex</FormatString>
 		<Category>Native</Category>
 		<Native>true</Native>
 	</vMixNewFunctionReference>
@@ -63,7 +63,7 @@
 	<vMixNewFunctionReference>
 		<Description></Description>
 		<Function>ValueChanged</Function>
-		<FormatString>Function=ValueChanged&amp;$Value$InputKey</FormatString>
+		<FormatString>Function=ValueChanged&amp;Value=$Value&amp;Input=$InputKey</FormatString>
 		<Category>Native</Category>
 		<Native>true</Native>
 	</vMixNewFunctionReference>
