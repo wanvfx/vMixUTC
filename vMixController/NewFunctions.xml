@@ -2024,7 +2024,7 @@ SelectedIndex or SelectedName can be used to select image.
 		<Description>Change Colour of Text in Title in HTML format (#xxxxxx)</Description>
 		<Function>SetTextColour</Function>
 		<ValueName>Colour</ValueName>
-		<FormatString>Function=SetTextColour&amp;Input=$InputKey&amp;Value=$Value&amp;SelectedIndex=$SelectedIndex</FormatString>
+		<FormatString>Function=SetTextColour&amp;Input=$InputKey&amp;Value=$Value</FormatString>
 		<Category>Title</Category>
 	</vMixNewFunctionReference>
 
